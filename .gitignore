@@ -41,6 +41,7 @@ out/
 
 # WWEBJS
 .wwebjs_auth/
+.wwebjs_cache/
 
 # TypeScript v1 declaration files
 typings/

@@ -16,9 +16,9 @@ export default defineConfig((env) => {
           format: 'cjs',
           // It should not be split chunks.
           inlineDynamicImports: true,
-          entryFileNames: '[name].js',
-          chunkFileNames: '[name].js',
-          assetFileNames: '[name].[ext]',
+          entryFileNames: 'preload.js',
+          chunkFileNames: 'preload.js',
+          assetFileNames: 'preload.[ext]',
         },
       },
     },
