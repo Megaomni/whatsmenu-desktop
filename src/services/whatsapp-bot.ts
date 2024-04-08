@@ -31,20 +31,20 @@ export class WhatsAppBot extends Client {
     if (!isDev || process.platform === 'win32') {
 
       // Comando para acessar o registro do Windows
-      const command = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
+      // const command = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
 
       // Executa o comando e manipula a saída
-      child_process.exec(command, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Erro ao executar o comando: ${error}`);
-          return;
-        }
-        if (stderr) {
-          console.error(`Erro do comando: ${stderr}`);
-          return;
-        }
-        executablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
-      });
+      // child_process.exec(command, (error, stdout, stderr) => {
+      //   if (error) {
+      //     console.error(`Erro ao executar o comando: ${error}`);
+      //     return;
+      //   }
+      //   if (stderr) {
+      //     console.error(`Erro do comando: ${stderr}`);
+      //     return;
+      //   }
+      // });
+      executablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
     }
     config.puppeteer.executablePath = executablePath
     super(config)
