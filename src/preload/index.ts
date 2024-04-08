@@ -7,6 +7,7 @@ import { contextBridge, ipcRenderer } from "electron";
 
 export const WhatsAppBotApi = {
   onqrcode: (callback: (event: Electron.IpcRendererEvent, qrcode: string) => void) => ipcRenderer.on('onqrcode', callback),
+  onready: (callback: (event: Electron.IpcRendererEvent) => void) => ipcRenderer.on('onready', callback),
 }
 
 contextBridge.exposeInMainWorld('WhatsAppBotApi', WhatsAppBotApi)
