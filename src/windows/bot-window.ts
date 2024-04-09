@@ -40,7 +40,7 @@ const botWindow = {
           dialog.showErrorBox('Ops!', err)
         });
       
-      // window.menuBarVisible = false
+      window.menuBarVisible = false
     } else {
       window.focus()
     }

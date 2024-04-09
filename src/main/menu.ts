@@ -37,7 +37,7 @@ const template = [
 ]
 
 
-const menu = Menu.buildFromTemplate(template as any[])
+export const whatsmenu_menu = Menu.buildFromTemplate(template as any[])
 if (isMac) {
-  Menu.setApplicationMenu(menu)
+  Menu.setApplicationMenu(whatsmenu_menu)
 }

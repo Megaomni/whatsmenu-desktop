@@ -1,8 +1,8 @@
 import { Notification } from "electron";
 import isDev from "electron-is-dev";
-import { Client, ClientOptions, ContactId, LocalAuth } from "whatsapp-web.js";
 import child_process from "node:child_process";
 import { promisify } from "util";
+import { Client, ClientOptions, ContactId, LocalAuth } from "whatsapp-web.js";
 
 export class WhatsApp {
   messagesQueue: Array<{ contact: string, message: string }> = []
@@ -54,7 +54,6 @@ export class WhatsApp {
     this.bot = new Client(config)
 
     this.bot.on('ready', () => {
-      
       new Notification({
         title: 'Robô pronto!',
         body: 'Estou pronto para enviar mensagens'

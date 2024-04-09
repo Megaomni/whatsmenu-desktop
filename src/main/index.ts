@@ -4,6 +4,7 @@ import isDev from 'electron-is-dev';
 import path from "node:path";
 
 import '../main/menu';
+import '../main/ipc';
 import { decodeDeepLinkMessage } from '../utils/decode-deep-link-message';
 import { WhatsApp } from '../services/whatsapp';
 
@@ -41,12 +42,12 @@ if (!goTheLock) {
       try {
         if (whatsAppService.bot) {
           const validatedContact = await whatsAppService.checkNinthDigit(contact)
-          whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
+          whatsAppService.bot.sendMessage(`${validatedContact}`, message)
         } else {
           await whatsAppService.initBot()
           whatsAppService.messagesQueue.push({ contact: `${contact}@c.us`, message })
           await whatsAppService.bot.initialize()
-        }  
+        } 
         
       } catch (error) {
         if (error instanceof Error) {
