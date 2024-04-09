@@ -20,10 +20,10 @@ export const whatsmenuWindow = {
       },
     });
 
-    window.loadURL('https://next.whatsmenu.com.br')
-    window.setMenu(Menu.buildFromTemplate([
-      { label: 'Robô Whatsapp', click: () => botWindow.createWindow() },
-    ]))
+    window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
+    // window.setMenu(Menu.buildFromTemplate([
+    //   { label: 'Robô Whatsapp', click: () => botWindow.createWindow() },
+    // ]))
     return window
   }
 }

@@ -1,18 +1,20 @@
+import { whatsmenuWindow } from './../windows/whatsmenu-window';
 import { app, BrowserWindow, dialog } from 'electron';
 import isDev from 'electron-is-dev';
 import path from "node:path";
-import { whatsmenuWindow } from '../windows/whatsmenu-window';
 
 import '../main/menu';
 import { decodeDeepLinkMessage } from '../utils/decode-deep-link-message';
 import { WhatsApp } from '../services/whatsapp';
+
+let mainWindow: BrowserWindow
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 export const whatsAppService = new WhatsApp()
 const loadWindows = () => {
-  whatsmenuWindow.createWindow()
+ mainWindow = whatsmenuWindow.createWindow()
 }
 
 if (isDev && process.platform === 'win32') {
@@ -24,73 +26,62 @@ if (isDev && process.platform === 'win32') {
   app.setAsDefaultProtocolClient('whatsmenu-whatsapp-bot');
 }
 
-app.on('second-instance', async (event, commandLine) => {
-  // Someone tried to run a second instance, we should focus our window.
-  // eslint-disable-next-line prefer-const
-  let { contact, message } = decodeDeepLinkMessage(commandLine[commandLine.length - 1])
-  // if (mainWindow) {
-  //   if (mainWindow.isMinimized()) mainWindow.restore()
-  //   try {
-  //     if (whatsAppReady) {
-  //       mainWindow.webContents.send('log', whatsAppReady)
-  //       contact = await checkNinthDigit(contact)
-  //       mainWindow.webContents.send('warn', 'ANTES DE ENVIAR MENSAGEM')
-  //       const sendMessageReturn = await whatsappClient.sendMessage(contact, message)
-  //       mainWindow.webContents.send('warn', sendMessageReturn)
-  //     } else {
-  //       mainWindow.webContents.send('warn', 'LOSTMESSAGES')
-  //       lostMessages.push({ contact, message })
-  //     }
-  //   } catch (error) {
-  //     mainWindow.webContents.send('error', error)
-  //     dialog.showErrorBox('Ops!', error)
-  //   }
-  // } else {
-  //   mainWindow.webContents.send('error', 'MAIN WINDOW NOT FOUND')
-  // }
+const goTheLock = app.requestSingleInstanceLock()
 
-  try {
-    const validatedContact = await whatsAppService.checkNinthDigit(contact)
-    if (whatsAppService.bot) {
-      whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
-    } else {
-      whatsAppService.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
-      await whatsAppService.initBot()
-      await whatsAppService.bot.initialize()
-    }  
-    
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.cause === 'checkNinthDigit') {
-        dialog.showErrorBox('Ops!', error.message)
+if (!goTheLock) {
+  app.quit()
+} else {
+  app.on('second-instance', async (event, commandLine) => {
+    // eslint-disable-next-line prefer-const
+    let { contact, message } = decodeDeepLinkMessage(commandLine[commandLine.length - 1])
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore()
+      }
+      try {
+        if (whatsAppService.bot) {
+          const validatedContact = await whatsAppService.checkNinthDigit(contact)
+          whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
+        } else {
+          await whatsAppService.initBot()
+          whatsAppService.messagesQueue.push({ contact: `${contact}@c.us`, message })
+          await whatsAppService.bot.initialize()
+        }  
+        
+      } catch (error) {
+        if (error instanceof Error) {
+          if (error.cause === 'checkNinthDigit') {
+            dialog.showErrorBox('Ops!', error.message)
+          }
+        }
       }
     }
-  }
-  // the commandLine is array of strings in which last element is deep link url
-  // the url str ends with /
-})
-
-app.on('open-url', async (event, url) => {
-  const { contact, message } = decodeDeepLinkMessage(url)
-  try {
-    const validatedContact = await whatsAppService.checkNinthDigit(contact)
+  })
   
-    if (whatsAppService.bot) {
-      whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
-    } else {
-      whatsAppService.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
-      await whatsAppService.initBot()
-      await whatsAppService.bot.initialize()
-    }  
+  app.on('open-url', async (event, url) => {
+    dialog.showErrorBox('Ops!', `URL: ${url}`)
+  
+    const { contact, message } = decodeDeepLinkMessage(url)
+    try {
+      const validatedContact = await whatsAppService.checkNinthDigit(contact)
     
-  } catch (error) {
-    if (error instanceof Error) {
-      if (error.cause === 'checkNinthDigit') {
-        dialog.showErrorBox('Ops!', error.message)
+      if (whatsAppService.bot) {
+        whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
+      } else {
+        whatsAppService.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
+        await whatsAppService.initBot()
+        await whatsAppService.bot.initialize()
+      }  
+      
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.cause === 'checkNinthDigit') {
+          dialog.showErrorBox('Ops!', error.message)
+        }
       }
     }
-  }
-});
+  });
+}
 
 app.on('ready', loadWindows);
 app.on('window-all-closed', () => {

@@ -70,10 +70,15 @@ export class WhatsApp {
     })
     return this.bot
   }
-  sendQueuedmessages() {
+  async sendQueuedmessages() {
     for (const messageQueued of this.messagesQueue) {
       const { contact, message } = messageQueued
-      this.bot.sendMessage(contact, message)
+      const validatedContact = await this.checkNinthDigit(contact)
+      try {
+        this.bot.sendMessage(validatedContact, message)
+      } catch (error) {
+        console.error(error);
+      }
       this.messagesQueue.slice(this.messagesQueue.indexOf(messageQueued), 1)
     }
   }
@@ -96,6 +101,8 @@ export class WhatsApp {
         throw new Error('Contato inválido!')
       }
     } catch (error) {
+      console.error(error);
+      
       throw new Error('Contato inválido!', { cause: 'checkNinthDigit' })
     }
   }
