@@ -1,13 +1,11 @@
-import { BrowserWindow, Notification, dialog } from "electron";
+import { BrowserWindow, dialog } from "electron";
 import path from 'path';
-import { WhatsAppBot } from '../services/whatsapp-bot';
+import { whatsAppService } from "../main";
 
 let window: BrowserWindow
 
-const bot = new WhatsAppBot()
-
 const botWindow = {
-  createWindow() {
+  async createWindow() {
     // Create the browser window.
     if (!window) {
       window = new BrowserWindow({
@@ -23,16 +21,21 @@ const botWindow = {
       } else {
         window.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
       }
-      
-      bot.on('qr', qr => {
+      await whatsAppService.initBot()
+
+      whatsAppService.bot.on('ready', () => {
+        window.webContents.send('onready')
+      })
+
+      whatsAppService.bot.on('qr', qr => {
         window.webContents.send('onqrcode', qr)
         window.webContents.send('log', qr)
   
       });
     
-      bot.initialize()
+      whatsAppService.bot.initialize()
         .catch(err => {
-          console.error("Deu ruim", err);
+          console.error(err);
           window.webContents.send('error', err)
           dialog.showErrorBox('Ops!', err)
         });
@@ -42,11 +45,11 @@ const botWindow = {
       window.focus()
     }
 
+    // window.webContents.openDevTools()
     return window
   }
 }
 
 export {
   botWindow,
-  bot
 }

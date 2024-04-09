@@ -5,12 +5,12 @@ import { whatsmenuWindow } from '../windows/whatsmenu-window';
 
 import '../main/menu';
 import { decodeDeepLinkMessage } from '../utils/decode-deep-link-message';
-import { bot } from '../windows/bot-window';
+import { WhatsApp } from '../services/whatsapp';
 
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
-
+export const whatsAppService = new WhatsApp()
 const loadWindows = () => {
   whatsmenuWindow.createWindow()
 }
@@ -50,13 +50,13 @@ app.on('second-instance', async (event, commandLine) => {
   // }
 
   try {
-    const validatedContact = await bot.checkNinthDigit(contact)
-  
-    if (bot.info) {
-      bot.sendMessage(`${validatedContact}@c.us`, message)
+    const validatedContact = await whatsAppService.checkNinthDigit(contact)
+    if (whatsAppService.bot) {
+      whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
     } else {
-      bot.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
-      await bot.initialize()
+      whatsAppService.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
+      await whatsAppService.initBot()
+      await whatsAppService.bot.initialize()
     }  
     
   } catch (error) {
@@ -73,13 +73,14 @@ app.on('second-instance', async (event, commandLine) => {
 app.on('open-url', async (event, url) => {
   const { contact, message } = decodeDeepLinkMessage(url)
   try {
-    const validatedContact = await bot.checkNinthDigit(contact)
+    const validatedContact = await whatsAppService.checkNinthDigit(contact)
   
-    if (bot.info) {
-      bot.sendMessage(`${validatedContact}@c.us`, message)
+    if (whatsAppService.bot) {
+      whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message)
     } else {
-      bot.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
-      await bot.initialize()
+      whatsAppService.messagesQueue.push({ contact: `${validatedContact}@c.us`, message })
+      await whatsAppService.initBot()
+      await whatsAppService.bot.initialize()
     }  
     
   } catch (error) {
@@ -97,6 +98,7 @@ app.on('window-all-closed', () => {
     app.quit();
   }
 });
+
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     loadWindows()

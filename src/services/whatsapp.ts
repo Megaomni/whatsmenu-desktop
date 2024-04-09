@@ -2,15 +2,19 @@ import { Notification } from "electron";
 import isDev from "electron-is-dev";
 import { Client, ClientOptions, ContactId, LocalAuth } from "whatsapp-web.js";
 import child_process from "node:child_process";
+import { promisify } from "util";
 
-export class WhatsAppBot extends Client {
+export class WhatsApp {
   messagesQueue: Array<{ contact: string, message: string }> = []
+  bot: Client | null = null
+
   /**
    * Constructor for the class with optional client options.
    *
    * @param {ClientOptions} [config] - Optional configuration for the client
    */
-  constructor(config?: ClientOptions) {
+
+  async initBot(config?: ClientOptions) {
     if (!config) {
       config = {}
     }
@@ -27,28 +31,30 @@ export class WhatsAppBot extends Client {
         "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
       ]
     }
-    let executablePath
     if (!isDev || process.platform === 'win32') {
 
-      // Comando para acessar o registro do Windows
-      // const command = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
+      const command = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
 
-      // Executa o comando e manipula a saída
-      // child_process.exec(command, (error, stdout, stderr) => {
-      //   if (error) {
-      //     console.error(`Erro ao executar o comando: ${error}`);
-      //     return;
-      //   }
-      //   if (stderr) {
-      //     console.error(`Erro do comando: ${stderr}`);
-      //     return;
-      //   }
-      // });
-      executablePath = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+      try {
+        const { stderr, stdout } = await promisify(child_process.exec)(command)
+        if (stderr) {
+          console.error(stderr);
+        }
+        if (stdout) {
+          const match = stdout.match(/(.*)(REG_SZ\s+)(.*)/);
+          const chromePath = match && match[3];
+
+          config.puppeteer.executablePath = chromePath
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-    config.puppeteer.executablePath = executablePath
-    super(config)
-    this.on('ready', () => {
+
+    this.bot = new Client(config)
+
+    this.bot.on('ready', () => {
+      
       new Notification({
         title: 'Robô pronto!',
         body: 'Estou pronto para enviar mensagens'
@@ -56,18 +62,18 @@ export class WhatsAppBot extends Client {
       
       this.sendQueuedmessages()
     })
-    this.on('disconnected', () => {
+    this.bot.on('disconnected', () => {
       new Notification({
         title: 'Robô desconectado!',
         body: 'Não será possível enviar mensagens'
       }).show()
     })
+    return this.bot
   }
-
   sendQueuedmessages() {
     for (const messageQueued of this.messagesQueue) {
       const { contact, message } = messageQueued
-      this.sendMessage(contact, message)
+      this.bot.sendMessage(contact, message)
       this.messagesQueue.slice(this.messagesQueue.indexOf(messageQueued), 1)
     }
   }
@@ -76,11 +82,11 @@ export class WhatsAppBot extends Client {
     try {
       let contactId: ContactId
       if (contact.startsWith('55') && contact.length === 13 && contact[4] === '9') {
-        contactId = await this.getNumberId(contact.slice(0, 4) + contact.slice(5))
+        contactId = await this.bot.getNumberId(contact.slice(0, 4) + contact.slice(5))
       }
 
       if (!contactId) {
-        contactId = await this.getNumberId(contact)
+        contactId = await this.bot.getNumberId(contact)
       }
 
       if (contactId) {
