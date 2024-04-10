@@ -1,6 +1,5 @@
 import { BrowserWindow, screen } from 'electron';
 import path from 'path';
-import { whatsmenu_menu } from '../main/menu';
 
 export const whatsmenuWindow = {
 
@@ -20,8 +19,12 @@ export const whatsmenuWindow = {
       },
     });
 
-    window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
-    window.setMenu(whatsmenu_menu)
+    // window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
+    window.loadURL('http://localhost:3000')
+    window.webContents.openDevTools()
+    // window.setMenu(Menu.buildFromTemplate([
+    //   { label: 'Robô Whatsapp', click: () => botWindow.createWindow() },
+    // ]))
     return window
   }
 }

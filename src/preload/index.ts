@@ -11,7 +11,13 @@ export const WhatsAppBotApi = {
   sendMessage: (contact: string, message: string) => ipcRenderer.send('send-message', { contact, message }),
 }
 
+const WhatsMenuPrintApi = {
+  print: (url: string) => ipcRenderer.send('print', url)
+}
+
+contextBridge.exposeInMainWorld('isElectron', true)
 contextBridge.exposeInMainWorld('WhatsAppBotApi', WhatsAppBotApi)
+contextBridge.exposeInMainWorld('WhatsMenuPrintApi', WhatsMenuPrintApi)
 
 ipcRenderer.on('log', (event, log) => {
   console.log(log);
@@ -20,3 +26,4 @@ ipcRenderer.on('log', (event, log) => {
 ipcRenderer.on('error', (event, error) => {
   console.error(error);
 })
+console.log('preload')
