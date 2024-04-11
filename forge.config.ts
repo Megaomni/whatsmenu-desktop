@@ -10,6 +10,7 @@ import { FuseV1Options, FuseVersion } from '@electron/fuses';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: './src/images/app_icon.ico',
     protocols: [
       {
         name: 'WhatsMenu WhatsApp Bot',
@@ -19,7 +20,19 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  makers: [new MakerSquirrel({ setupIcon: './src/images/install_icon.ico' }), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'Grove-Company',
+          name: 'whatsmenu-desktop'
+        },
+        prerelease: true,
+      }
+    }
+  ],
   plugins: [
     new VitePlugin({
       // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.

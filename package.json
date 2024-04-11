@@ -1,8 +1,8 @@
 {
   "name": "whatsmenu-desktop",
-  "productName": "whatsmenu-desktop",
+  "productName": "WhatsMenu Desktop",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Versão Desktop para WhatsMenu",
   "main": ".vite/build/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -39,8 +39,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "Bruno Santos",
-    "email": "brsantos197@gmail.com"
+    "name": "Grove Company",
+    "email": "atendimento@whatsmenu.com.br"
   },
   "license": "MIT",
   "dependencies": {
