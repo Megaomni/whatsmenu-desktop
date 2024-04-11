@@ -20,7 +20,7 @@ const config: ForgeConfig = {
   },
   rebuildConfig: {},
   
-  makers: [new MakerSquirrel({ setupIcon: './src/images/install_icon.ico' }), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  makers: [new MakerSquirrel({ setupIcon: './src/images/install_icon.ico', iconUrl: 'https://whatsmenu.com.br/favicon/app_icon.ico' }), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   publishers: [
     {
       name: '@electron-forge/publisher-github',
