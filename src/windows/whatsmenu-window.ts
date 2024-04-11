@@ -19,8 +19,8 @@ export const whatsmenuWindow = {
       },
     });
 
-    // window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
-    window.loadURL('http://localhost:3000')
+    window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
+    // window.loadURL('http://localhost:3000')
     window.webContents.openDevTools()
     // window.setMenu(Menu.buildFromTemplate([
     //   { label: 'Robô Whatsapp', click: () => botWindow.createWindow() },

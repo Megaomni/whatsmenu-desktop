@@ -22,19 +22,16 @@ ipcMain.on('send-message', async (_, {contact, message}: {contact: string, messa
 })
 
 ipcMain.on('print', async (_, url) => {
-  const printOptions = {
-    silent: false,
-    printBackground: true,
-    color: true,
-    margin: {
-      marginType: "printableArea",
+  const printOptions: Electron.WebContentsPrintOptions = {
+    silent: true,
+    margins: {
+      marginType: 'none'
     },
-    landscape: false,
-    pagesPerSheet: 1,
-    collate: false,
-    copies: 1,
-    header: "Page header",
-    footer: "Page footer",
+    dpi: {
+      vertical: 140,
+    },
+    pagesPerSheet: 10,
+    pageRanges: [{ to: 20, from: 0 }]
   };
 
   const win = new BrowserWindow({show: false});
