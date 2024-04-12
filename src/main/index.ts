@@ -8,6 +8,8 @@ import '../main/ipc';
 import '../main/auto-update';
 import '../main/store';
 
+console.log(process.env.GITHUB_TOKEN)
+
 import { decodeDeepLinkMessage } from '../utils/decode-deep-link-message';
 import { WhatsApp } from '../services/whatsapp';
 
