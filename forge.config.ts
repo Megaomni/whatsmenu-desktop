@@ -31,7 +31,7 @@ const config: ForgeConfig = {
       name: '@electron-forge/publisher-github',
       config: {
         repository: {
-          owner: 'Grove-Company',
+          owner: 'megaomni',
           name: 'whatsmenu-desktop'
         },
         prerelease: true,
