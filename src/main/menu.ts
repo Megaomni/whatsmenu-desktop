@@ -1,5 +1,6 @@
 import { app, Menu } from "electron";
 import { botWindow } from "../windows/bot-window";
+import { store } from "./store";
 
 const isMac = process.platform === 'darwin'
 
@@ -35,7 +36,15 @@ const template = [
     click: () => botWindow.createWindow()
   }),
   {
-    label: 'Configurações'
+    label: 'Impressão',
+    submenu: [
+      { 
+        label: 'Utilizar impressão automatica',
+        type: 'checkbox',
+        checked: store.get('configs.print.silent'),
+        click: () => store.set('configs.print.silent', !store.get('configs.print.silent'))
+      }
+    ]
   }
 ]
 
