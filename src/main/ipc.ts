@@ -1,5 +1,6 @@
 import { BrowserWindow, dialog, ipcMain } from "electron"
 import { whatsAppService } from "."
+import { store } from "./store"
 
 ipcMain.on('send-message', async (_, {contact, message}: {contact: string, message: string}) => {
   try {
@@ -23,7 +24,7 @@ ipcMain.on('send-message', async (_, {contact, message}: {contact: string, messa
 
 ipcMain.on('print', async (_, url) => {
   const printOptions: Electron.WebContentsPrintOptions = {
-    silent: true,
+    silent: store.get('configs.print.silent'),
     margins: {
       marginType: 'none'
     },
