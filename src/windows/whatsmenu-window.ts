@@ -1,6 +1,7 @@
-import { BrowserWindow, screen } from 'electron';
+import { BrowserWindow, app, screen } from 'electron';
 import path from 'path';
 import { whatsmenu_menu } from '../main/menu';
+import isDev from 'electron-is-dev';
 
 export const whatsmenuWindow = {
 
@@ -20,10 +21,12 @@ export const whatsmenuWindow = {
       },
     });
 
+    window.maximize()
     window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
     // window.loadURL('http://localhost:3000')
-    window.webContents.openDevTools()
+    isDev && window.webContents.openDevTools()
     window.setMenu(whatsmenu_menu)
+    window.on('close', () => app.quit())
     return window
   }
 }

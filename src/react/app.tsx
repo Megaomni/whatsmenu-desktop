@@ -5,7 +5,7 @@ import { Qrcode } from './components/qrcode';
 const root = createRoot(document.body);
 
 root.render(
-  <main className='flex flex-col items-center justify-center h-screen gap-4'>
+  <main className='flex flex-col items-center justify-center h-screen gap-4 text-center'>
     <h2 className='text-3xl'>Robô de atendimento - WhatsMenu</h2>
     <Qrcode />
   </main>

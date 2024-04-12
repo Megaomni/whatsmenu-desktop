@@ -1,6 +1,7 @@
 import { BrowserWindow, dialog } from "electron";
 import path from 'path';
 import { whatsAppService } from "../main";
+import isDev from "electron-is-dev";
 
 let window: BrowserWindow
 
@@ -13,7 +14,7 @@ const botWindow = {
           preload: path.join(__dirname, 'preload.js'),
         },
       });
-    
+      isDev && window.webContents.openDevTools()
       // and load the index.html of the app.
       if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
@@ -30,9 +31,16 @@ const botWindow = {
       whatsAppService.bot.on('qr', qr => {
         window.webContents.send('onqrcode', qr)
         window.webContents.send('log', qr)
-  
       });
     
+      whatsAppService.bot.on('loading_screen', (percent, message) => {
+        window.webContents.send('onloading', { percent, message })
+      })
+
+      whatsAppService.bot.on('disconnected', (reason) => {
+        window.webContents.send('ondisconnected', reason)
+      })
+
       whatsAppService.bot.initialize()
         .catch(err => {
           console.error(err);
@@ -45,7 +53,6 @@ const botWindow = {
       window.focus()
     }
 
-    // window.webContents.openDevTools()
     return window
   }
 }

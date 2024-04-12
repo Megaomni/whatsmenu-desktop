@@ -56,7 +56,7 @@ export class WhatsApp {
     this.bot.on('ready', () => {
       new Notification({
         title: 'Robô pronto!',
-        body: 'Estou pronto para enviar mensagens'
+        body: 'Pronto para enviar mensagens'
       }).show()
       
       this.sendQueuedmessages()

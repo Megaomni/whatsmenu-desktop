@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+progress#whatsapp-percent::-webkit-progress-bar {
+  @apply bg-zinc-50 rounded
+}
+progress#whatsapp-percent::-webkit-progress-value {
+  @apply bg-gradient-to-r from-green-500 to-cyan-500 rounded
+}
+progress#whatsapp-percent::-moz-progress-bar {
+  @apply bg-zinc-50
+}

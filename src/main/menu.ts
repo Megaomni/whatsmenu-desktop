@@ -34,6 +34,9 @@ const template = [
     label: 'Robô WhatsApp',
     click: () => botWindow.createWindow()
   }),
+  {
+    label: 'Configurações'
+  }
 ]
 
 
