@@ -1,6 +1,6 @@
 import { app, Menu } from "electron";
 import { botWindow } from "../windows/bot-window";
-import { store } from "./store";
+import { Printer, store } from "./store";
 
 const isMac = process.platform === 'darwin'
 
@@ -39,10 +39,20 @@ const template = [
     label: 'Impressão',
     submenu: [
       { 
-        label: 'Utilizar impressão automatica',
-        type: 'checkbox',
-        checked: store.get('configs.print.silent'),
-        click: () => store.set('configs.print.silent', !store.get('configs.print.silent'))
+        label: 'Impressoras',
+        submenu: (store.get('configs.printing.printers') as Printer[]).map(printer => (
+          {
+            label: printer.name,
+            type: "checkbox",
+            checked: printer.silent,
+            click: () => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).map(p => {
+              if (p.name === printer.name) {
+                p.silent = !p.silent
+              }
+              return p
+            }))
+          }
+        ))
       }
     ]
   }
