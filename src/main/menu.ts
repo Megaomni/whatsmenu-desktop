@@ -3,6 +3,8 @@ import { botWindow } from "../windows/bot-window";
 import { addPrinter, deletePrinter, getPrinters, Printer, store, updatePrinter } from "./store";
 import prompt from "electron-prompt"
 
+import { randomUUID } from "node:crypto";
+
 const isMac = process.platform === 'darwin'
 
 const copiesDialog = async (printerSelected: Printer) => {
@@ -16,7 +18,7 @@ const copiesDialog = async (printerSelected: Printer) => {
       cancel: 'Cancelar'
     }
   })
-  store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).filter(p => p.name === printerSelected.name).map(p => ({ ...p, copies: parseInt(copies) })))
+  updatePrinter({ id: printerSelected.id, copies: parseInt(copies) })
 }
 
 const template = [
@@ -130,7 +132,7 @@ setInterval(async () => {
         return
       }
 
-      const newPrinter =addPrinter({ ...printerSelected!, id: clientPrinters.length + 1, silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1 })
+      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1 })
 
       const paperSizeDialog = await dialog.showMessageBox(window, {
         title: 'Tamanho do Papel',
