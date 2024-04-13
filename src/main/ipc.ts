@@ -45,7 +45,7 @@ ipcMain.on('print', async (_, url) => {
         deviceName: printer.name,
         pageSize: {
           height: height > 1600000 ? height : 1600000,
-          width: 80 * 1000
+          width: printer.paperSize * 1000
         }
       }, (success, failureReason) => {
         console.log("Print Initiated in Main...");

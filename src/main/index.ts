@@ -20,11 +20,6 @@ if (require('electron-squirrel-startup')) {
 export const whatsAppService = new WhatsApp()
 const loadWindows = async () => {
  mainWindow = whatsmenuWindow.createWindow()
- if (!(store.get('configs.printing.printers') as Printer[]).length) {
-   let defaultPrinters = await mainWindow.webContents.getPrintersAsync()
-    defaultPrinters = (defaultPrinters.filter(printer => printer.isDefault || printer.name === 'POS-58 11.3.0.0') as Printer[]).map(p => ({ ...p, paperSize: 58, silent: true }))
-    store.set('configs.printing.printers', defaultPrinters)
- }
 }
 
 if (isDev && process.platform === 'win32') {

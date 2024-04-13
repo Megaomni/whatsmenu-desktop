@@ -1,7 +1,7 @@
 import { BrowserWindow, app, screen } from 'electron';
+import isDev from 'electron-is-dev';
 import path from 'path';
 import { whatsmenu_menu } from '../main/menu';
-import isDev from 'electron-is-dev';
 
 export const whatsmenuWindow = {
 
