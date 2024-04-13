@@ -1,9 +1,13 @@
 import ElectronStore from "electron-store";
 
+export type Printer = Electron.PrinterInfo & {
+  silent: boolean,
+  paperSize: 58 | 80
+}
 export interface Store {
   configs: {
-    print: {
-      silent: boolean
+    printing: {
+      printers: Printer[]
     }
   }
 }
@@ -11,8 +15,8 @@ export interface Store {
 export const store = new ElectronStore<Store>({
   defaults: {
     configs: {
-      print: {
-        silent: false
+      printing: {
+        printers: []
       }
     }
   }

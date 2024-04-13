@@ -6,12 +6,11 @@ import path from "node:path";
 import '../main/menu';
 import '../main/ipc';
 import '../main/auto-update';
-import '../main/store';
-
-console.log(process.env.GITHUB_TOKEN)
+import { Printer, store } from '../main/store';
 
 import { decodeDeepLinkMessage } from '../utils/decode-deep-link-message';
 import { WhatsApp } from '../services/whatsapp';
+
 
 let mainWindow: BrowserWindow
 
@@ -19,8 +18,13 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 export const whatsAppService = new WhatsApp()
-const loadWindows = () => {
+const loadWindows = async () => {
  mainWindow = whatsmenuWindow.createWindow()
+ if (!(store.get('configs.printing.printers') as Printer[]).length) {
+   let defaultPrinters = await mainWindow.webContents.getPrintersAsync()
+    defaultPrinters = (defaultPrinters.filter(printer => printer.isDefault || printer.name === 'POS-58 11.3.0.0') as Printer[]).map(p => ({ ...p, paperSize: 58, silent: true }))
+    store.set('configs.printing.printers', defaultPrinters)
+ }
 }
 
 if (isDev && process.platform === 'win32') {
