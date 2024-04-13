@@ -1,7 +1,7 @@
 import { app, autoUpdater, dialog } from "electron";
 import { mainWindow } from ".";
 
-const server = 'whatsmenu-desktop-update-server.vercel.app'
+const server = 'https://whatsmenu-desktop-update-server.vercel.app'
 const url = `${server}/update/${process.platform}/${app.getVersion()}`
 const UPDATE_CHECK_INTERVAL = 1000 * 60
 autoUpdater.setFeedURL({ url })
