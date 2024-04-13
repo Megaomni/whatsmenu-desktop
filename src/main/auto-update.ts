@@ -23,11 +23,11 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 })
 
 autoUpdater.on('checking-for-update', () => {
-  mainWindow.webContents.send('log', 'Bucando por novas atualizações...')
+  mainWindow.webContents.send('warn', 'Bucando por novas atualizações...')
 })
 
 autoUpdater.on('update-available', () => {
-  mainWindow.webContents.send('log', 'Nova atualização disponível, baixando...')
+  mainWindow.webContents.send('warn', 'Nova atualização disponível, baixando...')
 })
 
 autoUpdater.on('error', (message) => {

@@ -32,3 +32,7 @@ ipcRenderer.on('log', (event, log) => {
 ipcRenderer.on('error', (event, error) => {
   console.error(error);
 })
+
+ipcRenderer.on('warn', (event, error) => {
+  console.warn(error);
+})
