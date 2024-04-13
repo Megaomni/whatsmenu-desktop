@@ -27,11 +27,11 @@ export const Qrcode = () => {
     window.WhatsAppBotApi.ondisconnected((_, reason) => {
       setDisconnectedReason(reason)
       setConnected(false)
+      setQrcode('')
     })
     window.WhatsAppBotApi.onloading((event, { message, percent }) => {
       setLoading(() => ({ status: true, message, percent }))
-      console.log(event, { message, percent });
-      
+      setQrcode('')
     })
   }, [])
 
@@ -39,7 +39,7 @@ export const Qrcode = () => {
     <>
       {connected ? (
         <h1 className='font-bold text-2xl'>Conectado!</h1>
-      ) : !loading.status ? (
+      ) : !loading.status && !qrcode ? (
         <h1 className='font-bold text-2xl'>Desconectado</h1>
       ) : (
         <>
