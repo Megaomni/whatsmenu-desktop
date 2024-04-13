@@ -32,4 +32,3 @@ ipcRenderer.on('log', (event, log) => {
 ipcRenderer.on('error', (event, error) => {
   console.error(error);
 })
-console.log('preload')

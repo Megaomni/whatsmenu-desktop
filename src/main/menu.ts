@@ -45,7 +45,8 @@ const template = [
         submenu: []
       }
     ]
-  }
+  },
+  { role: 'toggleDevTools'},
 ]
 
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[])

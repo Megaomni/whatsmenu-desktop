@@ -1,4 +1,5 @@
 import { app, autoUpdater, dialog } from "electron";
+import { mainWindow } from ".";
 
 const server = 'whatsmenu-desktop-update-server.vercel.app'
 const url = `${server}/update/${process.platform}/${app.getVersion()}`
@@ -22,17 +23,17 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 })
 
 autoUpdater.on('checking-for-update', () => {
-  // mainWindow.webContents.send('warn', 'Bucando por novas atualizações...')
+  mainWindow.webContents.send('log', 'Bucando por novas atualizações...')
 })
 
 autoUpdater.on('update-available', () => {
-  // mainWindow.webContents.send('warn', 'Nova atualização disponível, baixando...')
+  mainWindow.webContents.send('log', 'Nova atualização disponível, baixando...')
 })
 
 autoUpdater.on('error', (message) => {
-  // mainWindow.webContents.send('error', message)
-  // console.error('There was a problem updating the application')
-  // console.error(message)
+  mainWindow.webContents.send('error', message)
+  console.error('There was a problem updating the application')
+  console.error(message)
 })
 
 setInterval(() => {

@@ -6,13 +6,12 @@ import path from "node:path";
 import '../main/menu';
 import '../main/ipc';
 import '../main/auto-update';
-import { Printer, store } from '../main/store';
 
 import { decodeDeepLinkMessage } from '../utils/decode-deep-link-message';
 import { WhatsApp } from '../services/whatsapp';
 
 
-let mainWindow: BrowserWindow
+export let mainWindow: BrowserWindow
 
 if (require('electron-squirrel-startup')) {
   app.quit();
