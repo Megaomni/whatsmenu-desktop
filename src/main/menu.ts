@@ -1,8 +1,23 @@
 import { app, BrowserWindow, dialog, Menu, MenuItem } from "electron";
 import { botWindow } from "../windows/bot-window";
-import { Printer, store } from "./store";
+import { addPrinter, deletePrinter, getPrinters, Printer, store, updatePrinter } from "./store";
+import prompt from "electron-prompt"
 
 const isMac = process.platform === 'darwin'
+
+const copiesDialog = async (printerSelected: Printer) => {
+  const copies = await prompt({
+    title: 'Quantidade de Cópias',
+    label: 'Quantidade de Cópias',
+    value: '1',
+    height: 200,
+    buttonLabels: {
+      ok: 'OK',
+      cancel: 'Cancelar'
+    }
+  })
+  store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).filter(p => p.name === printerSelected.name).map(p => ({ ...p, copies: parseInt(copies) })))
+}
 
 const template = [
   // { role: 'appMenu' }
@@ -52,7 +67,7 @@ const template = [
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[])
 
 setInterval(async () => {
-  const clientPrinters = store.get('configs.printing.printers') as Printer[]
+  const clientPrinters = getPrinters()
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   template.at(1).submenu.at(0).submenu = [...clientPrinters.map(printer => (
@@ -63,38 +78,25 @@ setInterval(async () => {
           label: 'Imprimir Automaticamente',
           type: "checkbox",
           checked: printer.silent,
-          click: () => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).map(p => {
-            if (p.name === printer.name) {
-              p.silent = !p.silent
-            }
-            return p
-          }))
+          click: () => updatePrinter({ id: printer.id, silent: !printer.silent })
         },
         { type: 'separator' },
         {
           label: '58mm',
           type: 'radio',
           checked: printer.paperSize === 58,
-          click: () => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).map(p => {
-            if (p.name === printer.name) {
-              p.paperSize = 58
-            }
-            return p
-          }))
+          click: () => updatePrinter({ id: printer.id, paperSize: 58 })
         },
         {
           label: '80mm',
           type: 'radio',
           checked: printer.paperSize === 80,
-          click: () => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).map(p => {
-            if (p.name === printer.name) {
-              p.paperSize = 80
-            }
-            return p
-          }))
+          click: () => updatePrinter({ id: printer.id, paperSize: 80 })
         },
         { type: 'separator' },
-        { label: 'Excluir', click: () => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).filter(p => p.name !== printer.name)) }
+        { label: `Cópias - ${printer.copies}`, click: () => copiesDialog(printer) },
+        { type: 'separator' },
+        { label: 'Excluir', click: () => deletePrinter(printer.id) },
       ],
       
     }
@@ -112,20 +114,42 @@ setInterval(async () => {
           buttons: ['OK'],
         })
       }
-      return dialog.showMessageBox(window, {
+      const printerDialog = await dialog.showMessageBox(window, {
         title: 'Impressoras Disponíveis',
         message: 'Selecione uma Impressora',
         checkboxLabel: 'Imprimir Automaticamente',
         checkboxChecked: true,
-        detail: 'Selecione uma Impressora e clique em Imprimir Automaticamente',
+        detail: 'Selecione uma Impressora, caso não queira impressão automática desmarque a caixa "Imprimir Automaticamente"',
         type: 'question',
         buttons: ['cancel', ...printers.map(printer => printer.name)],
-      }).then(({ response, checkboxChecked }) => {
-        if (response === 0 || clientPrinters.some(p => p.name === printers.at(response - 1)!.name)) {
-          return
-        }
-        store.set('configs.printing.printers', [...(store.get('configs.printing.printers') as Printer[]), { ...printers.at(response - 1)!, silent: checkboxChecked, paperSize: 58 }])
       })
+
+      const printerSelected = printers.at(printerDialog.response - 1)
+
+      if (printerDialog.response === 0 || clientPrinters.some(p => p.name === printerSelected!.name)) {
+        return
+      }
+
+      const newPrinter =addPrinter({ ...printerSelected!, id: clientPrinters.length + 1, silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1 })
+
+      const paperSizeDialog = await dialog.showMessageBox(window, {
+        title: 'Tamanho do Papel',
+        message: 'Selecione o tamanho do papel',
+        type: 'question',
+        buttons: ['58mm', '80mm'],
+      })
+      
+      switch (paperSizeDialog.response) {
+        case 0:
+          updatePrinter({ id: newPrinter.id, paperSize: 58 })
+        break;
+        case 1:
+          updatePrinter({ id: newPrinter.id, paperSize: 80 })
+        break;
+      }
+      
+      await copiesDialog(newPrinter)
+      
     }
   }
 ]
