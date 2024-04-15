@@ -28,6 +28,7 @@ autoUpdater.on('checking-for-update', () => {
 
 autoUpdater.on('update-available', () => {
   mainWindow.webContents.send('warn', 'Nova atualização disponível, baixando...')
+  clearInterval(updateInterval)
 })
 
 autoUpdater.on('error', (message) => {
@@ -36,6 +37,6 @@ autoUpdater.on('error', (message) => {
   console.error(message)
 })
 
-setInterval(() => {
+const updateInterval = setInterval(() => {
   autoUpdater.checkForUpdates()
 }, UPDATE_CHECK_INTERVAL)
