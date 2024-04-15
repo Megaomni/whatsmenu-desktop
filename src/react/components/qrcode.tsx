@@ -89,7 +89,7 @@ export const Qrcode = () => {
       <div>
         <QRCodeCanvas size={!qrcode ? 0 : 256} value={qrcode} data-loading={loading.status} className='transition-opacity delay-300 opacity-0 invisible data-[loading="false"]:opacity-100 data-[loading="false"]:visible' />
         <div data-loading={loading.status} className='data-[loading="false"]:opacity-0 data-[loading="false"]:h-0 animate-spin rounded-full h-[256px] w-[256px] border-b-2'></div>
-          {loading.message && (
+          {loading.message && !qrcode && (
             <div className='mt-8'>
               <progress id="whatsapp-percent" className="h-3 w-[256px]" max={100} value={loading.percent}></progress>
               <p className='text-center'>{loading.message} - {loading.percent}%</p>
