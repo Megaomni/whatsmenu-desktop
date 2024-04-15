@@ -22,7 +22,7 @@ export const whatsmenuWindow = {
     });
 
     window.maximize()
-    window.loadURL('https://whatsmenu-adm-front-git-bot-grove-company.vercel.app/')
+    window.loadURL('https://next.whatsmenu.com.br/')
     // window.loadURL('http://localhost:3000')
     isDev && window.webContents.openDevTools()
     window.setMenu(whatsmenu_menu)
