@@ -58,8 +58,14 @@ const botWindow = {
         dialog.showErrorBox("Ops!", err);
       });
 
+      window.on('close', (e) => {
+        e.preventDefault();
+        window.hide()
+      })
+
       window.menuBarVisible = false;
     } else {
+      window.restore()
       window.focus();
     }
 
