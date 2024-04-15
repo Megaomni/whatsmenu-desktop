@@ -1,9 +1,9 @@
 import { BrowserWindow, dialog } from "electron";
-import path from 'path';
+import path from "path";
 import { whatsAppService } from "../main";
 import isDev from "electron-is-dev";
 
-let window: BrowserWindow
+let window: BrowserWindow;
 
 const botWindow = {
   async createWindow() {
@@ -11,52 +11,60 @@ const botWindow = {
     if (!window) {
       window = new BrowserWindow({
         webPreferences: {
-          preload: path.join(__dirname, 'preload.js'),
+          preload: path.join(__dirname, "preload.js"),
         },
       });
-      isDev && window.webContents.openDevTools()
+      isDev && window.webContents.openDevTools();
       // and load the index.html of the app.
       if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-        window.setTitle('WhatsMenu Bot')
+        window.setTitle("WhatsMenu Bot");
       } else {
-        window.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+        window.loadFile(
+          path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+          )
+        );
       }
-      await whatsAppService.initBot()
+      await whatsAppService.initBot();
 
-      whatsAppService.bot.on('ready', () => {
-        window.webContents.send('onready')
-      })
-
-      whatsAppService.bot.on('qr', qr => {
-        window.webContents.send('onqrcode', qr)
-        window.webContents.send('log', qr)
+      whatsAppService.bot.on("ready", () => {
+        if (!whatsAppService.firstConection) {
+          window.webContents.send("onready");
+        } else {
+          whatsAppService.events.on("ready", () => {
+            window.webContents.send("onready");
+          });
+        }
       });
-    
-      whatsAppService.bot.on('loading_screen', (percent, message) => {
-        window.webContents.send('onloading', { percent, message })
-      })
 
-      whatsAppService.bot.on('disconnected', (reason) => {
-        window.webContents.send('ondisconnected', reason)
-      })
+      whatsAppService.bot.on("qr", (qr) => {
+        window.webContents.send("onqrcode", qr);
+        window.webContents.send("log", qr);
+      });
 
-      whatsAppService.bot.initialize()
-        .catch(err => {
-          console.error(err);
-          window.webContents.send('error', err)
-          dialog.showErrorBox('Ops!', err)
-        });
-      
-      window.menuBarVisible = false
+      whatsAppService.bot.on("loading_screen", (percent, message) => {
+        window.webContents.send("onloading", { percent, message });
+      });
+
+      whatsAppService.bot.on("disconnected", (reason) => {
+        window.webContents.send("ondisconnected", reason);
+      });
+
+      whatsAppService.bot.initialize().catch((err) => {
+        console.error(err);
+        window.webContents.send("error", err);
+        dialog.showErrorBox("Ops!", err);
+      });
+
+      window.menuBarVisible = false;
     } else {
-      window.focus()
+      window.focus();
     }
 
-    return window
-  }
-}
+    return window;
+  },
+};
 
-export {
-  botWindow,
-}
+export { botWindow };

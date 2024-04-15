@@ -4,10 +4,13 @@ import child_process from "node:child_process";
 import { promisify } from "util";
 import { Client, ClientOptions, ContactId, LocalAuth } from "whatsapp-web.js";
 
-export class WhatsApp {
-  messagesQueue: Array<{ contact: string, message: string }> = []
-  bot: Client | null = null
+import { EventEmitter } from "node:events";
 
+export class WhatsApp {
+  messagesQueue: Array<{ contact: string; message: string }> = [];
+  bot: Client | null = null;
+  firstConection = true;
+  events = new EventEmitter();
   /**
    * Constructor for the class with optional client options.
    *
@@ -16,9 +19,9 @@ export class WhatsApp {
 
   async initBot(config?: ClientOptions) {
     if (!config) {
-      config = {}
+      config = {};
     }
-    config.authStrategy = new LocalAuth()
+    config.authStrategy = new LocalAuth();
     config.puppeteer = {
       args: [
         "--no-sandbox",
@@ -29,14 +32,14 @@ export class WhatsApp {
         "--no-zygote",
         "--disable-gpu",
         "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
-      ]
-    }
-    if (!isDev || process.platform === 'win32') {
-
-      const command = 'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
+      ],
+    };
+    if (!isDev || process.platform === "win32") {
+      const command =
+        'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
 
       try {
-        const { stderr, stdout } = await promisify(child_process.exec)(command)
+        const { stderr, stdout } = await promisify(child_process.exec)(command);
         if (stderr) {
           console.error(stderr);
         }
@@ -44,65 +47,95 @@ export class WhatsApp {
           const match = stdout.match(/(.*)(REG_SZ\s+)(.*)/);
           const chromePath = match && match[3];
 
-          config.puppeteer.executablePath = chromePath
+          config.puppeteer.executablePath = chromePath;
         }
       } catch (error) {
         console.error(error);
       }
     }
 
-    this.bot = new Client(config)
+    this.bot = new Client(config);
 
-    this.bot.on('ready', () => {
+    this.bot.on("qr", (qr) => {
+      this.firstConection = true;
+    });
+
+    this.bot.on("ready", async () => {
+      if (this.firstConection) {
+        console.log("Checando número", this.bot.info.wid.user);
+        console.time("firstconnection");
+        try {
+          // const validatedContact = await this.checkNinthDigit(
+          //   this.bot.info.wid.user
+          // );
+          await this.bot.sendMessage(
+            this.bot.info.wid.user,
+            "Ola! Robô iniciado com sucesso"
+          );
+        } catch (error) {
+          console.error(error);
+        } finally {
+          console.timeEnd("firstconnection");
+        }
+
+        this.events.emit("ready");
+        this.firstConection = false;
+      }
       new Notification({
-        title: 'Robô pronto!',
-        body: 'Pronto para enviar mensagens'
-      }).show()
-      
-      this.sendQueuedmessages()
-    })
-    this.bot.on('disconnected', () => {
+        title: "Robô pronto!",
+        body: "Pronto para enviar mensagens",
+      }).show();
+
+      this.sendQueuedmessages();
+    });
+    this.bot.on("disconnected", () => {
       new Notification({
-        title: 'Robô desconectado!',
-        body: 'Não será possível enviar mensagens'
-      }).show()
-    })
-    return this.bot
+        title: "Robô desconectado!",
+        body: "Não será possível enviar mensagens",
+      }).show();
+    });
+    return this.bot;
   }
   async sendQueuedmessages() {
     for (const messageQueued of this.messagesQueue) {
-      const { contact, message } = messageQueued
-      const validatedContact = await this.checkNinthDigit(contact)
+      const { contact, message } = messageQueued;
+      // const validatedContact = await this.checkNinthDigit(contact);
       try {
-        this.bot.sendMessage(validatedContact, message)
+        this.bot.sendMessage(`${contact}@c.us`, message);
       } catch (error) {
         console.error(error);
       }
-      this.messagesQueue.slice(this.messagesQueue.indexOf(messageQueued), 1)
+      this.messagesQueue.slice(this.messagesQueue.indexOf(messageQueued), 1);
     }
   }
 
   checkNinthDigit = async (contact: string): Promise<string> => {
     try {
-      let contactId: ContactId
-      if (contact.startsWith('55') && contact.length === 13 && contact[4] === '9') {
-        contactId = await this.bot.getNumberId(contact.slice(0, 4) + contact.slice(5))
+      let contactId: ContactId;
+      if (
+        contact.startsWith("55") &&
+        contact.length === 13 &&
+        contact[4] === "9"
+      ) {
+        contactId = await this.bot.getNumberId(
+          contact.slice(0, 4) + contact.slice(5)
+        );
       }
 
       if (!contactId) {
-        contactId = await this.bot.getNumberId(contact)
+        contactId = await this.bot.getNumberId(contact);
       }
 
       if (contactId) {
-        contact = contactId._serialized
-        return contact
+        contact = contactId._serialized;
+        return contact;
       } else {
-        throw new Error('Contato inválido!')
+        throw new Error("Contato inválido!");
       }
     } catch (error) {
       console.error(error);
-      
-      throw new Error('Contato inválido!', { cause: 'checkNinthDigit' })
+
+      throw new Error("Contato inválido!", { cause: "checkNinthDigit" });
     }
-  }
+  };
 }
