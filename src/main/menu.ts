@@ -63,7 +63,7 @@ const template = [
       }
     ]
   },
-  { role: 'toggleDevTools'},
+  { role: 'toggleDevTools', accelerator: 'F12', label: 'Console' } as MenuItem,
 ]
 
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[])
