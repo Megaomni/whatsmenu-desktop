@@ -65,6 +65,7 @@ const botWindow = {
 
     return window;
   },
+  windowIsOpen: !!window
 };
 
 export { botWindow };

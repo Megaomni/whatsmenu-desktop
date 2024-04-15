@@ -1,21 +1,24 @@
 import { BrowserWindow, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
 import { Printer, store } from "./store";
+import { botWindow } from "../windows/bot-window";
 
 ipcMain.on(
   "send-message",
   async (_, { contact, message }: { contact: string; message: string }) => {
+    const botState = await whatsAppService.bot?.getState()
     try {
-      if (whatsAppService.bot) {
+      if (botState === 'CONNECTED') {
         // const validatedContact = await whatsAppService.checkNinthDigit(contact)
         whatsAppService.bot.sendMessage(`${contact}@c.us`, message);
       } else {
-        await whatsAppService.initBot();
         whatsAppService.messagesQueue.push({
           contact: `${contact}@c.us`,
           message,
         });
-        await whatsAppService.bot.initialize();
+        if (!botWindow.windowIsOpen) {
+          botWindow.createWindow()
+        }
       }
     } catch (error) {
       if (error instanceof Error) {

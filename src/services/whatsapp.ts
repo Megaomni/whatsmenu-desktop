@@ -55,9 +55,8 @@ export class WhatsApp {
     }
 
     this.bot = new Client(config);
-
     this.bot.on("qr", (qr) => {
-      this.firstConection = true;
+      // this.firstConection = true;
     });
 
     this.bot.on("ready", async () => {
@@ -69,7 +68,7 @@ export class WhatsApp {
           //   this.bot.info.wid.user
           // );
           await this.bot.sendMessage(
-            this.bot.info.wid.user,
+            `${this.bot.info.wid.user}@c.us`,
             "Ola! Robô iniciado com sucesso"
           );
         } catch (error) {
@@ -97,16 +96,20 @@ export class WhatsApp {
     return this.bot;
   }
   async sendQueuedmessages() {
-    for (const messageQueued of this.messagesQueue) {
-      const { contact, message } = messageQueued;
-      // const validatedContact = await this.checkNinthDigit(contact);
-      try {
-        this.bot.sendMessage(`${contact}@c.us`, message);
-      } catch (error) {
-        console.error(error);
+    setTimeout(() => {
+      for (const messageQueued of this.messagesQueue) {
+        const { contact, message } = messageQueued;
+        // const validatedContact = await this.checkNinthDigit(contact);
+        try {
+          setTimeout(() => {
+            this.bot.sendMessage(`${contact}`, message);
+          }, 1000);
+        } catch (error) {
+          console.error(error);
+        }
+        this.messagesQueue.slice(this.messagesQueue.indexOf(messageQueued), 1);
       }
-      this.messagesQueue.slice(this.messagesQueue.indexOf(messageQueued), 1);
-    }
+    }, 5 * 1000);
   }
 
   checkNinthDigit = async (contact: string): Promise<string> => {
