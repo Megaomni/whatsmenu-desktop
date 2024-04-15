@@ -2,6 +2,7 @@ import { BrowserWindow, app, screen } from 'electron';
 import isDev from 'electron-is-dev';
 import path from 'path';
 import { whatsmenu_menu } from '../main/menu';
+import { botWindow } from './bot-window';
 
 export const whatsmenuWindow = {
 
@@ -26,7 +27,10 @@ export const whatsmenuWindow = {
     // window.loadURL('http://localhost:3000')
     isDev && window.webContents.openDevTools()
     window.setMenu(whatsmenu_menu)
-    window.on('close', () => app.quit())
+    window.on('close', () => {
+      botWindow.forceCloseWindow()
+      app.quit()
+    })
     return window
   }
 }
