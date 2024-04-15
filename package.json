@@ -9,7 +9,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "release": "npm version patch -m \"Upgrade to version $npm_package_version\" && npm run publish",
+    "release": "npm version patch -m \"Upgrade version \" && npm run publish",
+    "release:no-make": "npm version patch -m \"Upgrade version \" && electron-forge publish --from-dry-run", 
     "lint": "eslint --ext .ts,.tsx ."
   },
   "devDependencies": {
