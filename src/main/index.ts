@@ -9,10 +9,12 @@ import "../main/auto-update";
 
 import { decodeDeepLinkMessage } from "../utils/decode-deep-link-message";
 import { WhatsApp } from "../services/whatsapp";
+import { botWindow } from "../windows/bot-window";
 
 export let mainWindow: BrowserWindow;
 
 if (require("electron-squirrel-startup")) {
+  botWindow.forceCloseWindow();
   app.quit();
 }
 export const whatsAppService = new WhatsApp();
@@ -36,6 +38,7 @@ if (isDev && process.platform === "win32") {
 const goTheLock = app.requestSingleInstanceLock();
 
 if (!goTheLock) {
+  botWindow?.forceCloseWindow();
   app.quit();
 } else {
   app.on("second-instance", async (event, commandLine) => {
@@ -99,6 +102,7 @@ if (!goTheLock) {
 app.on("ready", loadWindows);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
+    botWindow.forceCloseWindow();
     app.quit();
   }
 });
