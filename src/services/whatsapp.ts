@@ -2,7 +2,7 @@ import { Notification } from "electron";
 import isDev from "electron-is-dev";
 import child_process from "node:child_process";
 import { promisify } from "util";
-import { Client, ClientOptions, ContactId, LocalAuth } from "whatsapp-web.js";
+import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
 
 import { EventEmitter } from "node:events";
 
@@ -64,13 +64,17 @@ export class WhatsApp {
         console.log("Checando número", this.bot.info.wid.user);
         console.time("firstconnection");
         try {
-          // const validatedContact = await this.checkNinthDigit(
-          //   this.bot.info.wid.user
-          // );
-          await this.bot.sendMessage(
-            `${this.bot.info.wid.user}@c.us`,
-            "Ola! Robô iniciado com sucesso"
+          const chat = await this.checkNinthDigit(
+            this.bot.info.wid.user
           );
+          if (chat) {
+            chat.sendMessage("Ola! Robô iniciado com sucesso")
+          } else {
+            await this.bot.sendMessage(
+              `${this.bot.info.wid.user}@c.us`,
+              "Ola! Robô iniciado com sucesso"
+            );
+          }
         } catch (error) {
           console.error(error);
         } finally {
@@ -96,13 +100,18 @@ export class WhatsApp {
     return this.bot;
   }
   async sendQueuedmessages() {
-    setTimeout(() => {
+    setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
-        // const validatedContact = await this.checkNinthDigit(contact);
+        const chat = await this.checkNinthDigit(contact);
+
         try {
           setTimeout(() => {
-            this.bot.sendMessage(`${contact}`, message);
+            if (chat) {
+              chat.sendMessage(message);              
+            } else {
+              this.bot.sendMessage(`${contact}@c.us`, message);
+            }
           }, 1000);
         } catch (error) {
           console.error(error);
@@ -112,33 +121,27 @@ export class WhatsApp {
     }, 5 * 1000);
   }
 
-  checkNinthDigit = async (contact: string): Promise<string> => {
+  checkNinthDigit = async (contact: string): Promise<WAWebJS.Chat> => {
     try {
-      let contactId: ContactId;
+      let chat: WAWebJS.Chat
       if (
         contact.startsWith("55") &&
         contact.length === 13 &&
         contact[4] === "9"
       ) {
-        contactId = await this.bot.getNumberId(
-          contact.slice(0, 4) + contact.slice(5)
+        chat = await this.bot.getChatById(
+          `${contact.slice(0, 4) + contact.slice(5)}@c.us`
         );
       }
 
-      if (!contactId) {
-        contactId = await this.bot.getNumberId(contact);
+      if (!chat) {
+        chat = await this.bot.getChatById(`${contact}@c.us`);
       }
 
-      if (contactId) {
-        contact = contactId._serialized;
-        return contact;
-      } else {
-        throw new Error("Contato inválido!");
-      }
+      return chat
     } catch (error) {
       console.error(error);
-
-      throw new Error("Contato inválido!", { cause: "checkNinthDigit" });
+      throw error
     }
   };
 }
