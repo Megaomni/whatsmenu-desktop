@@ -5,7 +5,8 @@ export type Printer = Electron.PrinterInfo & {
   silent: boolean
   paperSize: 58 | 80
   copies: number
-  margins: Electron.Margins
+  margins: Electron.Margins,
+  scaleFactor: number
 }
 export interface Store {
   configs: {
