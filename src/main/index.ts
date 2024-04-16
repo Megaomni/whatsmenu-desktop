@@ -10,7 +10,7 @@ import "../main/auto-update";
 import { decodeDeepLinkMessage } from "../utils/decode-deep-link-message";
 import { WhatsApp } from "../services/whatsapp";
 import { botWindow } from "../windows/bot-window";
-import { getPrinters } from "./store";
+import { getPrinters, updatePrinter } from "./store";
 
 export let mainWindow: BrowserWindow;
 
@@ -24,8 +24,8 @@ const main = () => {
   const printers = getPrinters()
   if (printers.length > 0) {
     printers.forEach((printer) => {
-      printer.margins = printer.margins ?? {
-        marginType: 'none'
+      if (printer.margins) {
+        updatePrinter({ id: printer.id, margins: { marginType: 'none' } })
       }
     })
   }

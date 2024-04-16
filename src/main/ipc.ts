@@ -85,7 +85,7 @@ ipcMain.on("print", async (_, url) => {
           ...printOptions,
           deviceName: name,
           pageSize: {
-            height: height > 1600000 ? height : 1600000,
+            height: height < 1600000 ? height : 1600000,
             width: paperSize * 1000,
           },
         },
