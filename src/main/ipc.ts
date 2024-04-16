@@ -33,25 +33,16 @@ ipcMain.on(
 ipcMain.on("print", async (_, url) => {
   const printers = store.get("configs.printing.printers") as Printer[];
   for (const printer of printers) {
+    const { margins, copies, silent, name, paperSize } = printer
     const win = new BrowserWindow({ show: false });
-
+  
     const printOptions: Electron.WebContentsPrintOptions = {
-      silent: printer.silent,
+      silent,
+      margins,
+      copies,
       dpi: {
         vertical: 203,
       },
-      margins:
-        printer.paperSize === 80
-          ? {
-              marginType: "none",
-            }
-          : {
-              marginType: "custom",
-              top: 0,
-              bottom: 1,
-              left: 15,
-            },
-      copies: printer.copies,
     };
     win.webContents.addListener("did-finish-load", async () => {
       await win.webContents.executeJavaScript(`
@@ -64,20 +55,20 @@ ipcMain.on("print", async (_, url) => {
           \${styleElement.innerHTML}
           /* Adicione novos estilos ou sobrescreva os existentes aqui */
           .formated.print-row div {
-            width: ${printer.paperSize === 80 ? 100 : 65}mm !important;
+            width: ${paperSize === 80 ? 100 : 65}mm !important;
           }
 
           .formated.print-row div p {
             &.complement-space {
-              padding-left: ${printer.paperSize === 80 ? 13 : 4}mm !important;
+              padding-left: ${paperSize === 80 ? 13 : 4}mm !important;
             }
       
             &.item-space {
-              padding-left: ${printer.paperSize === 80 ? 20 : 8}mm !important;
+              padding-left: ${paperSize === 80 ? 20 : 8}mm !important;
             }
       
             &.transshipment-space {
-              padding-left: ${printer.paperSize === 80 ? 9 : 5}mm !important;
+              padding-left: ${paperSize === 80 ? 9 : 5}mm !important;
             }
           }
         \`;
@@ -92,10 +83,10 @@ ipcMain.on("print", async (_, url) => {
       win.webContents.print(
         {
           ...printOptions,
-          deviceName: printer.name,
+          deviceName: name,
           pageSize: {
-            height: height > 1600000 ? height : 1600000,
-            width: printer.paperSize * 1000,
+            height: height < 1600000 ? height : 1600000,
+            width: paperSize * 1000,
           },
         },
         (success, failureReason) => {
@@ -104,7 +95,7 @@ ipcMain.on("print", async (_, url) => {
         }
       );
     });
-
+  
     await win.loadURL(url);
   }
   return "shown print dialog";

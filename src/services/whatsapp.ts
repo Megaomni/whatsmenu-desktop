@@ -9,7 +9,7 @@ import { EventEmitter } from "node:events";
 export class WhatsApp {
   messagesQueue: Array<{ contact: string; message: string }> = [];
   bot: Client | null = null;
-  firstConection = true;
+  firstConection = false;
   events = new EventEmitter();
   /**
    * Constructor for the class with optional client options.

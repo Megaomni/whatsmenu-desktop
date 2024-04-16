@@ -98,6 +98,10 @@ setInterval(async () => {
         { type: 'separator' },
         { label: `Cópias - ${printer.copies}`, click: () => copiesDialog(printer) },
         { type: 'separator' },
+        { label: `Sem Margem`, type: 'radio', checked: printer.margins?.marginType === 'none',click: () => updatePrinter({ id: printer.id, margins: { marginType: 'none' }}) },
+        { label: `Margem Padrão`, type: 'radio', checked: printer.margins?.marginType === 'default',click: () => updatePrinter({ id: printer.id, margins: { marginType: 'default' }}) },
+        { label: `Margem Mínima`, type: 'radio', checked: printer.margins?.marginType === 'custom',click: () => updatePrinter({ id: printer.id, margins: { marginType: 'custom', top: 0, right: 0, bottom: 1, left: 15 }}) },
+        { type: 'separator' },
         { label: 'Excluir', click: () => deletePrinter(printer.id) },
       ],
       
@@ -132,7 +136,7 @@ setInterval(async () => {
         return
       }
 
-      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1 })
+      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1, margins: { marginType: 'none' } })
 
       const paperSizeDialog = await dialog.showMessageBox(window, {
         title: 'Tamanho do Papel',
