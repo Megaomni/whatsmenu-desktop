@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make",
+    "make": "electron-forge make --arch=\"ia32,x64\"",
     "publish": "electron-forge publish",
     "release": "npm version patch -m \"Upgrade version \" && npm run publish",
     "release:no-make": "npm version patch -m \"Upgrade version \" && electron-forge publish --from-dry-run",
