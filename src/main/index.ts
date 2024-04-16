@@ -10,6 +10,7 @@ import "../main/auto-update";
 import { decodeDeepLinkMessage } from "../utils/decode-deep-link-message";
 import { WhatsApp } from "../services/whatsapp";
 import { botWindow } from "../windows/bot-window";
+import { getPrinters } from "./store";
 
 export let mainWindow: BrowserWindow;
 
@@ -18,8 +19,16 @@ if (require("electron-squirrel-startup")) {
   app.quit();
 }
 export const whatsAppService = new WhatsApp();
-const loadWindows = async () => {
+const main = () => {
   mainWindow = whatsmenuWindow.createWindow();
+  const printers = getPrinters()
+  if (printers.length > 0) {
+    printers.forEach((printer) => {
+      printer.margins = printer.margins ?? {
+        marginType: 'none'
+      }
+    })
+  }
 };
 
 if (isDev && process.platform === "win32") {
@@ -99,7 +108,7 @@ if (!goTheLock) {
   });
 }
 
-app.on("ready", loadWindows);
+app.on("ready", main);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     botWindow.forceCloseWindow();
@@ -109,6 +118,6 @@ app.on("window-all-closed", () => {
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    loadWindows();
+    main();
   }
 });
