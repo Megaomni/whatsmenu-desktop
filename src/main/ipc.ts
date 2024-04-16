@@ -33,16 +33,18 @@ ipcMain.on(
 ipcMain.on("print", async (_, url) => {
   const printers = store.get("configs.printing.printers") as Printer[];
   for (const printer of printers) {
-    const { margins, copies, silent, name, paperSize } = printer
+    const { margins, copies, silent, name, paperSize, scaleFactor } = printer
     const win = new BrowserWindow({ show: false });
   
     const printOptions: Electron.WebContentsPrintOptions = {
+      deviceName: name,
       silent,
       margins,
       copies,
       dpi: {
         vertical: 203,
       },
+      scaleFactor
     };
     win.webContents.addListener("did-finish-load", async () => {
       await win.webContents.executeJavaScript(`
@@ -83,7 +85,6 @@ ipcMain.on("print", async (_, url) => {
       win.webContents.print(
         {
           ...printOptions,
-          deviceName: name,
           pageSize: {
             height: height < 1600000 ? height : 1600000,
             width: (paperSize === 80 ? 72 : 57) * 1000,

@@ -24,8 +24,11 @@ const main = () => {
   const printers = getPrinters()
   if (printers.length > 0) {
     printers.forEach((printer) => {
-      if (printer.margins) {
+      if (!printer.margins) {
         updatePrinter({ id: printer.id, margins: { marginType: 'none' } })
+      }
+      if (!printer.scaleFactor) {
+        updatePrinter({ id: printer.id, scaleFactor: 100 })
       }
     })
   }

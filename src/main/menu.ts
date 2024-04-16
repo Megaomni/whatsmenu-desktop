@@ -11,14 +11,30 @@ const copiesDialog = async (printerSelected: Printer) => {
   const copies = await prompt({
     title: 'Quantidade de Cópias',
     label: 'Quantidade de Cópias',
-    value: '1',
+    inputAttrs: { type: 'number' },
+    value: printerSelected.copies ? printerSelected.copies.toString() : '1',
     height: 200,
     buttonLabels: {
       ok: 'OK',
       cancel: 'Cancelar'
     }
   })
-  updatePrinter({ id: printerSelected.id, copies: parseInt(copies) })
+  updatePrinter({ id: printerSelected.id, copies: parseInt(copies) ?? printerSelected.copies })
+}
+
+const scaleFactorDialog = async (printerSelected: Printer) => {
+  const copies = await prompt({
+    title: 'Escala da impressão',
+    label: 'Escala em porcentagem',
+    inputAttrs: { type: 'number' },
+    value: printerSelected ? printerSelected.scaleFactor.toString() : '100',
+    height: 200,
+    buttonLabels: {
+      ok: 'OK',
+      cancel: 'Cancelar'
+    }
+  })
+  updatePrinter({ id: printerSelected.id, scaleFactor: parseInt(copies) ?? printerSelected.scaleFactor })
 }
 
 const template = [
@@ -101,6 +117,8 @@ setInterval(async () => {
         { label: `Sem Margem`, type: 'radio', checked: printer.margins?.marginType === 'none',click: () => updatePrinter({ id: printer.id, margins: { marginType: 'none' }}) },
         { label: `Margem Mínima`, type: 'radio', checked: printer.margins?.marginType === 'custom',click: () => updatePrinter({ id: printer.id, margins: { marginType: 'custom', top: 0, right: 0, bottom: 1, left: 15 }}) },
         { type: 'separator' },
+        { label: `Escala - ${printer.scaleFactor}%`, click: () => scaleFactorDialog(printer) },
+        { type: 'separator' },
         { label: 'Excluir', click: () => deletePrinter(printer.id) },
       ],
       
@@ -135,7 +153,7 @@ setInterval(async () => {
         return
       }
 
-      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1, margins: { marginType: 'none' } })
+      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1, margins: { marginType: 'none' }, scaleFactor: 100 })
 
       const paperSizeDialog = await dialog.showMessageBox(window, {
         title: 'Tamanho do Papel',
