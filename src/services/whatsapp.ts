@@ -5,6 +5,7 @@ import { promisify } from "util";
 import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
 
 import { EventEmitter } from "node:events";
+import { store } from "../main/store";
 
 export class WhatsApp {
   messagesQueue: Array<{ contact: string; message: string }> = [];
@@ -23,6 +24,7 @@ export class WhatsApp {
     }
     config.authStrategy = new LocalAuth();
     config.puppeteer = {
+      headless: !store.get('configs.whatsapp.showHiddenWhatsApp'),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",

@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
 import { Printer, store } from "./store";
 import { botWindow } from "../windows/bot-window";
@@ -33,6 +33,14 @@ ipcMain.on(
     }
   }
 );
+
+ipcMain.on('show-whatsapp', async (_, show) => {
+  store.set('configs.whatsapp.showHiddenWhatsApp', show)
+  app.relaunch()
+  // await whatsAppService.bot?.destroy()
+  // console.log(show, whatsAppService)
+  // whatsAppService.initBot()
+})
 
 ipcMain.on("print", async (_, url) => {
   const printers = store.get("configs.printing.printers") as Printer[];

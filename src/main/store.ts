@@ -13,6 +13,9 @@ export interface Store {
     printing: {
       printers: Printer[]
     }
+    whatsapp: {
+      showHiddenWhatsApp: boolean
+    }
   }
 }
 
@@ -21,6 +24,9 @@ export const store = new ElectronStore<Store>({
     configs: {
       printing: {
         printers: []
+      },
+      whatsapp: {
+        showHiddenWhatsApp: false
       }
     }
   }
