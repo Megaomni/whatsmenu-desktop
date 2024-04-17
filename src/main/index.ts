@@ -6,6 +6,7 @@ import path from "node:path";
 import "../main/menu";
 import "../main/ipc";
 import "../main/auto-update";
+import "../main/tray";
 
 import { decodeDeepLinkMessage } from "../utils/decode-deep-link-message";
 import { WhatsApp } from "../services/whatsapp";
