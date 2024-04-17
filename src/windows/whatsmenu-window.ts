@@ -3,6 +3,7 @@ import isDev from 'electron-is-dev';
 import path from 'path';
 import { whatsmenu_menu } from '../main/menu';
 import { botWindow } from './bot-window';
+import { registerShortCuts } from '../main/shortcuts';
 
 export const whatsmenuWindow = {
 
@@ -28,6 +29,7 @@ export const whatsmenuWindow = {
     isDev && window.webContents.openDevTools()
     window.setMenu(whatsmenu_menu)
     window.webContents.on('did-create-window', win => win.maximize())
+    registerShortCuts(window)
     window.on('close', () => {
       botWindow.forceCloseWindow()
       app.quit()
