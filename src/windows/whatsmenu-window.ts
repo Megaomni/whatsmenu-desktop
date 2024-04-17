@@ -1,12 +1,13 @@
-import { BrowserWindow, app, screen } from 'electron';
+import { BrowserWindow, screen } from 'electron';
 import isDev from 'electron-is-dev';
 import path from 'path';
 import { whatsmenu_menu } from '../main/menu';
-import { botWindow } from './bot-window';
 import { registerShortCuts } from '../main/shortcuts';
 
-export const whatsmenuWindow = {
+let forceClose = false
 
+export const whatsmenuWindow = {
+  forceCloseWindow: () => forceClose = true,
   /**
    * Create a new BrowserWindow with specified width and height, load a URL, set a menu, and return the window.
    *
@@ -30,9 +31,11 @@ export const whatsmenuWindow = {
     window.setMenu(whatsmenu_menu)
     window.webContents.on('did-create-window', win => win.maximize())
     registerShortCuts(window)
-    window.on('close', () => {
-      botWindow.forceCloseWindow()
-      app.quit()
+    window.on('close', (e) => {
+      if (!forceClose) {
+        e.preventDefault()
+        window.hide()
+      }
     })
     return window
   }

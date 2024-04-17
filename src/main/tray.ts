@@ -1,13 +1,23 @@
-import path from 'node:path';
 import { Menu, Tray, app, nativeImage } from "electron";
+import path from 'node:path';
+import { mainWindow } from '.';
+import { botWindow } from "../windows/bot-window";
+import { whatsmenuWindow } from "../windows/whatsmenu-window";
 
 app.whenReady().then(() => {
-  console.log(nativeImage.createFromPath(path.resolve(__dirname, 'app_icon.png')))
-  const tray = new Tray(nativeImage.createFromPath('./app_icon.png').resize({ width: 16, height: 16 }))
+  const tray = new Tray(nativeImage.createFromPath(path.resolve(__dirname, './app_icon.png')).resize({ width: 16, height: 16 }))
   const menu = Menu.buildFromTemplate([
-    {
-      label: 'Robô WhatsApp',
-    }
+    { label: 'Encerrar', click: () => {
+      whatsmenuWindow.forceCloseWindow()
+      botWindow.forceCloseWindow()
+      app.quit()
+    } }
   ])
   tray.setContextMenu(menu)
+  tray.on('click', () => {
+    if (!mainWindow.isVisible()) {
+      mainWindow.restore()
+      mainWindow.maximize()
+    }
+  })
 })
