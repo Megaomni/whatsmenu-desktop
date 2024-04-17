@@ -79,7 +79,11 @@ const template = [
       }
     ]
   },
-  { role: 'toggleDevTools', accelerator: 'F12', label: 'Console' } as MenuItem,
+  { label: 'Ver', submenu: [
+    { role: 'reload', label: 'Recarregar' },
+    { role: 'forceReload', label: 'Forçar Recarregar' },
+    { role: 'toggleDevTools', label: 'Console' },
+  ] as MenuItem[] },
 ]
 
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[])

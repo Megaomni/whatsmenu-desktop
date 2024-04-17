@@ -9,12 +9,12 @@ ipcMain.on(
     const botState = await whatsAppService.bot?.getState()
     try {
       if (botState === 'CONNECTED') {
-        const chat = await whatsAppService.checkNinthDigit(contact)
-        if (chat) {
-          chat.sendMessage(message);
-        } else {
+        // const chat = await whatsAppService.checkNinthDigit(contact)
+        // if (chat) {
+        //   chat.sendMessage(message);
+        // } else {
           whatsAppService.bot.sendMessage(`${contact}@c.us`, message);
-        }
+        // }
       } else {
         whatsAppService.messagesQueue.push({
           contact: `${contact}`,
