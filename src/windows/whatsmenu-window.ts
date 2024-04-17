@@ -27,6 +27,7 @@ export const whatsmenuWindow = {
     // window.loadURL('http://localhost:3000')
     isDev && window.webContents.openDevTools()
     window.setMenu(whatsmenu_menu)
+    window.webContents.on('did-create-window', win => win.maximize())
     window.on('close', () => {
       botWindow.forceCloseWindow()
       app.quit()

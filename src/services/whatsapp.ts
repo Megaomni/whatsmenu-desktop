@@ -64,17 +64,17 @@ export class WhatsApp {
         console.log("Checando número", this.bot.info.wid.user);
         console.time("firstconnection");
         try {
-          const chat = await this.checkNinthDigit(
-            this.bot.info.wid.user
-          );
-          if (chat) {
-            chat.sendMessage("Ola! Robô iniciado com sucesso")
-          } else {
+          // const chat = await this.checkNinthDigit(
+          //   this.bot.info.wid.user
+          // );
+          // if (chat) {
+          //   chat.sendMessage("Ola! Robô iniciado com sucesso")
+          // } else {
             await this.bot.sendMessage(
               `${this.bot.info.wid.user}@c.us`,
               "Ola! Robô iniciado com sucesso"
             );
-          }
+          // }
         } catch (error) {
           console.error(error);
         } finally {
@@ -103,15 +103,15 @@ export class WhatsApp {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
-        const chat = await this.checkNinthDigit(contact);
+        // const chat = await this.checkNinthDigit(contact);
 
         try {
           setTimeout(() => {
-            if (chat) {
-              chat.sendMessage(message);              
-            } else {
+            // if (chat) {
+            //   chat.sendMessage(message);              
+            // } else {
               this.bot.sendMessage(`${contact}@c.us`, message);
-            }
+            // }
           }, 1000);
         } catch (error) {
           console.error(error);
