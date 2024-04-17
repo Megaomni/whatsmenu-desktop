@@ -15,7 +15,8 @@ export interface Store {
     }
     whatsapp: {
       showHiddenWhatsApp: boolean
-    }
+    },
+    executablePath?: string
   }
 }
 
