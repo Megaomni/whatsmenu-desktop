@@ -6,6 +6,7 @@ import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
 
 import { EventEmitter } from "node:events";
 import { store } from "../main/store";
+import { onmessage } from "../utils/whatsapp-bot-messages";
 
 export class WhatsApp {
   messagesQueue: Array<{ contact: string; message: string }> = [];
@@ -93,6 +94,12 @@ export class WhatsApp {
 
       this.sendQueuedmessages();
     });
+    this.bot.on('message', (msg) => {
+      if (msg.body.includes('whatsmenu.com.br')) {
+        console.log(msg)
+        this.bot.sendMessage(msg.author,'Pedido recebido!')
+      }
+    })
     this.bot.on("disconnected", () => {
       new Notification({
         title: "Robô desconectado!",
