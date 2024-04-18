@@ -66,7 +66,6 @@ const botWindow = {
         }
       })
 
-      window.menuBarVisible = false;
       window.maximize();
     } else {
       window.restore();

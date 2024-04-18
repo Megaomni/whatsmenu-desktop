@@ -16,6 +16,8 @@ export const WhatsAppBotApi = {
   // Methods
   sendMessage: (contact: string, message: string) => ipcRenderer.send('send-message', { contact, message }),
   showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show),
+  setExecutablePath: (executablePath: string) => { console.log(executablePath, 'preload')
+    ipcRenderer.send('executablePath', executablePath)}
 }
 
 const WhatsMenuPrintApi = {

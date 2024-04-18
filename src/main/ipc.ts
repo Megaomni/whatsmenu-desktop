@@ -42,6 +42,12 @@ ipcMain.on('show-whatsapp', async (_, show) => {
   // whatsAppService.initBot()
 })
 
+ipcMain.on('executablePath', (_, executablePath) => {
+  console.log(executablePath, 'ipc');
+  
+  store.set('configs.executablePath', executablePath.replaceAll('\\', '/').replaceAll('/', '\\'))
+})
+
 ipcMain.on("print", async (_, url) => {
   const printers = store.get("configs.printing.printers") as Printer[];
   for (const printer of printers) {

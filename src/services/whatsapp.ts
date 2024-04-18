@@ -34,10 +34,10 @@ export class WhatsApp {
         "--no-first-run",
         "--no-zygote",
         "--disable-gpu",
-        "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
+        // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
       ],
     };
-    if (!isDev || process.platform === "win32") {
+    if (!store.get('configs.executablePath') || (!isDev || process.platform === "win32")) {
       const command =
         'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
 
@@ -55,6 +55,10 @@ export class WhatsApp {
       } catch (error) {
         console.error(error);
       }
+    }
+
+    if (store.get('configs.executablePath')) {
+      config.puppeteer.executablePath = store.get('configs.executablePath')
     }
 
     this.bot = new Client(config);
