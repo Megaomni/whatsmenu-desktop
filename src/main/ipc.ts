@@ -5,19 +5,16 @@ import { botWindow } from "../windows/bot-window";
 
 ipcMain.on(
   "send-message",
-  async (_, { contact, message }: { contact: string; message: string }) => {
+  async (_, { contact, message, alreadyChecked = false }: { contact: string; message: string, alreadyChecked?: boolean }) => {
     const botState = await whatsAppService.bot?.getState()
     try {
       if (botState === 'CONNECTED') {
-        // const chat = await whatsAppService.checkNinthDigit(contact)
-        // if (chat) {
-        //   chat.sendMessage(message);
-        // } else {
-          whatsAppService.bot.sendMessage(`${contact}@c.us`, message);
-        // }
+        const contactId = await whatsAppService.checkNinthDigit(contact, alreadyChecked);
+        whatsAppService.bot.sendMessage(contactId._serialized, message);
       } else {
         whatsAppService.messagesQueue.push({
           contact: `${contact}`,
+          alreadyChecked,
           message,
         });
         if (!botWindow.windowIsOpen) {
@@ -25,6 +22,7 @@ ipcMain.on(
         }
       }
     } catch (error) {
+      console.log(error, 'error');
       if (error instanceof Error) {
         if (error.cause === "checkNinthDigit") {
           dialog.showErrorBox("Ops!", error.message);
