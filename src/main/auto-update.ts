@@ -1,5 +1,7 @@
 import { app, autoUpdater, dialog } from "electron";
 import { mainWindow } from ".";
+import { whatsmenuWindow } from "../windows/whatsmenu-window";
+import { botWindow } from "../windows/bot-window";
 
 const server = 'https://whatsmenu-desktop-update-server.vercel.app'
 const url = `${server}/update/${process.platform}/${app.getVersion()}`
@@ -18,7 +20,11 @@ autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 
   dialog.showMessageBox(dialogOpts).then((returnValue) => {
     // mainWindow.removeAllListeners()
-    if (returnValue.response === 0) autoUpdater.quitAndInstall()
+    if (returnValue.response === 0) {
+      whatsmenuWindow.forceCloseWindow()
+      botWindow.forceCloseWindow()
+      autoUpdater.quitAndInstall()
+    }
   })
 })
 
