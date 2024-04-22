@@ -156,9 +156,7 @@ export class WhatsApp {
       return contactId
     } catch (error) {
       if (error.cause === 'timeout') {
-        const response = await fetch('https://bot.whatsmenu.com.br/whatsapp/checkNumberId', {
-          method: 'POST',
-          body: JSON.stringify({ contact }),
+        const response = await fetch(`https://bot.whatsmenu.com.br/whatsapp/${contact}/check`, {
           headers: { 'Content-Type': 'application/json' },
         })
           .then(response => response.json())
