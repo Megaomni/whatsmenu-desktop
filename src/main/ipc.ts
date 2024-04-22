@@ -5,11 +5,12 @@ import { botWindow } from "../windows/bot-window";
 
 ipcMain.on(
   "send-message",
-  async (_, { contact, message, alreadyChecked = false }: { contact: string; message: string, alreadyChecked?: boolean }) => {
+  async (_, { contact, message, client }: { contact: string; message: string, client?: any }) => {
     const botState = await whatsAppService.bot?.getState()
+    const alreadyChecked = client?.controls?.whatsapp?.contactId
     try {
       if (botState === 'CONNECTED') {
-        const contactId = await whatsAppService.checkNinthDigit(contact, alreadyChecked);
+        const contactId = await whatsAppService.checkNinthDigit(contact, client);
         whatsAppService.bot.sendMessage(contactId._serialized, message);
       } else {
         whatsAppService.messagesQueue.push({
@@ -117,3 +118,7 @@ ipcMain.on("print", async (_, url) => {
   }
   return "shown print dialog";
 });
+
+ipcMain.on('storeProfile', (_, profile) => {
+  store.set('configs.profile', profile)
+})

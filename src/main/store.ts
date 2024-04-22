@@ -16,7 +16,8 @@ export interface Store {
     whatsapp: {
       showHiddenWhatsApp: boolean
     },
-    executablePath?: string
+    executablePath?: string,
+    profile: any
   }
 }
 
@@ -28,7 +29,8 @@ export const store = new ElectronStore<Store>({
       },
       whatsapp: {
         showHiddenWhatsApp: false
-      }
+      },
+      profile: null
     }
   }
 });

@@ -14,7 +14,7 @@ export const WhatsAppBotApi = {
   ondisconnected: (callback: (event: Electron.IpcRendererEvent, reason: WAWebJS.WAState | "NAVIGATION") => void) => ipcRenderer.on('ondisconnected', callback),
 
   // Methods
-  sendMessage: (contact: string, message: string) => ipcRenderer.send('send-message', { contact, message }),
+  sendMessage: (contact: string, message: string, client?: any) => ipcRenderer.send('send-message', { contact, message, client }),
   showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show),
   setExecutablePath: (executablePath: string) => { console.log(executablePath, 'preload')
     ipcRenderer.send('executablePath', executablePath)}
@@ -24,9 +24,14 @@ const WhatsMenuPrintApi = {
   print: (url: string) => ipcRenderer.send('print', url)
 }
 
+const DesktopApi = {
+  storeProfile: (profile: any) => ipcRenderer.send('storeProfile', profile),
+}
+
 contextBridge.exposeInMainWorld('isElectron', true)
 contextBridge.exposeInMainWorld('WhatsAppBotApi', WhatsAppBotApi)
 contextBridge.exposeInMainWorld('WhatsMenuPrintApi', WhatsMenuPrintApi)
+contextBridge.exposeInMainWorld('DesktopApi', DesktopApi)
 
 ipcRenderer.on('log', (event, log) => {
   console.log(log);
