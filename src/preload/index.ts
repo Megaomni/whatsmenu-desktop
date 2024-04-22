@@ -1,6 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
 
 import { contextBridge, ipcRenderer } from "electron";
+import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
@@ -12,10 +13,10 @@ export const WhatsAppBotApi = {
   onloading: (callback: (event: Electron.IpcRendererEvent, value: { percent: number, message: string }) => void) => ipcRenderer.on('onloading', callback),
   onready: (callback: (event: Electron.IpcRendererEvent) => void) => ipcRenderer.on('onready', callback),
   ondisconnected: (callback: (event: Electron.IpcRendererEvent, reason: WAWebJS.WAState | "NAVIGATION") => void) => ipcRenderer.on('ondisconnected', callback),
-  onmessagesend: (callback: (event: Electron.IpcRendererEvent, client: any) => void) => ipcRenderer.once('onmessagesend', callback),
+  onmessagesend: (callback: (event: Electron.IpcRendererEvent, client: ClientType) => void) => ipcRenderer.once('onmessagesend', callback),
 
   // Methods
-  sendMessage: (contact: string, message: string, client?: any) => ipcRenderer.send('send-message', { contact, message, client }),
+  sendMessage: (contact: string, message: string, client?: ClientType) => ipcRenderer.send('send-message', { contact, message, client }),
   showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show),
   setExecutablePath: (executablePath: string) => { 
     console.log(executablePath, 'preload')

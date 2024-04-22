@@ -2,10 +2,11 @@ import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
 import { botWindow } from "../windows/bot-window";
 import { Printer, store } from "./store";
+import { ClientType } from "../@types/client";
 
 ipcMain.on(
   "send-message",
-  async (_, { contact, message, client }: { contact: string; message: string, client?: any }) => {
+  async (_, { contact, message, client }: { contact: string; message: string, client?: ClientType }) => {
     const botState = await whatsAppService.bot?.getState()
     try {
       if (botState === 'CONNECTED') {

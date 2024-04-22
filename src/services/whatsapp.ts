@@ -8,9 +8,10 @@ import { store } from './../main/store';
 import { EventEmitter } from "node:events";
 import { resolveInFixedTime } from '../utils/resolve-in-fixed-time';
 import { updateClient } from "./whatsmenu";
+import { ClientType } from "../@types/client";
 
 export class WhatsApp {
-  messagesQueue: Array<{ contact: string; message: string, client?: any }> = [];
+  messagesQueue: Array<{ contact: string; message: string, client?: ClientType }> = [];
   bot: Client | null = null;
   firstConection = false;
   events = new EventEmitter();
@@ -131,7 +132,7 @@ export class WhatsApp {
     }, 5 * 1000);
   }
 
-  checkNinthDigit = async (contact: string, client: any): Promise<WAWebJS.ContactId> => {
+  checkNinthDigit = async (contact: string, client: ClientType): Promise<WAWebJS.ContactId> => {
     console.log(client,'client');
     if (client?.controls?.whatsapp?.contactId) {
       return client.controls.whatsapp.contactId

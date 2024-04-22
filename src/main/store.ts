@@ -1,4 +1,5 @@
 import ElectronStore from "electron-store";
+import { ProfileType } from "../@types/profile";
 
 export type Printer = Electron.PrinterInfo & {
   id: string
@@ -17,7 +18,7 @@ export interface Store {
       showHiddenWhatsApp: boolean
     },
     executablePath?: string,
-    profile: any
+    profile: ProfileType | null
   }
 }
 
