@@ -175,10 +175,12 @@ export class WhatsApp {
         throw error
       }
     } finally {
-      client.controls.whatsapp = {
-        contactId
+      if (client?.controls) {
+        client.controls.whatsapp = {
+          contactId
+        }
+        updateClient({ client })
       }
-      updateClient({ client })
     }
   };
 
