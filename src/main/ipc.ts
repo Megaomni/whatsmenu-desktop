@@ -7,7 +7,6 @@ ipcMain.on(
   "send-message",
   async (_, { contact, message, client }: { contact: string; message: string, client?: any }) => {
     const botState = await whatsAppService.bot?.getState()
-    const alreadyChecked = client?.controls?.whatsapp?.contactId
     try {
       if (botState === 'CONNECTED') {
         const contactId = await whatsAppService.checkNinthDigit(contact, client);
@@ -15,7 +14,7 @@ ipcMain.on(
       } else {
         whatsAppService.messagesQueue.push({
           contact: `${contact}`,
-          alreadyChecked,
+          client,
           message,
         });
         if (!botWindow.windowIsOpen) {

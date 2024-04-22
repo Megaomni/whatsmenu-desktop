@@ -53,63 +53,6 @@ const goTheLock = app.requestSingleInstanceLock();
 if (!goTheLock) {
   botWindow?.forceCloseWindow();
   app.quit();
-} else {
-  app.on("second-instance", async (event, commandLine) => {
-    // eslint-disable-next-line prefer-const
-    let { contact, message } = decodeDeepLinkMessage(
-      commandLine[commandLine.length - 1]
-    );
-    if (mainWindow) {
-      if (mainWindow.isMinimized()) {
-        mainWindow.restore();
-      }
-      try {
-        if (whatsAppService.bot) {
-          // const validatedContact = await whatsAppService.checkNinthDigit(contact)
-          whatsAppService.bot.sendMessage(`${contact}@c.us`, message);
-        } else {
-          await whatsAppService.initBot();
-          whatsAppService.messagesQueue.push({
-            contact: `${contact}@c.us`,
-            message,
-          });
-          await whatsAppService.bot.initialize();
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          if (error.cause === "checkNinthDigit") {
-            dialog.showErrorBox("Ops!", error.message);
-          }
-        }
-      }
-    }
-  });
-
-  app.on("open-url", async (event, url) => {
-    dialog.showErrorBox("Ops!", `URL: ${url}`);
-
-    const { contact, message } = decodeDeepLinkMessage(url);
-    try {
-      const validatedContact = await whatsAppService.checkNinthDigit(contact);
-
-      if (whatsAppService.bot) {
-        whatsAppService.bot.sendMessage(`${validatedContact}@c.us`, message);
-      } else {
-        whatsAppService.messagesQueue.push({
-          contact: `${validatedContact}@c.us`,
-          message,
-        });
-        await whatsAppService.initBot();
-        await whatsAppService.bot.initialize();
-      }
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.cause === "checkNinthDigit") {
-          dialog.showErrorBox("Ops!", error.message);
-        }
-      }
-    }
-  });
 }
 
 app.on("ready", main);

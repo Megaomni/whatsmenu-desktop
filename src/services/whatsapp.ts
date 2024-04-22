@@ -10,7 +10,7 @@ import { resolveInFixedTime } from '../utils/resolve-in-fixed-time';
 import { updateClient } from "./whatsmenu";
 
 export class WhatsApp {
-  messagesQueue: Array<{ contact: string; message: string, alreadyChecked: boolean }> = [];
+  messagesQueue: Array<{ contact: string; message: string, client?: any }> = [];
   bot: Client | null = null;
   firstConection = false;
   events = new EventEmitter();
@@ -116,8 +116,8 @@ export class WhatsApp {
   async sendQueuedmessages() {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
-        const { contact, message } = messageQueued;
-        const contactId = await this.checkNinthDigit(contact, {});
+        const { contact, message, client } = messageQueued;
+        const contactId = await this.checkNinthDigit(contact, client);
 
         try {
           setTimeout(() => {
