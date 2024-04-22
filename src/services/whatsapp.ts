@@ -1,3 +1,4 @@
+import { addPrinter , store } from './../main/store';
 import { Notification } from "electron";
 import isDev from "electron-is-dev";
 import child_process from "node:child_process";
@@ -5,8 +6,6 @@ import { promisify } from "util";
 import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
 
 import { EventEmitter } from "node:events";
-import { store } from "../main/store";
-import { onmessage } from "../utils/whatsapp-bot-messages";
 
 export class WhatsApp {
   messagesQueue: Array<{ contact: string; message: string }> = [];
@@ -134,27 +133,37 @@ export class WhatsApp {
     }, 5 * 1000);
   }
 
-  checkNinthDigit = async (contact: string): Promise<WAWebJS.Chat> => {
+  checkNinthDigit = async (contact: string): Promise<WAWebJS.ContactId> => {
     try {
-      let chat: WAWebJS.Chat
+      let contactId: WAWebJS.ContactId
       if (
         contact.startsWith("55") &&
         contact.length === 13 &&
         contact[4] === "9"
       ) {
-        chat = await this.bot.getChatById(
-          `${contact.slice(0, 4) + contact.slice(5)}@c.us`
-        );
+        contactId = await this.validateContact(this.bot.getNumberId, `${contact.slice(0, 4) + contact.slice(5)}`);
       }
 
-      if (!chat) {
-        chat = await this.bot.getChatById(`${contact}@c.us`);
+      if (!contactId) {
+        contactId =  await this.validateContact(this.bot.getNumberId, contact);
       }
 
-      return chat
+      return contactId
     } catch (error) {
       console.error(error);
+      if (error.cause === 'timeout') {
+        console.log('Retrying...')
+      }
       throw error
     }
   };
+
+  validateContact(callback: (contact: string) => Promise<WAWebJS.ContactId>, contact: string): Promise<WAWebJS.ContactId> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        reject(new Error("Timeout", { cause: 'timeout' }))
+      }, 5 * 1000);
+      callback(contact).then(resolve).catch(reject)
+    })
+  }
 }
