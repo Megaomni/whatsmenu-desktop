@@ -7,6 +7,7 @@ import { store } from './../main/store';
 
 import { EventEmitter } from "node:events";
 import { resolveInFixedTime } from '../utils/resolve-in-fixed-time';
+import { updateClient } from "./whatsmenu";
 
 export class WhatsApp {
   messagesQueue: Array<{ contact: string; message: string, alreadyChecked: boolean }> = [];
@@ -116,7 +117,7 @@ export class WhatsApp {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
-        const contactId = await this.checkNinthDigit(contact);
+        const contactId = await this.checkNinthDigit(contact, {});
 
         try {
           setTimeout(() => {
@@ -130,17 +131,14 @@ export class WhatsApp {
     }, 5 * 1000);
   }
 
-  checkNinthDigit = async (contact: string, alreadyChecked = false): Promise<WAWebJS.ContactId> => {
-    console.log(alreadyChecked,'alreadyChecked');
-    if (alreadyChecked) {
-      return {
-        server: "@c.us",
-        user: contact.replace('@c.us', ''),
-        _serialized: contact
-      }
+  checkNinthDigit = async (contact: string, client: any): Promise<WAWebJS.ContactId> => {
+    console.log(client,'client');
+    if (client?.controls?.whatsapp?.contactId) {
+      return client.controls.whatsapp.contactId
     }
+    let contactId: WAWebJS.ContactId
+
     try {
-      let contactId: WAWebJS.ContactId
       if (
         contact.startsWith("55") &&
         contact.length === 13 &&
@@ -175,6 +173,11 @@ export class WhatsApp {
         console.error(error);
         throw error
       }
+    } finally {
+      client.controls.whatsapp = {
+        contactId
+      }
+      updateClient({ client })
     }
   };
 
