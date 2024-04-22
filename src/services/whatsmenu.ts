@@ -1,3 +1,4 @@
+import { mainWindow } from "../main";
 import { whatsmenu_api } from "../lib/axios";
 import { store } from "../main/store";
 
@@ -13,7 +14,7 @@ const updateClient = async ({ client }: { client: any }) => {
   }
   try {
     const { data } = await whatsmenu_api.patch(`/api/v2/business/${profile.slug}/client/${client.id}/update`, { client } )
-    console.log(data, 'aqui data');
+    mainWindow.webContents.send('onmessagesend', data.client)
   } catch (error) {
     console.error(error);
     throw error

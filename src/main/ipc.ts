@@ -1,7 +1,7 @@
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
-import { Printer, store } from "./store";
 import { botWindow } from "../windows/bot-window";
+import { Printer, store } from "./store";
 
 ipcMain.on(
   "send-message",

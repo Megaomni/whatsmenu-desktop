@@ -12,6 +12,7 @@ export const WhatsAppBotApi = {
   onloading: (callback: (event: Electron.IpcRendererEvent, value: { percent: number, message: string }) => void) => ipcRenderer.on('onloading', callback),
   onready: (callback: (event: Electron.IpcRendererEvent) => void) => ipcRenderer.on('onready', callback),
   ondisconnected: (callback: (event: Electron.IpcRendererEvent, reason: WAWebJS.WAState | "NAVIGATION") => void) => ipcRenderer.on('ondisconnected', callback),
+  onmessagesend: (callback: (event: Electron.IpcRendererEvent, client: any) => void) => ipcRenderer.once('onmessagesend', callback),
 
   // Methods
   sendMessage: (contact: string, message: string, client?: any) => ipcRenderer.send('send-message', { contact, message, client }),
