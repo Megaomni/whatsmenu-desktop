@@ -1,12 +1,5 @@
 import { QRCodeCanvas } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
-import { WhatsAppBotApi } from '../../preload';
-
-interface ElectronWindow extends Window {
-  WhatsAppBotApi: typeof WhatsAppBotApi
-}
-
-declare const window: ElectronWindow
 
 export const Qrcode = () => {
 

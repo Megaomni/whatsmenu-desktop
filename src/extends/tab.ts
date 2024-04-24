@@ -2,8 +2,8 @@ import { WebContentsView, WebContentsViewConstructorOptions } from "electron";
 
 export class WebTabContentsView extends WebContentsView {
   id: string
-  constructor({ id }: WebContentsViewConstructorOptions &{ id: string }) {
-    super()
+  constructor({ id, ...config }: WebContentsViewConstructorOptions & { id: string }) {
+    super(config)
     this.id = id
   }
 }
