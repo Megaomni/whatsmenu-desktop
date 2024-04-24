@@ -3,6 +3,7 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
+import { ProfileType } from "../@types/profile";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
@@ -24,18 +25,25 @@ export const WhatsAppBotApi = {
   }
 }
 
-const WhatsMenuPrintApi = {
+export const WhatsMenuPrintApi = {
   print: (url: string) => ipcRenderer.send('print', url)
 }
 
-const DesktopApi = {
-  storeProfile: (profile: any) => ipcRenderer.send('storeProfile', profile),
+export const DesktopApi = {
+  onProfileChange: (callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void) => ipcRenderer.on('onProfileChange', callback),
+
+  storeProfile: (profile: ProfileType) => ipcRenderer.send('storeProfile', profile),
+}
+
+export const TabsApi = {
+  setActiveTab: (tab: string) => ipcRenderer.send('setActiveTab', tab)
 }
 
 contextBridge.exposeInMainWorld('isElectron', true)
 contextBridge.exposeInMainWorld('WhatsAppBotApi', WhatsAppBotApi)
 contextBridge.exposeInMainWorld('WhatsMenuPrintApi', WhatsMenuPrintApi)
 contextBridge.exposeInMainWorld('DesktopApi', DesktopApi)
+contextBridge.exposeInMainWorld('TabsApi', TabsApi)
 
 ipcRenderer.on('log', (event, log) => {
   console.log(log);

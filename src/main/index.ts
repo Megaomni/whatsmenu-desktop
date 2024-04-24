@@ -1,19 +1,18 @@
-import { whatsmenuWindow } from "./../windows/whatsmenu-window";
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BaseWindow, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
-import "../main/menu";
-import "../main/ipc";
 import "../main/auto-update";
+import "../main/ipc";
+import "../main/menu";
 import "../main/tray";
 
-import { decodeDeepLinkMessage } from "../utils/decode-deep-link-message";
 import { WhatsApp } from "../services/whatsapp";
 import { botWindow } from "../windows/bot-window";
+import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";
 
-export let mainWindow: BrowserWindow;
+export let mainWindow: BaseWindow;
 
 if (require("electron-squirrel-startup")) {
   botWindow.forceCloseWindow();
@@ -21,7 +20,7 @@ if (require("electron-squirrel-startup")) {
 }
 export const whatsAppService = new WhatsApp();
 const main = () => {
-  mainWindow = whatsmenuWindow.createWindow();
+  mainWindow = tabsWindow.createWindow();
   const printers = getPrinters()
   if (printers.length > 0) {
     printers.forEach((printer) => {
