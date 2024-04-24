@@ -1,10 +1,12 @@
-import { WebContentsView, dialog, screen } from "electron"
+import { dialog, screen } from "electron"
 import path from "node:path"
 import { whatsAppService } from "../../main"
+import { WebTabContentsView } from "../../extends/tab"
 
 export const create_bot_tab = () => {
   const { width, height } = screen.getPrimaryDisplay().size
-  const tab = new WebContentsView({
+  const tab = new WebTabContentsView({
+    id: "bot",
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },

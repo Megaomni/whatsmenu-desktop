@@ -1,16 +1,27 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ComponentProps, ReactNode, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { ProfileType } from '../@types/profile';
+import * as RadixTabs from '@radix-ui/react-tabs';
 
 const root = createRoot(document.body);
 
-interface TabProps {
-  active?: boolean
-  children: ReactNode
-}
+type TabProps = RadixTabs.TabsTriggerProps
 
-const Tab = ({ active = false, children }: TabProps) => {
-  return <li data-active={active} className='flex items-center cursor-pointer justify-center rounded border rounded-b-none border-b-0 px-4 data-[active=true]:bg-green-500 data-[active=true]:text-white'>{children}</li>
+const Tab = ({ children, ...props }: TabProps) => {
+  const tabRef = useRef<HTMLButtonElement>(null)
+  const handleSetTab = () => {
+    window.TabsApi.setActiveTab(props.value)
+  }
+  return (
+    <RadixTabs.Trigger 
+      className='flex items-center cursor-pointer justify-center rounded border rounded-b-none border-b-0 px-4 data-[state=active]:bg-green-500 data-[state=active]:text-white'
+      ref={tabRef}
+      onClick={handleSetTab}
+      {...props}
+    >
+      {children}
+    </RadixTabs.Trigger>
+  )
 }
 
 const Tabs = () => {
@@ -18,23 +29,22 @@ const Tabs = () => {
 
   useEffect(() => {
     window.DesktopApi.onProfileChange((_, profile) => {
-      console.log(profile)
       setProfile(profile)
     })
   }, [])
   return (
-    <nav>
-      <ul className='flex m-1 mb-0 gap-1 border-b-2 h-[46px]'>
-        <Tab active>Painel</Tab>
+    <RadixTabs.Root>
+      <RadixTabs.List className='flex m-1 mb-0 gap-1 border-b-2 h-[46px]'>
+        <Tab value="dashboard">Painel</Tab>
           {profile && (
           <>
-            <Tab>PDV</Tab>
-            <Tab>Cardápio</Tab>
-            <Tab>Robô Whatsapp</Tab>
+            <Tab value="pdv">PDV</Tab>
+            <Tab value="menu">Cardápio</Tab>
+            <Tab value="bot">Robô Whatsapp</Tab>
           </>
           )}
-      </ul>
-    </nav>
+      </RadixTabs.List>
+    </RadixTabs.Root>
   )
 }
 

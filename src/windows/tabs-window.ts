@@ -28,19 +28,13 @@ export const tabsWindow =  {
     const tabs = [create_dashboard_tab(), create_pdv_tab(), create_menu_tab(), create_bot_tab()]
     tabGroup.setBounds({ x: 0, y: 0, width, height: 50 })
     tabGroup.webContents.openDevTools()
-    tabGroup.webContents.executeJavaScript(`
-      const tabs = document.querySelectorAll('li');
-      tabs.forEach((tab, index, arr) => {
-        tab.onclick = () => {
-          tab.setAttribute('data-active', 'true');
-          Array.from(arr).filter((t, i) => i !== index).forEach(t => t.setAttribute('data-active', 'false'))
-          window.TabsApi.setActiveTab(index);
-        }
-      });
-    `)
 
-    ipcMain.on('setActiveTab', (_, index) => {
-      tabs.forEach((tab, i) => tab.setVisible(i === index))
+    ipcMain.on('setActiveTab', (_, tabIndex) => {
+      console.log('===setActiveTab===');
+      tabs.forEach((tab) => {
+        console.log(tab.id, tabIndex);
+        tab.setVisible(tab.id === tabIndex)
+      })
     })
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

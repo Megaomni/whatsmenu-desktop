@@ -1,10 +1,11 @@
-import { WebContentsView, screen } from "electron"
+import { screen } from "electron"
 import path from "node:path"
+import { WebTabContentsView } from "../../extends/tab"
 
-let dashBoardTab
 export const create_dashboard_tab = () => {
   const { width, height } = screen.getPrimaryDisplay().size
-  const tab = new WebContentsView({
+  const tab = new WebTabContentsView({
+    id: 'dashboard',
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -14,8 +15,5 @@ export const create_dashboard_tab = () => {
   tab.webContents.loadURL(`https://next.whatsmenu.com.br/`)
   tab.webContents.openDevTools()
 
-  tab.webContents.on('did-finish-load', () => {
-    dashBoardTab = tab
-  })
   return tab
 }
