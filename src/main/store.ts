@@ -23,6 +23,7 @@ export interface Store {
 }
 
 export const store = new ElectronStore<Store>({
+  watch: true,
   defaults: {
     configs: {
       printing: {
