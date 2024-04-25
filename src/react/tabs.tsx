@@ -23,22 +23,22 @@ const Tab = ({ icon, tabTitle, ...props }: TabProps) => {
   return (
     <RadixTabs.Trigger
       
-      className='text-xs leading-snug flex items-center cursor-pointer justify-between text-center text-zinc-950 w-64 h-[34px] px-4 border-b-2 border-white relative
+      className='text-xs leading-snug flex items-center cursor-pointer justify-between text-center text-zinc-950 w-64 h-[34px] px-4 relative
       data-[state=inactive]:before:content-["|"]
-    data-[state=active]:bg-white data-[state=active]:border-b-0
-      data-[state=active]:rounded-t-[8px]
+      data-[state=active]:bg-white data-[state=active]:border-b-0
+      data-[state=active]:rounded-t-lg
 
       before:pointer-events-none
-      data-[state=active]:before:text-transparent before:absolute before:right-2 before:top-2
-    data-[state=active]:before:bg-zinc-200 
-    data-[state=active]:before:border-white data-[state=active]:before:border-bl-4 data-[state=active]:before:border-r-4
-      data-[state=active]:before:right-[252px] data-[state=active]:before:w-20 data-[state=active]:before:top-2 data-[state=active]:before:rounded-b-[8px] data-[state=active]:before:bottom-0
+      data-[state=active]:before:text-transparent before:absolute before:right-2 before:top-1
+      data-[state=active]:before:bg-zinc-200 data-[state=active]:before:z-0
+      data-[state=active]:before:border-white data-[state=active]:before:border-b-4  data-[state=active]:before:border-r-4
+      data-[state=active]:before:right-[252px] data-[state=active]:before:w-20 data-[state=active]:before:top-2 data-[state=active]:before:rounded-br-lg data-[state=active]:before:bottom-0
       
       after:pointer-events-none
       data-[state=active]:after:text-transparent after:absolute after:right-2 after:top-1
-    data-[state=active]:after:bg-zinc-200
-    data-[state=active]:after:border-white data-[state=active]:after:border-b-4 data-[state=active]:after:border-l-4
-      data-[state=active]:after:left-[252px] data-[state=active]:after:w-screen data-[state=active]:after:top-2 data-[state=active]:after:rounded-b-[8px] data-[state=active]:after:bottom-0
+      data-[state=active]:after:bg-zinc-200
+      data-[state=active]:after:border-white data-[state=active]:after:border-b-4 data-[state=active]:after:border-l-4
+      data-[state=active]:after:left-[252px] data-[state=active]:after:w-screen data-[state=active]:after:top-2 data-[state=active]:after:rounded-b-lg data-[state=active]:after:bottom-0
       '
       ref={tabRef}
       onClick={handleSetTab}

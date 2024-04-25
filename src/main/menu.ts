@@ -1,9 +1,9 @@
 import { app, BrowserWindow, dialog, Menu, MenuItem } from "electron";
-import { botWindow } from "../windows/bot-window";
-import { addPrinter, deletePrinter, getPrinters, Printer, store, updatePrinter } from "./store";
+import { addPrinter, deletePrinter, getPrinters, Printer, updatePrinter } from "./store";
 import prompt from "electron-prompt"
 
 import { randomUUID } from "node:crypto";
+import { mainWindow } from ".";
 
 const isMac = process.platform === 'darwin'
 
@@ -56,18 +56,18 @@ const template = [
       }]
     : []),
   // { role: 'fileMenu' }
-  (isMac ? {
-    label: 'Robô WhatsApp',
-    submenu: [
-      {
-        label: 'Iniciar',
-        click: () => botWindow.createWindow()
-      }
-    ]
-  } : {
-    label: 'Robô WhatsApp',
-    click: () => botWindow.createWindow()
-  }),
+  // (isMac ? {
+  //   label: 'Robô WhatsApp',
+  //   submenu: [
+  //     {
+  //       label: 'Iniciar',
+  //       click: () => botWindow.createWindow()
+  //     }
+  //   ]
+  // } : {
+  //   label: 'Robô WhatsApp',
+  //   click: () => botWindow.createWindow()
+  // }),
   {
     label: 'Impressão',
     submenu: [
@@ -80,10 +80,36 @@ const template = [
     ]
   },
   { label: 'Ver', submenu: [
-    { role: 'reload', label: 'Recarregar' },
-    { role: 'forceReload', label: 'Forçar Recarregar' },
-    { role: 'toggleDevTools', label: 'Console' },
-  ] as MenuItem[] },
+    { label: 'Recarregar', click: () => {
+        mainWindow.tabs.forEach(tab => {
+          if (tab.isVisible) {
+            tab.webContents.reload()
+          }
+        })
+      },
+   },
+    { label: 'Forçar Recarregar', click: () => {
+        mainWindow.tabs.forEach(tab => {
+          if (tab.isVisible) {
+            tab.webContents.reloadIgnoringCache()
+
+          }
+        })
+      }
+    },
+    { label: 'Console', click: () => {
+        mainWindow.tabs.forEach(tab => {
+          if (tab.isVisible) {
+            if (!tab.webContents.isDevToolsOpened()) {
+              tab.webContents.openDevTools({ activate: true, mode: 'right' })
+            } else {
+              tab.webContents.closeDevTools()
+            }
+          }
+        })
+      },
+    },
+  ] as unknown as  MenuItem[] },
 ]
 
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[])
@@ -92,7 +118,7 @@ setInterval(async () => {
   const clientPrinters = getPrinters()
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
-  template.at(1).submenu.at(0).submenu = [...clientPrinters.map(printer => (
+  template.at(0).submenu.at(0).submenu = [...clientPrinters.map(printer => (
     {
       label: printer.name,
       submenu:[

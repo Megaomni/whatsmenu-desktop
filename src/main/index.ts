@@ -1,4 +1,4 @@
-import { app, BaseWindow, BrowserWindow } from "electron";
+import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
@@ -11,8 +11,9 @@ import { WhatsApp } from "../services/whatsapp";
 import { botWindow } from "../windows/bot-window";
 import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";
+import { TabBrowser } from "../extends/tab-browser";
 
-export let mainWindow: BaseWindow;
+export let mainWindow: TabBrowser
 
 if (require("electron-squirrel-startup")) {
   botWindow.forceCloseWindow();

@@ -1,23 +1,32 @@
-import { BaseWindow, BrowserWindow, WebContentsView, ipcMain, screen } from "electron"
+import { BrowserWindow, WebContentsView, ipcMain, screen } from "electron";
 
 import path from 'node:path';
-import { create_dashboard_tab } from "./tabs/dashboard-tab";
-import { create_pdv_tab } from "./tabs/pdv-tab";
-import { create_bot_tab } from "./tabs/bot-tab";
-import { create_menu_tab } from "./tabs/menu-tab";
-import { store } from "../main/store";
 import { ProfileType } from "../@types/profile";
+import { registerShortCuts } from "../main/shortcuts";
+import { store } from "../main/store";
+import { create_bot_tab } from "./tabs/bot-tab";
+import { create_dashboard_tab } from "./tabs/dashboard-tab";
+import { create_menu_tab } from "./tabs/menu-tab";
+import { create_pdv_tab } from "./tabs/pdv-tab";
+import { TabBrowser } from "../extends/tab-browser";
+import { whatsmenu_menu } from "../main/menu";
+
+let forceClose = false
 
 export const tabsWindow =  {
+  forceCloseWindow: () => forceClose = true,
   createWindow: () => {
     const mainScreen = screen.getPrimaryDisplay()
     const { width, height } = mainScreen.size
 
-    const window = new BrowserWindow({
+    const window = new TabBrowser({
+      tabs: [create_dashboard_tab(), create_pdv_tab(), create_menu_tab(), create_bot_tab()],
       width,
       height,
     })
 
+    window.setMenu(whatsmenu_menu)
+    window.maximize()
     const tabGroup = new WebContentsView({
       webPreferences: {
         preload: path.join(__dirname, 'preload.js'),
@@ -25,12 +34,11 @@ export const tabsWindow =  {
       },
     })
 
-    const tabs = [create_dashboard_tab(), create_pdv_tab(), create_menu_tab(), create_bot_tab()]
     tabGroup.setBounds({ x: 0, y: 0, width, height: 42 })
     tabGroup.webContents.openDevTools()
 
     ipcMain.on('setActiveTab', (_, tabIndex) => {
-      tabs.forEach((tab) => {
+      window.tabs.forEach((tab) => {
         tab.setVisible(tab.id === tabIndex)
       })
     })
@@ -48,13 +56,21 @@ export const tabsWindow =  {
     }
     
     window.contentView.addChildView(tabGroup)
-    tabs.forEach(tab => window.contentView.addChildView(tab))
+    window.tabs.forEach(tab => window.contentView.addChildView(tab))
     tabGroup.webContents.on('did-finish-load', () => {
       const profile = store.get('configs.profile') as ProfileType
       tabGroup.webContents.send('onProfileChange', profile)
       store.onDidChange('configs', (newValue) => {
         tabGroup.webContents.send('onProfileChange', newValue.profile)
       })
+    })
+
+    registerShortCuts(window)
+    window.on('close', (e) => {
+      if (!forceClose) {
+        e.preventDefault()
+        window.minimize()
+      }
     })
 
     return window
