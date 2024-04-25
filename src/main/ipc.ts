@@ -23,7 +23,7 @@ ipcMain.on(
         }
       }
     } catch (error) {
-      console.log(error, 'error');
+      console.error(error, 'error');
       if (error instanceof Error) {
         if (error.cause === "checkNinthDigit") {
           dialog.showErrorBox("Ops!", error.message);
@@ -36,14 +36,9 @@ ipcMain.on(
 ipcMain.on('show-whatsapp', async (_, show) => {
   store.set('configs.whatsapp.showHiddenWhatsApp', show)
   app.relaunch()
-  // await whatsAppService.bot?.destroy()
-  // console.log(show, whatsAppService)
-  // whatsAppService.initBot()
 })
 
 ipcMain.on('executablePath', (_, executablePath) => {
-  console.log(executablePath, 'ipc');
-  
   store.set('configs.executablePath', executablePath.replaceAll('\\', '/').replaceAll('/', '\\'))
 })
 

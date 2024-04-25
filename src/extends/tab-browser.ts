@@ -11,10 +11,6 @@ export class TabBrowser extends BrowserWindow {
   constructor({ tabs = [], ...options }: TabBrowserConstructorOptions) {
     super(options);
     this.tabs = tabs;
-    this.webContents.openDevTools = (options) => {
-      console.log(options, 'aqui');
-      
-    }
   }
 
 }

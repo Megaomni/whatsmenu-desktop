@@ -20,7 +20,6 @@ export const WhatsAppBotApi = {
   sendMessage: (contact: string, message: string, client?: ClientType) => ipcRenderer.send('send-message', { contact, message, client }),
   showWhatsapp: (show: boolean) => ipcRenderer.send('show-whatsapp', show),
   setExecutablePath: (executablePath: string) => { 
-    console.log(executablePath, 'preload')
     ipcRenderer.send('executablePath', executablePath)
   }
 }

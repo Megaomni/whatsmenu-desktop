@@ -70,7 +70,6 @@ export class WhatsApp {
 
     this.bot.on("ready", async () => {
       if (this.firstConection) {
-        console.log("Checando número", this.bot.info.wid.user);
         console.time("firstconnection");
         try {
           // const chat = await this.checkNinthDigit(
@@ -100,12 +99,6 @@ export class WhatsApp {
 
       this.sendQueuedmessages();
     });
-    this.bot.on('message', (msg) => {
-      if (msg.body.includes('whatsmenu.com.br')) {
-        console.log(msg)
-        this.bot.sendMessage(msg.author,'Pedido recebido!')
-      }
-    })
     this.bot.on("disconnected", () => {
       new Notification({
         title: "Robô desconectado!",
@@ -133,7 +126,6 @@ export class WhatsApp {
   }
 
   checkNinthDigit = async (contact: string, client: ClientType): Promise<WAWebJS.ContactId> => {
-    console.log(client,'client');
     if (client?.controls?.whatsapp?.contactId) {
       return client.controls.whatsapp.contactId
     }
