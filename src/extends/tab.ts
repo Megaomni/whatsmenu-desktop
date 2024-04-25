@@ -7,7 +7,6 @@ export class WebTabContentsView extends WebContentsView {
     super(config)
     this.id = id
     this.isVisible = isVisible
-    this.webContents.openDevTools
   }
 
   setVisible(visible: boolean): void {
