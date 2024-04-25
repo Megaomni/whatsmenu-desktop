@@ -14,7 +14,7 @@ export const create_pdv_tab = () => {
     },
   })
   
-  tab.setBounds({ x: 0, y: 50, width, height: height - 185 })
+  tab.setBounds({ x: 0, y: 46, width, height: height - 175 })
   tab.webContents.loadURL(`https://whatsmenu.com.br/${profile?.slug}/pdv`)
   store.onDidChange('configs', (newValue) => {
     if (profile !== newValue.profile) {

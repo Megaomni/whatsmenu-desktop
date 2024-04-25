@@ -1,4 +1,4 @@
-import { BaseWindow, WebContentsView, ipcMain, screen } from "electron"
+import { BaseWindow, BrowserWindow, WebContentsView, ipcMain, screen } from "electron"
 
 import path from 'node:path';
 import { create_dashboard_tab } from "./tabs/dashboard-tab";
@@ -13,7 +13,7 @@ export const tabsWindow =  {
     const mainScreen = screen.getPrimaryDisplay()
     const { width, height } = mainScreen.size
 
-    const window = new BaseWindow({
+    const window = new BrowserWindow({
       width,
       height,
     })
@@ -26,13 +26,11 @@ export const tabsWindow =  {
     })
 
     const tabs = [create_dashboard_tab(), create_pdv_tab(), create_menu_tab(), create_bot_tab()]
-    tabGroup.setBounds({ x: 0, y: 0, width, height: 50 })
+    tabGroup.setBounds({ x: 0, y: 0, width, height: 42 })
     tabGroup.webContents.openDevTools()
 
     ipcMain.on('setActiveTab', (_, tabIndex) => {
-      console.log('===setActiveTab===');
       tabs.forEach((tab) => {
-        console.log(tab.id, tabIndex);
         tab.setVisible(tab.id === tabIndex)
       })
     })
@@ -51,7 +49,6 @@ export const tabsWindow =  {
     
     window.contentView.addChildView(tabGroup)
     tabs.forEach(tab => window.contentView.addChildView(tab))
-
     tabGroup.webContents.on('did-finish-load', () => {
       const profile = store.get('configs.profile') as ProfileType
       tabGroup.webContents.send('onProfileChange', profile)
