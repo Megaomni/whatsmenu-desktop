@@ -29,8 +29,8 @@ const Tab = ({ icon, tabTitle, ...props }: TabProps) => {
       data-[state=active]:rounded-t-lg
 
       before:pointer-events-none
-      data-[state=active]:before:text-transparent before:absolute before:right-2 before:top-1
-      data-[state=active]:before:bg-zinc-200 data-[state=active]:before:z-0
+      data-[state=active]:before:text-transparent before:absolute before:right-2 before:top-2
+      data-[state=active]:before:bg-zinc-200
       data-[state=active]:before:border-white data-[state=active]:before:border-b-4  data-[state=active]:before:border-r-4
       data-[state=active]:before:right-[252px] data-[state=active]:before:w-20 data-[state=active]:before:top-2 data-[state=active]:before:rounded-br-lg data-[state=active]:before:bottom-0
       
