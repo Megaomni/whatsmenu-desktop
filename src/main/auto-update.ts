@@ -6,7 +6,11 @@ import { botWindow } from "../windows/bot-window";
 const server = 'https://whatsmenu-desktop-update-server.vercel.app'
 const url = `${server}/update/${process.platform}/${app.getVersion()}`
 const UPDATE_CHECK_INTERVAL = 1000 * 60
-autoUpdater.setFeedURL({ url })
+
+const isMac = process.platform === 'darwin'
+
+if (!isMac) {
+  autoUpdater.setFeedURL({ url })
 
 autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
   const dialogOpts: Electron.MessageBoxOptions = {
@@ -46,3 +50,4 @@ autoUpdater.on('error', (message) => {
 const updateInterval = setInterval(() => {
   autoUpdater.checkForUpdates()
 }, UPDATE_CHECK_INTERVAL)
+}
