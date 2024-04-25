@@ -24,6 +24,7 @@ const main = () => {
   mainWindow = whatsmenuWindow.createWindow();
   const printers = getPrinters()
   if (printers.length > 0) {
+    
     printers.forEach((printer) => {
       if (!printer.margins) {
         updatePrinter({ id: printer.id, margins: { marginType: 'none' } })

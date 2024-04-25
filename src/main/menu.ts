@@ -2,9 +2,11 @@ import { app, BrowserWindow, dialog, Menu, MenuItem } from "electron";
 import { botWindow } from "../windows/bot-window";
 import { addPrinter, deletePrinter, getPrinters, Printer, store, updatePrinter } from "./store";
 import prompt from "electron-prompt"
+import { ProfileType } from "../@types/profile";
 
 import { randomUUID } from "node:crypto";
 
+const profile = store.get('configs.profile') as ProfileType
 const isMac = process.platform === 'darwin'
 
 const copiesDialog = async (printerSelected: Printer) => {
@@ -34,7 +36,21 @@ const scaleFactorDialog = async (printerSelected: Printer) => {
       cancel: 'Cancelar'
     }
   })
-  updatePrinter({ id: printerSelected.id, scaleFactor: parseInt(copies) ?? printerSelected.scaleFactor })
+  updatePrinter({ id: printerSelected.id, scaleFactor: parseInt(copies) ?? printerSelected.scaleFactor })}
+
+const dpiDialog = async (printerSelected: Printer) => {
+  const copies = await prompt({
+    title: 'Dpi da impressão',
+    label: 'Dpi da impressão',
+    inputAttrs: { type: 'number' },
+    value: printerSelected ? printerSelected.dpi.toString() : '203',
+    height: 200,
+    buttonLabels: {
+      ok: 'OK',
+      cancel: 'Cancelar'
+    }
+  })
+  updatePrinter({ id: printerSelected.id, dpi: parseInt(copies) ?? printerSelected.dpi })
 }
 
 const template = [
@@ -123,6 +139,8 @@ setInterval(async () => {
         { type: 'separator' },
         { label: `Escala - ${printer.scaleFactor}%`, click: () => scaleFactorDialog(printer) },
         { type: 'separator' },
+        { label: `DPi - ${printer.dpi}`, click: () => dpiDialog(printer) },
+        { type: 'separator' },
         { label: 'Excluir', click: () => deletePrinter(printer.id) },
       ],
       
@@ -157,7 +175,7 @@ setInterval(async () => {
         return
       }
 
-      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1, margins: { marginType: 'none' }, scaleFactor: 100 })
+      const newPrinter = addPrinter({ ...printerSelected!, id: randomUUID(), silent: printerDialog.checkboxChecked, paperSize: 58, copies: 1, margins: { marginType: 'none' }, scaleFactor: 100, dpi: 203 })
 
       const paperSizeDialog = await dialog.showMessageBox(window, {
         title: 'Tamanho do Papel',

@@ -3,6 +3,8 @@ import { whatsAppService } from ".";
 import { botWindow } from "../windows/bot-window";
 import { Printer, store } from "./store";
 import { ClientType } from "../@types/client";
+import { ProfileType } from "../@types/profile";
+
 
 ipcMain.on(
   "send-message",
@@ -48,10 +50,14 @@ ipcMain.on('executablePath', (_, executablePath) => {
 })
 
 ipcMain.on("print", async (_, url) => {
+  const profile = store.get("configs.profile") as ProfileType;
   const printers = store.get("configs.printing.printers") as Printer[];
   for (const printer of printers) {
-    const { margins, copies, silent, name, paperSize, scaleFactor } = printer
+    const { margins, copies, silent, name, paperSize, scaleFactor, dpi } = printer
     const win = new BrowserWindow({ show: false });
+
+    console.log(printer, 'printer');
+    console.log(profile.options.print, 'profile');
   
     const printOptions: Electron.WebContentsPrintOptions = {
       deviceName: name,
@@ -59,7 +65,7 @@ ipcMain.on("print", async (_, url) => {
       margins,
       copies,
       dpi: {
-        vertical: 203,
+        vertical: dpi,
       },
       scaleFactor
     };
@@ -73,6 +79,11 @@ ipcMain.on("print", async (_, url) => {
         styleElement.innerHTML = \`
           \${styleElement.innerHTML}
           /* Adicione novos estilos ou sobrescreva os existentes aqui */
+
+          *{
+            font-weight: bolder !important;
+          }
+
           .formated.print-row div {
             width: ${paperSize === 80 ? 100 : 65}mm !important;
           }

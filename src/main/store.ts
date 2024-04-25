@@ -7,7 +7,8 @@ export type Printer = Electron.PrinterInfo & {
   paperSize: 58 | 80
   copies: number
   margins: Electron.Margins,
-  scaleFactor: number
+  scaleFactor: number,
+  dpi: number,
 }
 export interface Store {
   configs: {
@@ -48,6 +49,7 @@ export const addPrinter = (payload: Printer) => {
   return getPrinter(payload.id)
 }
 export const updatePrinter = (payload: Partial<Printer>) => {
+  const profile = store.get("configs.profile") as ProfileType;
   const printer = store.get<'configs.printing.printers', Printer[]>('configs.printing.printers').find(p => p.id === payload.id)
   if (printer) {
     const printers = getPrinters()
@@ -59,6 +61,15 @@ export const updatePrinter = (payload: Partial<Printer>) => {
         }
       }
       return p
+    })
+    // console.log(printersUpdated, 'printersUpdated');
+    printersUpdated.map((prints) => {
+      console.log(prints.paperSize, 'paperSize');
+      if(prints.paperSize === 80) {
+        profile.options.print.width = '302px'
+      } else {
+        profile.options.print.width = '219px'
+      }
     })
     store.set('configs.printing.printers', printersUpdated)
   }
