@@ -7,7 +7,12 @@ export type Printer = Electron.PrinterInfo & {
   paperSize: 58 | 80
   copies: number
   margins: Electron.Margins,
-  scaleFactor: number
+  scaleFactor: number,
+  options: {
+    'printer-location': string,
+    'printer-make-and-model': string,
+    system_driverinfo: string
+  }
 }
 export interface Store {
   configs: {
@@ -41,7 +46,7 @@ export const getPrinters = () => store.get<'configs.printing.printers', Printer[
 
 export const getPrinter = (id: string) => store.get<'configs.printing.printers', Printer[]>('configs.printing.printers').find(p => p.id === id)
 
-export const addPrinter = (payload: Printer) => {
+export const addPrinter = (payload: Omit<Printer, 'options'>) => {
   store.set('configs.printing.printers', [
     ...getPrinters(),
     payload

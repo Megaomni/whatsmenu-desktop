@@ -41,6 +41,8 @@ ipcMain.on('executablePath', (_, executablePath) => {
 ipcMain.on("print", async (_, url) => {
   const printers = store.get("configs.printing.printers") as Printer[];
   for (const printer of printers) {
+    const isGeneric = printer.options.system_driverinfo.toLowerCase().includes("generic");
+    console.log(isGeneric, 'isGeneric');
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer
     const win = new BrowserWindow({ show: false });
   
