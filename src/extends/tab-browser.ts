@@ -13,7 +13,7 @@ export class TabBrowser extends BrowserWindow {
     this.tabs = tabs;
 
     for (const tab of this.tabs) {
-      tab.setBounds({ x: 0, y: 42, width: this.getBounds().width, height: this.getBounds().height - 42 - 50 });
+      tab.setBounds({ x: 0, y: 42, width: this.getBounds().width, height: this.getBounds().height - 42 - 48 });
     }
   }
 
