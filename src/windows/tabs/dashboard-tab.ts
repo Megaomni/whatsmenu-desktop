@@ -1,9 +1,9 @@
-import { screen } from "electron"
+
 import path from "node:path"
 import { WebTabContentsView } from "../../extends/tab"
 
 export const create_dashboard_tab = () => {
-  const { width, height } = screen.getPrimaryDisplay().size
+  
   const tab = new WebTabContentsView({
     id: 'dashboard',
     webPreferences: {

@@ -4,7 +4,7 @@ import { whatsAppService } from "../../main"
 import { WebTabContentsView } from "../../extends/tab"
 
 export const create_bot_tab = () => {
-  const { width, height } = screen.getPrimaryDisplay().size
+  
   const tab = new WebTabContentsView({
     id: "bot",
     webPreferences: {

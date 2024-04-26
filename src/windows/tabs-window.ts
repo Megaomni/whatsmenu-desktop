@@ -1,4 +1,4 @@
-import { BrowserWindow, WebContentsView, ipcMain, screen } from "electron";
+import { WebContentsView, ipcMain, screen } from "electron";
 
 import path from 'node:path';
 import { ProfileType } from "../@types/profile";
@@ -45,7 +45,7 @@ export const tabsWindow =  {
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       tabGroup.webContents.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/tabs.html`);
-      window.setTitle("WhatsMenu Bot");
+      window.setTitle("WhatsMenu Desktop");
     } else {
       tabGroup.webContents.loadFile(
         path.join(
@@ -64,8 +64,6 @@ export const tabsWindow =  {
         tabGroup.webContents.send('onProfileChange', newValue.profile)
       })
     })
-
-    tabGroup.webContents.openDevTools()
 
     registerShortCuts(window)
     window.on('close', (e) => {
