@@ -23,7 +23,7 @@ const Tab = ({ icon, tabTitle, ...props }: TabProps) => {
   return (
     <RadixTabs.Trigger
       
-      className='text-xs leading-snug flex items-center cursor-pointer justify-between text-center text-zinc-950 w-64 h-[34px] px-4 relative
+      className='text-xs leading-snug flex items-center cursor-pointer justify-between text-center text-zinc-950 w-64 h-[34px] px-4 relative border-b-4 border-white
       data-[state=inactive]:before:content-["|"]
       data-[state=active]:bg-white data-[state=active]:border-b-0
       data-[state=active]:rounded-t-lg

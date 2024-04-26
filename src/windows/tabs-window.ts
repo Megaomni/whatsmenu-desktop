@@ -35,6 +35,7 @@ export const tabsWindow =  {
     })
 
     tabGroup.setBounds({ x: 0, y: 0, width, height: 42 })
+    console.log( { window: window.getBounds(), tabGroup: tabGroup.getBounds(), tabs: window.tabs.map(tab => tab.getBounds()) })
 
     ipcMain.on('setActiveTab', (_, tabIndex) => {
       window.tabs.forEach((tab) => {

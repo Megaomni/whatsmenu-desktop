@@ -11,7 +11,6 @@ export const create_dashboard_tab = () => {
     },
   })
   
-  tab.setBounds({ x: 0, y: 46, width, height: height - 175 })
   tab.webContents.loadURL(`https://next.whatsmenu.com.br/`)
 
   return tab

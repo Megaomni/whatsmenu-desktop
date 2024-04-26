@@ -12,7 +12,6 @@ export const create_bot_tab = () => {
     },
   })
 
-  tab.setBounds({ x: 0, y: 46, width, height: height - 175 })
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     tab.webContents.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/bot.html`);
   } else {
