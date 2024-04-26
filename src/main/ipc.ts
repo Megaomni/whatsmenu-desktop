@@ -2,6 +2,9 @@ import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
 import { Printer, store } from "./store";
 import { ClientType } from "../@types/client";
+import axios from "axios";
+
+import path from "node:path";
 
 ipcMain.on(
   "send-message",
@@ -44,7 +47,23 @@ ipcMain.on("print", async (_, url) => {
     const isGeneric = printer.options.system_driverinfo.toLowerCase().includes("generic");
     console.log(isGeneric, 'isGeneric');
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer
-    const win = new BrowserWindow({ show: false });
+    const win = new BrowserWindow({ show: true });
+
+    try {
+      const payload = JSON.parse(url)
+      payload.profile.options.print.width = paperSize === 80 ? '302px' : '219px'
+      payload.profile.options.print.textOnly = isGeneric
+      const { data } = await axios.post('http://192.168.15.4:3000/api/printLayout', { ...payload, html: true, electron: true })
+      console.log(data.reactComponentString[paperSize])
+      win.webContents.openDevTools()
+      win.webContents.executeJavaScript(`
+        const printBody = document.body
+        printBody.innerHTML = ${JSON.stringify(data.reactComponentString[paperSize])}
+      `)
+      
+    } catch (error) {
+      console.error(error);
+    }
   
     const printOptions: Electron.WebContentsPrintOptions = {
       deviceName: name,
@@ -57,36 +76,8 @@ ipcMain.on("print", async (_, url) => {
       scaleFactor
     };
     win.webContents.addListener("did-finish-load", async () => {
-      await win.webContents.executeJavaScript(`
-      // Encontrar o elemento style
-      const styleElement = document.querySelector('style');
-
-      if (styleElement) {
-        // Sobrescrever os estilos existentes
-        styleElement.innerHTML = \`
-          \${styleElement.innerHTML}
-          /* Adicione novos estilos ou sobrescreva os existentes aqui */
-          .formated.print-row div {
-            width: ${paperSize === 80 ? 100 : 65}mm !important;
-          }
-
-          .formated.print-row div p {
-            &.complement-space {
-              padding-left: ${paperSize === 80 ? 13 : 4}mm !important;
-            }
+      console.log(name, typeof paperSize);
       
-            &.item-space {
-              padding-left: ${paperSize === 80 ? 20 : 8}mm !important;
-            }
-      
-            &.transshipment-space {
-              padding-left: ${paperSize === 80 ? 9 : 5}mm !important;
-            }
-          }
-        \`;
-      }
-    `);
-
       const height = Math.ceil(
         (await win.webContents.executeJavaScript(
           "document.body.offsetHeight"
@@ -96,7 +87,7 @@ ipcMain.on("print", async (_, url) => {
         {
           ...printOptions,
           pageSize: {
-            height: height < 1600000 ? height : 1600000,
+            height: height < 4800000 ? height : 4800000,
             width: (paperSize === 80 ? 72 : 57) * 1000,
           },
         },
@@ -106,9 +97,19 @@ ipcMain.on("print", async (_, url) => {
         }
       );
     });
-  
-    await win.loadURL(url);
+    
+    if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+      win.webContents.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`);
+    } else {
+      win.webContents.loadFile(
+        path.join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+        )
+      );
+    }
   }
+
   return "shown print dialog";
 });
 
