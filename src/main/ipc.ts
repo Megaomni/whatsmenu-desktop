@@ -1,6 +1,5 @@
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
-import { botWindow } from "../windows/bot-window";
 import { Printer, store } from "./store";
 import { ClientType } from "../@types/client";
 
@@ -18,9 +17,6 @@ ipcMain.on(
           client,
           message,
         });
-        if (!botWindow.windowIsOpen) {
-          botWindow.createWindow()
-        }
       }
     } catch (error) {
       console.error(error, 'error');

@@ -8,7 +8,6 @@ import "../main/menu";
 import "../main/tray";
 
 import { WhatsApp } from "../services/whatsapp";
-import { botWindow } from "../windows/bot-window";
 import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";
 import { TabBrowser } from "../extends/tab-browser";
@@ -16,7 +15,6 @@ import { TabBrowser } from "../extends/tab-browser";
 export let mainWindow: TabBrowser
 
 if (require("electron-squirrel-startup")) {
-  botWindow.forceCloseWindow();
   app.quit();
 }
 export const whatsAppService = new WhatsApp();
@@ -51,14 +49,12 @@ if (isDev && process.platform === "win32") {
 const goTheLock = app.requestSingleInstanceLock();
 
 if (!goTheLock) {
-  botWindow?.forceCloseWindow();
   app.quit();
 }
 
 app.on("ready", main);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
-    botWindow.forceCloseWindow();
     app.quit();
   }
 });

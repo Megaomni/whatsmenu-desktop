@@ -64,6 +64,8 @@ export const tabsWindow =  {
       })
     })
 
+    tabGroup.webContents.openDevTools()
+
     registerShortCuts(window)
     window.on('close', (e) => {
       if (!forceClose) {
