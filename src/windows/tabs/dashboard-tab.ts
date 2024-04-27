@@ -12,6 +12,7 @@ export const create_dashboard_tab = () => {
   })
   
   tab.webContents.loadURL(`https://next.whatsmenu.com.br/`)
+  // tab.webContents.loadURL(`http://localhost:3000`)
 
   return tab
 }

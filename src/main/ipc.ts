@@ -41,21 +41,19 @@ ipcMain.on('executablePath', (_, executablePath) => {
   store.set('configs.executablePath', executablePath.replaceAll('\\', '/').replaceAll('/', '\\'))
 })
 
-ipcMain.on("print", async (_, url) => {
+ipcMain.on("print", async (_, serializedPayload) => {
   const printers = store.get("configs.printing.printers") as Printer[];
   for (const printer of printers) {
     const isGeneric = printer.options.system_driverinfo.toLowerCase().includes("generic");
     console.log(isGeneric, 'isGeneric');
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer
-    const win = new BrowserWindow({ show: true });
+    const win = new BrowserWindow({ show: false });
 
     try {
-      const payload = JSON.parse(url)
+      const payload = JSON.parse(serializedPayload)
       payload.profile.options.print.width = paperSize === 80 ? '302px' : '219px'
       payload.profile.options.print.textOnly = isGeneric
-      const { data } = await axios.post('http://192.168.15.4:3000/api/printLayout', { ...payload, html: true, electron: true })
-      console.log(data.reactComponentString[paperSize])
-      win.webContents.openDevTools()
+      const { data } = await axios.post('https://next.whatsmenu.com.br/api/printLayout', { ...payload, html: true, electron: true })
       win.webContents.executeJavaScript(`
         const printBody = document.body
         printBody.innerHTML = ${JSON.stringify(data.reactComponentString[paperSize])}
@@ -88,7 +86,7 @@ ipcMain.on("print", async (_, url) => {
           ...printOptions,
           pageSize: {
             height: height < 4800000 ? height : 4800000,
-            width: (paperSize === 80 ? 72 : 57) * 1000,
+            width: (paperSize === 80 ? 72 : 58) * 1000,
           },
         },
         (success, failureReason) => {
