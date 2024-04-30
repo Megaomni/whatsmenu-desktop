@@ -68,9 +68,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
       silent,
       margins,
       copies,
-      dpi: {
-        vertical: 203,
-      },
       scaleFactor
     };
     win.webContents.addListener("did-finish-load", async () => {
@@ -81,19 +78,21 @@ ipcMain.on("print", async (_, serializedPayload) => {
           "document.body.offsetHeight"
         )) * 264.5833
       );
-      win.webContents.print(
-        {
-          ...printOptions,
-          pageSize: {
-            height: height < 4800000 ? height : 4800000,
-            width: (paperSize === 80 ? 72 : 58) * 1000,
+      setTimeout(() => {
+        win.webContents.print(
+          {
+            ...printOptions,
+            pageSize: {
+              height: height < 4800000 ? height : 4800000,
+              width: (paperSize === 80 ? 72 : 58) * 1000,
+            },
           },
-        },
-        (success, failureReason) => {
-          console.log("Print Initiated in Main...");
-          if (!success) console.error(failureReason);
-        }
-      );
+          (success, failureReason) => {
+            console.log("Print Initiated in Main...");
+            if (!success) console.error(failureReason);
+          }
+        );
+      }, 2000);
     });
     
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
