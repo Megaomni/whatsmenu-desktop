@@ -84,7 +84,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
             ...printOptions,
             pageSize: {
               height: height < 4800000 ? height : 4800000,
-              width: (paperSize === 80 ? 72 : paperSize) * 1000,
+              width: (paperSize) * 1000,
             },
           },
           (success, failureReason) => {
