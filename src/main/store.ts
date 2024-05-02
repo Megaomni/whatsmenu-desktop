@@ -4,7 +4,7 @@ import { ProfileType } from "../@types/profile";
 export type Printer = Electron.PrinterInfo & {
   id: string
   silent: boolean
-  paperSize: 58 | 80
+  paperSize: 58 | 80 | number
   copies: number
   margins: Electron.Margins,
   scaleFactor: number,

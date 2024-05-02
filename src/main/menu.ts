@@ -23,7 +23,7 @@ const copiesDialog = async (printerSelected: Printer) => {
 }
 
 const scaleFactorDialog = async (printerSelected: Printer) => {
-  const copies = await prompt({
+  const scaleFactor = await prompt({
     title: 'Escala da impressão',
     label: 'Escala em porcentagem',
     inputAttrs: { type: 'number' },
@@ -34,7 +34,22 @@ const scaleFactorDialog = async (printerSelected: Printer) => {
       cancel: 'Cancelar'
     }
   })
-  updatePrinter({ id: printerSelected.id, scaleFactor: parseInt(copies) ?? printerSelected.scaleFactor })
+  updatePrinter({ id: printerSelected.id, scaleFactor: parseInt(scaleFactor) ?? printerSelected.scaleFactor })
+}
+
+const paperSizeDialog = async (printerSelected: Printer) => {
+  const paperSize = await prompt({
+    title: 'Largura do papel',
+    label: 'Valor e milimetros (mm)',
+    inputAttrs: { type: 'number' },
+    value: printerSelected ? printerSelected.paperSize.toString() : '58',
+    height: 200,
+    buttonLabels: {
+      ok: 'OK',
+      cancel: 'Cancelar'
+    }
+  })
+  updatePrinter({ id: printerSelected.id, paperSize: parseInt(paperSize) ?? printerSelected.paperSize })
 }
 
 const template = [
@@ -140,6 +155,12 @@ setInterval(async () => {
           type: 'radio',
           checked: printer.paperSize === 80,
           click: () => updatePrinter({ id: printer.id, paperSize: 80 })
+        },
+        {
+          label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58 ? ' - ' + printer.paperSize + 'mm' : ''}`,
+          type: 'radio',
+          checked: printer.paperSize !== 80 && printer.paperSize !== 58,
+          click: () => paperSizeDialog(printer)
         },
         { type: 'separator' },
         { label: `Cópias - ${printer.copies}`, click: () => copiesDialog(printer) },

@@ -51,12 +51,12 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
     try {
       const payload = JSON.parse(serializedPayload)
-      payload.profile.options.print.width = paperSize === 80 ? '302px' : '219px'
+      payload.profile.options.print.width = paperSize !== 58 ? '302px' : '219px'
       payload.profile.options.print.textOnly = isGeneric
       const { data } = await axios.post('https://next.whatsmenu.com.br/api/printLayout', { ...payload, html: true, electron: true })
       win.webContents.executeJavaScript(`
         const printBody = document.body
-        printBody.innerHTML = ${JSON.stringify(data.reactComponentString[paperSize])}
+        printBody.innerHTML = ${JSON.stringify(data.reactComponentString[paperSize < 65 ? 58 : 80])}
       `)
       
     } catch (error) {
@@ -84,7 +84,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
             ...printOptions,
             pageSize: {
               height: height < 4800000 ? height : 4800000,
-              width: (paperSize === 80 ? 72 : 58) * 1000,
+              width: (paperSize === 80 ? 72 : paperSize) * 1000,
             },
           },
           (success, failureReason) => {
