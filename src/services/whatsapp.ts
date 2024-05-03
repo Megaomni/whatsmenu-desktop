@@ -3,12 +3,14 @@ import isDev from "electron-is-dev";
 import child_process from "node:child_process";
 import { promisify } from "util";
 import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
-import { store } from './../main/store';
+import { getProfile, store } from './../main/store';
 
 import { EventEmitter } from "node:events";
 import { resolveInFixedTime } from '../utils/resolve-in-fixed-time';
 import { updateClient } from "./whatsmenu";
 import { ClientType } from "../@types/client";
+
+import { DateTime } from "luxon";
 
 export class WhatsApp {
   messagesQueue: Array<{ contact: string; message: string, client?: ClientType }> = [];
@@ -105,6 +107,26 @@ export class WhatsApp {
         body: "Não será possível enviar mensagens",
       }).show();
     });
+
+    // BOT MESSAGES
+    this.bot.on("message", async (message) => {
+      const profile = getProfile()
+      const chat = await message.getChat()
+      if (chat.isGroup) {
+        return
+      }
+      const [penultimateMessage, lastMessage] = await chat.fetchMessages({ limit: 2 })
+      const penultimateMessageDate = DateTime.fromSeconds(penultimateMessage.timestamp)
+      const lastMessageDate = DateTime.fromSeconds(lastMessage.timestamp)
+
+      const { days, hours } = lastMessageDate.diff(penultimateMessageDate, ["days", "hours"])
+
+      if (days > 0 || hours >= 3) {
+        await chat.sendMessage(profile.options.placeholders.welcomeMessage);
+        await chat.markUnread()
+      }
+    })
+
     return this.bot;
   }
   async sendQueuedmessages() {
