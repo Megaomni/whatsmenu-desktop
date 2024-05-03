@@ -72,4 +72,6 @@ export const updatePrinter = (payload: Partial<Printer>) => {
 
 export const deletePrinter = (id: string) => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).filter(p => p.id !== id))
 
+export const getProfile = () => store.get<'configs.profile', ProfileType>('configs.profile')
+
 console.log(store.path);
