@@ -1,5 +1,7 @@
 import { QRCodeCanvas } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
+import { ProgressCircle } from './progress-circle';
+import { Spinner } from './spinner';
 
 export const Qrcode = () => {
 
@@ -31,7 +33,7 @@ export const Qrcode = () => {
   return (
     <>
       {connected ? (
-        <h1 className='font-bold text-2xl'>Conectado!</h1>
+        <div className='text-white bg-teal-500 rounded-full px-6 py-2'>Conectado!</div>
       ) : !loading.status && !qrcode ? (
         <h1 className='font-bold text-2xl'>Desconectado</h1>
       ) : (
@@ -81,13 +83,16 @@ export const Qrcode = () => {
         )}
       <div>
         <QRCodeCanvas size={!qrcode ? 0 : 256} value={qrcode} data-loading={loading.status} className='transition-opacity delay-300 opacity-0 invisible data-[loading="false"]:opacity-100 data-[loading="false"]:visible' />
-        <div data-loading={loading.status} className='data-[loading="false"]:opacity-0 data-[loading="false"]:h-0 animate-spin rounded-full h-[256px] w-[256px] border-b-2'></div>
+        <div className='flex flex-col gap-4 items-center'>
+          <Spinner />
+    
           {loading.message && !qrcode && (
             <div className='mt-8'>
               <progress id="whatsapp-percent" className="h-3 w-[256px]" max={100} value={loading.percent}></progress>
               <p className='text-center'>{loading.message} - {loading.percent}%</p>
             </div>
           )}
+        </div>
         </div>
       </div>
       )}
