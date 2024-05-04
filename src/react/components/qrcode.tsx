@@ -1,6 +1,5 @@
 import { QRCodeCanvas } from 'qrcode.react';
 import React, { useEffect, useState } from 'react';
-import { ProgressCircle } from './progress-circle';
 import { Spinner } from './spinner';
 
 export const Qrcode = () => {
@@ -84,7 +83,9 @@ export const Qrcode = () => {
       <div>
         <QRCodeCanvas size={!qrcode ? 0 : 256} value={qrcode} data-loading={loading.status} className='transition-opacity delay-300 opacity-0 invisible data-[loading="false"]:opacity-100 data-[loading="false"]:visible' />
         <div className='flex flex-col gap-4 items-center'>
-          <Spinner />
+          {loading.status && (
+            <Spinner />
+          )}
     
           {loading.message && !qrcode && (
             <div className='mt-8'>

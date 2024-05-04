@@ -112,7 +112,7 @@ export class WhatsApp {
     this.bot.on("message", async (message) => {
       const profile = getProfile()
       const chat = await message.getChat()
-      if (chat.isGroup) {
+      if (chat.isGroup || !profile.options.bot.whatsapp.welcomeMessage.status) {
         return
       }
       const [penultimateMessage, lastMessage] = await chat.fetchMessages({ limit: 2 })
@@ -121,8 +121,10 @@ export class WhatsApp {
 
       const { days, hours } = lastMessageDate.diff(penultimateMessageDate, ["days", "hours"])
 
-      if (days > 0 || hours >= 3) {
-        await chat.sendMessage(profile.options.placeholders.welcomeMessage);
+      if (days > 0 || hours >= 3 || profile.options.bot.whatsapp.welcomeMessage.alwaysSend) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        await chat.sendMessage(profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName));
         await chat.markUnread()
       }
     })
