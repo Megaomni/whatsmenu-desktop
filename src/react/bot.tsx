@@ -60,7 +60,7 @@ const BotRoot = () => {
     <main className='flex flex-col items-center justify-center h-screen gap-4'>
 
       <div className="relative">
-        <img src="/bot.png" alt="Minha Imagem" className="w-full h-full object-cover" />
+        <img src="../../bot.png" alt="Minha Imagem" className="w-full h-full object-cover" />
         <div className="absolute inset-0 top-[75%] bg-gradient-to-b from-transparent to-white opacity-100"></div>
       </div>
       
