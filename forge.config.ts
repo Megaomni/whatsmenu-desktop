@@ -7,15 +7,11 @@ import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
-import path from 'node:path'
-
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
     icon: './src/images/app_icon.ico',
-    extraResource: [
-      path.resolve(__dirname, '.env')
-    ],
+    extraResource: [],
     protocols: [
       {
         name: 'WhatsMenu WhatsApp Bot',
