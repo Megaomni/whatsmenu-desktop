@@ -1,6 +1,6 @@
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
-import { Printer, store } from "./store";
+import { Printer, getProfile, store } from "./store";
 import { ClientType } from "../@types/client";
 import axios from "axios";
 
@@ -112,4 +112,9 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
 ipcMain.on('storeProfile', (_, profile) => {
   store.set('configs.profile', profile)
+})
+
+ipcMain.on('getProfile', (event) => {
+  const profile = getProfile()
+  event.reply('onProfileChange', profile)
 })

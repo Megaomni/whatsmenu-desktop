@@ -160,4 +160,12 @@ interface ProfileOptions {
     showProductsWhenPaused: boolean
   }
   inventoryControl: boolean
+  bot: {
+    whatsapp: {
+      welcomeMessage: {
+        status: boolean
+        alwaysSend: boolean
+      }
+    }
+  }
 }
