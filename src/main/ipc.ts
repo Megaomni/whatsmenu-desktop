@@ -1,10 +1,11 @@
 import { BrowserWindow, app, dialog, ipcMain } from "electron";
 import { whatsAppService } from ".";
-import { Printer, getProfile, store } from "./store";
 import { ClientType } from "../@types/client";
 import axios from "axios";
 
 import path from "node:path";
+import { getProfile, setCacheContactByWhatsapp, store } from "./store";
+import { Printer } from "../@types/store";
 
 ipcMain.on(
   "send-message",
@@ -117,4 +118,10 @@ ipcMain.on('storeProfile', (_, profile) => {
 ipcMain.on('getProfile', (event) => {
   const profile = getProfile()
   event.reply('onProfileChange', profile)
+})
+
+ipcMain.on('onCart', (_, cart: { id: number, client?: ClientType }) => {
+  if (cart.client) {
+    setCacheContactByWhatsapp(cart.client.whatsapp, { contact: cart.client.whatsapp, messageType: "welcome" })
+  }
 })

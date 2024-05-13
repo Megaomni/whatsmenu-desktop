@@ -155,6 +155,7 @@ interface ProfileOptions {
     statusProduction: string
     welcomeMessage: string
     absenceMessage: string
+    cupomFirstMessage: string
   }
   disponibility: {
     showProductsWhenPaused: boolean

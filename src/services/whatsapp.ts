@@ -3,12 +3,12 @@ import isDev from "electron-is-dev";
 import child_process from "node:child_process";
 import { promisify } from "util";
 import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
-import { getProfile, store } from './../main/store';
+import { findCacheContact, getProfile, store } from './../main/store';
 
 import { EventEmitter } from "node:events";
+import { ClientType } from "../@types/client";
 import { resolveInFixedTime } from '../utils/resolve-in-fixed-time';
 import { updateClient } from "./whatsmenu";
-import { ClientType } from "../@types/client";
 
 import { DateTime } from "luxon";
 
@@ -66,7 +66,7 @@ export class WhatsApp {
     }
 
     this.bot = new Client(config);
-    this.bot.on("qr", (qr) => {
+    this.bot.on("qr", () => {
       // this.firstConection = true;
     });
 
@@ -115,16 +115,21 @@ export class WhatsApp {
       if (chat.isGroup || !profile.options.bot.whatsapp.welcomeMessage.status) {
         return
       }
+      const firstMessage = (await chat.fetchMessages({ limit: 1 })).length === 0
       const [penultimateMessage, lastMessage] = await chat.fetchMessages({ limit: 2 })
       const penultimateMessageDate = DateTime.fromSeconds(penultimateMessage.timestamp)
       const lastMessageDate = DateTime.fromSeconds(lastMessage.timestamp)
 
       const { days, hours } = lastMessageDate.diff(penultimateMessageDate, ["days", "hours"])
 
-      if (days > 0 || hours >= 3 || profile.options.bot.whatsapp.welcomeMessage.alwaysSend) {
+      if (firstMessage || days > 0 || hours >= 3 || profile.options.bot.whatsapp.welcomeMessage.alwaysSend) {
+        let cachedContact
+        if (days > 0 || hours >= 3) {
+          cachedContact = await findCacheContact(chat.id._serialized)
+        }
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
-        await chat.sendMessage(profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName));
+        await chat.sendMessage(cachedContact && cachedContact.messageType === "cupomFirst" ? profile.options.placeholders.cupomFirstMessage.replaceAll("[NOME]", message._data.notifyName) : profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName));
         await chat.markUnread()
       }
     })
