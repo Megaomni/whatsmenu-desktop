@@ -90,20 +90,21 @@ export const setCacheContactByWhatsapp = (whatsapp: string, payload: Partial<Cac
 
 export const findCacheContact = async (whatsapp: string) => {
   const cacheList = getCacheContactList()
+  const profile = getProfile()
   whatsapp = whatsapp?.substring(2).replaceAll(/\D/g, '')
   let cache = cacheList.find(cached => cached.contact === whatsapp)
   if (whatsapp) {
     if (cache && cache.messageType === 'welcome') {
       return cache
     }
-    const { data } = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${getProfile()?.id}`)
+    const { data } = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`)
     const contact = data.client?.whatsapp ?? whatsapp
     if (contact) {
       if (!cache) {
-        cache = { contact: data.client?.whatsapp ?? whatsapp, messageType: data.client?.lastRequests.length ? 'welcome' : 'cupomFirst' }
+        cache = { contact: data.client?.whatsapp ?? whatsapp, messageType: !data.client?.lastRequests.length && profile?.firstOnlyCupom ? 'cupomFirst' : 'welcome' }
         store.set('configs.contacts_cache', [...cacheList, cache])
       } else {
-        cache.messageType = data.client?.lastRequests.length ? 'welcome' : 'cupomFirst'
+        cache.messageType = !data.client?.lastRequests.length && profile?.firstOnlyCupom ? 'cupomFirst' : 'welcome'
         store.set('configs.contacts_cache', cacheList)
       }
     }

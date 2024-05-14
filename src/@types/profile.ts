@@ -29,6 +29,7 @@ export interface ProfileType {
   userId: number
   week: WeekType
   whatsapp: string
+  firstOnlyCupom: any
 }
 
 type KmType = {
