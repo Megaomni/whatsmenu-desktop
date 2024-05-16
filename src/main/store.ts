@@ -1,19 +1,10 @@
 import ElectronStore from "electron-store";
 import { ProfileType } from "../@types/profile";
+import { CacheContact, Printer } from "../@types/store";
+import { whatsmenu_api_v3 } from "../lib/axios";
+import { DateTime } from "luxon";
+import { AxiosResponse } from "axios";
 
-export type Printer = Electron.PrinterInfo & {
-  id: string
-  silent: boolean
-  paperSize: 58 | 80 | number
-  copies: number
-  margins: Electron.Margins,
-  scaleFactor: number,
-  options: {
-    'printer-location': string,
-    'printer-make-and-model': string,
-    system_driverinfo: string
-  }
-}
 export interface Store {
   configs: {
     printing: {
@@ -24,11 +15,17 @@ export interface Store {
     },
     executablePath?: string,
     profile: ProfileType | null
+    contacts_cache: CacheContact[]
   }
 }
 
 export const store = new ElectronStore<Store>({
   watch: true,
+  migrations: {
+    '0.2.1': (store) => {
+      store.set('configs.contacts_cache', [])
+    }
+  },
   defaults: {
     configs: {
       printing: {
@@ -37,7 +34,8 @@ export const store = new ElectronStore<Store>({
       whatsapp: {
         showHiddenWhatsApp: false
       },
-      profile: null
+      profile: null,
+      contacts_cache: []
     }
   }
 });
@@ -73,5 +71,57 @@ export const updatePrinter = (payload: Partial<Printer>) => {
 export const deletePrinter = (id: string) => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).filter(p => p.id !== id))
 
 export const getProfile = () => store.get<'configs.profile', ProfileType>('configs.profile')
+
+export const setCacheContactList = (cacheContact: CacheContact) => store.set('configs.contacts_cache', cacheContact)
+
+export const getCacheContactList = () => store.get<'configs.contacts_cache', Store['configs']['contacts_cache']>('configs.contacts_cache')
+
+export const setCacheContactByWhatsapp = (whatsapp: string, payload: Partial<CacheContact>) => {
+  const cacheList = getCacheContactList()
+  const cacheListUpdated = cacheList.map(cached => {
+    if (cached.contact === whatsapp) {
+      return {
+        ...cached,
+        ...payload
+      }
+    }
+    return cached
+  })
+  store.set('configs.contacts_cache', cacheListUpdated)
+}
+
+export const findCacheContact = async (whatsapp: string) => {
+  const cacheList = getCacheContactList()
+  const profile = getProfile()
+  whatsapp = whatsapp?.substring(2).replaceAll(/\D/g, '')
+  let contact = whatsapp
+  let cache = cacheList.find(cached => cached?.contact === whatsapp) 
+  if (whatsapp) {
+    if (cache && cache.messageType === 'welcome') {
+      return cache
+    }
+
+    if (contact) {
+      if (!cache || cache.messageType === 'cupomFirst') {
+        let response: AxiosResponse
+
+        if (!cache || (cache && DateTime.fromISO(cache.created_at).diffNow('hours').hours >= cache.revalidateTime)) {
+          response = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`)
+          if (response.data.client?.whatsapp) {
+            contact = response.data.client?.whatsapp
+          }
+          cache = { 
+            contact, 
+            messageType: !response.data.client?.last_requests.length && profile?.firstOnlyCupom ? 'cupomFirst' : 'welcome', 
+            created_at: DateTime.local().toISO(),
+            revalidateTime: 3
+          }
+          store.set('configs.contacts_cache', [...cacheList, cache])
+        }
+      }
+    }
+  }
+  return cache
+}
 
 console.log(store.path);

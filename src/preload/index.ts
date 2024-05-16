@@ -30,6 +30,7 @@ export const WhatsMenuPrintApi = {
 
 export const DesktopApi = {
   onProfileChange: (callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void) => ipcRenderer.on('onProfileChange', callback),
+  onCart: (cart: { id: number, client?: ClientType }) => ipcRenderer.send('onCart', cart),
 
   storeProfile: (profile: ProfileType) => ipcRenderer.send('storeProfile', profile),
   getProfile: () => ipcRenderer.send('getProfile'),

@@ -29,6 +29,7 @@ export interface ProfileType {
   userId: number
   week: WeekType
   whatsapp: string
+  firstOnlyCupom: any
 }
 
 type KmType = {
@@ -155,6 +156,7 @@ interface ProfileOptions {
     statusProduction: string
     welcomeMessage: string
     absenceMessage: string
+    cupomFirstMessage: string
   }
   disponibility: {
     showProductsWhenPaused: boolean
