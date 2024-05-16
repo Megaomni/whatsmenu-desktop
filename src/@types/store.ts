@@ -12,4 +12,4 @@ export type Printer = Electron.PrinterInfo & {
   }
 }
 
-export type CacheContact = { contact: string, messageType: 'welcome' | 'cupomFirst' }
+export type CacheContact = { contact: string, messageType: 'welcome' | 'cupomFirst', revalidateTime?: number, created_at: string }

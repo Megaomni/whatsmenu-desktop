@@ -2,6 +2,8 @@ import ElectronStore from "electron-store";
 import { ProfileType } from "../@types/profile";
 import { CacheContact, Printer } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
+import { DateTime } from "luxon";
+import { AxiosResponse } from "axios";
 
 export interface Store {
   configs: {
@@ -20,7 +22,7 @@ export interface Store {
 export const store = new ElectronStore<Store>({
   watch: true,
   migrations: {
-    '0.2.2': (store) => {
+    '0.2.1': (store) => {
       store.set('configs.contacts_cache', [])
     }
   },
@@ -92,20 +94,30 @@ export const findCacheContact = async (whatsapp: string) => {
   const cacheList = getCacheContactList()
   const profile = getProfile()
   whatsapp = whatsapp?.substring(2).replaceAll(/\D/g, '')
-  let cache = cacheList.find(cached => cached.contact === whatsapp)
+  let contact = whatsapp
+  let cache = cacheList.find(cached => cached?.contact === whatsapp) 
   if (whatsapp) {
     if (cache && cache.messageType === 'welcome') {
       return cache
     }
-    const { data } = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`)
-    const contact = data.client?.whatsapp ?? whatsapp
+
     if (contact) {
-      if (!cache) {
-        cache = { contact: data.client?.whatsapp ?? whatsapp, messageType: !data.client?.lastRequests.length && profile?.firstOnlyCupom ? 'cupomFirst' : 'welcome' }
-        store.set('configs.contacts_cache', [...cacheList, cache])
-      } else {
-        cache.messageType = !data.client?.lastRequests.length && profile?.firstOnlyCupom ? 'cupomFirst' : 'welcome'
-        store.set('configs.contacts_cache', cacheList)
+      if (!cache || cache.messageType === 'cupomFirst') {
+        let response: AxiosResponse
+
+        if (!cache || (cache && DateTime.fromISO(cache.created_at).diffNow('hours').hours >= cache.revalidateTime)) {
+          response = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`)
+          if (response.data.client?.whatsapp) {
+            contact = response.data.client?.whatsapp
+          }
+          cache = { 
+            contact, 
+            messageType: !response.data.client?.last_requests.length && profile?.firstOnlyCupom ? 'cupomFirst' : 'welcome', 
+            created_at: DateTime.local().toISO(),
+            revalidateTime: 3
+          }
+          store.set('configs.contacts_cache', [...cacheList, cache])
+        }
       }
     }
   }

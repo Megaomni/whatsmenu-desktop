@@ -123,10 +123,7 @@ export class WhatsApp {
       const { days, hours } = lastMessageDate.diff(penultimateMessageDate, ["days", "hours"])
 
       if (firstMessage || days > 0 || hours >= 3 || profile.options.bot.whatsapp.welcomeMessage.alwaysSend) {
-        let cachedContact
-        if (days > 0 || hours >= 3) {
-          cachedContact = await findCacheContact(chat.id._serialized)
-        }
+        const cachedContact = await findCacheContact(chat.id._serialized)
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
         await chat.sendMessage(cachedContact && cachedContact.messageType === "cupomFirst" ? profile.options.placeholders.cupomFirstMessage.replaceAll("[NOME]", message._data.notifyName) : profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName));
