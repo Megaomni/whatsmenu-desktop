@@ -22,7 +22,7 @@ export interface Store {
 export const store = new ElectronStore<Store>({
   watch: true,
   migrations: {
-    '0.2.1': (store) => {
+    '0.2.2': (store) => {
       store.set('configs.contacts_cache', [])
     }
   },
