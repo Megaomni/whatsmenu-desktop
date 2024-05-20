@@ -1,3 +1,5 @@
+import { VoucherType } from "./voucher"
+
 export interface ClientType {
   id?: number
   name?: string
@@ -26,6 +28,7 @@ export interface ClientType {
       }
     }
   }
+  vouchers?: VoucherType[]
 }
 
 export interface ClientCardType {
