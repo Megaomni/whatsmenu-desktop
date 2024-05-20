@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Qrcode } from './components/qrcode';
 import { Switch } from './shadcn-ui/components/ui/switch';
 import { ProfileType } from '../@types/profile';
 import { whatsmenu_api } from '../lib/axios';
+import { Ws } from '../services/ws';
 
 const root = createRoot(document.body);
 
@@ -13,9 +14,8 @@ const BotRoot = () => {
   const [disconnectedReason, setDisconnectedReason] = useState<string | null>(null)
   const [loading, setLoading] = useState({ status: true, message: null, percent: 0 })
   const [profile, setProfile] = useState<ProfileType | null>(null)
-  
-  console.log(profile);
-  
+
+  const wsRef = useRef<Ws>(null)
 
   useEffect(() => {
     window.WhatsAppBotApi.onqrcode((_ ,qr: string) => {
@@ -42,6 +42,22 @@ const BotRoot = () => {
 
     window.DesktopApi.getProfile()
   }, [])
+
+  useEffect(() => {
+    if (profile) {
+      wsRef.current = new Ws({ url: `ws://localhost:7777` })
+      wsRef.current.join(`${profile.slug}:voucher`)
+      wsRef.current.connection.on('voucher:avaliable', (voucher) => {
+        window.DesktopApi.onVoucher(voucher)
+      })
+      wsRef.current.connection.on('voucher:used', (voucher) => {
+        window.DesktopApi.removeVoucher(voucher)
+      })
+      wsRef.current.connection.on('voucher:cancelled', (voucher) => {
+        window.DesktopApi.removeVoucher(voucher)
+      })
+    }
+  }, [profile])
 
   const handleWhatsBotConfig = async (whatsapp: ProfileType['options']['bot']['whatsapp']) => {
     if (profile) {

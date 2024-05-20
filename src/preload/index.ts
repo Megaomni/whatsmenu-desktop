@@ -4,6 +4,7 @@ import { contextBridge, ipcRenderer } from "electron";
 import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
 import { ProfileType } from "../@types/profile";
+import { VoucherType } from "../@types/voucher";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
@@ -31,6 +32,8 @@ export const WhatsMenuPrintApi = {
 export const DesktopApi = {
   onProfileChange: (callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void) => ipcRenderer.on('onProfileChange', callback),
   onCart: (cart: { id: number, client?: ClientType }) => ipcRenderer.send('onCart', cart),
+  onVoucher: (voucher: VoucherType) => ipcRenderer.send('onVoucher', voucher),
+  removeVoucher: (voucher: VoucherType) => ipcRenderer.send('removeVoucher', voucher),
 
   storeProfile: (profile: ProfileType) => ipcRenderer.send('storeProfile', profile),
   getProfile: () => ipcRenderer.send('getProfile'),

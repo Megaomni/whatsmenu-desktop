@@ -4,8 +4,10 @@ import { ClientType } from "../@types/client";
 import axios from "axios";
 
 import path from "node:path";
-import { getProfile, setCacheContactByWhatsapp, store } from "./store";
+import { deleteVoucherToNotify, getProfile, setCacheContactByWhatsapp, store, storeVoucherToNotify } from "./store";
 import { Printer } from "../@types/store";
+import { DateTime } from "luxon";
+import { VoucherType } from "../@types/voucher";
 
 ipcMain.on(
   "send-message",
@@ -124,4 +126,25 @@ ipcMain.on('onCart', (_, cart: { id: number, client?: ClientType }) => {
   if (cart.client) {
     setCacheContactByWhatsapp(cart.client.whatsapp, { contact: cart.client.whatsapp, messageType: "welcome" })
   }
+})
+
+ipcMain.on('onVoucher', (_, voucher: VoucherType) => {
+  const rememberDays = DateTime.fromISO(voucher.expirationDate).diff(DateTime.fromISO(voucher.created_at), 'days').days / 2
+  storeVoucherToNotify({
+    id: voucher.id,
+    value: voucher.value,
+    expirationDate: voucher.expirationDate,
+    rememberDays,
+    rememberDate: DateTime.fromISO(voucher.created_at).plus({ days: rememberDays }).toISO(),
+    afterPurchaseDate: DateTime.fromISO(voucher.created_at).plus({ minutes: 20 }).toISO(),
+    client: {
+      whatsapp: voucher.client.whatsapp,
+      name: voucher.client.name,
+      vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => total + voucher.value, 0) || 0
+    }
+  })
+})
+
+ipcMain.on('removeVoucher', (_, voucher: VoucherType) => {
+  deleteVoucherToNotify(voucher.id)
 })
