@@ -6,7 +6,10 @@ export class Ws {
   connection: Socket
 
   constructor({ url, options }: { url: `${Protocol}${string}`, options?: Partial<ManagerOptions & SocketOptions> }) {
-    this.connection = io(url, options)
+    this.connection = io(url, {
+      transports: ["websocket"],
+      ...options
+    })
   }
 
   public join(room: string) {

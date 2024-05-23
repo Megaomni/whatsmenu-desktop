@@ -129,7 +129,7 @@ ipcMain.on('onCart', (_, cart: { id: number, client?: ClientType }) => {
 })
 
 ipcMain.on('onVoucher', (_, voucher: VoucherType) => {
-  const rememberDays = DateTime.fromISO(voucher.expirationDate).diff(DateTime.fromISO(voucher.created_at), 'days').days / 2
+  const rememberDays = Math.floor(DateTime.fromISO(voucher.expirationDate).diff(DateTime.fromISO(voucher.created_at), 'days').days / 2)
   storeVoucherToNotify({
     id: voucher.id,
     value: voucher.value,
