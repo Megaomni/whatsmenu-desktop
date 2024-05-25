@@ -6,6 +6,7 @@ import { MakerRpm } from '@electron-forge/maker-rpm';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import fs from "fs";
 
 const config: ForgeConfig = {
   packagerConfig: {
@@ -18,6 +19,31 @@ const config: ForgeConfig = {
         schemes: ['whatsmenu-whatsapp-bot'],
       }
     ]
+  },
+  hooks: {
+    postMake: async (ctx, makeResult) => {
+      for (const makeTarget of makeResult) {
+        makeTarget.artifacts.forEach((artifact) => {
+          console.log("artifact", artifact);
+          if (artifact.includes("RELEASES")) {
+            const content = fs.readFileSync(artifact, 'utf8')
+            const newDataRelease = content.split('whatsmenu_desktop').join(`whatsmenu_desktop_${makeTarget.arch}`)
+            console.log(newDataRelease);
+            fs.writeFileSync(artifact, newDataRelease, 'utf-8')
+            
+            fs.renameSync(artifact, `${artifact}_${makeTarget.arch}`)
+          }
+          if (artifact.includes(".nupkg")) {
+            const splitStrint = `whatsmenu_desktop`
+            fs.renameSync(artifact, artifact.split(splitStrint).join(`${splitStrint}_${makeTarget.arch}`))
+          }
+          if (artifact.includes(".exe")) {
+            fs.renameSync(artifact, artifact.split(makeTarget.packageJSON.version).join(`${makeTarget.packageJSON.version}_${makeTarget.arch}`))
+          } 
+        });
+      }
+      return makeResult
+    }
   },
   rebuildConfig: {},
   

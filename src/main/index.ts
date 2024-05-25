@@ -2,7 +2,7 @@ import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
-import "../main/auto-update";
+import { initAutoUpdate } from "../main/auto-update";
 import "../main/ipc";
 import "../main/menu";
 import "../main/tray";
@@ -20,6 +20,7 @@ if (require("electron-squirrel-startup")) {
 export const whatsAppService = new WhatsApp();
 const main = () => {
   mainWindow = tabsWindow.createWindow();
+  initAutoUpdate()
   const printers = getPrinters()
   if (printers.length > 0) {
     printers.forEach((printer) => {
