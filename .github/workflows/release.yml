@@ -54,6 +54,9 @@ jobs:
           nupkg_file=$(awk '/whatsmenu_desktop-.*-full.nupkg/{print $NF}' files.txt)
           echo "setup_file=$setup_file" >> $GITHUB_ENV
           echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
+        env:
+          setup_file: ${{ env.setup_file }}
+          nupkg_file: ${{ env.nupkg_file }}
 
       - name: Create Release
         id: create_release
@@ -80,6 +83,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          setup_file: ${{ env.setup_file }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/${{ env.setup_file }}
@@ -90,6 +94,7 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          nupkg_file: ${{ env.nupkg_file }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/${{ env.nupkg_file }}
