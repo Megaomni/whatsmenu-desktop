@@ -37,7 +37,7 @@ jobs:
 
   release:
     needs: make
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v3
@@ -47,16 +47,14 @@ jobs:
 
       - name: List files
         id: list_files
-        shell: bash
         run: |
           ls ./out/make/squirrel.windows/ia32 > files.txt
-          setup_file=$(awk '/WhatsMenu Desktop .* Setup.exe/{print $NF}' files.txt)
-          nupkg_file=$(awk '/whatsmenu_desktop-.*-full.nupkg/{print $NF}' files.txt)
+          setup_file=$(awk 'NR==2' files.txt)
           echo "setup_file=$setup_file" >> $GITHUB_ENV
+          
+          # Simulate a second file extraction (example)
+          nupkg_file=$(awk 'NR==3' files.txt)
           echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
-        env:
-          setup_file: ${{ env.setup_file }}
-          nupkg_file: ${{ env.nupkg_file }}
 
       - name: Create Release
         id: create_release
@@ -83,7 +81,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          setup_file: ${{ env.setup_file }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/${{ env.setup_file }}
@@ -94,7 +91,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          nupkg_file: ${{ env.nupkg_file }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/${{ env.nupkg_file }}
