@@ -29,10 +29,11 @@ jobs:
       - name: Build
         run: npm run make
 
-      - name: Zip artifacts
-        run: Compress-Archive -Path ./out/make/squirrel.windows/ia32/* -DestinationPath squirrel_windows_ia32.zip
-        working-directory: ./out/make/squirrel.windows/ia32
-
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: squirrel-windows
+          path: ./out/make/squirrel.windows/ia32
 
   release:
     needs: make
@@ -44,16 +45,8 @@ jobs:
           name: squirrel-windows
           path: ./out/make/squirrel.windows/ia32
 
-      - name: Unzip artifacts
-        run: Expand-Archive -Path ./out/make/squirrel.windows/ia32/squirrel_windows_ia32.zip -DestinationPath ./out/make/squirrel.windows/ia32/squirrel_windows_ia32
-
-
       - name: List files
-        run: ls ./out/make/squirrel.windows/ia32/squirrel_windows_ia32
-
-      - name: Set asset name
-        id: set_asset_name
-        run: echo "::set-output name=asset_name::$(basename -s .zip ./out/make/squirrel.windows/ia32/squirrel_windows_ia32.zip)"
+        run: ls ./out/make/squirrel.windows/ia32
 
       - name: Create Release
         id: create_release
@@ -65,11 +58,13 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: true
           prerelease: false
-
+      
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./out/make/squirrel.windows/ia32/squir
+          asset_path: ./out/make/squirrel.windows/ia32
+          asset_name: teste
+          asset_content_type: application/octet-stream
