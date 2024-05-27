@@ -23,31 +23,6 @@ jobs:
       - name: Set NPM Cache Directory
         run: npm config set cache C:\npm\cache --global
 
-      - naname: Build/release WhatsMenu Desktop
-
-on:
-  push:
-    branches:
-      - master
-    tags:
-      - v*.*.*
-
-jobs:
-  make:
-    name: Make artifacts
-    runs-on: windows-latest
-    steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v3
-      
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
-
-      - name: Set NPM Cache Directory
-        run: npm config set cache C:\npm\cache --global
-
       - name: Install Dependencies
         run: npm install
 
