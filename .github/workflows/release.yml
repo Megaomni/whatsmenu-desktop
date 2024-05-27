@@ -30,10 +30,9 @@ jobs:
         run: npm run make
 
       - name: Zip artifacts
-        run: |
-          cd ./out/make/squirrel.windows/ia32
-          zip -r squirrel_windows_ia32.zip ./*
-          cd ../..
+        run: Compress-Archive -Path ./out/make/squirrel.windows/ia32/* -DestinationPath squirrel_windows_ia32.zip
+        working-directory: ./out/make/squirrel.windows/ia32
+
 
   release:
     needs: make
@@ -46,10 +45,8 @@ jobs:
           path: ./out/make/squirrel.windows/ia32
 
       - name: Unzip artifacts
-        run: |
-          cd ./out/make/squirrel.windows/ia32
-          unzip squirrel_windows_ia32.zip -d squirrel_windows_ia32
-          cd ../..
+        run: Expand-Archive -Path ./out/make/squirrel.windows/ia32/squirrel_windows_ia32.zip -DestinationPath ./out/make/squirrel.windows/ia32/squirrel_windows_ia32
+
 
       - name: List files
         run: ls ./out/make/squirrel.windows/ia32/squirrel_windows_ia32
