@@ -47,10 +47,11 @@ jobs:
 
       - name: List files
         id: list_files
+        shell: bash
         run: |
           ls ./out/make/squirrel.windows/ia32 > files.txt
           setup_file=$(awk '/WhatsMenu Desktop .* Setup.exe/{print $NF}' files.txt)
-          nupkg_file=$(awk '/whatsmenu_desktop .* -full.nupkg/{print $NF}' files.txt)
+          nupkg_file=$(awk '/whatsmenu_desktop-.*-full.nupkg/{print $NF}' files.txt)
           echo "setup_file=$setup_file" >> $GITHUB_ENV
           echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
 
