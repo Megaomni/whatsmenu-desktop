@@ -38,13 +38,16 @@ jobs:
 
   release:
     needs: make
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: squirrel-windows
           path: ./out/make/squirrel.windows/ia32
+
+      - name: List files
+        run: ls ./out/make/squirrel.windows/ia32
 
       - name: Create Release
         id: create_release
@@ -57,14 +60,6 @@ jobs:
           draft: true
           prerelease: false
 
-      - name: Extract file name
-        id: extract_file_name
-        run: echo "::set-output name=file_name::$(basename -s .zip ./out/make/squirrel.windows/ia32/*)"
-
-      - name: Determine content type
-        id: determine_content_type
-        run: echo "::set-output name=content_type::$(file --mime-type -b ./out/make/squirrel.windows/ia32/*)"
-
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
@@ -72,5 +67,3 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/*
-          asset_name: ${{ steps.extract_file_name.outputs.file_name }}
-          asset_content_type: ${{ steps.determine_content_type.outputs.content_type }}
