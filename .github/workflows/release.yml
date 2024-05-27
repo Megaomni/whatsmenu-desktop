@@ -49,8 +49,10 @@ jobs:
         id: list_files
         run: |
           ls ./out/make/squirrel.windows/ia32 > files.txt
-          echo "::set-output name=setup_file::$(awk '/WhatsMenu Desktop .*-Setup.exe/{print $NF}' files.txt)"
-          echo "::set-output name=nupkg_file::$(awk '/whatsmenu_desktop-.*-full.nupkg/{print $NF}' files.txt)"
+          setup_file=$(awk '/WhatsMenu Desktop .* Setup.exe/{print $NF}' files.txt)
+          nupkg_file=$(awk '/whatsmenu_desktop .* -full.nupkg/{print $NF}' files.txt)
+          echo "setup_file=$setup_file" >> $GITHUB_ENV
+          echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
@@ -79,8 +81,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./out/make/squirrel.windows/ia32/${{ steps.list_files.outputs.setup_file }}
-          asset_name: ${{ steps.list_files.outputs.setup_file }}
+          asset_path: ./out/make/squirrel.windows/ia32/${{ env.setup_file }}
+          asset_name: ${{ env.setup_file }}
           asset_content_type: application/octet-stream
 
       - name: Upload WhatsMenu Desktop NuPKG
@@ -89,6 +91,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./out/make/squirrel.windows/ia32/${{ steps.list_files.outputs.nupkg_file }}
-          asset_name: ${{ steps.list_files.outputs.nupkg_file }}
+          asset_path: ./out/make/squirrel.windows/ia32/${{ env.nupkg_file }}
+          asset_name: ${{ env.nupkg_file }}
           asset_content_type: application/octet-stream
