@@ -49,8 +49,8 @@ jobs:
         id: list_files
         run: |
           ls ./out/make/squirrel.windows/ia32 > files.txt
-          echo "::set-output name=setup_file::$(awk '/WhatsMenu Desktop.*Setup.exe/{print $NF}' files.txt)"
-          echo "::set-output name=nupkg_file::$(awk '/whatsmenu_desktop.*full.nupkg/{print $NF}' files.txt)"
+          echo "::set-output name=setup_file::$(awk '/WhatsMenu Desktop .*-Setup.exe/{print $NF}' files.txt)"
+          echo "::set-output name=nupkg_file::$(awk '/whatsmenu_desktop-.*-full.nupkg/{print $NF}' files.txt)"
 
       - name: Create Release
         id: create_release
