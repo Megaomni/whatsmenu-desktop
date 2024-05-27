@@ -46,7 +46,11 @@ jobs:
           path: ./out/make/squirrel.windows/ia32
 
       - name: List files
-        run: ls ./out/make/squirrel.windows/ia32
+        id: list_files
+        run: |
+          ls ./out/make/squirrel.windows/ia32 > files.txt
+          echo "::set-output name=setup_file::$(awk '/WhatsMenu Desktop.*Setup.exe/{print $NF}' files.txt)"
+          echo "::set-output name=nupkg_file::$(awk '/whatsmenu_desktop.*full.nupkg/{print $NF}' files.txt)"
 
       - name: Create Release
         id: create_release
@@ -58,13 +62,30 @@ jobs:
           release_name: Release ${{ github.ref_name }}
           draft: true
           prerelease: false
-      
+
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./out/make/squirrel.windows/ia32
-          asset_name: teste
-          asset_content_type: application/octet-stream
+          asset_path: ./out/make/squirrel.windows/ia32/RELEASES
+          asset_name: RELEASES
+
+      - name: Upload WhatsMenu Desktop Setup
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./out/make/squirrel.windows/ia32/${{ steps.list_files.outputs.setup_file }}
+          asset_name: ${{ steps.list_files.outputs.setup_file }}
+
+      - name: Upload WhatsMenu Desktop NuPKG
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./out/make/squirrel.windows/ia32/${{ steps.list_files.outputs.nupkg_file }}
+          asset_name: ${{ steps.list_files.outputs.nupkg_file }}
