@@ -7,6 +7,9 @@ on:
     tags:
       - v*.*.*
 
+permissions:
+  contents: write  # Define explicit permissions for the GITHUB_TOKEN
+
 jobs:
   make:
     name: Make artifacts
@@ -63,3 +66,4 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/*
+          asset_name: ${{ basename(github.event.inputs.asset_path) }}
