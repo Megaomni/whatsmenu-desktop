@@ -71,6 +71,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./out/make/squirrel.windows/ia32/*
+          asset_path: ./out/make/squirrel.windows/ia32
           asset_name: ${{ steps.extract_file_name.outputs.file_name }}
           asset_content_type: application/octet-stream
