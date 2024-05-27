@@ -60,8 +60,8 @@ jobs:
       - name: Extract file name
         id: extract_file_name
         run: echo "::set-output name=file_name::$(basename -s .zip ./out/make/squirrel.windows/ia32/*.zip)"
-      
-     - name: Determine content type
+
+      - name: Determine content type
         id: determine_content_type
         run: echo "::set-output name=content_type::$(file --mime-type -b ./out/make/squirrel.windows/ia32/*.zip)"
 
