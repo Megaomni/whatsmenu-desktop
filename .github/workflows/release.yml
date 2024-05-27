@@ -20,11 +20,20 @@ jobs:
         with:
           node-version: 20
 
+      - name: Set NPM Cache Directory
+        run: npm config set cache C:\npm\cache --global
+
       - name: Install Dependencies
         run: npm install
 
       - name: Build
         run: npm run make
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: squirrel-windows
+          path: ./out/make/squirrel.windows/ia32
 
   release:
     needs: make
@@ -42,8 +51,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
           draft: true
           prerelease: false
 
