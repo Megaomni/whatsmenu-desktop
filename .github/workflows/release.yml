@@ -7,8 +7,6 @@ on:
     tags:
       - v*.*.*
 
-permissions:
-  contents: write  # Define explicit permissions for the GITHUB_TOKEN
 
 jobs:
   make:
@@ -59,6 +57,10 @@ jobs:
           draft: true
           prerelease: false
 
+      - name: Extract file name
+        id: extract_file_name
+        run: echo "::set-output name=file_name::$(basename -s .zip ./out/make/squirrel.windows/ia32/*.zip)"
+      
       - name: Upload Release Assets
         uses: actions/upload-release-asset@v1
         env:
@@ -66,4 +68,4 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./out/make/squirrel.windows/ia32/*
-          asset_name: ${{ basename(github.event.inputs.asset_path) }}
+          asset_name: ${{ steps.extract_file_name.outputs.file_name }}
