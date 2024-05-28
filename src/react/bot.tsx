@@ -45,16 +45,18 @@ const BotRoot = () => {
 
   useEffect(() => {
     if (profile) {
-      wsRef.current = new Ws({ url: `ws://localhost:7777` })
-      wsRef.current.join(`${profile.slug}:voucher`)
-      wsRef.current.connection.on('voucher:avaliable', (voucher) => {
-        window.DesktopApi.onVoucher(voucher)
-      })
-      wsRef.current.connection.on('voucher:used', (voucher) => {
-        window.DesktopApi.removeVoucher(voucher)
-      })
-      wsRef.current.connection.on('voucher:cancelled', (voucher) => {
-        window.DesktopApi.removeVoucher(voucher)
+      wsRef.current = new Ws({ url: `wss://beta3.whatsmenu.com.br` })
+      wsRef.current.connection.on('connect', () => {
+        wsRef.current.join(`${profile.slug}:voucher`)
+        wsRef.current.connection.on('voucher:avaliable', (voucher) => {
+          window.DesktopApi.onVoucher(voucher)
+        })
+        wsRef.current.connection.on('voucher:used', (voucher) => {
+          window.DesktopApi.removeVoucher(voucher)
+        })
+        wsRef.current.connection.on('voucher:cancelled', (voucher) => {
+          window.DesktopApi.removeVoucher(voucher)
+        })
       })
     }
   }, [profile])
