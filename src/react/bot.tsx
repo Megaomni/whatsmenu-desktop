@@ -45,7 +45,7 @@ const BotRoot = () => {
 
   useEffect(() => {
     if (profile) {
-      wsRef.current = new Ws({ url: `wss://beta3.whatsmenu.com.br` })
+      wsRef.current = new Ws({ url: `wss://api3.whatsmenu.com.br` })
       wsRef.current.connection.on('connect', () => {
         wsRef.current.join(`${profile.slug}:voucher`)
         wsRef.current.connection.on('voucher:avaliable', (voucher) => {
