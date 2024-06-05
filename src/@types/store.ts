@@ -12,4 +12,23 @@ export type Printer = Electron.PrinterInfo & {
   }
 }
 
-export type CacheContact = { contact: string, messageType: 'welcome' | 'cupomFirst', revalidateTime?: number, created_at: string }
+export type CacheContact = { 
+  contact: string, 
+  messageType: 'welcome' | 'cupomFirst', 
+  revalidateTime?: number, 
+  created_at: string 
+}
+
+export type VoucherNotification = { 
+  id: number,
+  value: number,
+  client: {
+    whatsapp: string
+    name: string
+    vouchersTotal: number
+  }
+  afterPurchaseDate: string | null
+  rememberDate: string | null
+  rememberDays: number
+  expirationDate: string | null
+}

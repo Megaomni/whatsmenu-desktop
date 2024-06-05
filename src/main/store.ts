@@ -1,6 +1,6 @@
 import ElectronStore from "electron-store";
 import { ProfileType } from "../@types/profile";
-import { CacheContact, Printer } from "../@types/store";
+import { CacheContact, Printer, VoucherNotification } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
@@ -16,6 +16,7 @@ export interface Store {
     executablePath?: string,
     profile: ProfileType | null
     contacts_cache: CacheContact[]
+    voucherToNotify: VoucherNotification[]
   }
 }
 
@@ -24,6 +25,9 @@ export const store = new ElectronStore<Store>({
   migrations: {
     '0.2.2': (store) => {
       store.set('configs.contacts_cache', [])
+    },
+    '0.2.4': (store) => {
+      store.set('configs.voucherToNotify', [])
     }
   },
   defaults: {
@@ -35,7 +39,8 @@ export const store = new ElectronStore<Store>({
         showHiddenWhatsApp: false
       },
       profile: null,
-      contacts_cache: []
+      contacts_cache: [],
+      voucherToNotify: []
     }
   }
 });
@@ -122,6 +127,24 @@ export const findCacheContact = async (whatsapp: string) => {
     }
   }
   return cache
+}
+
+export const storeVoucherToNotify = (payload: VoucherNotification) => store.set('configs.voucherToNotify', [...getVoucherToNotifyList(), payload])
+
+export const getVoucherToNotifyList = () => store.get<'configs.voucherToNotify', VoucherNotification[]>('configs.voucherToNotify')
+
+export const deleteVoucherToNotify = (id: number) => store.set('configs.voucherToNotify', getVoucherToNotifyList().filter(voucher => voucher.id !== id))
+
+export const updateVoucherToNotify = (id: number, payload: Partial<VoucherNotification>) => {
+  store.set('configs.voucherToNotify', getVoucherToNotifyList().map(voucher => {
+    if (voucher.id === id) {
+      return {
+        ...voucher,
+        ...payload
+      }
+    }
+    return voucher
+  }))
 }
 
 console.log(store.path);
