@@ -220,7 +220,7 @@ export class WhatsApp {
 
   checkNinthDigit = (contact: string): WAWebJS.ContactId => {
     if (contact.startsWith("55")) {
-      if (contact.length === 13 && contact[4] === "9" && parseInt(contact.slice(2, 4)) < 30) {
+      if (contact.length === 13 && contact[4] === "9" && parseInt(contact.slice(2, 4)) > 30) {
         contact = contact.slice(0, 4) + contact.slice(5);
       }
     } else {
