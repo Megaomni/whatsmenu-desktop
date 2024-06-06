@@ -3,7 +3,10 @@ name: Build/release WhatsMenu Desktop
 on:
   push:
     branches:
-      - main
+      - master
+
+  pull_request:
+    types: [closed]
 
 jobs:
   make:
