@@ -1,6 +1,10 @@
 name: Build/release WhatsMenu Desktop
 
 on:
+  push:
+    branches:
+      - main
+
   pull_request:
     types: [closed]
 
