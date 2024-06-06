@@ -88,29 +88,6 @@ export class WhatsApp {
     });
 
     this.bot.on("ready", async () => {
-      if (this.firstConection) {
-        console.time("firstconnection");
-        try {
-          // const chat = await this.checkNinthDigit(
-          //   this.bot.info.wid.user
-          // );
-          // if (chat) {
-          //   chat.sendMessage("Ola! Robô iniciado com sucesso")
-          // } else {
-          await this.bot.sendMessage(
-            `${this.bot.info.wid.user}@c.us`,
-            "Ola! Robô iniciado com sucesso"
-          );
-          // }
-        } catch (error) {
-          console.error(error);
-        } finally {
-          console.timeEnd("firstconnection");
-        }
-
-        this.events.emit("ready");
-        this.firstConection = false;
-      }
       new Notification({
         title: "Robô pronto!",
         body: "Pronto para enviar mensagens",
@@ -169,8 +146,8 @@ export class WhatsApp {
   async sendQueuedmessages() {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
-        const { contact, message, client } = messageQueued;
-        const contactId = await this.checkNinthDigit(contact, client);
+        const { contact, message } = messageQueued;
+        const contactId = this.checkNinthDigit(contact);
 
         try {
           setTimeout(() => {
@@ -241,79 +218,22 @@ export class WhatsApp {
     return;
   }
 
-  checkNinthDigit = async (
-    contact: string,
-    client: ClientType
-  ): Promise<WAWebJS.ContactId> => {
-    if (client?.controls?.whatsapp?.contactId) {
-      return client.controls.whatsapp.contactId;
-    }
-    let contactId: WAWebJS.ContactId;
-
-    if (contact.startsWith("55") && parseInt(contact.slice(2, 4)) > 30) {
-      contactId = {
-        user: contact,
-        server: "c.us",
-        _serialized: `${contact}@c.us`,
-      };
-
-      return contactId;
+  checkNinthDigit = (contact: string): WAWebJS.ContactId => {
+    if (contact.startsWith("55")) {
+      if (contact.length === 13 && contact[4] === "9" && parseInt(contact.slice(2, 4)) < 30) {
+        contact = contact.slice(0, 4) + contact.slice(5);
+      }
+    } else {
+      throw new Error("Invalid contact number");
     }
 
-    try {
-      if (
-        contact.startsWith("55") &&
-        contact.length === 13 &&
-        contact[4] === "9"
-      ) {
-        contactId = await resolveInFixedTime({
-          promise: this.bot.getNumberId(
-            `${contact.slice(0, 4) + contact.slice(5)}`
-          ),
-          secondsAwait: 5,
-        });
-      }
+    const contactId: WAWebJS.ContactId = {
+      user: contact,
+      server: "c.us",
+      _serialized: `${contact}@c.us`,
+    };
 
-      if (!contactId) {
-        contactId = await resolveInFixedTime({
-          promise: this.bot.getNumberId(contact),
-          secondsAwait: 5,
-        });
-      }
-
-      return contactId;
-    } catch (error) {
-      if (error.cause === "timeout") {
-        const response = await fetch(
-          `https://bot.whatsmenu.com.br/whatsapp/${contact}/check`,
-          {
-            headers: { "Content-Type": "application/json" },
-          }
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            return data;
-          })
-          .catch((err) => {
-            throw err;
-          });
-
-        if (!response.contactId) {
-          throw new Error("contactId not found", { cause: "checkNinthDigit" });
-        }
-        return response.contactId;
-      } else {
-        console.error(error);
-        throw error;
-      }
-    } finally {
-      if (client?.controls) {
-        client.controls.whatsapp = {
-          contactId,
-        };
-        updateClient({ client });
-      }
-    }
+    return contactId;
   };
 
   validateContact(

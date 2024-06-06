@@ -15,7 +15,7 @@ ipcMain.on(
     const botState = await whatsAppService.bot?.getState()
     try {
       if (botState === 'CONNECTED') {
-        const contactId = await whatsAppService.checkNinthDigit(contact, client);
+        const contactId = whatsAppService.checkNinthDigit(contact);
         whatsAppService.bot.sendMessage(contactId._serialized, message);
       } else {
         whatsAppService.messagesQueue.push({
