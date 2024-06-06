@@ -1,15 +1,12 @@
 name: Build/release WhatsMenu Desktop
 
 on:
-  push:
-    branches:
-      - master
-
   pull_request:
     types: [closed]
 
 jobs:
   make:
+    if: github.event.pull_request.merged == true
     name: Make artifacts
     runs-on: windows-latest
     steps:
@@ -37,6 +34,7 @@ jobs:
           path: ./out/make/squirrel.windows/ia32
 
   release:
+    if: github.event.pull_request.merged == true
     needs: make
     runs-on: ubuntu-latest
     steps:
