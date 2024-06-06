@@ -3,11 +3,18 @@ import isDev from "electron-is-dev";
 import child_process from "node:child_process";
 import { promisify } from "util";
 import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
-import { deleteVoucherToNotify, findCacheContact, getProfile, getVoucherToNotifyList, store, updateVoucherToNotify } from './../main/store';
+import {
+  deleteVoucherToNotify,
+  findCacheContact,
+  getProfile,
+  getVoucherToNotifyList,
+  store,
+  updateVoucherToNotify,
+} from "./../main/store";
 
 import { EventEmitter } from "node:events";
 import { ClientType } from "../@types/client";
-import { resolveInFixedTime } from '../utils/resolve-in-fixed-time';
+import { resolveInFixedTime } from "../utils/resolve-in-fixed-time";
 import { updateClient } from "./whatsmenu";
 
 import { DateTime } from "luxon";
@@ -15,7 +22,11 @@ import { botMessages } from "../utils/bot-messages";
 import { VoucherNotification } from "../@types/store";
 
 export class WhatsApp {
-  messagesQueue: Array<{ contact: string; message: string, client?: ClientType }> = [];
+  messagesQueue: Array<{
+    contact: string;
+    message: string;
+    client?: ClientType;
+  }> = [];
   bot: Client | null = null;
   firstConection = false;
   events = new EventEmitter();
@@ -31,7 +42,7 @@ export class WhatsApp {
     }
     config.authStrategy = new LocalAuth();
     config.puppeteer = {
-      headless: !store.get('configs.whatsapp.showHiddenWhatsApp'),
+      headless: !store.get("configs.whatsapp.showHiddenWhatsApp"),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
@@ -43,7 +54,11 @@ export class WhatsApp {
         // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
       ],
     };
-    if (!store.get('configs.executablePath') || (!isDev || process.platform === "win32")) {
+    if (
+      !store.get("configs.executablePath") ||
+      !isDev ||
+      process.platform === "win32"
+    ) {
       const command =
         'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
 
@@ -63,8 +78,8 @@ export class WhatsApp {
       }
     }
 
-    if (store.get('configs.executablePath')) {
-      config.puppeteer.executablePath = store.get('configs.executablePath')
+    if (store.get("configs.executablePath")) {
+      config.puppeteer.executablePath = store.get("configs.executablePath");
     }
 
     this.bot = new Client(config);
@@ -82,10 +97,10 @@ export class WhatsApp {
           // if (chat) {
           //   chat.sendMessage("Ola! Robô iniciado com sucesso")
           // } else {
-            await this.bot.sendMessage(
-              `${this.bot.info.wid.user}@c.us`,
-              "Ola! Robô iniciado com sucesso"
-            );
+          await this.bot.sendMessage(
+            `${this.bot.info.wid.user}@c.us`,
+            "Ola! Robô iniciado com sucesso"
+          );
           // }
         } catch (error) {
           console.error(error);
@@ -113,26 +128,41 @@ export class WhatsApp {
 
     // BOT MESSAGES
     this.bot.on("message", async (message) => {
-      const profile = getProfile()
-      const chat = await message.getChat()
+      const profile = getProfile();
+      const chat = await message.getChat();
       if (chat.isGroup || !profile.options.bot.whatsapp.welcomeMessage.status) {
-        return
+        return;
       }
-      const [penultimateMessage, lastMessage] = await chat.fetchMessages({ limit: 2 })
-      const firstMessage = !lastMessage
-      const penultimateMessageDate = DateTime.fromSeconds(penultimateMessage.timestamp)
-      const lastMessageDate = lastMessage ? DateTime.fromSeconds(lastMessage.timestamp) : DateTime.local()
+      const [penultimateMessage, lastMessage] = await chat.fetchMessages({
+        limit: 2,
+      });
+      const firstMessage = !lastMessage;
+      const penultimateMessageDate = DateTime.fromSeconds(
+        penultimateMessage.timestamp
+      );
+      const lastMessageDate = lastMessage
+        ? DateTime.fromSeconds(lastMessage.timestamp)
+        : DateTime.local();
 
-      const { days, hours } = lastMessageDate.diff(penultimateMessageDate, ["days", "hours"])
+      const { days, hours } = lastMessageDate.diff(penultimateMessageDate, [
+        "days",
+        "hours",
+      ]);
 
-      if (firstMessage || days > 0 || hours >= 3 || profile.options.bot.whatsapp.welcomeMessage.alwaysSend) {
-        const cachedContact = await findCacheContact(chat.id._serialized)
+      if (
+        firstMessage ||
+        days > 0 ||
+        hours >= 3 ||
+        profile.options.bot.whatsapp.welcomeMessage.alwaysSend
+      ) {
+        const cachedContact = await findCacheContact(chat.id._serialized);
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         //@ts-ignore
+        // prettier-ignore
         await chat.sendMessage(cachedContact && cachedContact.messageType === "cupomFirst" ? profile.options.placeholders.cupomFirstMessage.replaceAll("[NOME]", message._data.notifyName ?? '') : profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName ?? ""));
-        await chat.markUnread()
+        await chat.markUnread();
       }
-    })
+    });
 
     return this.bot;
   }
@@ -155,27 +185,70 @@ export class WhatsApp {
   }
 
   cashbackCron() {
-    const profile = getProfile()
-    getVoucherToNotifyList().filter(voucher => voucher.expirationDate && DateTime.fromISO(voucher.expirationDate).diffNow(['days']).days < 0).forEach(voucher => deleteVoucherToNotify(voucher.id))
-    const cronLoop = async (messageType: keyof typeof botMessages.cashback, list: VoucherNotification[], callback?: (voucher: VoucherNotification) => void) => {
+    const profile = getProfile();
+    getVoucherToNotifyList()
+      .filter(
+        (voucher) =>
+          voucher.expirationDate &&
+          DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
+      )
+      .forEach((voucher) => deleteVoucherToNotify(voucher.id));
+    const cronLoop = async (
+      messageType: keyof typeof botMessages.cashback,
+      list: VoucherNotification[],
+      callback?: (voucher: VoucherNotification) => void
+    ) => {
       for await (const voucher of list) {
-        await this.bot.sendMessage(`55${voucher.client.whatsapp}@c.us`, botMessages.cashback[messageType]({ voucher, profile }));
-        callback(voucher)
+        await this.bot.sendMessage(
+          `55${voucher.client.whatsapp}@c.us`,
+          botMessages.cashback[messageType]({ voucher, profile })
+        );
+        callback(voucher);
       }
-    }
+    };
     setInterval(async () => {
-      await cronLoop('afterPurchase', getVoucherToNotifyList().filter(voucher => voucher.afterPurchaseDate && DateTime.fromISO(voucher.afterPurchaseDate).diffNow(['minutes']).minutes <= 0), (voucher) => updateVoucherToNotify(voucher.id, { afterPurchaseDate: null }))
-      await cronLoop('remember',  getVoucherToNotifyList().filter(voucher => voucher.rememberDate && DateTime.fromISO(voucher.rememberDate).diffNow(['days']).days <= 0), (voucher) => updateVoucherToNotify(voucher.id, { rememberDate: null }))
-      await cronLoop('expire', getVoucherToNotifyList().filter(voucher => voucher.expirationDate && DateTime.fromISO(voucher.expirationDate).diffNow(['days']).days === 0), (voucher) => deleteVoucherToNotify(voucher.id))
+      await cronLoop(
+        "afterPurchase",
+        getVoucherToNotifyList().filter(
+          (voucher) =>
+            voucher.afterPurchaseDate &&
+            DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
+              .minutes <= 0
+        ),
+        (voucher) =>
+          updateVoucherToNotify(voucher.id, { afterPurchaseDate: null })
+      );
+      await cronLoop(
+        "remember",
+        getVoucherToNotifyList().filter(
+          (voucher) =>
+            voucher.rememberDate &&
+            DateTime.fromISO(voucher.rememberDate).diffNow(["days"]).days <= 0
+        ),
+        (voucher) => updateVoucherToNotify(voucher.id, { rememberDate: null })
+      );
+      await cronLoop(
+        "expire",
+        getVoucherToNotifyList().filter(
+          (voucher) =>
+            voucher.expirationDate &&
+            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days ===
+              0
+        ),
+        (voucher) => deleteVoucherToNotify(voucher.id)
+      );
     }, 5000);
     return;
   }
 
-  checkNinthDigit = async (contact: string, client: ClientType): Promise<WAWebJS.ContactId> => {
+  checkNinthDigit = async (
+    contact: string,
+    client: ClientType
+  ): Promise<WAWebJS.ContactId> => {
     if (client?.controls?.whatsapp?.contactId) {
-      return client.controls.whatsapp.contactId
+      return client.controls.whatsapp.contactId;
     }
-    let contactId: WAWebJS.ContactId
+    let contactId: WAWebJS.ContactId;
 
     try {
       if (
@@ -183,51 +256,65 @@ export class WhatsApp {
         contact.length === 13 &&
         contact[4] === "9"
       ) {
-        contactId = await resolveInFixedTime({ promise: this.bot.getNumberId(`${contact.slice(0, 4) + contact.slice(5)}`), secondsAwait: 5 })
+        contactId = await resolveInFixedTime({
+          promise: this.bot.getNumberId(
+            `${contact.slice(0, 4) + contact.slice(5)}`
+          ),
+          secondsAwait: 5,
+        });
       }
 
       if (!contactId) {
-        contactId = await resolveInFixedTime({ promise: this.bot.getNumberId(contact), secondsAwait: 5 })
+        contactId = await resolveInFixedTime({
+          promise: this.bot.getNumberId(contact),
+          secondsAwait: 5,
+        });
       }
 
-      return contactId
+      return contactId;
     } catch (error) {
-      if (error.cause === 'timeout') {
-        const response = await fetch(`https://bot.whatsmenu.com.br/whatsapp/${contact}/check`, {
-          headers: { 'Content-Type': 'application/json' },
-        })
-          .then(response => response.json())
-          .then(data => {
-            return data
+      if (error.cause === "timeout") {
+        const response = await fetch(
+          `https://bot.whatsmenu.com.br/whatsapp/${contact}/check`,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            return data;
           })
           .catch((err) => {
-            throw err
+            throw err;
           });
 
-          if (!response.contactId) {
-            throw new Error('contactId not found', { cause: "checkNinthDigit" })
-          }
-        return response.contactId
+        if (!response.contactId) {
+          throw new Error("contactId not found", { cause: "checkNinthDigit" });
+        }
+        return response.contactId;
       } else {
         console.error(error);
-        throw error
+        throw error;
       }
     } finally {
       if (client?.controls) {
         client.controls.whatsapp = {
-          contactId
-        }
-        updateClient({ client })
+          contactId,
+        };
+        updateClient({ client });
       }
     }
   };
 
-  validateContact(callback: (contact: string) => Promise<WAWebJS.ContactId>, contact: string): Promise<WAWebJS.ContactId> {
+  validateContact(
+    callback: (contact: string) => Promise<WAWebJS.ContactId>,
+    contact: string
+  ): Promise<WAWebJS.ContactId> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        reject(new Error("Timeout", { cause: 'timeout' }))
+        reject(new Error("Timeout", { cause: "timeout" }));
       }, 5 * 1000);
-      callback(contact).then(resolve).catch(reject)
-    })
+      callback(contact).then(resolve).catch(reject);
+    });
   }
 }
