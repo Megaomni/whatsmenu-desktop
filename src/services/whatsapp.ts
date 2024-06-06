@@ -250,6 +250,16 @@ export class WhatsApp {
     }
     let contactId: WAWebJS.ContactId;
 
+    if (contact.startsWith("55") && parseInt(contact.slice(2, 4)) > 30) {
+      contactId = {
+        user: contact,
+        server: "c.us",
+        _serialized: `${contact}@c.us`,
+      };
+
+      return contactId;
+    }
+
     try {
       if (
         contact.startsWith("55") &&
