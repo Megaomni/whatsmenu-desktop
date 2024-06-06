@@ -1,18 +1,18 @@
 name: Build/release WhatsMenu Desktop
 
 on:
-  push:
-    tags:
-      - v*.*.*
+  pull_request:
+    types: [closed]
 
 jobs:
   make:
+    if: github.event.pull_request.merged == true
     name: Make artifacts
     runs-on: windows-latest
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
-      
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -34,6 +34,7 @@ jobs:
           path: ./out/make/squirrel.windows/ia32
 
   release:
+    if: github.event.pull_request.merged == true
     needs: make
     runs-on: ubuntu-latest
     steps:
@@ -49,10 +50,26 @@ jobs:
           ls ./out/make/squirrel.windows/ia32 > files.txt
           setup_file=$(awk 'NR==2' files.txt)
           echo "setup_file=$setup_file" >> $GITHUB_ENV
-          
+
           # Simulate a second file extraction (example)
           nupkg_file=$(awk 'NR==3' files.txt)
           echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
+
+      - name: Get PR Details
+        id: get_pr_details
+        uses: octokit/request-action@v2.1.0
+        with:
+          route: GET /repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Process PR Details
+        id: process_pr_details
+        run: |
+          pr_title=$(echo "${{ steps.get_pr_details.outputs.data }}" | jq -r '.title')
+          pr_description=$(echo "${{ steps.get_pr_details.outputs.data }}" | jq -r '.body')
+          echo "pr_title=$pr_title" >> $GITHUB_ENV
+          echo "pr_description=$pr_description" >> $GITHUB_ENV
 
       - name: Create Release
         id: create_release
@@ -60,8 +77,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }} - Release
+          tag_name: ${{ github.event.pull_request.head.ref }}
+          release_name: ${{ env.pr_title }}
+          body: ${{ env.pr_description }}
           draft: true
           prerelease: false
 
