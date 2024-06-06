@@ -66,8 +66,8 @@ jobs:
       - name: Process PR Details
         id: process_pr_details
         run: |
-          pr_title=$(echo "${{ steps.get_pr_details.outputs.data }}" | jq -r '.title')
-          pr_description=$(echo "${{ steps.get_pr_details.outputs.data }}" | jq -r '.body')
+          pr_title=$(echo ${{ steps.get_pr_details.outputs.data }} | jq -r '.title')
+          pr_description=$(echo ${{ steps.get_pr_details.outputs.data }} | jq -r '.body')
           echo "pr_title=$pr_title" >> $GITHUB_ENV
           echo "pr_description=$pr_description" >> $GITHUB_ENV
 
