@@ -135,7 +135,13 @@ export const findCacheContact = async (whatsapp: string) => {
 
 export const storeVoucherToNotify = (payload: VoucherNotification) => store.set('configs.voucherToNotify', [...getVoucherToNotifyList(), payload])
 
-export const getVoucherToNotifyList = () => store.get<'configs.voucherToNotify', VoucherNotification[]>('configs.voucherToNotify')
+export const getVoucherToNotifyList = () => {
+  const vouchersToNotify = store.get<'configs.voucherToNotify', VoucherNotification[]>('configs.voucherToNotify')
+  if (!vouchersToNotify) {
+    store.set('configs.voucherToNotify', [])
+  }
+  return store.get<'configs.voucherToNotify', VoucherNotification[]>('configs.voucherToNotify')
+}
 
 export const deleteVoucherToNotify = (id: number) => store.set('configs.voucherToNotify', getVoucherToNotifyList().filter(voucher => voucher.id !== id))
 
