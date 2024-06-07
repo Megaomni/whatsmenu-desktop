@@ -111,7 +111,11 @@ export const findCacheContact = async (whatsapp: string) => {
         let response: AxiosResponse
 
         if (!cache || (cache && DateTime.fromISO(cache.created_at).diffNow('hours').hours >= cache.revalidateTime)) {
-          response = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`)
+          try {
+            response = await whatsmenu_api_v3.get(`/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`)
+          } catch (error) {
+            return null
+          }
           if (response.data.client?.whatsapp) {
             contact = response.data.client?.whatsapp
           }
