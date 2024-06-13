@@ -176,8 +176,9 @@ export class WhatsApp {
       callback?: (voucher: VoucherNotification) => void
     ) => {
       for await (const voucher of list) {
+        const contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`)
         await this.bot.sendMessage(
-          `55${voucher.client.whatsapp}@c.us`,
+          contact._serialized,
           botMessages.cashback[messageType]({ voucher, profile })
         );
         callback(voucher);
