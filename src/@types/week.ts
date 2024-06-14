@@ -8,7 +8,7 @@ export type WeekDayProps =
   | { dayName: 'sunday'; dayNumber: 7 }
 
 export type WeekType<T extends 'profile' = any> = {
-  [day in WeekDayProps['dayName']]: Array<
+  [day in WeekDayProps['dayName'] | string]: Array<
     T extends 'profile'
       ? Omit<WeekDayType<Extract<WeekDayProps, { dayName: day }>>, 'active'>
       : WeekDayType<Extract<WeekDayProps, { dayName: day }>>

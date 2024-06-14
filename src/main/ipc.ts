@@ -6,6 +6,7 @@ import axios from "axios";
 import path from "node:path";
 import {
   deleteVoucherToNotify,
+  getMerchant,
   getProfile,
   setCacheContactByWhatsapp,
   store,
@@ -142,9 +143,18 @@ ipcMain.on("storeProfile", (_, profile) => {
   store.set("configs.profile", profile);
 });
 
+ipcMain.on("storeMerchant", (_, merchant) => {
+  store.set("configs.merchant", merchant);
+});
+
 ipcMain.on("getProfile", (event) => {
   const profile = getProfile();
   event.reply("onProfileChange", profile);
+});
+
+ipcMain.on("getMerchant", (event) => {
+  const merchant = getMerchant();
+  event.reply("onMerchantChange", merchant);
 });
 
 ipcMain.on("onCart", (_, cart: { id: number; client?: ClientType }) => {
