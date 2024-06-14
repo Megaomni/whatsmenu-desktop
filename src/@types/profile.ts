@@ -68,6 +68,9 @@ interface ProfileOptions {
       birthDate: boolean
     }
     cashierManagement: boolean
+  },
+  integrations: {
+    ifood: string
   }
   asaas?: {
     id: string

@@ -4,6 +4,7 @@ import { CacheContact, Printer, VoucherNotification } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
+import { MerchantType } from "../@types/merchant";
 
 export interface Store {
   configs: {
@@ -17,6 +18,7 @@ export interface Store {
     profile: ProfileType | null
     contacts_cache: CacheContact[]
     voucherToNotify: VoucherNotification[]
+    merchant: MerchantType | null
   }
 }
 
@@ -28,7 +30,10 @@ export const store = new ElectronStore<Store>({
     },
     '0.2.4': (store) => {
       store.set('configs.voucherToNotify', [])
-    }
+    },
+    '0.4.5': (store) => {
+      store.set('configs.merchant', null)
+    },
   },
   defaults: {
     configs: {
@@ -39,6 +44,7 @@ export const store = new ElectronStore<Store>({
         showHiddenWhatsApp: false
       },
       profile: null,
+      merchant: null,
       contacts_cache: [],
       voucherToNotify: []
     }
@@ -76,6 +82,7 @@ export const updatePrinter = (payload: Partial<Printer>) => {
 export const deletePrinter = (id: string) => store.set('configs.printing.printers', (store.get('configs.printing.printers') as Printer[]).filter(p => p.id !== id))
 
 export const getProfile = () => store.get<'configs.profile', ProfileType>('configs.profile')
+export const getMerchant = () => store.get<'configs.merchant', MerchantType>('configs.merchant')
 
 export const setCacheContactList = (cacheContact: CacheContact) => store.set('configs.contacts_cache', cacheContact)
 
