@@ -9,9 +9,9 @@
     "package": "electron-forge package",
     "make": "electron-forge make --arch=\"ia32\"",
     "publish": "electron-forge publish",
-    "release:patch": "npm version patch -m \"Bump de versão v%s\" && git push && git push --tags",
-    "release:minor": "npm version minor -m \"Bump de versão v%s\" && git push && git push --tags",
-    "release:major": "npm version major -m \"Bump de versão v%s\" && git push && git push --tags",
+    "release:patch": "node version-bump.mjs patch && git push && git push --tags",
+    "release:minor": "node version-bump.mjs minor && git push && git push --tags",
+    "release:major": "node version-bump.mjs major && git push && git push --tags",
     "lint": "eslint --ext .ts,.tsx ."
   },
   "devDependencies": {
