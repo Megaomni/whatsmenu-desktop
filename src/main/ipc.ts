@@ -4,7 +4,7 @@ import { ClientType } from "../@types/client";
 import axios from "axios";
 
 import path from "node:path";
-import { deleteVoucherToNotify, getProfile, setCacheContactByWhatsapp, store, storeVoucherToNotify } from "./store";
+import { deleteVoucherToNotify, getMerchant, getProfile, setCacheContactByWhatsapp, store, storeVoucherToNotify } from "./store";
 import { Printer } from "../@types/store";
 import { DateTime } from "luxon";
 import { VoucherType } from "../@types/voucher";
@@ -117,9 +117,18 @@ ipcMain.on('storeProfile', (_, profile) => {
   store.set('configs.profile', profile)
 })
 
+ipcMain.on('storeMerchant', (_, merchant) => {
+  store.set('configs.merchant', merchant)
+})
+
 ipcMain.on('getProfile', (event) => {
   const profile = getProfile()
   event.reply('onProfileChange', profile)
+})
+
+ipcMain.on('getMerchant', (event) => {
+  const merchant = getMerchant()
+  event.reply('onMerchantChange', merchant)
 })
 
 ipcMain.on('onCart', (_, cart: { id: number, client?: ClientType }) => {
