@@ -56,7 +56,6 @@ export const tabsWindow = {
       tabGroup.webContents.loadURL(
         `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/tabs.html`
       );
-      window.setTitle(`WhatsMenu Desktop - ${app.getVersion()}`);
     } else {
       tabGroup.webContents.loadFile(
         path.join(
@@ -65,6 +64,7 @@ export const tabsWindow = {
         )
       );
     }
+    window.setTitle(`WhatsMenu Desktop - ${app.getVersion()}`);
 
     window.contentView.addChildView(tabGroup);
     window.tabs.forEach((tab) => window.contentView.addChildView(tab));
