@@ -163,6 +163,7 @@ export const findCacheContact = async (whatsapp: string) => {
   }
   return cache;
 };
+
 export const storeVoucherToNotify = (payload: VoucherNotification) =>
   vouchersToNotifyQueue.push(async () => {
     store.set("configs.voucherToNotify", [
@@ -170,6 +171,7 @@ export const storeVoucherToNotify = (payload: VoucherNotification) =>
       payload,
     ]);
   });
+r
 
 export const getVoucherToNotifyList = () => {
   const vouchersToNotify = store.get<
@@ -194,6 +196,7 @@ export const updateVoucherToNotify = (
   id: number,
   payload: Partial<VoucherNotification>
 ) => {
+
   vouchersToNotifyQueue.push(async () => {
     store.set(
       "configs.voucherToNotify",
@@ -208,6 +211,7 @@ export const updateVoucherToNotify = (
       })
     );
   });
+
 };
 
 console.log(store.path);
