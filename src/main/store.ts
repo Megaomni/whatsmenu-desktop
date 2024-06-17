@@ -4,6 +4,7 @@ import { CacheContact, Printer, VoucherNotification } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
+import { vouchersToNotifyQueue } from "../lib/queue";
 
 export interface Store {
   configs: {
@@ -164,7 +165,12 @@ export const findCacheContact = async (whatsapp: string) => {
 };
 
 export const storeVoucherToNotify = (payload: VoucherNotification) =>
-  store.set("configs.voucherToNotify", [...getVoucherToNotifyList(), payload]);
+  vouchersToNotifyQueue.push(async () => {
+    store.set("configs.voucherToNotify", [
+      ...getVoucherToNotifyList(),
+      payload,
+    ]);
+  });
 
 export const getVoucherToNotifyList = () => {
   const vouchersToNotify = store.get<
@@ -189,18 +195,20 @@ export const updateVoucherToNotify = (
   id: number,
   payload: Partial<VoucherNotification>
 ) => {
-  store.set(
-    "configs.voucherToNotify",
-    getVoucherToNotifyList().map((voucher) => {
-      if (voucher.id === id) {
-        return {
-          ...voucher,
-          ...payload,
-        };
-      }
-      return voucher;
-    })
-  );
+  vouchersToNotifyQueue.push(async () => {
+    store.set(
+      "configs.voucherToNotify",
+      getVoucherToNotifyList().map((voucher) => {
+        if (voucher.id === id) {
+          return {
+            ...voucher,
+            ...payload,
+          };
+        }
+        return voucher;
+      })
+    );
+  });
 };
 
 console.log(store.path);
