@@ -130,6 +130,11 @@ ipcMain.on('onCart', (_, cart: { id: number, client?: ClientType }) => {
 
 ipcMain.on('onVoucher', (_, voucher: VoucherType) => {
   const rememberDays = Math.floor(DateTime.fromISO(voucher.expirationDate).diff(DateTime.fromISO(voucher.created_at), 'days').days / 2)
+
+  if (!voucher.client?.vouchers?.some(v => v.id === voucher.id)) {
+    voucher.client.vouchers?.push(voucher)
+  }
+  
   storeVoucherToNotify({
     id: voucher.id,
     value: voucher.value,
@@ -140,7 +145,10 @@ ipcMain.on('onVoucher', (_, voucher: VoucherType) => {
     client: {
       whatsapp: voucher.client.whatsapp,
       name: voucher.client.name,
-      vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => total + voucher.value, 0) || 0
+      vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => {
+        total += voucher.value, 0
+        return total || 0
+      }, 0)
     }
   })
 })
