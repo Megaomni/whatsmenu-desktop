@@ -33,4 +33,8 @@ try {
 }
 
 // Mensagem de sucesso
-console.log("\x1b[32m", `Versão incrementada com sucesso para ${versionType}.`);
+console.log(
+  "\x1b[32m",
+  `Versão incrementada com sucesso para ${versionType}.`,
+  "\x1b[0m"
+);
