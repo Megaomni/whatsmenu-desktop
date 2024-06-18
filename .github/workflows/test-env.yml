@@ -25,8 +25,7 @@ jobs:
         run: npm install
 
       - name: Build
-        env:
-          EXEMPLO: ${{ secrets.EXEMPLO }}
+
         run: npm run make
 
       - name: Upload Build Artifacts
