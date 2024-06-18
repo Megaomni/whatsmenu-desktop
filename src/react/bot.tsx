@@ -41,11 +41,12 @@ const BotRoot = () => {
     })
 
     window.DesktopApi.getProfile()
+    window.DesktopApi.getMerchant()
   }, [])
 
   useEffect(() => {
     if (profile) {
-      wsRef.current = new Ws({ url: `wss://rt4.whatsmenu.com.br` })
+      wsRef.current = new Ws({ url: `ws://localhost:3434` })
       wsRef.current.connection.on('connect', () => {
         wsRef.current.join(`${profile.slug}:voucher`)
         wsRef.current.connection.on('voucher:avaliable', (voucher) => {

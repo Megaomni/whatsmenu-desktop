@@ -5,6 +5,7 @@ import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
+import { MerchantType } from "../@types/merchant";
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
@@ -36,7 +37,9 @@ export const DesktopApi = {
   removeVoucher: (voucher: VoucherType) => ipcRenderer.send('removeVoucher', voucher),
 
   storeProfile: (profile: ProfileType) => ipcRenderer.send('storeProfile', profile),
+  storeMerchant: (merchant: MerchantType) => ipcRenderer.send('storeMerchant', merchant),
   getProfile: () => ipcRenderer.send('getProfile'),
+  getMerchant: () => ipcRenderer.send('getMerchant'),
 }
 
 export const TabsApi = {
