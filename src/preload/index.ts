@@ -6,6 +6,7 @@ import WAWebJS from "whatsapp-web.js";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
 import { Env } from "../environments";
+import { MerchantType } from "../@types/merchant";
 
 export const WhatsAppBotApi = {
   // Events
@@ -55,7 +56,10 @@ export const DesktopApi = {
 
   storeProfile: (profile: ProfileType) =>
     ipcRenderer.send("storeProfile", profile),
+  storeMerchant: (merchant: MerchantType) =>
+    ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),
+  getMerchant: () => ipcRenderer.send("getMerchant"),
 };
 
 export const TabsApi = {
