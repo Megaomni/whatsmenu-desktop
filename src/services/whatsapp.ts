@@ -14,12 +14,11 @@ import {
 
 import { EventEmitter } from "node:events";
 import { ClientType } from "../@types/client";
-import { resolveInFixedTime } from "../utils/resolve-in-fixed-time";
-import { updateClient } from "./whatsmenu";
 
 import { DateTime } from "luxon";
-import { botMessages } from "../utils/bot-messages";
 import { VoucherNotification } from "../@types/store";
+import { vouchersToNotifyQueue } from "../lib/queue";
+import { botMessages } from "../utils/bot-messages";
 
 export class WhatsApp {
   messagesQueue: Array<{
@@ -170,58 +169,79 @@ export class WhatsApp {
           DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
       )
       .forEach((voucher) => deleteVoucherToNotify(voucher.id));
-    const cronLoop = async (
-      messageType: keyof typeof botMessages.cashback,
-      list: VoucherNotification[],
-      callback?: (voucher: VoucherNotification) => void
-    ) => {
+    const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
+      let list: VoucherNotification[] = [];
+      switch (messageType) {
+        case "afterPurchase":
+          list = getVoucherToNotifyList().filter(
+            (voucher) =>
+              voucher.afterPurchaseDate &&
+              DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
+                .minutes <= 0
+          );
+          break;
+        case "remember":
+          list = getVoucherToNotifyList().filter(
+            (voucher) =>
+              voucher.rememberDate &&
+              DateTime.fromISO(voucher.rememberDate).diffNow(["days"]).days <= 0
+          );
+          break;
+        case "expire":
+          list = getVoucherToNotifyList().filter(
+            (voucher) =>
+              voucher.expirationDate &&
+              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <=
+                0
+          );
+          break;
+        default:
+          break;
+      }
       for await (const voucher of list) {
-        const contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`)
+        const contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
         await this.bot.sendMessage(
           contact._serialized,
           botMessages.cashback[messageType]({ voucher, profile })
         );
-        callback(voucher);
+        switch (messageType) {
+          case "afterPurchase":
+            updateVoucherToNotify(voucher.id, {
+              afterPurchaseDate: null,
+            });
+            break;
+          case "remember":
+            updateVoucherToNotify(voucher.id, {
+              rememberDate: null,
+            });
+            break;
+          case "expire":
+            updateVoucherToNotify(voucher.id, {
+              expirationDate: null,
+            });
+            break;
+          default:
+            break;
+        }
       }
     };
-    setInterval(async () => {
-      await cronLoop(
-        "afterPurchase",
-        getVoucherToNotifyList().filter(
-          (voucher) =>
-            voucher.afterPurchaseDate &&
-            DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
-              .minutes <= 0
-        ),
-        (voucher) =>
-          updateVoucherToNotify(voucher.id, { afterPurchaseDate: null })
-      );
-      await cronLoop(
-        "remember",
-        getVoucherToNotifyList().filter(
-          (voucher) =>
-            voucher.rememberDate &&
-            DateTime.fromISO(voucher.rememberDate).diffNow(["days"]).days <= 0
-        ),
-        (voucher) => updateVoucherToNotify(voucher.id, { rememberDate: null })
-      );
-      await cronLoop(
-        "expire",
-        getVoucherToNotifyList().filter(
-          (voucher) =>
-            voucher.expirationDate &&
-            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days ===
-              0
-        ),
-        (voucher) => deleteVoucherToNotify(voucher.id)
-      );
-    }, 5000);
+    setInterval(() => {
+      vouchersToNotifyQueue.push(async () => {
+        await cronLoop("afterPurchase");
+        await cronLoop("remember");
+        await cronLoop("expire");
+      });
+    }, 1000 * 60);
     return;
   }
 
   checkNinthDigit = (contact: string): WAWebJS.ContactId => {
     if (contact.startsWith("55")) {
-      if (contact.length === 13 && contact[4] === "9" && parseInt(contact.slice(2, 4)) > 28) {
+      if (
+        contact.length === 13 &&
+        contact[4] === "9" &&
+        parseInt(contact.slice(2, 4)) > 28
+      ) {
         contact = contact.slice(0, 4) + contact.slice(5);
       }
     } else {

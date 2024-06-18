@@ -190,25 +190,22 @@ export const deleteVoucherToNotify = (id: number) =>
     "configs.voucherToNotify",
     getVoucherToNotifyList().filter((voucher) => voucher.id !== id)
   );
-
 export const updateVoucherToNotify = (
   id: number,
   payload: Partial<VoucherNotification>
 ) => {
-  vouchersToNotifyQueue.push(async () => {
-    store.set(
-      "configs.voucherToNotify",
-      getVoucherToNotifyList().map((voucher) => {
-        if (voucher.id === id) {
-          return {
-            ...voucher,
-            ...payload,
-          };
-        }
-        return voucher;
-      })
-    );
-  });
+  store.set(
+    "configs.voucherToNotify",
+    getVoucherToNotifyList().map((voucher) => {
+      if (voucher.id === id) {
+        return {
+          ...voucher,
+          ...payload,
+        };
+      }
+      return voucher;
+    })
+  );
 };
 
 console.log(store.path);
