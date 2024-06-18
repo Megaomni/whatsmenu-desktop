@@ -157,3 +157,12 @@ ipcMain.on('onVoucher', (_, voucher: VoucherType) => {
 ipcMain.on('removeVoucher', (_, voucher: VoucherType) => {
   deleteVoucherToNotify(voucher.id)
 })
+
+ipcMain.on('polling', async (eventsPolling) => {
+  try {
+    console.log('POLLING', eventsPolling, 'POLLING')
+    
+  } catch (error) {
+    console.error('erro ao enviar o polling', error)
+  }
+})

@@ -5,6 +5,8 @@ export interface MerchantType {
     wm_id: number
     controls: ControlsType
     status: boolean
+    token: string
+    refresh_token: string
     created_at: string
     updated_at: string
 }
