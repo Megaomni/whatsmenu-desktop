@@ -207,3 +207,11 @@ ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
 ipcMain.on("env", (event) => {
   event.returnValue = process.env;
 });
+
+ipcMain.on("polling", async (eventsPolling) => {
+  try {
+    console.log("POLLING", eventsPolling, "POLLING");
+  } catch (error) {
+    console.error("erro ao enviar o polling", error);
+  }
+});

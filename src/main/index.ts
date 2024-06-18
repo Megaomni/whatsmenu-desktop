@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
@@ -6,6 +6,7 @@ import "../main/auto-update";
 import "../main/ipc";
 import "../main/menu";
 import "../main/tray";
+import "../services/ws_integration"
 
 import { WhatsApp } from "../services/whatsapp";
 import { tabsWindow } from "../windows/tabs-window";
@@ -31,6 +32,7 @@ const main = () => {
       }
     })
   }
+  // dialog.showErrorBox(process.env.EXEMPLO, 'teste')
 };
 
 if (isDev && process.platform === "win32") {
@@ -58,6 +60,15 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
+
+ipcMain.on('polling', async (eventsPolling) => {
+  try {
+    console.log('evento', eventsPolling)
+    
+  } catch (error) {
+    console.error('erro ao enviar o polling', error)
+  }
+})
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
