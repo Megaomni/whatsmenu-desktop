@@ -16,7 +16,7 @@ export const create_pdv_tab = () => {
   
   tab.webContents.loadURL(`https://whatsmenu.com.br/${profile?.slug}/pdv`)
   store.onDidChange('configs', (newValue) => {
-    if (profile !== newValue.profile) {
+    if (profile?.slug !== newValue.profile?.slug) {
       tab.webContents.loadURL(`https://whatsmenu.com.br/${newValue.profile.slug}/pdv`)
     }
   })

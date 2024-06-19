@@ -19,7 +19,7 @@ export const create_menu_tab = () => {
   tab.setVisible(false)
 
   store.onDidChange('configs', (newValue) => {
-    if (profile !== newValue.profile) {
+    if (profile?.slug !== newValue.profile?.slug) {
       tab.webContents.loadURL(`https://whatsmenu.com.br/${newValue.profile.slug}`)
     }
   })

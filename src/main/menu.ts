@@ -299,5 +299,7 @@ const updateMenu = async () => {
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));
 };
 
-updateMenu();
+setTimeout(() => {
+  updateMenu();
+}, 1000);
 store.onDidAnyChange(() => updateMenu());
