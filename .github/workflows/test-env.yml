@@ -29,6 +29,7 @@ jobs:
           EXEMPLO: ${{ secrets.EXEMPLO }}
         run: |
           echo EXEMPLO=$EXEMPLO >> .env
+          cat .env
 
       - name: Build
         run: npm run make
