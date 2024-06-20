@@ -25,10 +25,8 @@ jobs:
         run: npm install
 
       - name: Set Environment Variables
-        env:
-          EXEMPLO: ${{ secrets.EXEMPLO }}
         run: |
-          echo EXEMPLO=$EXEMPLO >> .env
+          echo EXEMPLO=${{ secrets.EXEMPLO }} >> .env
           cat .env
 
       - name: Build
