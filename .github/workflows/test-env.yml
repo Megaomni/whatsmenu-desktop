@@ -24,9 +24,13 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Build
+      - name: Set Environment Variables
         env:
           EXEMPLO: ${{ secrets.EXEMPLO }}
+        run: |
+          echo EXEMPLO=$EXEMPLO >> .env
+
+      - name: Build
         run: npm run make
 
       - name: Upload Build Artifacts
