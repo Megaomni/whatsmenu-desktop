@@ -70,6 +70,7 @@ export const create_dashboard_tab = () => {
               'x-polling-merchants': `${merchant?.merchantId}`,
             }
           })
+          console.log('DATA DO POLLING', data)
           pollingData = data
           sendPollingDataApi(pollingData, profile.id)
   
@@ -138,7 +139,7 @@ export const create_dashboard_tab = () => {
         }
       }
 
-      if(open && merchant !== undefined) {
+      if(open && merchant) {
         setInterval(polling , 10000)
       }
 
