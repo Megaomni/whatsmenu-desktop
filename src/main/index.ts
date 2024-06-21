@@ -32,7 +32,7 @@ const main = () => {
       }
     })
   }
-  dialog.showErrorBox(process.env.EXEMPLO, 'teste')
+  // dialog.showErrorBox(process.env.EXEMPLO, 'teste')
 };
 
 if (isDev && process.platform === "win32") {
@@ -61,14 +61,14 @@ app.on("window-all-closed", () => {
   }
 });
 
-// ipcMain.on('polling', async (eventsPolling) => {
-//   try {
-//     console.log('evento', eventsPolling)
+ipcMain.on('polling', async (event, data) => {
+  try {
+    console.log('POLLING NO INDEX', data)
     
-//   } catch (error) {
-//     console.error('erro ao enviar o polling', error)
-//   }
-// })
+  } catch (error) {
+    console.error('erro ao enviar o polling', error)
+  }
+})
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
