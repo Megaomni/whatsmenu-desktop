@@ -26,7 +26,7 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo -e "IFOOD_CLIENT_ID=${{ secrets.IFOOD_CLIENT_ID }}\nIFOOD_CLIENT_SECRET=${{ secrets.IFOOD_CLIENT_SECRET }}\nIFOOD_INTEGRATION_TOKEN=${{ secrets.IFOOD_INTEGRATION_TOKEN }}" >> .env
+          echo "IFOOD_CLIENT_ID='${{ secrets.IFOOD_CLIENT_ID }}'\nIFOOD_CLIENT_SECRET='${{ secrets.IFOOD_CLIENT_SECRET }}'\nIFOOD_INTEGRATION_TOKEN='${{ secrets.IFOOD_INTEGRATION_TOKEN }}'" >> .env
           cat .env
 
       - name: Build
