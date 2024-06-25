@@ -1,0 +1,102 @@
+name: Build/release WhatsMenu Desktop
+
+on:
+  push:
+    tags:
+      - test*
+
+jobs:
+  make:
+    name: Make artifacts
+    runs-on: windows-latest
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Set NPM Cache Directory
+        run: npm config set cache C:\npm\cache --global
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Set Environment Variables
+        run: |
+          echo IFOOD_CLIENT_ID='${{ secrets.IFOOD_CLIENT_ID }}' >> .env
+          echo IFOOD_CLIENT_SECRET='${{ secrets.IFOOD_CLIENT_SECRET }}' >> .env
+          echo IFOOD_INTEGRATION_TOKEN='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
+          echo WM_API_V2='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
+          echo WM_API_V3='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
+          cat .env
+      - name: Build
+        run: npm run make
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: squirrel-windows
+          path: ./out/make/squirrel.windows/ia32
+
+  release:
+    needs: make
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: squirrel-windows
+          path: ./out/make/squirrel.windows/ia32
+
+      - name: List files
+        id: list_files
+        run: |
+          ls ./out/make/squirrel.windows/ia32 > files.txt
+          setup_file=$(awk 'NR==2' files.txt)
+          echo "setup_file=$setup_file" >> $GITHUB_ENV
+          # Simulate a second file extraction (example)
+          nupkg_file=$(awk 'NR==3' files.txt)
+          echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: ${{ github.ref_name }} - Release
+          draft: true
+          prerelease: false
+
+      - name: Upload Release Assets
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./out/make/squirrel.windows/ia32/RELEASES
+          asset_name: RELEASES
+          asset_content_type: application/octet-stream
+
+      - name: Upload WhatsMenu Desktop Setup
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./out/make/squirrel.windows/ia32/${{ env.setup_file }}
+          asset_name: ${{ env.setup_file }}
+          asset_content_type: application/octet-stream
+
+      - name: Upload WhatsMenu Desktop NuPKG
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./out/make/squirrel.windows/ia32/${{ env.nupkg_file }}
+          asset_name: ${{ env.nupkg_file }}
+          asset_content_type: application/octet-stream
