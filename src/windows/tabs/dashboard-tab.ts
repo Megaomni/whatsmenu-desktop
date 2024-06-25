@@ -4,10 +4,9 @@ import { WebTabContentsView } from "../../extends/tab"
 import { getMerchant, getProfile, store } from "../../main/store"
 import { DateTime } from "luxon"
 import { WeekDayType } from "../../@types/week"
-import { ipcRenderer } from "electron"
-import { MerchantType } from "../../@types/merchant"
 import {  whatsmenu_api_v3 } from "../../lib/axios"
 import axios from "axios"
+import {io} from '../../services/ws_integration'
 
 export const create_dashboard_tab = () => {
   
@@ -25,7 +24,7 @@ export const create_dashboard_tab = () => {
   tab.webContents.on('did-finish-load', () => {
     const profile = getProfile()
     if(profile) {
-
+      let pollingData
       const getMerchantApi = async () => {
         try {
           const { data } = await whatsmenu_api_v3.get(`merchant?slug=${profile.slug}`)
@@ -64,15 +63,15 @@ export const create_dashboard_tab = () => {
           console.log('não tem merchant pro polling')
         }
         try {
-          
+          console.log('vai chamar o polling')
           const { data } = await axios.get('https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS', {
             headers: {
               'Authorization': `Bearer ${merchant?.token}`,
               'x-polling-merchants': `${merchant?.merchantId}`,
             }
           })
-          console.log(data)
-          ipcRenderer.send('polling', data)
+          pollingData = data
+          sendPollingDataApi(pollingData, profile.id)
   
         } catch (error) {
           if (error.response) {
@@ -87,8 +86,26 @@ export const create_dashboard_tab = () => {
         }
       }
 
+      const sendPollingDataApi = async (pollingData: [], id: number) => {
+        try {
+          let returnOrders
+          console.log('vai enviar o polling pra API')
+          if(pollingData.length > 0) {
+            returnOrders = await whatsmenu_api_v3.post('ifood/polling', { pollingData, id})
+          } 
+          // console.log('DATA DO POLLING', data)
+          console.log('quantidade de pedidos', returnOrders)
+          if(returnOrders) {
+            io.to(`ifood:${profile?.slug}`).emit('newOrderIfood', returnOrders.data)
+          }
+        } catch (error) {
+          console.error('erro ao enviar dados do Polling para API integração', error)
+        }
+      }
+
       const attToken = async () => {
         try {
+          console.log('VAI GERAR UM NOVO TOKEN')
           let formParams
           if (merchant) {
             formParams = {
@@ -121,7 +138,7 @@ export const create_dashboard_tab = () => {
         }
       }
 
-      if(open && profile.options.integrations && merchant !== undefined) {
+      if(open && merchant !== undefined) {
         setInterval(polling , 10000)
       }
 
