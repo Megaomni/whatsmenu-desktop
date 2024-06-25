@@ -59,9 +59,7 @@ export const create_dashboard_tab = () => {
       }
   
       const polling = async () => {
-        if (!merchant) {
-          console.log('não tem merchant pro polling')
-        }
+        attToken()
         try {
           console.log('vai chamar o polling')
           const { data } = await axios.get('https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS', {
@@ -71,8 +69,12 @@ export const create_dashboard_tab = () => {
             }
           })
           console.log('DATA DO POLLING', data)
+          console.log('QUANTIDADE DO POLLING', data.length)
           pollingData = data
-          sendPollingDataApi(pollingData, profile.id)
+          if(pollingData.length > 0) {
+            sendPollingDataApi(pollingData, profile.id, profile.slug)
+            pollingAcknowledgment(pollingData)
+          }
   
         } catch (error) {
           if (error.response) {
@@ -87,20 +89,32 @@ export const create_dashboard_tab = () => {
         }
       }
 
-      const sendPollingDataApi = async (pollingData: [], id: number) => {
+      const sendPollingDataApi = async (pollingData: [], id: number, slug: string) => {
         try {
           let returnOrders
           console.log('vai enviar o polling pra API')
           if(pollingData.length > 0) {
-            returnOrders = await whatsmenu_api_v3.post('ifood/polling', { pollingData, id})
+            returnOrders = await whatsmenu_api_v3.post('ifood/polling', { pollingData, id, slug})
           } 
-          // console.log('DATA DO POLLING', data)
-          console.log('quantidade de pedidos', returnOrders)
+          console.log('PEDIDOS TRATADOS DO POLLING', returnOrders)
           if(returnOrders) {
             io.to(`ifood:${profile?.slug}`).emit('newOrderIfood', returnOrders.data)
           }
         } catch (error) {
           console.error('erro ao enviar dados do Polling para API integração', error)
+        }
+      }
+
+      const pollingAcknowledgment = async (pollingData: []) => {
+        try {
+          console.log('VAI FAZER O RECONHECIMENTO DO POLLING')
+          const { data } = await axios.post('https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment',pollingData ,{
+            headers: {
+              'Authorization': `Bearer ${merchant?.token}`,
+            }
+          })
+        } catch (error) {
+          console.error('erro ao fazer o reconhecimento pelo ifood', error)
         }
       }
 
@@ -124,7 +138,6 @@ export const create_dashboard_tab = () => {
         
           })
           console.log('DATA DO ATT TOKEN', data)
-          // ipcRenderer.send('polling', data)
   
         } catch (error) {
           if (error.response) {
@@ -140,7 +153,8 @@ export const create_dashboard_tab = () => {
       }
 
       if(open && merchant) {
-        setInterval(polling , 10000)
+        polling()
+        setInterval(polling , 30000)
       }
 
       if(profile){
