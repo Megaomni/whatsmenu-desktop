@@ -5,7 +5,7 @@ import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
-import { Env } from "../enviroments";
+import { Env } from "../environments";
 
 export const WhatsAppBotApi = {
   // Events
