@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Check out Git repository
         uses: actions/checkout@v3
-      
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -24,6 +24,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Set Environment Variables
+        run: |
+          echo WM_API_V2='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
+          echo WM_API_V3='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
       - name: Build
         run: npm run make
 
