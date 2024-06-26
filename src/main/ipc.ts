@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
@@ -214,4 +214,8 @@ ipcMain.on("polling", async (event, data) => {
   } catch (error) {
     console.error("erro ao enviar o polling", error);
   }
+});
+
+ipcMain.on("openLink", (_, url) => {
+  shell.openExternal(url);
 });

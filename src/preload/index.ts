@@ -60,6 +60,15 @@ export const DesktopApi = {
     ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),
   getMerchant: () => ipcRenderer.send("getMerchant"),
+  /**
+   * Abre um link no navegador padrão.
+   *
+   * @param {string} url - A URL a ser aberta.
+   * @return {void}
+   */
+  openLink: (url: string): void => {
+    ipcRenderer.send("openLink", url);
+  },
 };
 
 export const TabsApi = {
