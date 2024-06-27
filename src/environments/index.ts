@@ -14,13 +14,3 @@ if (typeof process === "undefined" && window) {
 } else {
   env = envSchema.parse(process.env);
 }
-
-
-if (!env.WM_API_V2) {
-  env.WM_API_V2 = "https://api2.whatsmenu.com.br";
-}
-
-if (!env.WM_API_V3) {
-  env.WM_API_V3 = "https://api3.whatsmenu.com.br/api/v3/desktop";
-}
-console.log(!env.WM_API_V3, env.WM_API_V3);
