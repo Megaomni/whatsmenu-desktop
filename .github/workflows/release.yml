@@ -26,8 +26,8 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo WM_API_V2='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
-          echo WM_API_V3='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
+          echo WM_API_V2='${{ secrets.WM_API_V2 }}' >> .env
+          echo WM_API_V3='${{ secrets.WM_API_V3 }}' >> .env
       - name: Build
         run: npm run make
 
@@ -53,7 +53,7 @@ jobs:
           ls ./out/make/squirrel.windows/ia32 > files.txt
           setup_file=$(awk 'NR==2' files.txt)
           echo "setup_file=$setup_file" >> $GITHUB_ENV
-          
+
           # Simulate a second file extraction (example)
           nupkg_file=$(awk 'NR==3' files.txt)
           echo "nupkg_file=$nupkg_file" >> $GITHUB_ENV
