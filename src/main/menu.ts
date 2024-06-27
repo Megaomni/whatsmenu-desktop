@@ -124,6 +124,7 @@ const template = [
             }
           });
         },
+        accelerator: "CmdOrCtrl+R",
       },
       {
         label: "Forçar Recarregar",
@@ -134,6 +135,7 @@ const template = [
             }
           });
         },
+        accelerator: "CmdOrCtrl+Shit+R",
       },
       {
         label: "Console",
@@ -148,6 +150,7 @@ const template = [
             }
           });
         },
+        accelerator: "F12",
       },
     ] as unknown as MenuItem[],
   },
@@ -303,3 +306,75 @@ setTimeout(() => {
   updateMenu();
 }, 1000);
 store.onDidAnyChange(() => updateMenu());
+
+export const contextMenu = Menu.buildFromTemplate([
+  {
+    label: "Recarregar",
+    accelerator: "F5",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.reload();
+    },
+  },
+  {
+    label: "Recarregar (Ignorar Cache)",
+    accelerator: "Shift+F5",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.reloadIgnoringCache();
+    },
+  },
+  {
+    label: "Alternar Ferramentas de Desenvolvedor",
+    accelerator: "F12",
+    click: () => {
+      if (!mainWindow.getCurrentTab()?.webContents.isDevToolsOpened()) {
+        mainWindow.getCurrentTab()?.webContents.openDevTools({ mode: "right" });
+      } else {
+        mainWindow.getCurrentTab()?.webContents.closeDevTools();
+      }
+    },
+  },
+  { type: "separator" },
+  {
+    label: "Copiar",
+    accelerator: "CmdOrCtrl+C",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.copy();
+    },
+  },
+  {
+    label: "Recortar",
+    accelerator: "CmdOrCtrl+X",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.cut();
+    },
+  },
+  {
+    label: "Colar",
+    accelerator: "CmdOrCtrl+V",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.paste();
+    },
+  },
+  {
+    label: "Selecionar Tudo",
+    accelerator: "CmdOrCtrl+A",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.selectAll();
+    },
+  },
+  { type: "separator" },
+  {
+    label: "Desfazer",
+    accelerator: "CmdOrCtrl+Z",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.undo();
+    },
+  },
+  {
+    label: "Refazer",
+    accelerator: "CmdOrCtrl+Shift+Z",
+    click: () => {
+      mainWindow.getCurrentTab()?.webContents.redo();
+    },
+  },
+]);
