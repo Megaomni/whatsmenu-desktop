@@ -21,21 +21,40 @@ export const create_dashboard_tab = () => {
   // tab.webContents.loadURL(`https://teste.whatsmenu.com.br/`)
   tab.webContents.loadURL(`http://localhost:3000`)
 
-  tab.webContents.on('did-finish-load', () => {
-    const profile = getProfile()
-    if(profile) {
-      let pollingData
+  tab.webContents.on("did-finish-load", () => {
+    const profile = getProfile();
+    let merchant: any
+    if (profile) {
+      let pollingData;
       const getMerchantApi = async () => {
         try {
-          const { data } = await whatsmenu_api_v3.get(`merchant?slug=${profile.slug}`)
-          store.set('configs.merchant', data)
+          console.log('PEGANDO O MERCHANT')
+          const { data } = await whatsmenu_api_v3.get(
+            `/merchant?slug=${profile.slug}`
+          );
+          store.set("configs.merchant", data);
         } catch (error) {
           console.error(error);
         }
       }
 
-      getMerchantApi()
-      const merchant = getMerchant()
+      store.onDidAnyChange((newValue, oldValue) => {
+        console.log(oldValue.configs.profile.options.integrations, newValue.configs.profile.options.integrations)
+        if(newValue.configs.profile.options.integrations) {
+          getMerchantApi();
+          merchant = getMerchant();
+          polling();
+          if (open && merchant) {
+            setInterval(polling, 30000);
+          }
+        }
+      })
+      // tab.webContents.on('did-navigate-in-page', () => {
+      //  if (open && merchant) {
+      //   polling();
+      //   setInterval(polling, 30000);
+      // }
+      // })
 
       if(!merchant){
         console.log('não tem o merchant')
@@ -57,9 +76,15 @@ export const create_dashboard_tab = () => {
       if (filter.length) {
         open = true
       }
-  
+
+      if(open){
+        console.log("ABERTO");
+      } else {
+        console.log("FECHADO");
+      }
+      
       const polling = async () => {
-        attToken()
+        // attToken()
         try {
           console.log('vai chamar o polling')
           const { data } = await axios.get('https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS', {
@@ -124,8 +149,8 @@ export const create_dashboard_tab = () => {
           let formParams
           if (merchant) {
             formParams = {
-              clientId: `d67294ed-3436-425b-833c-b4085aac859e`,
-              clientSecret: `oor4zyr9jsm58z7eja964q9b8lis07bltnqwimvvinger32n5n0iv6sgk5vybdlj8dd9k9i9s6qnsg8dw074y267cyn74j1a5gj`,
+              clientId: `${process.env.IFOOD_CLIENT_ID}`,
+              clientSecret: `${process.env.IFOOD_CLIENT_SECRET}`,
               refreshToken: merchant.refresh_token,
             }
           }
@@ -139,6 +164,18 @@ export const create_dashboard_tab = () => {
           })
           console.log('DATA DO ATT TOKEN', data)
   
+          
+          if(data) {
+            console.log("GERADO TOKEN");
+          } else {
+            console.log("NÃO GEROU O TOKEN");
+          }
+          
+          merchant.token = data.accessToken;
+          merchant.refresh_token = data.refreshToken;
+
+          store.set("configs.merchant", merchant)
+          
         } catch (error) {
           if (error.response) {
             console.error('Server responded with status code:', error.response.status)
@@ -160,9 +197,36 @@ export const create_dashboard_tab = () => {
       if(profile){
         // setInterval(attToken , 8820000)
       }
+
+      // let time
+      // let timeDiff
+      // let tokenCreated
+      // let threeHours = false
+
+      // if (merchant) {
+      //   tokenCreated = merchant.controls.dateTokenCreated
+      // }
+
+      // if (tokenCreated) {
+      //   time = DateTime.fromISO(tokenCreated, { zone: profile.timeZone })
+      // }
+      // const nowHour = DateTime.now()
+      // if (time) {
+      //   timeDiff = nowHour.diff(time, 'hours').hours
+      //   if (timeDiff > 3) {
+      //     threeHours = true
+      //   } else {
+      //     threeHours = false
+      //   }
+      // }
+      // console.log('tempo diferença', timeDiff, threeHours)
+      // if (threeHours) {
+      //   console.log('Passou de 3 horas')
+      //   attToken()
+      // } else {
+      //   console.log('Não passou de 3 horas')
+      // }
     }
-    
-    
   })
 
   return tab
