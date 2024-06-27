@@ -70,6 +70,12 @@ export const DesktopApi = {
     ipcRenderer.send("openLink", url);
   },
 };
+//   storeProfile: (profile: ProfileType) => ipcRenderer.send('storeProfile', profile),
+//   storeMerchant: (merchant: MerchantType) => ipcRenderer.send('storeMerchant', merchant),
+//   getProfile: () => ipcRenderer.send('getProfile'),
+//   onMerchantChange: (callback: (event: Electron.IpcRendererEvent, merchant: MerchantType) => void) => ipcRenderer.on('onMerchantChange', callback),
+//   getMerchant: () => ipcRenderer.send('getMerchant'),
+// }
 
 export const TabsApi = {
   setActiveTab: (tab: string) => ipcRenderer.send("setActiveTab", tab),

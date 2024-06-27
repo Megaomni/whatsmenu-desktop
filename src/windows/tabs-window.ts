@@ -10,6 +10,7 @@ import { create_menu_tab } from "./tabs/menu-tab";
 import { create_pdv_tab } from "./tabs/pdv-tab";
 import { TabBrowser } from "../extends/tab-browser";
 import { whatsmenu_menu } from "../main/menu";
+import { MerchantType } from "../@types/merchant";
 
 let forceClose = false;
 
@@ -65,6 +66,19 @@ export const tabsWindow = {
       );
     }
     window.setTitle(`WhatsMenu Desktop - ${app.getVersion()}`);
+    
+    window.contentView.addChildView(tabGroup)
+    window.tabs.forEach(tab => window.contentView.addChildView(tab))
+    tabGroup.webContents.on('did-finish-load', () => {
+      const profile = store.get('configs.profile') as ProfileType
+      const merchant = store.get('configs.merchant') as MerchantType
+      tabGroup.webContents.send('onProfileChange', profile)
+      tabGroup.webContents.send('onMerchantChange', merchant)
+      store.onDidChange('configs', (newValue) => {
+        tabGroup.webContents.send('onProfileChange', newValue.profile)
+        tabGroup.webContents.send('onMerchantChange', newValue.merchant)
+      })
+    })
 
     window.contentView.addChildView(tabGroup);
     window.tabs.forEach((tab) => window.contentView.addChildView(tab));

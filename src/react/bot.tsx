@@ -5,6 +5,7 @@ import { Switch } from './shadcn-ui/components/ui/switch';
 import { ProfileType } from '../@types/profile';
 import { whatsmenu_api } from '../lib/axios';
 import { Ws } from '../services/ws';
+import { MerchantType } from '../@types/merchant';
 
 const root = createRoot(document.body);
 
@@ -14,6 +15,7 @@ const BotRoot = () => {
   const [disconnectedReason, setDisconnectedReason] = useState<string | null>(null)
   const [loading, setLoading] = useState({ status: true, message: null, percent: 0 })
   const [profile, setProfile] = useState<ProfileType | null>(null)
+  const [merchant, setMerchant] = useState<MerchantType | null>(null)
 
   const wsRef = useRef<Ws>(null)
 
@@ -38,6 +40,10 @@ const BotRoot = () => {
 
     window.DesktopApi.onProfileChange((event, data) => {
       setProfile(data)
+    })
+    
+    window.DesktopApi.onMerchantChange((event, data) => {
+      setMerchant(data)
     })
 
     window.DesktopApi.getProfile()
