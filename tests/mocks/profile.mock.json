@@ -1,0 +1,423 @@
+{
+  "address": {
+    "city": "Santos",
+    "state": "SP",
+    "number": "120",
+    "street": "Rua República do Equador",
+    "zipcode": "11030-151",
+    "complement": null,
+    "neigborhood": "Ponta da Praia"
+  },
+  "background": "https://s3.us-west-2.amazonaws.com/whatsmenu/production/mundoburguer/thamburgers-with-beef-tomato-red-onion-and-lettuce.jpg",
+  "color": "#0f100f",
+  "command": 4,
+  "created_at": "2020-05-23T18:21:05.000-03:00",
+  "deliveryLocal": 1,
+  "description": "Hambúrguer Artesanal, fritas e saladas",
+  "fees": [],
+  "formsPayment": [
+    {
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "flags": [],
+      "label": "Dinheiro",
+      "status": true,
+      "payment": "money"
+    },
+    {
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "flags": [],
+      "label": "Cartão",
+      "status": true,
+      "payment": "card"
+    },
+    {
+      "key": {
+        "type": "Telefone",
+        "value": "99 99999-9999"
+      },
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "label": "Pix",
+      "status": true,
+      "payment": "pix"
+    },
+    {
+      "key": {
+        "type": "email",
+        "value": "exemplo@exemplo.com.br"
+      },
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "label": "PicPay",
+      "status": true,
+      "payment": "picpay"
+    },
+    {
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "flags": [
+        {
+          "code": "ba68ed",
+          "name": "Elo",
+          "image": null
+        },
+        {
+          "code": "d9f588",
+          "name": "Master Card",
+          "image": null
+        },
+        {
+          "code": "4c9771",
+          "name": "Visa",
+          "image": null
+        }
+      ],
+      "label": "Crédito",
+      "status": true,
+      "payment": "credit"
+    },
+    {
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "flags": [],
+      "label": "Débito",
+      "status": true,
+      "payment": "debit"
+    },
+    {
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "flags": [],
+      "label": "Vale Refeição",
+      "status": false,
+      "payment": "snack"
+    },
+    {
+      "addon": {
+        "type": "fee",
+        "value": 0,
+        "status": false,
+        "valueType": "fixed"
+      },
+      "flags": [],
+      "label": "Vale Alimentação",
+      "status": false,
+      "payment": "food"
+    }
+  ],
+  "id": 4,
+  "logo": "https://s3.us-west-2.amazonaws.com/whatsmenu/production/mundoburguer/logo.jpg",
+  "minval": "5.00",
+  "minvalLocal": "5.00",
+  "name": "Mundo Burguer 🥳",
+  "options": {
+    "bot": {
+      "whatsapp": {
+        "welcomeMessage": {
+          "status": true,
+          "alwaysSend": false
+        }
+      }
+    },
+    "pdv": {
+      "clientConfig": {
+        "required": true,
+        "birthDate": true
+      },
+      "sendWhatsMessage": true,
+      "cashierManagement": false
+    },
+    "asaas": {
+      "id": "80e63db0-bd2c-4c08-a6bf-ff08df0ac47b",
+      "apiKey": "$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNjg3Njg6OiRhYWNoXzY5M2RiMjYzLTA5MzItNGE0ZS1hOWNkLTNmMDc2NjUwZWNhZA==",
+      "walletId": "43acccf9-f8aa-4f76-8e8e-908cd2874410",
+      "incomeValue": "2500",
+      "accountNumber": {
+        "agency": "0001",
+        "account": "102979",
+        "accountDigit": "1"
+      }
+    },
+    "order": "none",
+    "pizza": {
+      "higherValue": true,
+      "multipleBorders": false,
+      "multipleComplements": true
+    },
+    "print": {
+      "app": true,
+      "width": "219px",
+      "active": true,
+      "copies": 1,
+      "textOnly": true,
+      "groupItems": true
+    },
+    "steps": 1,
+    "store": {
+      "productModal": {
+        "infoPosition": "first"
+      }
+    },
+    "table": {
+      "callBartender": true,
+      "persistBartender": true
+    },
+    "queues": {
+      "bartender": []
+    },
+    "package": {
+      "week": {
+        "friday": [
+          {
+            "code": "4e385a",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ],
+        "monday": [
+          {
+            "code": "f892c3",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ],
+        "sunday": [
+          {
+            "code": "18ea4b",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ],
+        "tuesday": [
+          {
+            "code": "a9dadc",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ],
+        "saturday": [
+          {
+            "code": "470782",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ],
+        "thursday": [
+          {
+            "code": "215135",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ],
+        "wednesday": [
+          {
+            "code": "5dc776",
+            "open": "00:00",
+            "close": "23:59"
+          }
+        ]
+      },
+      "active": false,
+      "minValue": 5,
+      "hoursBlock": [],
+      "maxPackage": 30,
+      "distanceDays": {
+        "end": 7,
+        "start": 0
+      },
+      "intervalTime": 30,
+      "weekDistance": null,
+      "minValueLocal": 5,
+      "shippingLocal": {
+        "active": false
+      },
+      "specialsDates": [],
+      "maxPackageHour": 1,
+      "shippingDelivery": {
+        "active": false
+      }
+    },
+    "voucher": [
+      {
+        "status": false,
+        "created_at": "2024-06-05T11:52:52.647-03:00",
+        "percentage": 10,
+        "expirationDays": 20
+      }
+    ],
+    "delivery": {
+      "enableKm": true,
+      "disableDelivery": false
+    },
+    "minValue": null,
+    "tracking": {
+      "pixel": ""
+    },
+    "isRevoked": true,
+    "legacyPix": true,
+    "forceClose": null,
+    "hoursBlock": [],
+    "activeCupom": true,
+    "forceLogout": 1680100778824,
+    "grovePayKey": {
+      "created_on": 1692997157,
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoibWFyY2VsbG9nLmNAaG90bWFpbC5jb20iLCJ1c2VybmFtZSI6Im1hcmNlbGxvX3doYXRzbWVudSIsImlhdCI6MTY5Mjk5NzE1NywiZXhwIjoxNjkzMDgzNTU3fQ.xjoYCXwn0F1NOrbGaIbaPPHaim3eXSXz0TsTbJfjnzQ"
+    },
+    "migrated_at": "sdasdas",
+    "linkWhatsapp": true,
+    "placeholders": {
+      "pizzaObs": "Deixe aqui qualquer observação no produto.",
+      "clientText": "⏳ ⌚ ⏰",
+      "productObs": "Ex.: Sem maionese, sem salada, etc...",
+      "statusSend": "Obaaa, [NOME] seu pedido já está a caminho!",
+      "absenceMessage": "Olá [Nome], estamos fechados no momento.\n\nOs horários de funcionamento e o cardápio completo você pode consultar em https://whatsmenu.com.br/mundoburguer\n\nAté mais",
+      "statusToRemove": "Obaaa, [NOME] seu pedido já está pronto para retirada!",
+      "welcomeMessage": "Olá! Seja bem 0xfa41vindo ao Mundo Burguer\n\nVeja o nosso cardápio e faça seu pedido rapidamente\n\nhttps://www.whatsmenu.com.br/mundoburguer\n\nEquipe Mundo Burguer",
+      "sendWhatsMessage": "",
+      "statusProduction": "[NOME] seu pedido já está em produção!",
+      "cupomFirstMessage": "Olá *[NOME]!*\nSeja bem vindo ao Mundo Burguer ? \n\nÉ sua primeira vez aqui, separei um cupom especial para você \n\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=DESCONTO\n\n ?? Cupom: *DESCONTO* ?? \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çssdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çssdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Ç\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Ç* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Çsssdsdsdsdsdsdsqq* 👆🏻 \n\nClique no link para fazer o pedido com o cupom\n\nhttps://www.whatsmenu.com.br/mundoburguer?firstOnlyCupom=CODIGO_DUPLICADO_Ç\n\n 👆🏻 Cupom: *CODIGO_DUPLICADO_Ç* 👆🏻 \n\nClique no link para fazer o pedido com o cupom"
+    },
+    "disponibility": {
+      "showProductsWhenPaused": false
+    },
+    "minValueLocal": null,
+    "hideSecretNumber": false
+  },
+  "request": 1301,
+  "showTotal": 1,
+  "slug": "mundoburguer",
+  "status": 1,
+  "taxDelivery": [
+    {
+      "city": "Santos",
+      "code": "3106f1",
+      "neighborhoods": [
+        {
+          "code": "6c84a8",
+          "name": "Centro",
+          "time": "50",
+          "value": 5
+        },
+        {
+          "code": "772247",
+          "name": "Embaré",
+          "time": "50",
+          "value": 3
+        },
+        {
+          "code": "f70934",
+          "name": "Encruzilhada",
+          "time": "50",
+          "value": 6
+        },
+        {
+          "code": "fd4697",
+          "name": "Gonzaga",
+          "time": "50",
+          "value": 5
+        }
+      ]
+    }
+  ],
+  "timeZone": "America/Sao_Paulo",
+  "typeDelivery": "neighborhood",
+  "typeStore": null,
+  "updated_at": "2024-06-27T16:04:21.000-03:00",
+  "userId": 4,
+  "week": {
+    "friday": [
+      {
+        "code": "4e385a",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ],
+    "monday": [
+      {
+        "code": "f892c3",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ],
+    "sunday": [
+      {
+        "code": "18ea4b",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ],
+    "tuesday": [
+      {
+        "code": "a9dadc",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ],
+    "saturday": [
+      {
+        "code": "470782",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ],
+    "thursday": [
+      {
+        "code": "215135",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ],
+    "wednesday": [
+      {
+        "code": "5dc776",
+        "open": "00:00",
+        "close": "23:59"
+      }
+    ]
+  },
+  "whatsapp": "5511937036875",
+  "firstOnlyCupom": {
+    "id": 11600,
+    "profileId": 4,
+    "code": "CODIGO_DUPLICADO_Ç",
+    "type": "percent",
+    "value": 100,
+    "minValue": 50,
+    "status": 0,
+    "firstOnly": 1,
+    "controls": {},
+    "deleted_at": null,
+    "created_at": "2024-05-14T20:01:42.000-03:00",
+    "updated_at": "2024-05-16T19:46:57.000-03:00"
+  }
+}
