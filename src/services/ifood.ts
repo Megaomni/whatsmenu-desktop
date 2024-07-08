@@ -42,7 +42,7 @@ export const polling = async ({
     pollingData = data;
     if (pollingData.length > 0) {
       sendPollingDataApi(pollingData, profile.id, profile.slug);
-      pollingAcknowledgment(pollingData);
+      pollingAcknowledgment(pollingData, merchant);
     }
   } catch (error) {
     if (error.response.status === 401) {
@@ -88,7 +88,7 @@ const sendPollingDataApi = async (
   }
 };
 
-const pollingAcknowledgment = async (pollingData: []) => {
+export const pollingAcknowledgment = async (pollingData: [], merchant: MerchantType) => {
   try {
     console.log("VAI FAZER O RECONHECIMENTO DO POLLING");
     const { data } = await axios.post(

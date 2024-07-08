@@ -1,16 +1,24 @@
 import { describe, expect, it, vi } from "vitest";
 import { ProfileType } from "../src/@types/profile";
+import { MerchantType } from "../src/@types/merchant";
 import { integration_api, whatsmenu_api_v3 } from "../src/lib/axios";
-import { getMerchantApi } from "../src/services/ifood";
+import { getMerchantApi, polling, pollingAcknowledgment } from "../src/services/ifood";
 
 import profileMock from "./mocks/profile.mock.json";
+import merchantMock from "./mocks/merchant.mock.json";
+import axios from "axios";
 
 const profile = profileMock as unknown as ProfileType;
+const merchant = merchantMock as unknown as MerchantType;
 
 describe("IFood Service", () => {
+  const whatsmenu_api_v3_spy = vi.spyOn(whatsmenu_api_v3, "get");
+  const integration_api_spy = vi.spyOn(integration_api, "get");
+  const axios_get = vi.spyOn(axios, "get");
+  const axios_post = vi.spyOn(axios, "post");
+
   describe("getMerchantApi", () => {
-    const whatsmenu_api_v3_spy = vi.spyOn(whatsmenu_api_v3, "get");
-    const integration_api_spy = vi.spyOn(integration_api, "get");
+
     it("Não deve ser possível buscar a loja ifood sem um perfil", async () => {
       try {
         await getMerchantApi({ profile: undefined as ProfileType });
@@ -19,6 +27,7 @@ describe("IFood Service", () => {
         expect(error).toHaveProperty("message", "Perfil não encontrado!");
       }
     });
+
     it("Deve ser possível buscar a loja ifood atribuida a um perfil", async () => {
       try {
         whatsmenu_api_v3_spy.mockResolvedValue({ data: {} });
@@ -32,53 +41,26 @@ describe("IFood Service", () => {
     });
   });
 
-  // it("não deve ser possível buscar o merchant", async () => {
-  //   try {
-  //     const spy = vi.spyOn(whatsmenu_api_v3, "post")
-  //     await getMerchantApi();
-  //   } catch (error) {
-  //     expect(error).rejects.toThrow();
-  //     throw error
-  //   }
-  // });
+  describe("polling", () => {
 
-  // it("deve ser possível setar o merchant pelo store" , async () => {
-  //   try {
-  //     const spy = vi.spyOn(store, "set")
-  //     await getMerchantApi();
-  //     expect(spy).toHaveBeenCalled();
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // })
+    it('deve ser possível enviar dados do polling para o reconhecimento do ifood', async () => {
+      try {
+        axios_post.mockResolvedValue({ data: {} });
+        await pollingAcknowledgment([], merchant);
+        expect(axios_post).toHaveBeenLastCalledWith(
+          `https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment`, 
+          [],
+          {
+            headers: {
+              Authorization: `Bearer ${merchant?.token}`
+            }
+          }
+        )
+      } catch (error) {
+        throw error
+      }
+    })
 
-  // it("deve ser possível fazer o polling", async () => {
-  //   try {
-  //     const spy = vi.spyOn(axios, "post")
-  //     await polling();
-  //     expect(spy).toHaveBeenCalled();
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // })
+  })
 
-  // it('Deve ser possível enviar dados do polling para a API', async () => {
-  //   try {
-  //     const spy = vi.spyOn(whatsmenu_api_v3, "post")
-  //     await polling();
-  //     expect(spy).toHaveBeenCalled();
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // })
-
-  // it("Deve ser possível fazer conhecimento dos dados do polling para o ifood", async () => {
-  //   try {
-  //     const spy = vi.spyOn(axios, "get")
-  //     await polling();
-  //     expect(spy).toHaveBeenCalled();
-  //   } catch (error) {
-  //     throw error
-  //   }
-  // })
 });
