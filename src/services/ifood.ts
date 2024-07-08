@@ -10,16 +10,16 @@ const merchant = getMerchant()
 let pollingData
 
 export const getMerchantApi = async () => {
-    try {
-      console.log('PEGANDO O MERCHANT')
-      const { data } = await whatsmenu_api_v3.get(
-        `/merchant?slug=${profile.slug}`
-      );
-      store.set("configs.merchant", data);
-    } catch (error) {
-      console.error(error);
-    }
-}
+      try {
+        console.log('PEGANDO O MERCHANT')
+        const { data } = await whatsmenu_api_v3.get(
+          `/merchant?slug=${profile.slug}`
+        );
+        store.set("configs.merchant", data);
+      } catch (error) {
+        console.error(error);
+      }
+}  
 
 export const polling = async () => {
 
@@ -127,30 +127,30 @@ export const polling = async () => {
   }
 
   let time
-      let timeDiff
-      let tokenCreated
-      let threeHours = false
+  let timeDiff
+  let tokenCreated
+  let threeHours = false
 
-      if (merchant) {
-        tokenCreated = merchant.controls.dateTokenCreated
-      }
+  if (merchant) {
+    tokenCreated = merchant.controls.dateTokenCreated
+  }
 
-      if (tokenCreated) {
-        time = DateTime.fromISO(tokenCreated, { zone: profile.timeZone })
-      }
-      const nowHour = DateTime.now()
-      if (time) {
-        timeDiff = nowHour.diff(time, 'hours').hours
-        if (timeDiff > 3) {
-          threeHours = true
-        } else {
+  if (tokenCreated) {
+  time = DateTime.fromISO(tokenCreated, { zone: profile.timeZone })
+  }
+  const nowHour = DateTime.now()
+  if (time) {
+    timeDiff = nowHour.diff(time, 'hours').hours
+    if (timeDiff > 3) {
+      threeHours = true
+    } else {
           threeHours = false
-        }
-      }
-      console.log('tempo diferença', timeDiff, threeHours)
-      if (threeHours) {
-        console.log('Passou de 3 horas')
-        attToken()
-      } else {
-        console.log('Não passou de 3 horas')
-      }
+    }
+  }
+  console.log('tempo diferença', timeDiff, threeHours)
+  if (threeHours) {
+    console.log('Passou de 3 horas')
+    attToken()
+  } else {
+    console.log('Não passou de 3 horas')
+  } 
