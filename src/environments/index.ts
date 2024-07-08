@@ -3,6 +3,7 @@ import { z } from "zod";
 const envSchema = z.object({
   WM_API_V3: z.string(),
   WM_API_V2: z.string(),
+  INTEGRATION_API: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

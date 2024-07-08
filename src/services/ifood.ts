@@ -1,16 +1,20 @@
 import axios from "axios";
-import { whatsmenu_api_v3 } from "../lib/axios";
+import { whatsmenu_api_v3, integration_api } from "../lib/axios";
 import { getMerchant, getProfile, store } from "../main/store";
 import {io} from '../services/ws_integration'
 import { DateTime } from "luxon";
+import { ProfileType } from "src/@types/profile";
 
 
 const profile = getProfile()
 const merchant = getMerchant()
 let pollingData
 
-export const getMerchantApi = async () => {
+export const getMerchantApi = async (profile: ProfileType) => {
       try {
+        if(!profile){
+          throw new Error('Perfil não encontrado')
+        }
         console.log('PEGANDO O MERCHANT')
         const { data } = await whatsmenu_api_v3.get(
           `/merchant?slug=${profile.slug}`
@@ -25,7 +29,7 @@ export const polling = async () => {
 
     try {
       console.log('vai chamar o polling')
-      const { data } = await axios.get('https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS', {
+      const { data } = await integration_api.get('https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS', {
         headers: {
           'Authorization': `Bearer ${merchant?.token}`,
           'x-polling-merchants': `${merchant?.merchantId}`,
@@ -39,6 +43,9 @@ export const polling = async () => {
       }
 
     } catch (error) {
+      if(error.response.status === 401) {
+        attToken(profile)
+      }
       if (error.response) {
         console.error('Server responded with status code:', error.response.status)
         console.error('Response data:', error.response.data)
@@ -80,7 +87,7 @@ export const polling = async () => {
     }
   }
 
-  const attToken = async () => {
+  const attToken = async (profile: ProfileType) => {
     try {
       console.log('VAI GERAR UM NOVO TOKEN')
       let formParams
@@ -91,14 +98,7 @@ export const polling = async () => {
           refreshToken: merchant.refresh_token,
         }
       }
-      const { data } = await axios.post('https://merchant-api.ifood.com.br/authentication/v1.0/oauth/token', 
-        { grantType: 'refresh_token', ...formParams },
-    {
-      headers: {
-        'content-Type': 'application/x-www-form-urlencoded',
-      },
-    
-      })
+      const { data } = await integration_api.post('/ifood/refreshToken', profile.id)
       console.log('DATA DO ATT TOKEN', data)
 
       
@@ -125,32 +125,3 @@ export const polling = async () => {
       throw error
     }
   }
-
-  let time
-  let timeDiff
-  let tokenCreated
-  let threeHours = false
-
-  if (merchant) {
-    tokenCreated = merchant.controls.dateTokenCreated
-  }
-
-  if (tokenCreated) {
-  time = DateTime.fromISO(tokenCreated, { zone: profile.timeZone })
-  }
-  const nowHour = DateTime.now()
-  if (time) {
-    timeDiff = nowHour.diff(time, 'hours').hours
-    if (timeDiff > 3) {
-      threeHours = true
-    } else {
-          threeHours = false
-    }
-  }
-  console.log('tempo diferença', timeDiff, threeHours)
-  if (threeHours) {
-    console.log('Passou de 3 horas')
-    attToken()
-  } else {
-    console.log('Não passou de 3 horas')
-  } 
