@@ -3,7 +3,7 @@ import { whatsmenu_api_v3, integration_api } from "../lib/axios";
 import { getMerchant, getProfile, store } from "../main/store";
 import {io} from '../services/ws_integration'
 import { DateTime } from "luxon";
-import { ProfileType } from "src/@types/profile";
+import  { ProfileType } from "../@types/profile";
 
 
 const profile = getProfile()
@@ -44,6 +44,7 @@ export const polling = async () => {
 
     } catch (error) {
       if(error.response.status === 401) {
+        console.log('DEU 401 TOKEN EXPIRADO')
         attToken(profile)
       }
       if (error.response) {
@@ -87,32 +88,19 @@ export const polling = async () => {
     }
   }
 
-  const attToken = async (profile: ProfileType) => {
+  export const attToken = async (profile: ProfileType) => {
     try {
       console.log('VAI GERAR UM NOVO TOKEN')
-      let formParams
-      if (merchant) {
-        formParams = {
-          clientId: `${process.env.IFOOD_CLIENT_ID}`,
-          clientSecret: `${process.env.IFOOD_CLIENT_SECRET}`,
-          refreshToken: merchant.refresh_token,
+      
+      const { data } = await integration_api.post('/ifood/refreshToken', {
+        id: profile.id} )
+      
+        if(data) {
+          console.log("GERADO TOKEN");
+        } else {
+          console.log("NÃO GEROU O TOKEN");
         }
-      }
-      const { data } = await integration_api.post('/ifood/refreshToken', profile.id)
-      console.log('DATA DO ATT TOKEN', data)
-
-      
-      if(data) {
-        console.log("GERADO TOKEN");
-      } else {
-        console.log("NÃO GEROU O TOKEN");
-      }
-      
-      merchant.token = data.accessToken;
-      merchant.refresh_token = data.refreshToken;
-
-      store.set("configs.merchant", merchant)
-      
+        
     } catch (error) {
       if (error.response) {
         console.error('Server responded with status code:', error.response.status)

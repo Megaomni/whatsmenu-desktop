@@ -4,7 +4,7 @@ import { WebTabContentsView } from "../../extends/tab"
 import { getMerchant, getProfile, store } from "../../main/store"
 import { DateTime } from "luxon"
 import { WeekDayType } from "../../@types/week"
-import { getMerchantApi, polling } from "../../services/ifood"
+import { attToken, getMerchantApi, polling } from "../../services/ifood"
 
 export const create_dashboard_tab = () => {
   
@@ -50,7 +50,7 @@ export const create_dashboard_tab = () => {
       } else {
         console.log("FECHADO");
       }
-
+      
       store.onDidAnyChange((newValue, oldValue) => {
         console.log(oldValue.configs.profile.options.integrations, newValue.configs.profile.options.integrations)
         if(newValue.configs.profile.options.integrations) {
