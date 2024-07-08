@@ -12,5 +12,5 @@ export let env: Env = {};
 if (typeof process === "undefined" && window) {
   env = envSchema.parse(window.env());
 } else {
-  env = envSchema.safeParse(process.env);
+  env = envSchema.parse(process.env);
 }
