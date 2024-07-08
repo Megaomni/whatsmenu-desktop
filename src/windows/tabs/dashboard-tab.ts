@@ -54,7 +54,7 @@ export const create_dashboard_tab = () => {
       store.onDidAnyChange((newValue, oldValue) => {
         console.log(oldValue.configs.profile.options.integrations, newValue.configs.profile.options.integrations)
         if(newValue.configs.profile.options.integrations) {
-          getMerchantApi()
+          getMerchantApi(profile)
           merchant = getMerchant();
           if (open && merchant) {
             setInterval(polling, 30000);
