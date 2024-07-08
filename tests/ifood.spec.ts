@@ -1,21 +1,35 @@
-import { getMerchantApi, polling } from "../src/services/ifood";
-import { whatsmenu_api_v3 } from "../src/lib/axios";
 import { describe, expect, it, vi } from "vitest";
-import { store } from "../src/main/store";
-import axios from "axios";
-import { ProfileType } from "src/@types/profile";
+import { ProfileType } from "../src/@types/profile";
+import { integration_api, whatsmenu_api_v3 } from "../src/lib/axios";
+import { getMerchantApi } from "../src/services/ifood";
 
+import profileMock from "./mocks/profile.mock.json";
 
+const profile = profileMock as unknown as ProfileType;
 
-describe("ifood Service", () => {
-  it("deve ser possível buscar o merchant", async () => {
-    try {
-      const spy = vi.spyOn(whatsmenu_api_v3, "get")
-      await getMerchantApi({ slug: "pizzaria-do-meu-amor" } as ProfileType);
-      expect(spy).toHaveBeenCalled();
-    } catch (error) {
-      throw error
-    }
+describe("IFood Service", () => {
+  describe("getMerchantApi", () => {
+    const whatsmenu_api_v3_spy = vi.spyOn(whatsmenu_api_v3, "get");
+    const integration_api_spy = vi.spyOn(integration_api, "get");
+    it("Não deve ser possível buscar a loja ifood sem um perfil", async () => {
+      try {
+        await getMerchantApi({ profile: undefined as ProfileType });
+      } catch (error) {
+        expect(error).instanceOf(Error);
+        expect(error).toHaveProperty("message", "Perfil não encontrado!");
+      }
+    });
+    it("Deve ser possível buscar a loja ifood atribuida a um perfil", async () => {
+      try {
+        whatsmenu_api_v3_spy.mockResolvedValue({ data: {} });
+        await getMerchantApi({ profile });
+        expect(whatsmenu_api_v3_spy).toHaveBeenCalledWith(
+          `/merchant?slug=${profile.slug}`
+        );
+      } catch (error) {
+        throw error;
+      }
+    });
   });
 
   // it("não deve ser possível buscar o merchant", async () => {
