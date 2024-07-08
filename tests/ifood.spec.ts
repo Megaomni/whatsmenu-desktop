@@ -1,30 +1,35 @@
 import { describe, expect, it, vi } from "vitest";
 import { ProfileType } from "../src/@types/profile";
-import { MerchantType } from "../src/@types/merchant";
-import { integration_api, whatsmenu_api_v3 } from "../src/lib/axios";
-import { getMerchantApi, polling, pollingAcknowledgment } from "../src/services/ifood";
+import { whatsmenu_api_v3 } from "../src/lib/axios";
+import {
+  getMerchantApi,
+  polling,
+  pollingAcknowledgment,
+  sendPollingDataApi,
+} from "../src/services/ifood";
 
-import profileMock from "./mocks/profile.mock.json";
-import merchantMock from "./mocks/merchant.mock.json";
 import axios from "axios";
+import { MerchantType } from "../src/@types/merchant";
+import merchantMock from "./mocks/merchant.mock.json";
+import profileMock from "./mocks/profile.mock.json";
+import pollingMock from "./mocks/polling.mock.json";
 
 const profile = profileMock as unknown as ProfileType;
 const merchant = merchantMock as unknown as MerchantType;
+const pollingData = pollingMock as unknown as any[];
 
 describe("IFood Service", () => {
   const whatsmenu_api_v3_spy = vi.spyOn(whatsmenu_api_v3, "get");
-  const integration_api_spy = vi.spyOn(integration_api, "get");
-  const axios_get = vi.spyOn(axios, "get");
-  const axios_post = vi.spyOn(axios, "post");
 
   describe("getMerchantApi", () => {
-
     it("Não deve ser possível buscar a loja ifood sem um perfil", async () => {
       try {
         await getMerchantApi({ profile: undefined as ProfileType });
       } catch (error) {
         expect(error).instanceOf(Error);
         expect(error).toHaveProperty("message", "Perfil não encontrado!");
+      } finally {
+        whatsmenu_api_v3_spy.mockReset();
       }
     });
 
@@ -37,30 +42,67 @@ describe("IFood Service", () => {
         );
       } catch (error) {
         throw error;
+      } finally {
+        whatsmenu_api_v3_spy.mockReset();
       }
     });
   });
 
   describe("polling", () => {
-
-    it('deve ser possível enviar dados do polling para o reconhecimento do ifood', async () => {
+    it("Não deve ser possível fazer polling sem um perfil", async () => {
       try {
-        axios_post.mockResolvedValue({ data: {} });
-        await pollingAcknowledgment([], merchant);
-        expect(axios_post).toHaveBeenLastCalledWith(
-          `https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment`, 
-          [],
+        await polling({
+          profile: undefined as ProfileType,
+          merchant: {} as MerchantType,
+        });
+      } catch (error) {
+        expect(error).instanceOf(Error);
+        expect(error).toHaveProperty("message", "Perfil não encontrado!");
+      }
+    });
+    it("Não deve ser possível fazer polling sem uma loja ifood", async () => {
+      try {
+        await polling({
+          profile: {} as ProfileType,
+          merchant: undefined as MerchantType,
+        });
+      } catch (error) {
+        expect(error).instanceOf(Error);
+        expect(error).toHaveProperty("message", "Loja ifood não encontrada!");
+      }
+    });
+
+    it("Deve ser possível fazer polling", async () => {
+      const axiosSpy = vi
+        .spyOn(axios, "get")
+        .mockResolvedValue({ data: pollingData });
+      const pollingAcknowledgmentSpy = vi
+        .fn(pollingAcknowledgment)
+        .mockResolvedValue();
+      const sendPollingDataApiSpy = vi
+        .fn(sendPollingDataApi)
+        .mockResolvedValue();
+
+      try {
+        await polling({
+          profile,
+          merchant,
+        });
+        expect(axiosSpy).toHaveBeenCalledWith(
+          "https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS",
           {
             headers: {
-              Authorization: `Bearer ${merchant?.token}`
-            }
+              Authorization: `Bearer ${merchant.token}`,
+              "x-polling-merchants": `${merchant.merchantId}`,
+            },
           }
-        )
+        );
       } catch (error) {
-        throw error
+        throw error;
+      } finally {
+        pollingAcknowledgmentSpy.mockRestore();
+        sendPollingDataApiSpy.mockRestore();
       }
-    })
-
-  })
-
+    });
+  });
 });

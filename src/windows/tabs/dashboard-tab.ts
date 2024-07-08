@@ -4,6 +4,7 @@ import { WeekDayType } from "../../@types/week";
 import { WebTabContentsView } from "../../extends/tab";
 import { getMerchant, getProfile, store } from "../../main/store";
 import { getMerchantApi, polling } from "../../services/ifood";
+import { MerchantType } from "../../@types/merchant";
 
 export const create_dashboard_tab = () => {
   const tab = new WebTabContentsView({
@@ -19,7 +20,7 @@ export const create_dashboard_tab = () => {
 
   tab.webContents.on("did-finish-load", () => {
     const profile = getProfile();
-    let merchant: any;
+    let merchant: MerchantType;
     let open = false;
     if (profile) {
       if (!merchant) {
