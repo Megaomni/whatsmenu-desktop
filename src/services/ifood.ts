@@ -51,50 +51,22 @@ export const polling = async ({
 
     pollingData = data;
     if (pollingData.length > 0) {
-      sendPollingDataApi(pollingData, profile.id, profile.slug);
-      pollingAcknowledgment(pollingData, merchant);
-    }
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const sendPollingDataApi = async (
-  pollingData: [],
-  id: number,
-  slug: string
-) => {
-  try {
-    let returnOrders;
-    if (pollingData.length > 0) {
-      returnOrders = await whatsmenu_api_v3.post("ifood/polling", {
+      const returnOrders = await whatsmenu_api_v3.post("ifood/polling", {
         pollingData,
-        id,
-        slug,
+        id: profile.id,
+        slug: profile.slug,
       });
+      io.to(`ifood:${profile.slug}`).emit("newOrderIfood", returnOrders.data);
+      await axios.post(
+        "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
+        pollingData,
+        {
+          headers: {
+            Authorization: `Bearer ${merchant?.token}`,
+          },
+        }
+      );
     }
-    if (returnOrders) {
-      io.to(`ifood:${slug}`).emit("newOrderIfood", returnOrders.data);
-    }
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const pollingAcknowledgment = async (
-  pollingData: [],
-  merchant: MerchantType
-) => {
-  try {
-    await axios.post(
-      "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
-      pollingData,
-      {
-        headers: {
-          Authorization: `Bearer ${merchant?.token}`,
-        },
-      }
-    );
   } catch (error) {
     throw error;
   }

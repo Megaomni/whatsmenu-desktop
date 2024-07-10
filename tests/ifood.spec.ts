@@ -1,12 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { ProfileType } from "../src/@types/profile";
 import { whatsmenu_api_v3 } from "../src/lib/axios";
-import {
-  getMerchantApi,
-  polling,
-  pollingAcknowledgment,
-  sendPollingDataApi,
-} from "../src/services/ifood";
+import { getMerchantApi, polling } from "../src/services/ifood";
 
 import axios from "axios";
 import { MerchantType } from "../src/@types/merchant";
@@ -73,23 +68,20 @@ describe("IFood Service", () => {
     });
 
     it("Deve ser possível fazer polling", async () => {
-      const axiosSpy = vi
+      const axiosGetSpy = vi
         .spyOn(axios, "get")
         .mockResolvedValue({ data: pollingData });
-      const pollingAcknowledgmentSpy = vi
-        .fn(pollingAcknowledgment)
-        .mockResolvedValue();
-      const sendPollingDataApiSpy = vi
-        .fn(sendPollingDataApi)
-        .mockResolvedValue();
-
+      const axiosPostSpy = vi.spyOn(axios, "post");
+      const whatsmenu_api_v3_spy = vi
+        .spyOn(whatsmenu_api_v3, "post")
+        .mockResolvedValue({ data: [] });
       try {
         await polling({
           profile,
           merchant,
         });
-        expect(axiosSpy).toHaveBeenCalledWith(
-          "https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS",
+        expect(axiosGetSpy).toHaveBeenCalledWith(
+          "https://merchant-api.com.br/events/v1.0/events:polling?groups=ORDER_STATUS",
           {
             headers: {
               Authorization: `Bearer ${merchant.token}`,
@@ -97,11 +89,24 @@ describe("IFood Service", () => {
             },
           }
         );
+        expect(whatsmenu_api_v3_spy).toHaveBeenCalledWith("ifood/polling", {
+          pollingData,
+          id: profile.id,
+          slug: profile.slug,
+        });
+        expect(axiosPostSpy).toHaveBeenCalledWith(
+          "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
+          pollingData,
+          {
+            headers: {
+              Authorization: `Bearer ${merchant.token}`,
+            },
+          }
+        );
       } catch (error) {
         throw error;
       } finally {
-        pollingAcknowledgmentSpy.mockRestore();
-        sendPollingDataApiSpy.mockRestore();
+        axiosGetSpy.mockRestore();
       }
     });
   });
