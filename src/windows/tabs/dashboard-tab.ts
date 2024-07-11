@@ -54,7 +54,7 @@ export const create_dashboard_tab = () => {
       } else {
         console.log("FECHADO");
       }
-
+      let pollingInterval: NodeJS.Timeout | null = null;
       store.onDidAnyChange((newValue, oldValue) => {
         console.log(
           oldValue.configs.profile.options.integrations,
@@ -62,9 +62,11 @@ export const create_dashboard_tab = () => {
         );
         if (newValue.configs.profile.options.integrations) {
           getMerchantApi({ profile });
-          merchant = getMerchant();
-          if (open && merchant) {
-            setInterval(polling, 30000);
+          if (!merchant) {
+            merchant = getMerchant();
+          }
+          if (open && merchant && !pollingInterval) {
+            pollingInterval = setInterval(() => polling({ merchant, profile }), 30 * 1000);
           }
         }
       });

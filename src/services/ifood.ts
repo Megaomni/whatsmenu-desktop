@@ -1,7 +1,7 @@
 import axios from "axios";
 import { MerchantType } from "../@types/merchant";
 import { ProfileType } from "../@types/profile";
-import { integration_api, whatsmenu_api_v3 } from "../lib/axios";
+import { whatsmenu_api_v3 } from "../lib/axios";
 import { store } from "../main/store";
 import { io } from "../services/ws_integration";
 
@@ -17,7 +17,7 @@ export const getMerchantApi = async ({
       throw new Error("Perfil não encontrado!");
     }
     const { data } = await whatsmenu_api_v3.get(
-      `/merchant?slug=${profile.slug}`
+      `/ifood/merchant?slug=${profile.slug}`
     );
     store.set("configs.merchant", data);
   } catch (error) {
@@ -53,10 +53,18 @@ export const polling = async ({
     if (pollingData.length > 0) {
       const returnOrders = await whatsmenu_api_v3.post("ifood/polling", {
         pollingData,
-        id: profile.id,
-        slug: profile.slug,
+        token : merchant.token,
       });
-      io.to(`ifood:${profile.slug}`).emit("newOrderIfood", returnOrders.data);
+      console.log('returnOrders', returnOrders.data)
+      returnOrders.data.orders.forEach((order: any) => {
+        if(order.orderStatus === 'PLACED') {
+          io.to(`ifood:${profile.slug}`).emit("newOrderIfood", order)
+        }
+        if (order.orderStatus !== 'PLACED') {
+          io.to(`ifood:${profile.slug}`).emit("processedOrderIfood", order)
+        }
+      })
+      // io.to(`ifood:${profile.slug}`).emit("newOrderIfood", returnOrders.data.orders);
       await axios.post(
         "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
         pollingData,
