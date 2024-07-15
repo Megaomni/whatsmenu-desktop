@@ -28,6 +28,9 @@ jobs:
         run: |
           echo WM_API_V2='${{ secrets.WM_API_V2 }}' >> .env
           echo WM_API_V3='${{ secrets.WM_API_V3 }}' >> .env
+          echo WM_DASHBOARD='${{ secrets.WM_DASHBOARD }}' >> .env
+          echo WM_STORE='${{ secrets.WM_STORE }}' >> .env
+          echo WM_WEBSOCKET='${{ secrets.WM_WEBSOCKET }}' >> .env
       - name: Build
         run: npm run make
 
