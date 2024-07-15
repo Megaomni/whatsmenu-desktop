@@ -1,19 +1,16 @@
-
-import path from "node:path"
-import { WebTabContentsView } from "../../extends/tab"
+import path from "node:path";
+import { WebTabContentsView } from "../../extends/tab";
+import { env } from "../../environments";
 
 export const create_dashboard_tab = () => {
-  
   const tab = new WebTabContentsView({
-    id: 'dashboard',
+    id: "dashboard",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
     },
-  })
-  
-  tab.webContents.loadURL(`https://next.whatsmenu.com.br/`)
-  // tab.webContents.loadURL(`https://teste.whatsmenu.com.br/`)
-  // tab.webContents.loadURL(`http://localhost:3000`)
+  });
 
-  return tab
-}
+  tab.webContents.loadURL(env.WM_DASHBOARD);
+
+  return tab;
+};
