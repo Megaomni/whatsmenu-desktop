@@ -62,7 +62,7 @@ export const TabsApi = {
   setActiveTab: (tab: string) => ipcRenderer.send("setActiveTab", tab),
 };
 
-export const envPreload = () => ipcRenderer.sendSync("env");
+export const envPreload = (): Env => ipcRenderer.sendSync("env");
 
 contextBridge.exposeInMainWorld("isElectron", true);
 contextBridge.exposeInMainWorld("WhatsAppBotApi", WhatsAppBotApi);

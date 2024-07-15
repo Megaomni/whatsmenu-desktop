@@ -37,7 +37,7 @@
     "@vitest/coverage-v8": "^1.6.0",
     "@vitest/ui": "^1.6.0",
     "autoprefixer": "^10.4.19",
-    "electron": "^30.0.1",
+    "electron": "^31.2.0",
     "electron-is-dev": "^3.0.1",
     "eslint": "^8.0.1",
     "eslint-plugin-import": "^2.25.0",

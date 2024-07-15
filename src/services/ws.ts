@@ -1,21 +1,27 @@
 import { ManagerOptions, Socket, SocketOptions, io } from "socket.io-client";
 
 type Protocol = "ws://" | "wss://";
-
+export type wsURL = `${Protocol}${string}`;
 export class Ws {
-  connection: Socket
+  connection: Socket;
 
-  constructor({ url, options }: { url: `${Protocol}${string}`, options?: Partial<ManagerOptions & SocketOptions> }) {
+  constructor({
+    url,
+    options,
+  }: {
+    url: wsURL;
+    options?: Partial<ManagerOptions & SocketOptions>;
+  }) {
     this.connection = io(url, {
       transports: ["websocket"],
-      ...options
-    })
+      ...options,
+    });
   }
 
   public join(room: string) {
-    this.connection.emit("join", { room })
+    this.connection.emit("join", { room });
   }
 }
 
 // eslint-disable-next-line prefer-const
-export let websocket: Ws | null = null
+export let websocket: Ws | null = null;
