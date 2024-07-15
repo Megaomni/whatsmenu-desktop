@@ -22,7 +22,9 @@ jobs:
         run: npm config set cache C:\npm\cache --global
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          cat package.json
+          npm install
 
       - name: Set Environment Variables
         run: |
