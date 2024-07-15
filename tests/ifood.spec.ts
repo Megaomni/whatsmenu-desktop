@@ -33,7 +33,7 @@ describe("IFood Service", () => {
         whatsmenu_api_v3_spy.mockResolvedValue({ data: {} });
         await getMerchantApi({ profile });
         expect(whatsmenu_api_v3_spy).toHaveBeenCalledWith(
-          `/merchant?slug=${profile.slug}`
+          `/ifood/merchant?slug=${profile.slug}`
         );
       } catch (error) {
         throw error;
@@ -71,17 +71,17 @@ describe("IFood Service", () => {
       const axiosGetSpy = vi
         .spyOn(axios, "get")
         .mockResolvedValue({ data: pollingData });
-      const axiosPostSpy = vi.spyOn(axios, "post");
+      const axiosPostSpy = vi.spyOn(axios, "post").mockResolvedValue({});
       const whatsmenu_api_v3_spy = vi
         .spyOn(whatsmenu_api_v3, "post")
-        .mockResolvedValue({ data: [] });
+        .mockResolvedValue({ data: {orders: []} });
       try {
         await polling({
           profile,
           merchant,
         });
         expect(axiosGetSpy).toHaveBeenCalledWith(
-          "https://merchant-api.com.br/events/v1.0/events:polling?groups=ORDER_STATUS",
+          "https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS",
           {
             headers: {
               Authorization: `Bearer ${merchant.token}`,
@@ -91,8 +91,7 @@ describe("IFood Service", () => {
         );
         expect(whatsmenu_api_v3_spy).toHaveBeenCalledWith("ifood/polling", {
           pollingData,
-          id: profile.id,
-          slug: profile.slug,
+          token: merchant.token,
         });
         expect(axiosPostSpy).toHaveBeenCalledWith(
           "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
@@ -104,6 +103,7 @@ describe("IFood Service", () => {
           }
         );
       } catch (error) {
+        console.error(error);
         throw error;
       } finally {
         axiosGetSpy.mockRestore();

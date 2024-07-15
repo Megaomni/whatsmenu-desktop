@@ -75,10 +75,6 @@ export const polling = async ({
       );
     }
   } catch (error) {
-    console.error('TOKEN EXPIRADO',error.response.status);
-    if (error.response.status === 401) {
-      getMerchantApi({ profile });
-    }
     throw error;
   }
 };
