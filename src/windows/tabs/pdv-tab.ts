@@ -13,10 +13,10 @@ export const create_pdv_tab = () => {
     },
   });
 
-  tab.webContents.loadURL(env.WM_STORE + `${profile?.slug}/pdv`);
+  tab.webContents.loadURL(`${env.WM_STORE}/${profile?.slug}/pdv`);
   store.onDidChange("configs", (newValue) => {
     if (profile?.slug !== newValue.profile?.slug) {
-      tab.webContents.loadURL(env.WM_STORE + `${newValue.profile.slug}/pdv`);
+      tab.webContents.loadURL(`${env.WM_STORE}/${newValue.profile.slug}/pdv`);
     }
   });
 
