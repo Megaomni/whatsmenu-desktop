@@ -1,11 +1,10 @@
 // See the Electron documentation for details on how to use preload scripts:
 
 import { contextBridge, ipcRenderer } from "electron";
-import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
+import { ClientType } from "../@types/client";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
-import { Env } from "../environments";
 
 export const WhatsAppBotApi = {
   // Events

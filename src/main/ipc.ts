@@ -70,8 +70,17 @@ ipcMain.on("print", async (_, serializedPayload) => {
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer;
     const win = new BrowserWindow({ show: false });
 
+    const { printTypeMode = "whatsmenu", ...payload } =
+      JSON.parse(serializedPayload);
+
+    if (printTypeMode === "html") {
+      win.webContents.executeJavaScript(`
+        const printBody = document.body
+        printBody.innerHTML = ${JSON.stringify(payload.html)}
+      `);
+    }
+
     try {
-      const payload = JSON.parse(serializedPayload);
       payload.profile.options.print.width =
         paperSize !== 58 ? "302px" : "219px";
       payload.profile.options.print.textOnly = isGeneric;
