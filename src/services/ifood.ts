@@ -64,7 +64,6 @@ export const polling = async ({
           io.to(`ifood:${profile.slug}`).emit("processedOrderIfood", order)
         }
       })
-      // io.to(`ifood:${profile.slug}`).emit("newOrderIfood", returnOrders.data.orders);
       await axios.post(
         "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
         pollingData,
@@ -76,6 +75,10 @@ export const polling = async ({
       );
     }
   } catch (error) {
+    console.error('TOKEN EXPIRADO',error.response.status);
+    if (error.response.status === 401) {
+      getMerchantApi({ profile });
+    }
     throw error;
   }
 };

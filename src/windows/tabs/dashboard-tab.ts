@@ -23,11 +23,6 @@ export const create_dashboard_tab = () => {
     let merchant: MerchantType;
     let open = false;
     if (profile) {
-      if (!merchant) {
-        console.log("não tem o merchant");
-      } else {
-        console.log("PEGOU O merchant");
-      }
 
       const day = DateTime.local().setZone(profile.timeZone).toISO();
       const today = DateTime.fromISO(day, { zone: profile.timeZone })
@@ -54,6 +49,7 @@ export const create_dashboard_tab = () => {
       } else {
         console.log("FECHADO");
       }
+
       let pollingInterval: NodeJS.Timeout | null = null;
       store.onDidAnyChange((newValue, oldValue) => {
         console.log(
@@ -62,9 +58,7 @@ export const create_dashboard_tab = () => {
         );
         if (newValue.configs.profile.options.integrations) {
           getMerchantApi({ profile });
-          if (!merchant) {
-            merchant = getMerchant();
-          }
+          merchant = getMerchant();          
           if (open && merchant && !pollingInterval) {
             pollingInterval = setInterval(() => polling({ merchant, profile }), 30 * 1000);
           }
