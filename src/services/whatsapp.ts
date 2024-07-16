@@ -162,13 +162,16 @@ export class WhatsApp {
 
   cashbackCron() {
     const profile = getProfile();
-    getVoucherToNotifyList()
-      .filter(
+    const removeExpiredVouchers = async () => {
+      const list = getVoucherToNotifyList().filter(
         (voucher) =>
           voucher.expirationDate &&
           DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
-      )
-      .forEach((voucher) => deleteVoucherToNotify(voucher.id));
+      );
+      await Promise.all(
+        list.map((voucher) => deleteVoucherToNotify(voucher.id))
+      );
+    };
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
       let list: VoucherNotification[] = [];
       switch (messageType) {
@@ -227,6 +230,7 @@ export class WhatsApp {
     };
     setInterval(() => {
       vouchersToNotifyQueue.push(async () => {
+        await removeExpiredVouchers();
         await cronLoop("afterPurchase");
         await cronLoop("remember");
         await cronLoop("expire");
