@@ -166,7 +166,7 @@ export const findCacheContact = async (whatsapp: string) => {
 
 export const storeVoucherToNotify = (payload: VoucherNotification) =>
   vouchersToNotifyQueue.push(async () => {
-    const currentVouchers = getVoucherToNotifyList();
+    const currentVouchers = getVoucherToNotifyList() || [];
     const exists = currentVouchers.some((voucher) => voucher.id === payload.id);
     if (!exists) {
       store.set("configs.voucherToNotify", [...currentVouchers, payload]);
