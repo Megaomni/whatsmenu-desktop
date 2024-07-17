@@ -1,23 +1,31 @@
-import { describe, it, vi, expect } from "vitest";
-import * as storeModule from "../../whatsmenu-desktop/src/main/store";
+import { describe, it, vi, expect, beforeEach, afterEach } from "vitest";
 import voucherToNotifyMock from "./mocks/voucherToNotify.json";
+import { store, storeVoucherToNotify } from "../src/main/store";
 
 describe.only("storeVoucherToNotify", () => {
-  it.only("Deve adicionar um novo voucher se ele não existir", async () => {
-    const mock = vi
-      .spyOn(storeModule, "getVoucherToNotifyList")
-      .mockReturnValue([]);
+  let getSpy: ReturnType<typeof vi.spyOn>;
+  let setSpy: ReturnType<typeof vi.spyOn>;
 
-    storeModule.storeVoucherToNotify(voucherToNotifyMock[0]);
+  beforeEach(() => {
+    getSpy = vi.spyOn(store, "get");
+    setSpy = vi.spyOn(store, "set");
   });
 
-  // it("Não deve adicionar o voucher se ele já existir", async () => {
-  //   (
-  //     getVoucherToNotifyList as MockedFunction<typeof getVoucherToNotifyList>
-  //   ).mockReturnValueOnce([mockPayload]);
+  afterEach(() => {
+    vi.resetAllMocks();
+  });
 
-  //   await storeVoucherToNotify(mockPayload);
+  it("Deve adicionar um novo voucher se ele não existir", async () => {
+    getSpy.mockReturnValue([]);
+    storeVoucherToNotify(voucherToNotifyMock[0]);
+    expect(setSpy).toHaveBeenCalledWith("configs.voucherToNotify", [
+      voucherToNotifyMock[0],
+    ]);
+  });
 
-  //   expect(store.set).not.toHaveBeenCalled();
-  // });
+  it("Não deve adicionar o voucher se ele já existir", async () => {
+    getSpy.mockReturnValue([voucherToNotifyMock[0]]);
+    storeVoucherToNotify(voucherToNotifyMock[0]);
+    expect(setSpy).not.toHaveBeenCalled();
+  });
 });
