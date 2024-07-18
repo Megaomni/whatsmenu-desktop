@@ -69,33 +69,40 @@ ipcMain.on("print", async (_, serializedPayload) => {
     console.log(isGeneric, "isGeneric");
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer;
     const win = new BrowserWindow({ show: false });
+    // win.webContents.openDevTools({ mode: "right" });
 
     const { printTypeMode = "whatsmenu", ...payload } =
       JSON.parse(serializedPayload);
-
-    if (printTypeMode === "html") {
-      win.webContents.executeJavaScript(`
-        const printBody = document.body
-        printBody.innerHTML = ${JSON.stringify(payload.html)}
-      `);
-    }
-
-    try {
-      payload.profile.options.print.width =
-        paperSize !== 58 ? "302px" : "219px";
-      payload.profile.options.print.textOnly = isGeneric;
-      const { data } = await axios.post(
-        "https://next.whatsmenu.com.br/api/printLayout",
-        { ...payload, html: true, electron: true }
-      );
-      win.webContents.executeJavaScript(`
-        const printBody = document.body
-        printBody.innerHTML = ${JSON.stringify(
-          data.reactComponentString[paperSize < 65 ? 58 : 80]
-        )}
-      `);
-    } catch (error) {
-      console.error(error);
+      
+      if (printTypeMode === "html") {
+        win.webContents.executeJavaScript(`
+          const printBody = document.body
+          if (${isGeneric}) {
+            let link = document.getElementById('bootstrap-link')
+            link.parentNode.removeChild(link)
+          }
+          printBody.innerHTML = ${JSON.stringify(payload.html)}
+          `);
+        }
+          
+    if(printTypeMode === 'whatsmenu') {
+      try {
+        payload.profile.options.print.width =
+          paperSize !== 58 ? "302px" : "219px";
+        payload.profile.options.print.textOnly = isGeneric;
+        const { data } = await axios.post(
+          "https://next.whatsmenu.com.br/api/printLayout",
+          { ...payload, html: true, electron: true }
+        );
+        win.webContents.executeJavaScript(`
+          const printBody = document.body
+          printBody.innerHTML = ${JSON.stringify(
+            data.reactComponentString[paperSize < 65 ? 58 : 80]
+          )}
+        `);
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     const printOptions: Electron.WebContentsPrintOptions = {
