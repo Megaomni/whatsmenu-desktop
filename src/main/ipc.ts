@@ -75,17 +75,21 @@ ipcMain.on("print", async (_, serializedPayload) => {
       JSON.parse(serializedPayload);
       
       if (printTypeMode === "html") {
+        
         win.webContents.executeJavaScript(`
           const printBody = document.body
           if (${isGeneric}) {
             let link = document.getElementById('bootstrap-link')
             link.parentNode.removeChild(link)
+          } else {
+            printBody.style.height = '1400px' 
           }
           printBody.innerHTML = ${JSON.stringify(payload.html)}
+          
           `);
         }
           
-    if(printTypeMode === 'whatsmenu') {
+    if (printTypeMode === 'whatsmenu') {
       try {
         payload.profile.options.print.width =
           paperSize !== 58 ? "302px" : "219px";
@@ -96,6 +100,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
         );
         win.webContents.executeJavaScript(`
           const printBody = document.body
+          let link = document.getElementById('bootstrap-link')
+          link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
             data.reactComponentString[paperSize < 65 ? 58 : 80]
           )}
