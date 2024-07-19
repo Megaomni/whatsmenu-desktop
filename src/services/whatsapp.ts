@@ -8,6 +8,7 @@ import {
   findCacheContact,
   getProfile,
   getVoucherToNotifyList,
+  removeDuplicateVouchers,
   store,
   updateVoucherToNotify,
 } from "./../main/store";
@@ -94,6 +95,7 @@ export class WhatsApp {
 
       this.sendQueuedmessages();
       this.cashbackCron();
+      removeDuplicateVouchers();
     });
     this.bot.on("disconnected", () => {
       new Notification({
