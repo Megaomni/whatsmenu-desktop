@@ -8,6 +8,7 @@ import {
   findCacheContact,
   getProfile,
   getVoucherToNotifyList,
+  removeDuplicateVouchers,
   store,
   updateVoucherToNotify,
 } from "./../main/store";
@@ -94,6 +95,7 @@ export class WhatsApp {
 
       this.sendQueuedmessages();
       this.cashbackCron();
+      removeDuplicateVouchers();
     });
     this.bot.on("disconnected", () => {
       new Notification({
@@ -162,13 +164,15 @@ export class WhatsApp {
 
   cashbackCron() {
     const profile = getProfile();
-    getVoucherToNotifyList()
-      .filter(
-        (voucher) =>
-          voucher.expirationDate &&
-          DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
-      )
-      .forEach((voucher) => deleteVoucherToNotify(voucher.id));
+    const removeExpiredVouchers = async () => {
+      getVoucherToNotifyList()
+        .filter(
+          (voucher) =>
+            voucher.expirationDate &&
+            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
+        )
+        .forEach((voucher) => deleteVoucherToNotify(voucher.id));
+    };
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
       let list: VoucherNotification[] = [];
       switch (messageType) {
@@ -227,6 +231,7 @@ export class WhatsApp {
     };
     setInterval(() => {
       vouchersToNotifyQueue.push(async () => {
+        await removeExpiredVouchers();
         await cronLoop("afterPurchase");
         await cronLoop("remember");
         await cronLoop("expire");
