@@ -1,0 +1,88 @@
+@layout('inner/layout')
+@section('content')
+<div class="">
+  <div class="ui grid">
+      <div class="sixteen wide column centered">
+          <a class="ui button blue botLEFT hide-for-large">Menu</a>
+          <h1>Faturas</h1>
+          <h4>Sua Mensalidade vence todo dia <strong class="color-red">{{ dayDue }}</strong> de cada mês</h4>
+          <form class="ui form" method="get" action="">
+            @if(invoiceOpened)
+              <div class="ui segment secondary">
+                  <h4>Fatura em aberto</h4>
+                  <div class="ui divider"></div>
+
+                      <table class="ui table very basic">
+                          <thead class="hide-for-small-only">
+                              <tr>
+                                  <th class="pl-10">Vencimento</th>
+                                  {{--
+                                    @if(due !== dateFormat(getLastInvoice().expiration))
+                                      <th class="pl-10">Prorrogado</th>
+                                    @endif
+                                  --}}
+                                  <th>Valor</th>
+                                  <th>Serviços</th>
+                                  <th>Status</th>
+                                  <th></th>
+                              </tr>
+                          </thead>
+                          <tbody id="invoiceOpened">
+                              <tr class="positive">
+
+                                  <td class="pl-10">{{due}}</td>
+                                  <td>{{formatCurrencyCents(getLastInvoice().paghiper.create_request.value_cents)}}</td>
+                                  <td>{{translateStatus(getLastInvoice().status)}}</td>
+                                  <td>
+                                    @if(getLastInvoice() && getLastInvoice().status !== 'paid' && getLastInvoice().status !== 'completed' && getLastInvoice().status !== 'reserved')
+                                      <a data-transaction="{{getLastInvoice().transactionId}}" href="{{getLastInvoice().paghiper.create_request.bank_slip.url_slip}}" target="_blank" class="ui button green">Gerar Boleto</a>
+                                    @endif
+                                  </td>
+
+                              </tr>
+                          </tbody>
+                      </table>
+
+              </div>
+            @endif
+              <h3 class="ucfirst">Histórico de Faturas Pagas</h3>
+              <table class="ui celled table striped selectable">
+                  <thead class="hide-for-small-only">
+                      <tr>
+                          <th>Vencimento</th>
+                          <th>Pagamento</th>
+                          <th>Valor</th>
+                          <th>Serviços</th>
+                          <th>Status</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                    @each(item in invoices)
+                      <tr>
+                          <td><span class="show-for-small-only"><b>Vencimento:</b></span> {{dateFormat(item.expiration)}}</td>
+                          <td><span class="show-for-small-only"><b>Pagamento:</b></span> {{dateFormat(item.updated_at)}}</td>
+                          <td><span class="show-for-small-only"><b>Valor:</b></span> {{ formatCurrency(item.value) }}</td>
+                          <td><span class="show-for-small-only"><b>Valor:</b></span>
+                            @each(element in item.itens)
+                            <p>Plano {{ element.name }} - {{ toBRL(element.value) }}</p>
+                            @endeach
+                          </td>
+                          <td><span class="show-for-small-only"><b>Status:</b></span> <i class="check icon"></i> Pago</td>
+                      </tr>
+                    @endeach
+                  </tbody>
+                  <tfoot>
+                      <tr>
+                          <th colspan="8">
+                              <div class="ui right aligned pagination">
+                                  Exibindo {{ invoices.length }} até {{ invoices.length }} do total de {{ invoices.length }}
+                              </div>
+                          </th>
+                      </tr>
+                  </tfoot>
+              </table>
+          </form>
+      </div>
+  </div>
+</div>
+@endsection

@@ -1,0 +1,110 @@
+@layout('inner/layout')
+@section('content')
+<h1 class="small-space">Bloquear / Desbloquear Usuários em Lote</h1>
+<form class="ui form medium-space">
+  <div class="two fields">
+    <div class="field">
+      <label>Ação</label>
+      <select id="status" name="status" class="ui fluid dropdown">
+        <option value="1">Desbloquear</option>
+        <option value="0">Bloquear</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Tipo de Lista</label>
+      <select id="type" name="type" class="ui fluid dropdown">
+        <option value="slug">Slug</option>
+        <option value="email">E-mail</option>
+        <option value="whatsapp">WhatsApp</option>
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>Coloque apenas 1 item por linha!</label>
+    <div class="fields">
+      <div class="sixteen wide field">
+        <textarea id="list" name="list"></textarea>
+      </div>
+    </div>
+  </div>
+  <button type="button" id="send" class="fluid ui green right floated button" tabindex="0">Executar</button>
+</form>
+
+<div id="resultReleaseBlock" class="ui modal">
+  <div class="header">Resultado</div>
+  <div class="scrolling content">
+    <div id="modalSuccess">asdasdfasdf</div>
+    <div id="modalError">qwerqwerqwer</div>
+  </div>
+  <div class="actions">
+    <div class="green ui approve button">OK</div>
+  </div>
+</div>
+@endsection
+@section('js')
+<script type="text/babel">
+  document.querySelector('#send').onclick = async () => {
+    try {
+      const data = {
+        _csrf: '{{ csrfToken }}',
+        type: $('#type').val(),
+        status: $('#status').val(),
+        list: $('#list').val()
+      }
+
+      const listProcessed = await $.post('{{ route('adm.releaseBlock.post') }}', data)
+
+      if (listProcessed.success) {
+        ReactDOM.render(<ListSuccess list={listProcessed.aprove} />, document.querySelector('#modalSuccess'))
+        ReactDOM.render(<ListError list={listProcessed.reject} />, document.querySelector('#modalError'))
+
+        $('#resultReleaseBlock').modal('show')
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  class ListError extends React.Component {
+    render() {
+      return (
+        <div className="ui list">
+          {
+            this.props.list.map((error, i) => {
+              return (
+                <div key={i} className="item">
+                  <i class="close icon"></i>
+                  <div class="content">
+                    {error.item} - {error.message}
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+      )
+    }
+  }
+
+  class ListSuccess extends React.Component {
+    render() {
+      return (
+        <div className="ui list">
+          {
+            this.props.list.map((success, i) => {
+              return (
+                <div key={i} className="item">
+                  <i class="check icon"></i>
+                  <div class="content">
+                    {success.item}
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+      )
+    }
+  }
+</script>
+@endsection

@@ -1,0 +1,587 @@
+@layout('inner/layout')
+@section('content')
+<style>
+  .mt-23 { margin-top: 23px !important; }
+</style>
+<a class="ui button blue botLEFT hide-for-large">Menu</a>
+<div id="settings-content" style="margin: 24px auto;">
+</div>
+
+<script type="text/babel">
+let profile = {};
+const dates = []
+
+class BasicConfigs extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      disableDelivery: {{profile.options.delivery.disableDelivery}},
+      deliveryLocal: {{profile.deliveryLocal}},
+    }
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  async handleChange(event) {
+    this.state[event.target.id] = !this.state[event.target.id]
+    if (event.target.id == 'deliveryLocal') {
+      this.state.deliveryLocal === true ? this.state.deliveryLocal = 1 : this.state.deliveryLocal = 0
+    }
+    try {
+      await $.ajax({
+        method: 'PATCH',
+        url: '/dashboard/settings/basicConfigUpdate',
+        data: {
+          _csrf: localStorage.csrf,
+          [event.target.id]: this.state[event.target.id],
+        }
+      })
+    WhatsMenu.alert('green', 'Sucesso', 'Alterado com sucesso!')
+    } catch (error) {
+      WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+      console.error(error);
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <h3>Opções de entrega</h3>
+        <div className="ui divider"></div>
+        <div className="fields">
+          <div className="field">
+            <div className="ui toggle checkbox" id="disableDeliveryField" >
+              <input type="checkbox" name="options[delivery][disableDelivery]" className="hidden" readOnly="" tabIndex="0" defaultChecked={!this.state.disableDelivery}/>
+              <label id="disableDelivery" onClick={this.handleChange} >O seu negócio faz entregas?</label>
+              </div>
+              </div>
+              <br/>
+
+            <div className="field">
+              <div className="ui toggle checkbox" >
+                <input type="checkbox" name="deliveryLocal" defaultChecked={this.state.deliveryLocal}/>
+                <label id="deliveryLocal" onClick={this.handleChange} >O cliente pode retirar o pedido no local?</label>
+              </div>
+            </div>
+        </div>
+      </div>
+      )
+    }
+  }
+
+class TextConfigs extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: true,
+      productObs: profile.options.placeholders.productObs,
+      pizzaObs: profile.options.placeholders.pizzaObs,
+      statusProduction: profile.options.placeholders.statusProduction,
+      statusSend: profile.options.placeholders.statusSend,
+      statusToRemove: profile.options.placeholders.statusToRemove,
+    }
+
+    this.handleChange = this.handleChange.bind(this);
+    this.saveTexts = this.saveTexts.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value})
+    this.state[event.target.id] = event.target.value
+  }
+
+  async saveTexts() {
+    try {
+      await $.ajax({
+      method: 'PATCH',
+      url: '/dashboard/settings/textConfigUpdate',
+      data: {
+        _csrf: localStorage.csrf,
+        options: {
+          placeholders: {
+              productObs: this.state.productObs,
+              pizzaObs: this.state.pizzaObs,
+              statusProduction: this.state.statusProduction,
+              statusSend: this.state.statusSend,
+              statusToRemove: this.state.statusToRemove,
+            }
+          }
+        }
+      })
+      WhatsMenu.alert('green', 'Sucesso', 'Textos padrões alterados com sucesso!')
+    } catch (error) {
+      WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+      console.error(error);
+    }
+  }
+
+  render() {
+    return (
+      <div>
+      <h3>Textos Padrões</h3>
+      <div className="ui divider"></div>
+        <div className="fields">
+          <div className="eight wide field">
+              <label>Observação Produto</label>
+              <textarea id="productObs" name="options[placeholders][productObs]" defaultValue={profile.options.placeholders.productObs} onChange={this.handleChange}/>
+          </div>
+
+          <div  className="eight wide field">
+              <label>Observação Pizza</label>
+              <textarea id="pizzaObs" name="options[placeholders][pizzaObs]" defaultValue={profile.options.placeholders.pizzaObs} onChange={this.handleChange} />
+          </div>
+
+          </div>
+          <div className="fields">
+
+            <div className="eight wide field">
+                <label>Status Recebido</label>
+                <textarea id="statusProduction" name="options[placeholders][statusProduction]" defaultValue={profile.options.placeholders.statusProduction} onChange={this.handleChange} />
+            </div>
+
+            <div className="eight wide field">
+                <label>Status Entregando</label>
+                <textarea id="statusSend" name="options[placeholders][statusSend]" defaultValue={profile.options.placeholders.statusSend} onChange={this.handleChange} />
+            </div>
+
+            <div  className="eight wide field">
+                <label>Status Retirar</label>
+                <textarea id="statusToRemove" name="options[placeholders][statusToRemove]" defaultValue={profile.options.placeholders.statusToRemove} onChange={this.handleChange} />
+            </div>
+
+          </div>
+          <button className="ui button green" onClick={this.saveTexts} >Salvar</button>
+      </div>
+    )
+  }
+}
+
+    class PrintConfigs extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          textOnly: {{ profile.options.print.textOnly }},
+          width: "{{ profile.options.print.width }}",
+          copies: "{{ profile.options.print.copies }}",
+          active: {{profile.options.print.active}},
+          groupItems: {{profile.options.print.groupItems}}
+        }
+
+        this.handleChange = this.handleChange.bind(this);
+        this.savePrintConfigs = this.savePrintConfigs.bind(this);
+      }
+
+      handleChange(event) {
+        const target = event.target.nodeName === 'SELECT' ? event.target.value : event.target.previousElementSibling.checked
+        this.setState({[event.target.id] : target})
+      }
+
+      async savePrintConfigs() {
+        console.log(this.state);
+        try {
+            await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/settings/printConfigUpdate',
+            data: {
+              _csrf: localStorage.csrf,
+              textOnly: this.state.textOnly ,
+              width:  this.state.width,
+              copies: this.state.copies,
+              active: this.state.active,
+              groupItems: this.state.groupItems
+            }
+          })
+            WhatsMenu.alert('green', 'Sucesso', 'Opções de impressora alteradas com sucesso!')
+          } catch (error) {
+            WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+            console.error(error);
+          }
+      }
+
+      render() {
+        return (
+          <div>
+            <h3>Opções de impressora</h3>
+
+            <div className="ui divider"></div>
+
+            <div className="eight wide field">
+              <div className="two wide fields">
+                <div className="ui toggle checkbox field" id="active">
+                  <input type="checkbox" name="options[print][active]" defaultChecked={this.state.active} />
+                  <label id="active" onClick={this.handleChange} >Usar impressora?</label>
+                </div>
+                <div className="ui toggle checkbox field" id="groupItems">
+                  <input type="checkbox" name="options[print][groupItems]" defaultChecked={this.state.groupItems} />
+                  <label id="groupItems" onClick={this.handleChange} >Agrupar itens de pedidos para impressão?</label>
+                </div>
+              </div>
+            </div>
+
+            <div className={ this.state.active ? 'fields' : 'fields disabled' } id="print-options">
+
+              <div className="eight wide field">
+                <label>Tipo de impressão</label>
+                <select className="ui dropdown" name="options[print][textOnly]" id="textOnly" defaultValue={this.state.textOnly} onChange={this.handleChange} >
+                  <option value="true">Apenas Texto</option>
+                  <option value="false">Formatada</option>
+                </select>
+              </div>
+
+              <div className="eight wide field">
+                <label>Largura da Impressão</label>
+                <select className="ui dropdown" name="options[print][width]" id="width" defaultValue={this.state.width} onChange={this.handleChange} >
+                  <option value="219px" >58mm</option>
+                  <option value="302px" >80mm</option>
+                </select>
+              </div>
+
+              <div className="eight wide field">
+                  <label >Número de cópias</label>
+                  <input type="number" min="1" name="options[print][copies]" id="copies" defaultValue={this.state.copies} onChange={this.handleChange} />
+              </div>
+
+            </div>
+            <button className="ui button green" onClick={this.savePrintConfigs} >Salvar</button>
+
+          </div>
+        )
+      }
+    }
+
+    class WhatsAppConfigs extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { name: {{profile.options.linkWhatsapp}} }
+
+        this.handleChange = this.handleChange.bind(this);
+      }
+
+      async handleChange(event) {
+        this.state[event.target.id] = !this.state[event.target.id]
+        try {
+          await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/settings/whatsConfigUpdate',
+            data: {
+              _csrf: localStorage.csrf,
+              [event.target.id]: !profile.options.linkWhatsapp
+            }
+          })
+          WhatsMenu.alert('green', 'Sucesso', 'Alterado com sucesso!')
+        } catch (error) {
+          WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+          console.error(error);
+        }
+      }
+
+      render() {
+        return (
+          <div>
+            <h3>Opções de WhatsApp</h3>
+
+            <div className="ui divider"></div>
+
+            <div className="fields">
+              <div className="eight wide field">
+                <div className="ui toggle checkbox">
+                  <input type="checkbox" name="options[whatsappWeb]" className="hidden" defaultChecked={profile.options.linkWhatsapp} />
+                  <label id="whatsappWeb" onClick={this.handleChange} >Utilizar aplicativo WhatsApp? (Obrigatório ter o aplicativo instalado!)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+
+    class PizzaConfigs extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { name: {{profile.options.pizza.higherValue}} }
+
+        this.handleChange = this.handleChange.bind(this);
+      }
+
+      async handleChange(event) {
+        this.state[event.target.id] = !this.state[event.target.id]
+        try {
+          await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/settings/pizzaConfigUpdate',
+            data: {
+              _csrf: localStorage.csrf,
+              [event.target.id]: !profile.options.pizza.higherValue,
+            }
+          })
+          WhatsMenu.alert('green', 'Sucesso', 'Alterado com sucesso!')
+        } catch (error) {
+          WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+          console.error(error);
+        }
+      }
+
+      render() {
+        return (
+          <div>
+            <h3>Opções de tipo pizza</h3>
+
+            <div className="ui divider"></div>
+
+            <div className="fields">
+              <div className="eight wide field">
+                <div className="ui toggle checkbox">
+                  <input type="checkbox" name="options[pizza][higherValue]" className="hidden" defaultChecked={profile.options.pizza.higherValue} />
+                  <label id="higherValue" onClick={this.handleChange} >Atribuir valor da mais cara?</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+
+    class DisponibilityConfigs extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { name: {{ profile.options.disponibility.showProductsWhenPaused }} }
+        this.handleChange = this.handleChange.bind(this);
+      }
+
+      async handleChange(event) {
+        this.state[event.target.id] = !this.state[event.target.id]
+        try {
+          await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/settings/disponibilityConfigUpdate',
+            data: {
+              _csrf: localStorage.csrf,
+              [event.target.id]: !profile.options.disponibility.showProductsWhenPaused
+            }
+          })
+          WhatsMenu.alert('green', 'Sucesso', 'Alterado com sucesso!')
+        } catch (error) {
+          WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+          console.error(error);
+        }
+      }
+
+      render() {
+        return (
+          <div>
+            <h3>Opções de Disponibilidade de Horários</h3>
+
+            <div className="ui divider"></div>
+
+            <div className="fields">
+              <div className="eight wide field">
+                <div className="ui toggle checkbox">
+                  <input type="checkbox" name="options[disponibility][showProductsWhenPaused]" className="hidden" defaultChecked={profile.options.disponibility.showProductsWhenPaused} />
+                  <label id="showProductsWhenPaused" onClick={this.handleChange} >Exibir status de "esgotado" em produtos e complementos pausados?</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+
+    class FacebookConfigs extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          pixel: null,
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.savePrintConfigs = this.savePrintConfigs.bind(this);
+      }
+
+      handleChange(event) {
+        this.setState({[event.target.id]: event.target.value});
+      }
+
+      async savePrintConfigs() {
+        try {
+            await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/settings/facebookConfigUpdate',
+            data: {
+              _csrf: localStorage.csrf,
+              tracking: {
+                pixel: this.state.pixel
+              }
+            }
+          })
+            WhatsMenu.alert('green', 'Sucesso', 'Opções de impressora alteradas com sucesso!')
+          } catch (error) {
+            WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+            console.error(error);
+          }
+      }
+      render() {
+        return (
+          <React.Fragment>
+            <h3>Opções de Facebook</h3>
+
+            <div className="ui divider"></div>
+            <h3>Rastreador</h3>
+
+            <div className="divider"></div>
+
+            <div className="two fields">
+                <div className="eight wide field">
+                    <label>Facebook Pixel - Apenas a identificação</label>
+                    <input type="text" id="pixel" onChange={this.handleChange} defaultValue={profile.options.tracking ? profile.options.tracking.pixel : ''}/>
+                </div>
+                <div className="field">
+                  <button className="ui button green mt-23" onClick={this.savePrintConfigs} >Salvar</button>
+                </div>
+            </div>
+          </React.Fragment>
+        )
+      }
+    }
+
+    class GoogleConfigs extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          google: null,
+        }
+        this.handleChange = this.handleChange.bind(this);
+        this.save = this.save.bind(this);
+      }
+
+      handleChange(event) {
+        this.setState({[event.target.id]: event.target.value});
+      }
+
+      async save() {
+        try {
+            await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/settings/googleConfigUpdate',
+            data: {
+              _csrf: localStorage.csrf,
+              tracking: {
+                google: this.state.google
+              }
+            }
+          })
+            WhatsMenu.alert('green', 'Sucesso', 'Opções de impressora alteradas com sucesso!')
+          } catch (error) {
+            WhatsMenu.alert('red', 'Erro', 'Não foi possivel realizar as alterações!')
+            console.error(error);
+          }
+      }
+      render() {
+        return (
+          <React.Fragment>
+            <h3>Opções de Google</h3>
+            <div className="ui divider"></div>
+
+            <div className="two fields">
+                <div className="eight wide field">
+                    <label>Google Tag Manager - Apenas a identificação</label>
+                    <input type="text" id="google" onChange={this.handleChange} defaultValue={profile.options.tracking ? profile.options.tracking.google : ''}/>
+                </div>
+                <div className="field">
+                  <button className="ui button green mt-23" onClick={this.save}>Salvar</button>
+                </div>
+            </div>
+          </React.Fragment>
+        )
+      }
+    }
+
+    class Settings extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          domains: [],
+        }
+      }
+      async componentDidMount() {
+      const domains = await $.ajax({
+          method: 'GET',
+          url: '/dashboard/domains'
+        })
+        this.setState({
+          domains: domains,
+        })
+        $('.ui.toggle.checkbox').checkbox()
+    }
+
+    render() {
+      const deliveryAccess = WhatsMenu.getCookie('deliveryAccess') && JSON.parse(WhatsMenu.getCookie('deliveryAccess'))
+      const scheduleAccess = WhatsMenu.getCookie('scheduleAccess') && JSON.parse(WhatsMenu.getCookie('scheduleAccess'))
+      return (
+        <div className="">
+          <h1>Configurações</h1>
+          <div className="ui form">
+
+            {
+              deliveryAccess === true ?
+              <React.Fragment>
+                <div className="small-space"></div>
+                <BasicConfigs />
+
+                <div className="small-space"></div>
+                <TextConfigs />
+
+                </React.Fragment>
+                :
+
+                scheduleAccess === true ?
+                <React.Fragment>
+                  <div className="small-space"></div>
+                  <TextConfigs />
+                </React.Fragment>
+                :
+                null
+            }
+
+              <div className="small-space"></div>
+              <PrintConfigs />
+
+              <div className="small-space"></div>
+              <PizzaConfigs />
+
+              <div className="small-space"></div>
+              <DisponibilityConfigs />
+
+            {
+
+              deliveryAccess === true || scheduleAccess === true ?
+              <React.Fragment>
+                <div className="small-space"></div>
+                <WhatsAppConfigs />
+
+                <div className="small-space"></div>
+
+                { this.state.domains.length > 0
+                  ?
+                    <React.Fragment>
+                      <FacebookConfigs />
+                      <GoogleConfigs />
+                    </React.Fragment>
+                  :
+                    null
+                }
+              </React.Fragment>
+              :
+              null
+            }
+          </div>
+      </div>
+    )
+  }
+}
+
+(async () => {
+  profile = await $.get('{{route('myProfile')}}')
+  ReactDOM.render(<Settings />, document.querySelector('#settings-content'))
+})();
+
+</script>
+@endsection

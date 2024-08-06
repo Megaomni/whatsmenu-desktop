@@ -1,0 +1,47 @@
+<div id="modalEditPizzaFlavor" class="ui small modal">
+  <i class="close icon"></i>
+  <div class="ui inverted dimmer">
+    <div class="ui text loader">Aguarde</div>
+  </div>
+  <div class="header">Editar Sabor</div>
+  <div class="content"></div>
+  <div class="content bg-1"></div>
+  <div class="actions"></div>
+</div>
+
+<div id="modalAddPizzaFlavor" class="ui fullscreen overlay modal">
+  <i class="close icon"></i>
+  <div class="ui inverted dimmer">
+    <div class="ui text loader">Aguarde</div>
+  </div>
+  <div class="header">Criar novo sabor</div>
+  <div class="content">
+    <div class="ui form">
+      <div class="ui equal width grid stackable padded middle aligned">
+        <div class="row">
+          <div class="five wide column center aligned">
+            <img src="/img/no-img.jpg" alt="" class="ui image centered" style="width:600px;height:450px">
+              <p className="inf">Imagem com até 8mb (resolução recomendada de 600x450)</p>
+            <label for="addFlavorImage" class="add-file">Adicionar imagem</label>
+            <input type="file" name="image" id="addFlavorImage" style="display: none;" accept=".png, .jpg, .jpeg, .gif, .tiff, .bmp">
+          </div>
+          <div class="column">
+            <div class="field">
+              <label for="">Nome</label>
+              <input type="text" id="addPizzaFlavorName" name="name">
+              <div class="text-right"><small><b>0/55 caracteres</b></small></div>
+            </div>
+            <div class="field">
+              <label>Descrição</label>
+              <textarea id="addPizzaFlavorDescription" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div id="addFlavorValues" class="column"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="actions"></div>
+</div>

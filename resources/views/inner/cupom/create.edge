@@ -1,0 +1,293 @@
+@layout('inner/layout')
+@section('content')
+<div class="">
+  <div class="ui grid">
+
+    <div class="row small-space">
+      <div class="sixteen wide column">
+          <a class="ui button blue botLEFT hide-for-large">Menu</a>
+          <div class="ui segment secondary" style="overflow: visible;">
+            <div class="ui inverted dimmer" id="loadingBusca">
+              <div class="ui text loader">Aguarde</div>
+            </div>
+
+            <div class="ui equal width grid padded doubling middle aligned">
+              <div class="column">
+                <h3>Cupom</h3>
+              </div>
+              <div class="column right aligned">
+                <div class="sixteen wide field">
+                  <div id="cupomActive" class="ui toggle checkbox">
+                    <input {{profile.options.activeCupom ? 'checked' : ''}} type="checkbox" name="active">
+                    <label>Ativado</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ui divider"></div>
+            <div class="ui form">
+              <div class="five fields">
+                <div class="six wide field">
+                  <label for="code">Código do Cupom</label>
+                  <input id="code" name="code" type="text">
+                </div>
+                <div class="four wide field">
+                  <label>Tipo de Cupom</label>
+                  <select id="type" name="type" class="ui fluid dropdown">
+                    <option value="value" selected>Valor Fixo</option>
+                    <option value="percent">Porcentagem</option>
+                    <option value="freight">Frete Grátis</option>
+                  </select>
+                </div>
+                <div class="four wide field">
+                  <label for="value">Valor Desconto</label>
+                  <input id="cupomValue" name="value" type="tel">
+                </div>
+                <div class="four wide field">
+                  <label for="value">Valor Mínimo</label>
+                  <input id="cupomMinValue" name="minValue" type="tel">
+                </div>
+                <div class="two wide field">
+                  <button style="margin-top: 22px" type="button" id="send" class="ui green right floated button">Criar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row small-space">
+        <div class="sixteen wide column">
+          <table class="ui celled table striped selectable">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Valor Mínimo</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCupons">
+            </tbody>
+          </table>
+        </div>
+      </div>
+  </div>
+</div>
+@endsection
+
+@section('js')
+  <script>
+    const cupons = [...JSON.parse('{{{stringify(cupons)}}}')]
+    const cupomCode = document.querySelector('#code')
+    const cupomType = document.querySelector('#type')
+    const cupomValue = document.querySelector('#cupomValue')
+    const cupomMinValue = document.querySelector('#cupomMinValue')
+    const cupomSend = document.querySelector('#send')
+    const cupomActive = document.querySelector('#cupomActive')
+
+    $(cupomActive).checkbox({
+      onChange: async () => {
+        try {
+          await $.ajax({
+            method: 'PUT',
+            url: '{{route('cupom.activeDeactive')}}',
+            data: {
+              _csrf: '{{ csrfToken }}',
+              status: $(cupomActive).checkbox('is checked')
+            }
+          });
+
+          $('body').toast({
+            title: 'Cupom',
+            message: $(cupomActive).checkbox('is checked') ? 'Recurso Cupons Ativado!' : 'Recurso Cupons Desativado!',
+            class : 'green',
+            className: {
+                toast: 'ui message'
+            }
+          })
+
+        } catch (error) {
+          $('body').toast({
+            title: 'Cupom',
+            message: 'Erro ao Ativar/Desativar a função Cupons',
+            class : 'red',
+            className: {
+                toast: 'ui message'
+            }
+          })
+        }
+      }
+    })
+
+    $(document).ready(($) => {
+      $([cupomValue, cupomMinValue]).mask('####0,00', {
+        reverse: true
+      })
+    })
+
+    cupomCode.addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f \ ]/g, "").replace(/[^a-z0-9]/gi,'').replace('&', '').replace("\'", '')
+    })
+
+    if (cupomType.value === 'freight') {
+      cupomValue.value = 0
+      cupomValue.parentElement.className += ' disabled'
+    }
+
+    cupomType.addEventListener('change', (e) => {
+
+      if (e.target.value === 'freight') {
+        cupomValue.value = 0
+        cupomValue.parentElement.className += ' disabled'
+      } else {
+        cupomValue.parentElement.className = cupomValue.parentElement.className.replace(' disabled', '')
+        cupomValue.select()
+        cupomValue.focus()
+      }
+    })
+
+    cupomSend.onclick = async () => {
+      try {
+        $('#loadingBusca').dimmer('show')
+        const cupom = await $.post('{{route('cupom.store')}}', {
+          _csrf: localStorage.csrf,
+          code: cupomCode.value,
+          type: cupomType.value,
+          value: cupomValue.value,
+          minValue: cupomMinValue.value
+        })
+
+        cupons.unshift(cupom)
+
+        $('body').toast({
+          title: 'Cupom',
+          message: 'Criado com sucesso!',
+          class : 'green',
+          className: {
+              toast: 'ui message'
+          }
+        })
+
+        renderTable()
+        $('#loadingBusca').dimmer('hide')
+      } catch (error) {
+
+        const merror = (message) => {
+          $('body').toast({
+            title: 'Cupom',
+            message: message,
+            class : 'red',
+            className: {
+                toast: 'ui message'
+            }
+          })
+        }
+
+        switch (error.responseJSON.code) {
+          case '403-42':
+            merror('O código já foi usado! <br/>Digite um código diferente.')
+            break;
+
+          default:
+            merror('Erro ao criar cupom!')
+            break;
+        }
+
+
+        $('#loadingBusca').dimmer('hide')
+      }
+    }
+  </script>
+
+  <script type="text/babel">
+    class Cupom extends React.Component {
+      delete(cupom) {
+        $('body').toast({
+          message: 'Deseja realmente excluir esse cupom?',
+          displayTime: 0,
+          class: 'black message',
+          classActions: 'bottom attached',
+          actions:	[{
+            text: 'Sim',
+            icon: 'check',
+            class: 'green',
+            click: async () => {
+              try {
+                console.log(cupom);
+                const delCupom = await $.ajax({
+                  method: 'DELETE',
+                  url: '/dashboard/cupom/' + cupom.id,
+                  data: {
+                    _csrf: localStorage.csrf,
+                  }
+                })
+
+                cupons.splice(cupons.findIndex(c => c.id == cupom.id), 1)
+                renderTable()
+
+              } catch (error) {
+                console.error(error)
+                alert('Erro ao deletar cupom')
+              }
+            }
+          },{
+            text: 'Não',
+            icon: 'close',
+            class: 'red'
+          }]
+        })
+      }
+
+      async playPause(cupom) {
+        try {
+          console.log(cupom);
+          const playpause = await $.ajax({
+            method: 'PATCH',
+            url: '/dashboard/cupom/' + cupom.id,
+            data: {
+              _csrf: localStorage.csrf,
+            }
+          })
+
+          const cpm = cupons.find(c => c.id == cupom.id)
+          cpm.status = !cpm.status
+          renderTable()
+
+        } catch (error) {
+          console.error(error)
+          alert('Erro ao pausar/ativar cupom')
+        }
+      }
+
+      render() {
+        return (
+          <tr>
+            <td>{this.props.cupom.code}</td>
+            <td>{this.props.cupom.type === 'freight' ? 'Frete Grátis' : this.props.cupom.type === 'value' ? 'Valor Fixo' : 'Porcentagem'}</td>
+            <td>{this.props.cupom.type === 'freight' ? '-' : this.props.cupom.type === 'value' ? window.WhatsMenu.toBRL(this.props.cupom.value) : this.props.cupom.value + '%'}</td>
+            <td>{window.WhatsMenu.toBRL(this.props.cupom.minValue)}</td>
+            <td>
+              <button onClick={() => this.playPause(this.props.cupom)} className={this.props.cupom.status ? 'ui button orange' : 'ui button green'}>{this.props.cupom.status ? 'Pausar' : 'Ativar'}</button>
+              <button className="ui button red" onClick={() => this.delete(this.props.cupom)}>Excluir</button>
+            </td>
+          </tr>
+        )
+      }
+    }
+
+    class Cupons extends React.Component {
+      render() {
+        return cupons.map((cupom, index) => <Cupom cupom={cupom} key={index}/>)
+      }
+    }
+
+    renderTable()
+
+    function renderTable() {
+      ReactDOM.render(<Cupons/>, document.querySelector('#tbodyCupons'))
+    }
+  </script>
+@endsection

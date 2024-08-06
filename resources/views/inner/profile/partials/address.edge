@@ -1,0 +1,115 @@
+@if(!profile.address.street)
+
+  <a class="ui green btn-adicionar-endereco button large">Adicionar endereço</a>
+  <br>
+  <br>
+
+   <!-- ADICIONAR ENDEREÇO -->
+   <div class="ui adicionar-endereco small modal">
+    <i class="close icon"></i>
+    <div class="header">Adicionar endereço</div>
+    <div class="content">
+    <form method="POST" action="{{route('profile.address.add')}}" id="step2" class="ui form">
+      {{ csrfField() }}
+            <div class="three wide field">
+                <label for="cep">CEP</label>
+                <input name="zipcode" id="cep" type="tel" data-mask="00000-000">
+            </div>
+            <div class="fields">
+                <div class="ten wide field">
+                    <label for="address">Endereço</label>
+                    <input name="street" id="address" type="text">
+                </div>
+                <div class="three wide field">
+                    <label for="number">Número</label>
+                    <input name="number" id="number" type="text">
+                </div>
+                <div class="three wide field">
+                    <label for="complement">Complemento</label>
+                    <input name="complement" id="complement" type="text">
+                </div>
+            </div>
+            <div class="equal width fields">
+                <div class="field">
+                    <label for="neigborhood">Bairro</label>
+                    <input name="neigborhood" id="neigborhood" type="text">
+                </div>
+                <div class="field">
+                    <label for="city">Cidade</label>
+                    <input name="city" id="city" type="text">
+                </div>
+            </div>
+            <input type="hidden" name="state" id="state">
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">Cancelar</div>
+        <button class="ui approve green button" onclick="document.querySelector('#step2').submit()">Salvar</button>
+
+    </div>
+</div>
+
+@else
+
+  <div class="ui equal width grid stackable middle aligned">
+      <div class="six wide column">
+          <div class="ui embed">
+              <iframe src="https://www.google.com/maps/embed/v1/place?key=AIzaSyAQ86CfA1RgY_d_stSABzYkjufYgGuKaTg&q='{{profile.address.street}}+{{profile.address.number}},+{{profile.address.neigborhood}}+{{profile.address.city}}+{{profile.address.state}}'" width="600" height="450" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
+          </div>
+      </div>
+      <div class="column">
+          <h3>Endereço do restaurante</h3>
+          <div class="ui list big">
+              <div class="item">{{profile.address.street}}, {{profile.address.number}} • {{profile.address.neigborhood}}</div>
+              <div class="item">CEP {{profile.address.zipcode}}</div>
+              <div class="item">{{profile.address.city}}/{{profile.address.state}}</div>
+          </div>
+          <a class="ui green btn-editar-endereco button large">Editar endereço</a>
+      </div>
+  </div>
+
+  <div class="ui editar-endereco small modal">
+    <i class="close icon"></i>
+    <div class="header">Editar endereço</div>
+    <div class="content">
+    <form method="POST" action="{{route('profile.address.update')}}?_method=PATCH" id="updAddress" class="ui form">
+      {{ csrfField() }}
+            <div class="three wide field">
+                <label for="cep">CEP</label>
+                <input name="zipcode" id="cep" value="{{profile.address.zipcode}}" type="tel" data-mask="00000-000">
+            </div>
+            <div class="fields">
+                <div class="ten wide field">
+                    <label for="address">Endereço</label>
+                    <input name="street" id="address" value="{{profile.address.street}}" type="text">
+                </div>
+                <div class="three wide field">
+                    <label for="number">Número</label>
+                    <input name="number" id="number" value="{{profile.address.number}}" type="text">
+                </div>
+                <div class="three wide field">
+                    <label for="complement">Complemento</label>
+                    <input name="complement" id="complement" value="{{profile.address.complement}}" type="text">
+                </div>
+            </div>
+            <div class="equal width fields">
+                <div class="field">
+                    <label for="neigborhood">Bairro</label>
+                    <input name="neigborhood" id="neigborhood" value="{{profile.address.neigborhood}}" type="text">
+                </div>
+                <div class="field">
+                    <label for="city">Cidade</label>
+                    <input name="city" id="city" value="{{profile.address.city}}" type="text">
+                </div>
+            </div>
+            <input type="hidden" name="state" value="{{profile.address.state}}" id="state">
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">Cancelar</div>
+        <button class="ui approve green button" onclick="document.querySelector('#updAddress').submit()">Salvar</button>
+
+    </div>
+  </div>
+
+@endif

@@ -1,0 +1,37 @@
+@layout('outer/layout')
+@section('body')
+<section class="login">
+  <div class="">
+      <div class="ui grid middle aligned">
+          <div class="stretched row">
+              <div class="sixteen wide column">
+                      <div class="ui grid centered">
+                          <div class="sixteen wide mobile eleven wide tablet six wide computer column center aligned">
+                          <form method="POST" action="{{route('postLogin')}}" class="ui form login">
+                                {{ csrfField() }}
+                                  <img src="/img/logo.png?v=2" alt="WhatsMenu">
+                                  <div class="ui hidden divider"></div>
+                                  <div class="field">
+                                      <label>Email</label>
+                                  <input name="email" value="{{old('email', '')}}" type="text">
+                                      {{ elIf('<span>$self</span>', getErrorFor('email'), hasErrorFor('email')) }}
+                                  </div>
+                                  <div class="field">
+                                      <label>Senha</label>
+                                      <input type="password" name="password">
+                                      {{ elIf('<span>$self</span>', getErrorFor('password'), hasErrorFor('password')) }}
+                                  </div>
+                                  <button class="ui green button fluid">Acessar</button>
+                                  <p>Esqueceu sua senha? &nbsp <a class="recover_password" onclick="showRecoverPasswordModal()" href="#"> Recuperar senha</a></p>
+                                  <div class="ui hidden divider"></div>
+                                  {{--  <a href="/login/forgot">Esqueceu a senha?</a><br><br>  --}}
+                                  {{--  <strong>Ainda não é cadastrado?</strong> <br><a href="{{route('getRegister')}}">Cadastre-se agora!</a>  --}}
+                              </form>
+                          </div>
+                      </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+@endsection
