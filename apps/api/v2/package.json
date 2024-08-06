@@ -1,6 +1,6 @@
 {
-  "name": "adonis-api-app",
-  "version": "4.1.0",
+  "name": "api-v2",
+  "version": "0.0.0",
   "adonis-version": "4.1.0",
   "description": "Adonisjs boilerplate for API server with pre-configured JWT",
   "main": "index.js",
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node server.js",
     "test": "nyc --reporter=html node ace test",
-    "dev": "adonis serve --dev"
+    "dev": "chmod +x nvm_exec.sh && ./nvm_exec.sh && adonis serve --dev"
   },
   "keywords": [
     "adonisjs",
@@ -41,6 +41,7 @@
     "luxon": "^2.4.0",
     "mysql": "^2.18.1",
     "stripe": "^11.18.0",
+    "uuid": "^10.0.0",
     "web-push": "^3.6.7"
   },
   "autoload": {

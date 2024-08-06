@@ -1,12 +1,9 @@
 {
-  "name": "whatsmenu-v3-api",
+  "name": "api-v3",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
-  "engines": {
-    "node": "20.11.1"
-  },
   "scripts": {
     "setup": "chmod +x setup.sh && ./setup.sh",
     "start": "node bin/server.js",
