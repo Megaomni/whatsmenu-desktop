@@ -1,0 +1,32 @@
+@if(invoices.length === 0)
+  <h1>Nenhuma fatura gerada!</h1>
+@else
+  <h1>Foram gerados {{ invoices.length }} mesalidades</h1>
+  <table cellspacing="0" style="width: 100%">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>User Id</th>
+        <th>Transação</th>
+        <th>Vencimento</th>
+        <th>Boleto</th>
+      </tr>
+    </thead>
+    <tbody>
+      @each(invoice in invoices)
+        <tr style="background-color: {{ $loop.isEven ? 'rgb(76 175 80 / 0.2)' : 'transparent' }}">
+          <td style="text-align: center">{{ $loop.index + 1 }}</td>
+          <td style="text-align: center">{{ invoice.userId }}</td>
+          <td style="text-align: center">{{ invoice.transactionId }}</td>
+          <td style="text-align: center">{{ invoice.expiration }}</td>
+          <td style="text-align: center"><a target="_blank" href="{{ invoice.paghiper[0].create_request.bank_slip.url_slip }}">ver fatura</a></td>
+        </tr>
+      @endeach
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="5">Foram gerados {{ invoices.length }} mesalidades</td>
+      </tr>
+    </tfoot>
+  </table>
+@endif

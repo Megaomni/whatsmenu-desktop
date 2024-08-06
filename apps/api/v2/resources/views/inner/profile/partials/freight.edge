@@ -1,0 +1,150 @@
+<div class="ui grid">
+  <div class="sixteen wide column centered">
+      @if(profile.options.delivery.enableKm)
+        <h1>Tipo de Entrega</h1>
+        <div class="ui segment secondary">
+          <div class="ui form">
+            <div class="inline fields">
+              @if(profile.typeDelivery === 'km')
+              <div class="field">
+                <div class="ui radio checkbox typeDelivery">
+                  <input type="radio" name="typeDelivery" checked="" value="km" tabindex="0" class="hidden">
+                  <label>Por Kilometro</label>
+                </div>
+              </div>
+              <div class="field">
+                <div class="ui radio checkbox typeDelivery">
+                  <input type="radio" name="typeDelivery" value="neighborhood" tabindex="0" class="hidden">
+                  <label>Por Bairro</label>
+                </div>
+              </div>
+              @else
+                <div class="field">
+                  <div class="ui radio checkbox typeDelivery">
+                    <input type="radio" name="typeDelivery" value="km" tabindex="0" class="hidden">
+                    <label>Por Kilometro</label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="ui radio checkbox typeDelivery">
+                    <input type="radio" name="typeDelivery" checked="" value="neighborhood" tabindex="0" class="hidden">
+                    <label>Por Bairro</label>
+                  </div>
+                </div>
+              @endif
+            </div>
+          </div>
+        </div>
+        <div class="ui hidden divider"></div>
+      @endif
+      <h1>Taxas de Entrega</h1>
+      {{--  <p class="medium-font">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Libero voluptatibus praesentium reprehenderit at pariatur dolorum voluptatum necessitatibus quod deleniti, numquam, sapiente, ex distinctio nulla perspiciatis nihil unde atque id, aspernatur.</p>  --}}
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+      <div class="ui segment secondary">
+          <div class="ui form">
+            @if(profile.typeTax === 'km')
+              <div id="contentFormTax" class="four fields">
+            @else
+              <div id="contentFormTax" class="five fields">
+            @endif
+                  @if(profile.typeDelivery === 'neighborhood')
+                    <div id="fieldCity" class="field">
+                      <label for="taxCity">Cidade:</label>
+                      <input type="text" id="taxCity" name="city" value="{{ profile.address.city }}">
+                    </div>
+                  @else
+                    <div style="display: none" id="fieldCity" class="field">
+                      <label for="taxCity">Cidade:</label>
+                      <input type="text" id="taxCity" name="city" value="{{ profile.address.city }}">
+                    </div>
+                  @endif
+                  <div class="field">
+                    @if(profile.typeDelivery === 'km')
+                      <label id="distanceLabel" for="">Distância em km até:</label>
+                      <input type="number" id="taxDistance" name="distance">
+                      @else
+                      <label id="distanceLabel" for="">Nome do Bairro</label>
+                      <input type="text" id="taxDistance" name="distance">
+                    @endif
+                  </div>
+                  <div class="field">
+                      <label for="">Tempo em minutos</label>
+                      <input type="tel" id="taxTime" name="time">
+                  </div>
+                  <div class="field">
+                      <label for="">Valor</label>
+                      <input type="text" id="taxValue" name="value">
+                  </div>
+                  <div class="field">
+                      <button style="margin-top: 24px" class="ui button green mt-20" id="taxAdd">Adicionar</button>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="ui segment basic">
+          @if(profile.typeDelivery === 'km')
+            <table class="ui very basic table" id="taxTable">
+                <thead>
+                    <tr>
+                      <th id="distanceHeader">Distância em KM até</th>
+                      <th>Tempo</th>
+                      <th>Valor</th>
+                      <th width="100">Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tTaxDeliveries">
+                  @if(profile.typeDelivery === 'km')
+                      @each(tax in profile.taxDelivery)
+                        <tr>
+                          <td>{{tax.distance}}km</td>
+                          <td>{{tax.time}}</td>
+
+                          @if(tax.value === null)
+                            <td>A consultar</td>
+                          @endif
+
+                          @if(tax.value === 0)
+                            <td>Grátis</td>
+                          @endif
+
+                          @if(tax.value > 0)
+                            <td>{{formatCurrency(tax.value)}}</td>
+                          @endif
+
+                          <td><button class="ui button taxdel" data-code="{{tax.code}}">Excluir</button></td>
+                        </tr>
+                      @endeach
+                    @else
+                    @each(tax in profile.taxDelivery)
+                      @each(neighborhood in tax.neighborhoods)
+                        <tr>
+                          <td>{{ neighborhood.name }} - {{ $parent.tax.city }}</td>
+                          <td>{{neighborhood.time}}</td>
+
+                          @if(neighborhood.value === null)
+                            <td>A consultar</td>
+                          @endif
+
+                          @if(neighborhood.value === 0)
+                            <td>Grátis</td>
+                          @endif
+
+                          @if(neighborhood.value > 0)
+                            <td>{{formatCurrency(neighborhood.value)}}</td>
+                          @endif
+
+                          <td><button class="ui button taxdel" data-code="{{neighborhood.code}}">Excluir</button></td>
+                        </tr>
+                      @endeach
+                    @endeach
+                  @endif
+                </tbody>
+            </table>
+          @else
+            <div id="tTaxDeliveries"></div>
+          @endif
+      </div>
+  </div>
+</div>
+

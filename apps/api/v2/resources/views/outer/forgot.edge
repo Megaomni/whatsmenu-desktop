@@ -1,0 +1,46 @@
+@layout('outer/layout')
+@section('body')
+<section class="login">
+  <div class="">
+      <div class="ui grid middle aligned">
+          <div class="stretched row">
+              <div class="sixteen wide column">
+                  <div class="ui grid centered">
+                      <div class="sixteen wide mobile eleven wide tablet six wide computer column center aligned">
+                        @if(expired)
+                        <h2>Sua solicitação de recuperação de senha expirou!<br>Por favor solicite novamente uma recuperação de senha de acesso.</h2>
+                        <p><a href="/login" class="recover_password">Clique aqui para voltar</a></p>
+                        @else
+                        <div class="sixteen wide mobile twelve wide tablet eight wide computer column">
+                            <img src="/img/logo.png?v=2" alt="WhatsMenu">
+                            <h4>Recuperação de Senha</h4>
+                            <form class="ui form" action="{{ route('user.update.passwordForgot') }}" method="post">
+                              {{ csrfField() }}
+                              <div class="ui fields" style="display: flex; flex-direction: column;">
+                                <label>
+                                  Nova Senha
+                                </label>
+                                <div class="ui input field">
+                                  <input type="password" name="password">
+                                </div>
+
+                                <label>
+                                  Confirme Sua Nova Senha
+                                </label>
+                                <div class="ui input field">
+                                    <input type="password" name="password_confirm">
+                                  </div>
+                              </div>
+                              <input type="hidden" name="user_email" value="{{ user.email }}">
+                              <button class="ui button green fluid" type="submit">Salvar</button>
+                            </form>
+                        </div>
+                        @endif
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+@endsection

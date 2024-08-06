@@ -1,0 +1,438 @@
+@layout('inner/layout')
+@section('content')
+<h1 class="">Usuário</h1>
+<div class="ui grid">
+  <div class="row small-space">
+    <div class="sixteen wide column">
+      <a class="ui button blue botLEFT hide-for-large">Menu</a>
+      <div class="ui segment secondary" style="overflow: inherit;">
+        <div class="ui inverted dimmer" id="loadingBusca">
+          <div class="ui text loader">Aguarde</div>
+        </div>
+        <div class="ui form">
+          <div class="three fields">
+            <div class="fourteen wide field">
+              <label>Usuário</label>
+              <input id="user" name="user" type="text">
+            </div>
+            <div class="field">
+              <label>Buscar por</label>
+              <select id="type" name="type" class="ui fluid dropdown">
+                <option value="email">E-mail</option>
+                <option value="slug">Slug</option>
+                <option value="whatsapp">WhatsApp</option>
+              </select>
+            </div>
+            <div class="two wide field">
+              <button style="margin-top: 22px" type="button" id="send" class="ui green right floated button" tabIndex={0}>Buscar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="userInfo" class="small-space"></div>
+
+<div id="resultReleaseBlock" class="ui modal">
+  <div class="header">Resultado</div>
+  <div class="scrolling content">
+    <div id="modalSuccess">asdasdfasdf</div>
+    <div id="modalError">qwerqwerqwer</div>
+  </div>
+  <div class="actions">
+    <div class="green ui approve button">OK</div>
+  </div>
+</div>
+@endsection
+@section('js')
+<script type="text/babel">
+  (async () => {
+    document.querySelector('#user').focus();
+  })();
+
+  const users = {
+    total: NaN,
+    perPage: NaN,
+    page: NaN,
+    lastPage: NaN,
+    data: []
+  }
+
+  let user
+  let profile
+
+  function message(color, title, message) {
+  $('body').toast({
+    title: title,
+    message: message,
+    class : color,
+    className: {
+        toast: 'ui message'
+    }
+  })
+}
+
+  async function getUsers() {
+    try {
+      const url = '/adm/users/' + (!users.page ? '1' : ++users.page)
+      const usrs = await $.get(url)
+      users.total = usrs.total
+      users.perPage = usrs.perPage
+      users.page = usrs.page
+      users.lastPage = usrs.lastPage
+      users.data.push(...usrs.data)
+
+      ReactDOM.render(<Users users={users.data} />, document.getElementById('userInfo'))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  getUsers()
+
+  $('#coluna-conteudo').visibility({
+      once: false,
+      observeChanges: true,
+      onBottomVisible: () => getUsers()
+    })
+
+
+  document.querySelector('#user').onkeyup = (e) => {
+    if (e.key === 'Enter') {
+      document.querySelector('#send').click()
+    }
+  }
+  document.querySelector('#send').onclick = async () => {
+    try {
+      $('#loadingBusca').dimmer('show')
+      const data = {
+        _csrf: '{{ csrfToken }}',
+        type: $('#type').val(),
+        user: $('#user').val()
+      }
+
+      const result = await $.post('{{ route('adm.getUser.post') }}', data)
+
+      if (result.success) {
+        user = result.user
+        profile = result.profile
+        ReactDOM.unmountComponentAtNode(document.getElementById('userInfo'))
+        ReactDOM.render(<UserInfo user={user} profile={profile} />, document.getElementById('userInfo'))
+        $('.ui.dropdown').dropdown()
+      }
+      $('#loadingBusca').dimmer('hide')
+    } catch (error) {
+      console.error(error)
+      $('#loadingBusca').dimmer('hide')
+      alert('Usuário não encontrado!')
+    }
+  }
+
+
+  class UserInfo extends React.Component {
+    constructor(props) {
+      super(props)
+    }
+
+    componentDidMount() {
+      if (this.props.user) {
+        document.querySelector('#sendUser').onclick = async () => {
+          try {
+            const result = await $.ajax({
+              method: 'PATCH',
+              url: '{{ route('adm.updateUser.post') }}',
+              data: {
+                _csrf: '{{ csrfToken }}',
+                id: $('#uid').val(),
+                name: $('#uname').val(),
+                email: $('#uemail').val(),
+                whatsapp: $('#uwhatsapp').val(),
+                secretNumber: $('#usecret').val(),
+                due: $('#udue').val(),
+                password: $('#upassword').val(),
+                disableInvoice: ({{auth.user.controls.type === 'adm'}}) ? $('#udisableInvoice').val() : this.props.user.controls.disableInvoice ? 1 : 0.
+              }
+            })
+
+            if (result.success) {
+              this.props.user = result.user
+
+              const usrGlobal = users.data.findIndex(u => u.id === result.user.id)
+
+              if (usrGlobal > -1) {
+                users.data[usrGlobal] = result.user
+              }
+
+              this.forceUpdate()
+
+              message('green', 'Usuário', 'Usuário atualizado com sucesso!')
+            }
+          } catch (error) {
+            console.error(error)
+            alert('houve um erro! Por favor avise o Jason.')
+          }
+        }
+      }
+    }
+
+    async setSupport(e, id) {
+      try {
+        console.log('user', id)
+        const user = await $.post('{{route('adm.user.add.support')}}', {user: id, _csrf: localStorage.csrf})
+
+        if (user) {
+          this.props.user = user
+
+          const usrGlobal = users.data.findIndex(u => u.id === user.id)
+
+          if (usrGlobal > -1) {
+            users.data[usrGlobal] = user
+          }
+
+          this.forceUpdate()
+
+          message('green', 'Usuário', 'Suporte atribuído com sucesso!')
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    toList() {
+      ReactDOM.unmountComponentAtNode(document.getElementById('userInfo'))
+      ReactDOM.render(<Users users={users.data} />, document.getElementById('userInfo'))
+    }
+
+    render() {
+      console.log(luxon.DateTime.fromFormat(this.props.user.created_at, 'yyyy-MM-dd hh:mm:ss').toString())
+
+      let support = null
+
+      if (luxon.DateTime.fromFormat(this.props.user.created_at, 'yyyy-MM-dd hh:mm:ss') >= luxon.DateTime.fromISO('2021-06-07T00:00:00')) {
+        support = (
+          <button className="ui button yellow" onClick={(e) => this.setSupport(e, this.props.user.id)}>Atribuir Suporte</button>
+        )
+      }
+
+      if (this.props.user.supportId) {
+        support = (
+          <p><strong>Suporte Responsável:</strong> {this.props.user.support.name}</p>
+        )
+      }
+      return (
+        <div className="ui form">
+          <h2 className="pointer" onClick={this.toList}><i className="arrow circle left icon"></i>Voltar para Lista</h2>
+
+          <h4 className="ui dividing header">Dados do Usuário: {this.props.user.id} <span className="float-right">{support}</span></h4>
+          <div className="ui hidden divider"></div>
+
+            <div className="three fields">
+              <div className="field">
+                <label>Nome</label>
+                <input type="hidden" id="uid" defaultValue={this.props.user.id}/>
+                <input type="text" id="uname" defaultValue={this.props.user.name} placeholder="José Raimundo Exemplo da Silva"/>
+              </div>
+              <div className="field">
+                <label>E-mail</label>
+                <input type="email" id="uemail" defaultValue={this.props.user.email} placeholder="usuario@exemplo.com.br"/>
+              </div>
+              <div className="field">
+                <label>CPF/CNPJ</label>
+                <input type="text" id="usecret" defaultValue={this.props.user.secretNumber} placeholder="333.333.333-33"/>
+              </div>
+            </div>
+
+            <div className="two fields">
+              <div className="field">
+                <label>WhatsApp</label>
+                <input type="tel" id="uwhatsapp" defaultValue={this.props.user.whatsapp} placeholder="99 99999-9999"/>
+              </div>
+              <div className="field disabled">
+                <label>Cadastro</label>
+                <input type="email" id="ucreatedAt" value={this.props.user.created_at}/>
+              </div>
+            </div>
+
+          <div className="field">
+            <div className="three fields">
+              <div className="field">
+                <label>Vencimento</label>
+                <input type="text" id="udue" defaultValue={this.props.user.due} placeholder="Exemplo: 05"/>
+              </div>
+              <div className="field {{auth.user.controls.type !== 'adm' ? 'disabled' : ''}}">
+                <label>Forma de Pagamento - {{auth.user.controls.type}}</label>
+                <select id="udisableInvoice" name="type" className="ui fluid dropdown">
+                  <option value="0" selected={this.props.user.controls.disableInvoice ? false : true}>Boleto</option>
+                  <option value="1" selected={this.props.user.controls.disableInvoice ? true : false}>Cartão</option>
+                </select>
+              </div>
+              <div className="field">
+                <label>Senha</label>
+                <input type="text" id="upassword" placeholder="Digite a nova senha"/>
+              </div>
+            </div>
+          </div>
+          <button type="button" id="sendUser" className="ui green right floated button" tabIndex={1}>Salvar</button>
+          <div className="small-space"></div>
+          <Profile profile={this.props.profile}/>
+        </div>
+      )
+    }
+  }
+
+  class Profile extends React.Component {
+    componentDidMount() {
+      if (this.props.profile) {
+        document.querySelector('#sendProfile').onclick = async () => {
+          try {
+            const result = await $.ajax({
+              method: 'PATCH',
+              url: '{{ route('adm.updateProfile.post') }}',
+              data: {
+                _csrf: '{{ csrfToken }}',
+                id: $('#pid').val(),
+                name: $('#pname').val(),
+                whatsapp: $('#pwhatsapp').val(),
+                status: $('#pstatus').val(),
+                showTotal: $('#pshowtotal').val(),
+                km: $('#pkm').val()
+              }
+            })
+
+            if (result.success) {
+              const user =  users.data.findIndex(u => u.id === result.profile.userId)
+
+              if (user > -1) {
+                users.data[user].profile = result.profile
+              }
+
+              message('green', 'Perfil', 'Perfil atualizado com sucesso!')
+            }
+          } catch (error) {
+            console.error(error)
+            alert('houve um erro! Por favor avise o Jason.')
+          }
+        }
+      }
+    }
+
+    render() {
+      if (!this.props.profile) {
+        return (
+          <div>
+            <h4 className="ui dividing header">Perfil - Não Cadastrado!</h4>
+          </div>
+        )
+      }
+
+      return (
+        <div>
+          <h4 className="ui dividing header">Perfil {this.props.profile.id}</h4>
+          <div className="field">
+            <div className="fields">
+              <div className="seven wide field">
+                <label>Título</label>
+                <input type="hidden" id="pid" defaultValue={this.props.profile.id}/>
+                <input type="text" id="pname" defaultValue={this.props.profile.name} placeholder="Nome do meu negócio de sucesso"/>
+              </div>
+              <div className="four wide field">
+                <label>WhatsApp</label>
+                <input type="tel" id="pcontact" defaultValue={this.props.profile.whatsapp} placeholder="99 99999-9999"/>
+              </div>
+              <div className="four wide field disabled">
+                <label>SLUG</label>
+                <input type="text" value={this.props.profile.slug} placeholder="Apt #"/>
+              </div>
+            </div>
+          </div>
+          <div className="field">
+            <div className="three fields">
+              <div className="field">
+                <label>Status</label>
+                <select id="pstatus" name="pstatus" className="ui fluid dropdown">
+                  <option value="1" selected={this.props.profile.status ? true : false}>Ativo</option>
+                  <option value="0" selected={!this.props.profile.status ? true : false}>Bloqueado</option>
+                </select>
+              </div>
+              <div className="field">
+                <label>Valor no WhatsApp?</label>
+                <select id="pshowtotal" name="showTotal" className="ui fluid dropdown">
+                  <option value="1" selected={this.props.profile.showTotal ? true : false}>Sim</option>
+                  <option value="0" selected={!this.props.profile.showTotal ? true : false}>Não</option>
+                </select>
+              </div>
+              <div className="field">
+                <label>Config. KM</label>
+                <select id="pkm" name="km" className="ui fluid dropdown">
+                  <option value="1" selected={this.props.profile.options.delivery.enableKm ? true : false}>Sim</option>
+                  <option value="0" selected={!this.props.profile.options.delivery.enableKm ? true : false}>Não</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <button type="button" id="sendProfile" className="ui green right floated button" tabIndex={1}>Salvar</button>
+        </div>
+      )
+    }
+  }
+
+  class Users extends React.Component {
+    componentDidMount() {
+
+      $('.infinity').visibility({
+        once: false,
+        observeChanges: true,
+        onBottomVisible: () => getUsers()
+      })
+
+    }
+
+    openUser(user) {
+      ReactDOM.unmountComponentAtNode(document.getElementById('userInfo'))
+      ReactDOM.render(<UserInfo user={user} profile={user.profile} />, document.getElementById('userInfo'))
+    }
+
+    render() {
+
+      return (
+        <table className="ui table striped infinity">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>WhatsApp</th>
+              <th>Slug</th>
+              <th>Suporte</th>
+              <th>Vendedor</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.props.users.map((usr, index) => {
+              return (
+                <tr className="pointer" key={index} onClick={() => this.openUser(usr)}>
+                  <td>{usr.id}</td>
+                  <td>{usr.name}</td>
+                  <td>{usr.email}</td>
+                  <td>{usr.whatsapp}</td>
+                  <td>{usr.profile ? usr.profile.slug : '-'}</td>
+                  <td>{usr.support ? usr.support.name : '-'}</td>
+                  <td>{usr.seller.name}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+          <tfoot>
+            <tr className="bg-green pointer" onClick={getUsers}>
+              <td className="center aligned bg-trans pointer" colSpan={7}>{users.page !== users.lastPage ? <span className="wite pointer"><i className="arrow down icon"></i> Carregar mais <i className="arrow down icon"></i></span> : null}</td>
+            </tr>
+          </tfoot>
+        </table>
+      )
+    }
+  }
+
+</script>
+@endsection

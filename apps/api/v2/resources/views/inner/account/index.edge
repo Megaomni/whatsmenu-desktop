@@ -1,0 +1,276 @@
+@layout('inner/layout')
+@section('content')
+<a class="ui button blue botLEFT hide-for-large">Menu</a>
+
+<div id="account-content" style="margin: 24px auto;">
+</div>
+
+<script type="text/babel" > //src="/react/account.jsx"
+
+class PasswordsConfigs extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      security_key: null,
+      security_key_confirm: null,
+      old_security_key: null,
+      recovery: "{{recovery}}" === 'true' ? true : false,
+      token: "{{ token }}" === '' ? null : "{{ token }}"
+    }
+
+    this.saveSecurityKey = this.saveSecurityKey.bind(this)
+    this.updateSecurityKey = this.updateSecurityKey.bind(this)
+    this.updatePassword = this.updatePassword.bind(this)
+    this.recoverySecurityPassword = this.recoverySecurityPassword.bind(this)
+    this.handleChange = this.handleChange.bind(this)
+  }
+
+  handleChange(event) {
+    this.setState({ [event.target.id]: event.target.value })
+  }
+
+  async saveSecurityKey() {
+    try {
+      await $.ajax({
+        method: 'PATCH',
+        url: '/dashboard/account',
+        data: {
+          _csrf: localStorage.csrf,
+          security_key: this.state.security_key,
+          security_key_confirm: this.state.security_key_confirm
+        }
+      })
+      $('body').modal({
+        content: '<span class="ui big green text">SENHA FINANCEIRA CADASTRADA COM SUCESSO</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+    } catch (error) {
+      $('body').modal({
+        content: '<span class="ui big red text">FALHA NA REQUISIÇÃO, POR FAVOR TENTE NOVAMENTE</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+      console.error(error)
+      throw error
+    }
+    window.location.reload()
+  }
+
+  async updateSecurityKey() {
+    try {
+      await $.ajax({
+        method: 'PATCH',
+        url: '/dashboard/account/updateSecurityKey',
+        data: {
+          _csrf: localStorage.csrf,
+          security_key: this.state.security_key,
+          old_security_key: this.state.old_security_key
+        }
+      })
+      $('body').modal({
+        content: '<span class="ui big green text">SENHA FINANCEIRA ALTERADA COM SUCESSO</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+      window.location.reload()
+    } catch (error) {
+      $('body').modal({
+        content: '<span class="ui big red text">FALHA NA REQUISIÇÃO, POR FAVOR TENTE NOVAMENTE</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+      console.error(error)
+      throw error
+    }
+  }
+
+  async updatePassword() {
+    try {
+      await $.ajax({
+        method: 'PATCH',
+        url: '/dashboard/user/password',
+        data: {
+          _csrf: localStorage.csrf,
+          password: this.state.password,
+          old_password: this.state.old_password
+        }
+      })
+      $('body').modal({
+        content: '<span class="ui big green text">SENHA DE ACESSO ALTERADA COM SUCESSO</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+    } catch (error) {
+      $('body').modal({
+        content: '<span class="ui big red text">FALHA NA REQUISIÇÃO, POR FAVOR TENTE NOVAMENTE</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+      console.error(error)
+      throw error
+    }
+  }
+
+  async recoverySecurityPassword() {
+    try {
+      await $.ajax({
+        method: 'POST',
+        url: '/dashboard/account/recoverySecurityPassword',
+        data: {
+            _csrf: localStorage.csrf
+        }
+      })
+
+      $('body').modal({
+        title: '<span class="ui big green text">Email enviado com sucesso.</span>',
+        classTitle: 'centered',
+        content: '<span class="ui large text">Acesse ' + "<span class='ui green text'>{{ user.email }}</span>" + ' e verifique na "caixa de entrada" ou "spam"<br />a mensagem com o assunto:<br />"Recuperação de Senha | WhatsMenu"</span>',
+        classContent: 'centered',
+        centered: true,
+        class: 'tiny',
+        closeIcon: true,
+      }).modal('show')
+    } catch (error) {
+      $('body').modal({
+        title: '<span class="ui big red text">Falha ao enviar o email.</span>',
+        classTitle: 'centered',
+        content: '<span class="ui big text">Tente novamente.</span>',
+        classContent: 'centered',
+        centered: true,
+        class: 'tiny',
+        closeIcon: true,
+      }).modal('show')
+      console.error(error)
+      throw error
+    }
+  }
+
+  render() {
+    let content;
+    if (!this.state.recovery && this.state.token ) {
+      $('body').modal({
+          title: '<span class="ui big red text">Falha na autenticação</span>',
+          classTitle: 'centered',
+          content: '<span class="ui big text">Token de recuperação de senha expirado ou inválido</span>',
+          classContent: 'centered',
+          centered: true,
+          class: 'tiny',
+          closeIcon: true,
+        }).modal('show')
+    } else {
+    }
+    if("{{user.security_key}}" != "null" && !this.state.recovery) {
+      content = (
+        <React.Fragment>
+          <h3>Alterar Senha Financeira</h3>
+          <div className="ui divider"></div>
+          <div className="fields">
+            <div className="field five wide">
+                <label>Digite sua Senha Financeira Atual</label>
+              <div className="ui input">
+                <input id="old_security_key" type="password" onChange={this.handleChange} />
+              </div>
+
+              <label>Digite a Nova Senha Financeira</label>
+              <div className="ui input">
+                <input id="security_key" type="password" onChange={this.handleChange}/>
+              </div>
+
+            </div>
+          </div>
+          <button className="ui button green" onClick={this.updateSecurityKey}>Salvar</button>
+          <p>Esqueceu sua Senha Financeira? <a className="recover_security_key" onClick={this.recoverySecurityPassword}>Recuperar Senha</a></p>
+        </React.Fragment>
+      )
+    } else if ("{{user.security_key}}" == "null" || this.state.recovery) {
+      content = (
+        <React.Fragment>
+        <h3>{ this.state.recovery && "Recuperação de" } Senha Financeira</h3>
+        <div className="ui divider"></div>
+          <div className="fields">
+            <div className="field five wide">
+                <label>Cadastre uma Senha Financeira</label>
+              <div className="ui input">
+                <input id="security_key" type="password" onChange={this.handleChange}/>
+              </div>
+
+              <label>Confirme a Senha Financeira</label>
+              <div className="ui input">
+                <input id="security_key_confirm" type="password" onChange={this.handleChange}/>
+              </div>
+            </div>
+          </div>
+          <button className="ui button green" onClick={this.saveSecurityKey}>Salvar</button>
+        </React.Fragment>
+      )
+    }
+    return (
+      <React.Fragment>
+        {content}
+
+        {!this.state.recovery ?
+          <React.Fragment>
+            <h3>Alterar Senha de Acesso</h3>
+            <div className="ui divider"></div>
+            <div className="fields">
+              <div className="field five wide">
+                  <label>Digite a Senha de Acesso Atual</label>
+                <div className="ui input">
+                  <input id="old_password" type="password" onChange={this.handleChange}/>
+                </div>
+
+                <label>Digite a Nova Senha de Acesso</label>
+                <div className="ui input">
+                  <input id="password" type="password" onChange={this.handleChange}/>
+                </div>
+
+              </div>
+            </div>
+            <button className="ui button green" onClick={this.updatePassword}>Salvar</button>
+          </React.Fragment> :
+          <div></div>
+        }
+      </React.Fragment>
+    )
+  }
+}
+
+class Account extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      valeu: false
+    }
+  }
+
+  render() {
+    return (
+      <div className="" >
+        <div className="ui form">
+          <h1>Configurações de senhas</h1>
+          <div className="ui small-space"></div>
+          <PasswordsConfigs />
+        </div>
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(<Account />, document.querySelector('#account-content'))
+
+</script>
+@endsection
