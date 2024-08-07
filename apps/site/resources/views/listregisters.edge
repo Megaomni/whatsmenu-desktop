@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Cients Clist</title>
+
+  <link href="/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/bootstrap/font/bootstrap-icons.css">
+</head>
+<body>
+  <table  class="table table-striped">
+    <thead>
+      <th>#</th>
+      <th>Nome</th>
+      <th>whatsapp</th>
+      <th>Trabalha</th>
+      <th>utm_source</th>
+      <th>utm_medium</th>
+      <th>utm_campaign</th>
+      <th>utm_content</th>
+      <th>utm_term</th>
+      <th>Criado</th>
+      <th>Contatado</th>
+    </thead>
+    <tbody>
+      @each(client in clients)
+        <tr>
+          <td>{{ $index }}</td>
+          <td>{{ client.name }}</td>
+          <td>{{ client.whatsapp }}</td>
+          <td>{{ client.work }}</td>
+          <td>{{ client.utm_source ? client.utm_source : '-' }}</td>
+          <td>{{ client.utm_medium ? client.utm_medium : '-' }}</td>
+          <td>{{ client.utm_campaign ? client.utm_campaign : '-' }}</td>
+          <td>{{ client.utm_content ? client.utm_content : '-' }}</td>
+          <td>{{ client.utm_term ? client.utm_term : '-' }}</td>
+          <td>{{ client.date }}</td>
+          <td>{{ client.contacted_at ? client.contacted_at : '-' }}</td>
+        </tr>
+      @endeach
+    </tbody>
+  </table>
+  <script>
+    window.scrollTo(0, document.body.scrollHeight);
+  </script>
+</body>
+</html>

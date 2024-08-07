@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html class="no-js" lang="pt">
+	<head>
+		<!-- Standard Meta -->
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+		<!-- Site Properties -->
+		<title>{{title}}</title>
+        {{--  <?php include "include/head.php";?>  --}}
+        @include('include/head')
+		<style>
+			/* WHATSAPP FIXO */
+			.whatsapp-fixo {
+				position: fixed;
+				bottom:60px;
+				right:10px;
+				z-index: 999;
+			}
+			.img-padding{
+				padding: 10px !important;
+				border: 1px solid #ecf0f1;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v7.0&appId=468639929968884&autoLogAppEvents=1"></script>
+    {{--  @include('include/menu-mobile')  --}}
+		<div class="pusher">
+	        @include('include/top-bar')
+	        <!--<section class="bg-1 medium-space">
+	        	<div class="ui container">
+			      <div class="ui equal width grid padded stackable center aligned">
+			          <div class="column">
+			          	<a class="ui fluid button font-button massive yellow sendContact">GOSTARIA DE MAIS INFORMAÇÕES</a><br/>
+	                      <p class="font-medium" style="color: #fff !important">
+	                          Sem taxa de adesão ou tempo mínimo de permanência<br/>
+	                          <b>R$49,90/mês</b>
+	                      </p>
+			          </div>
+			      </div>
+			  </div>
+	        </section> -->
+
+          <section class="small-space bg-4 center-mobile">
+            <div class="ui container">
+                <div class="ui equal width grid padded stackable middle aligned">
+                    <div class="column">
+                        <p class="font-biggest color-green">Imprima <b>AINDA HOJE</b> os pedidos <br>do seu Delivery</p>
+                        <p class="font-medium strong">Do Whatsapp Direto para a Cozinha</p>
+
+                        <div class="mobile hidden">
+                            <a onclick="contact()" target="_blank" href="https://wa.me/5511937036875?text={{ request.url() === '/impressoras' ? 'Informa%C3%A7%C3%B5es%20WhatsMenu%20+%20Impressora' : 'Informa%C3%A7%C3%B5es%20WhatsMenu' }}" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES</a>
+                            <div style="margin-top:15px; margin-bottom:35px"><img class="ui middle aligned mini image" src="img/like-heart.png"> <span class="font-large">Aprovado por mais de {{ count }} clientes</span></div>
+                        </div>
+                    </div>
+                    <div class="eight wide column">
+                        <div class="ui image">
+                            <img src="img/pedido-impressora.png" alt="">
+                            <div class="mobile only">
+                                <a onclick="contact()" target="_blank" href="https://wa.me/5511937036875?text={{ request.url() === '/impressoras' ? 'Informa%C3%A7%C3%B5es%20WhatsMenu%20+%20Impressora' : 'Informa%C3%A7%C3%B5es%20WhatsMenu' }}" class="ui button massive yellow sendContact" style="margin-top:35px">QUERO MAIS INFORMAÇÕES</a>
+                                <div style="margin-top:15px; margin-bottom:35px"><img class="ui middle aligned mini image" src="img/like-heart.png"> <span class="font-large">Aprovado por mais de {{ count }} clientes</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+	        <section class="small-space">
+		      	<div class="ui container">
+		      		<div class="ui equal width grid padded center aligned">
+		      			<div class="column">
+		      				<img src="img/sociais.png" alt="" class="ui image centered">
+		      				<p class="mediun-font">DIVULGUE O SEU CARDÁPIO ONLINE NO FACEBOOK, INSTAGRAM, GOOGLE, YOUTUBE E RECEBA OS PEDIDOS NO WHATSAPP.</p>
+		      			</div>
+		      		</div>
+		      	</div>
+		    </section>
+			<section class="medium-space">
+				<div class="ui container">
+					<div id="allClients" class="ui grid padded stackable">
+						<div class="row">
+							<div class="sixteen wide column center aligned">
+								{{-- <p class="subtitle color-red">QUAL O TIPO DE PRODUTO VOCÊ TRABALHA NO DELIVERY?</p> --}}
+								<p class="title">QUAL O TIPO DE PRODUTO VOCÊ TRABALHA NO DELIVERY?</p>
+							</div>
+            </div>
+
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+            <div class="doubling four column row center aligned">
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+              <div class="column ui placeholder">
+                <div class="image"></div>
+              </div>
+            </div>
+
+            {{-- HAMBUGER --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> HAMBÚRGUERES</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/hamburguer/barleys.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/barleys" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/papa-lanches.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/papalanches" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/burgerecia.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/deliveriaburgercia" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/uruguaygourmet.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/uruguaygourmet" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/hamburguer/fratelli-burguers.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/fratelliburguers" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/st-anthony-burger.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/stanthonyburger" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/gordaolanchesoriginal.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/uruguaygourmet" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/honorato.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/honorato" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/hamburguer/saboresdopark.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/saboresdopark" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/burgerhouse.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/burgerhouse" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/tcheburguer.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/tcheburguer" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/trescoracoes.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/trescoracoes" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/hamburguer/gordaodelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/gordaodelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/tapsburguer.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/tapsburguer" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/ttburguer.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/ttburguer" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/hamburgueriaexpress.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/hamburgueriaexpress" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/hamburguer/heroisburguer.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/heroisburguer" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/picoslanches.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/picoslanches" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/lanoleohamburgueriadelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/lanoleohamburgueriadelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/hamburguer/biglanchesebatatasfritas.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/biglanchesebatatasfritas" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/hamburguer/trailerponto77.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/trailerponto77" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- BOLOS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> BOLOS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/bolos/pedacinhodoceuconfeitaria.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/pedacinhodoceuconfeitaria" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- JAPONES --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> COMIDA JAPONESA</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/japones/naomisushidelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/naomisushidelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/japones/brasilsushiregistro.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/brasilsushiregistro" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/japones/toyasushi.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/toyasushi" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/japones/doispalitosushi.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/doispalitosushi" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/japones/zookisushi.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/zookisushi" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/japones/shakemaki.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/shakemaki" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- COMIDA FIT --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> COMIDA FIT</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/fit/saborfitness.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/saborfitness" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+            --}}
+
+            {{-- SORVETES --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> SORVETES</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/sorvetes/oacaizeiro.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/oacaizeiro" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/sorvetes/palitosdourados.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/boiquelateacaiepastelaria" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/sorvetes/boiquelateacaiepastelaria.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/palitosdourados" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/sorvetes/balneariosantosantonio.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/balneariosantosantonio" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- LANCHES --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> LANCHES</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/lanches/garagemdabatata.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/garagemdabatata" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/lanches/tksdogs.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/tksdogs" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/lanches/bohsdogdelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/bohsdogdelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/lanches/reidobeirutedelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/reidobeirutedelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/lanches/pointdajoh.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/pointdajoh" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+            --}}
+
+            {{-- MERCADOS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> MERCADOS & CONVENIÊNCIAS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/mercado/willameconveniencia.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/willameconveniencia" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+            --}}
+
+            {{-- SALAGADOS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> SALGADOS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/salgados/seuzazasalgadosartesanais.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/seuzazasalgadosartesanais" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/salgados/andressasouzagourmet.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/andressasouzagourmet" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/salgados/santosalgadinho.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/santosalgadinho" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/salgados/rainhapastelariaerotisseria.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/rainhapastelariaerotisseria" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/salgados/reidacoxinha.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/reidacoxinha" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/salgados/reidacoxinha.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/reidacoxinha" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/salgados/pointdosalgado.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/pointdosalgado" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/salgados/boiquelateacaiepastelaria.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/boiquelateacaiepastelaria" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- MARMITAS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> MARMITAS & RESTAURANTES</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/marmitas/jairdafeijoada.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/jairdafeijoada" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/nordestaorestaurante.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/nordestaorestaurante" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/teletalita.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/teletalita" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/greenfit.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/greenfit" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/marmitas/deliciasnabrasa.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/deliciasnabrasa" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/gulosaolanchescamobi.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/gulosaolanchescamobi" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/hopedelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/hopedelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/neidelu.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/neidelu" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/marmitas/cozinhadanessa.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/cozinhadanessa" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/marmitas/restaurantefigueiredo.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/restaurantefigueiredo" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- FRANGO CARNES E ASSADOS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> FRANGO • CARNES E ASSADOS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/frango/assadosbomsabor.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/assadosbomsabor" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- FRUTOS DO MAR --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> FRUTOS DO MAR</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/frutos-mar/maresiapescados.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/maresiapescados" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- MASSAS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> MASSAS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/massas/paodikasa.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/paodikasa" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/massas/johnycrepe.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/johnycrepe" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/massas/dusidmassas.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/dusidmassas" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/massas/kimassas.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/kimassas" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/massas/duchefgourmetdelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/duchefgourmetdelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/massas/johnycrepe.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/johnycrepe" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+                <div class="column">
+                  <img src="img/massas/crepetremendos.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/crepetremendos" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- BEBIDAS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> BEBIDAS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/bebidas/tntdrinksdelivery.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/tntdrinksdelivery" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+              <div class="ui divider section"></div>
+            --}}
+
+            {{-- DIVERSOS --}}
+            {{--
+              <div class="row" style="margin-top: 50px !important">
+                <div class="sixteen wide column left aligned">
+                  <p class="font-medium color-green"><i class="chevron circle right icon"></i> DIVERSOS</h3>
+                </div>
+              </div>
+              <div class="doubling four column row center aligned">
+                <div class="column">
+                  <img src="img/diversos/cheirosdaterra.png" alt="" class="ui image centered img-padding">
+                  <a href="https://www.whatsmenu.com.br/delivery2/cheirosdaterra" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                </div>
+              </div>
+            --}}
+
+
+
+						<div class="row">
+							<div class="column center aligned margin-top-30">
+								<img src="img/sociais.png" alt="" class="ui image centered">
+		      					<p class="mediun-font">DIVULGUE O SEU CARDÁPIO ONLINE NO FACEBOOK, INSTAGRAM, GOOGLE, YOUTUBE E RECEBA OS PEDIDOS NO WHATSAPP.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+			<section class="bg-3 small-space">
+	        	<div class="ui container">
+			      <div class="ui equal width grid padded stackable center aligned">
+			          <div class="column">
+			          	<a class="ui fluid button font-button massive yellow sendContact">GOSTARIA DE MAIS INFORMAÇÕES</a><br/>
+	                      <p class="font-medium">
+	                          Sem taxa de adesão ou tempo mínimo de permanência<br/>
+	                          <b>R$49,90/mês</b>
+	                      </p>
+			          </div>
+			      </div>
+			  </div>
+	        </section>
+	     	<div class="ui termo longer modal">
+			    <i class="close icon"></i>
+			    <div class="header">Termo de Uso</div>
+			    <div class="content">
+			    	@include('include/modal')
+			    </div>
+		    </div>
+	        @include('include/footer')
+	        @include('include/script')
+    </div>
+    <script src="https://unpkg.com/react@17/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/babel" src="/react/profiles.jsx"></script>
+	</body>
+</html>

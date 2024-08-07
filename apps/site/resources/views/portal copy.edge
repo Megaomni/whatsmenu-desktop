@@ -1,0 +1,891 @@
+@layout('layoutportal')
+@section('body')
+
+@include('include-portal/header')
+
+<!-- NAV APÓS ESCOLHER A CIDADE
+<nav class="bg-theme hotsite py-md-2 py-0 fixed-top">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center align-self-center align-content-center">
+            <div class="flex-fill align-items-center align-self-center align-content-center">
+                <div class="hstack">
+                    <div class="p2-1">
+                        <img src="/img/logo.webp" alt="WhatsMenu" width="40px" class="pe-1 mobile hidden">
+                    </div>
+                    <div>
+                        <p class="mb-0 logo"><span class="fw-800">WhatsMenu</span> <span class="text-white pe-2">em:</span> <a data-bs-toggle="modal" data-bs-target="#exampleModal">Santos/SP <i class="bi bi-caret-down-fill fs-6"></i></a></p>
+                    </div>
+                  </div>
+
+            </div>
+            <div class="flex-fill">
+                <div class="hstack mobile hidden tablet hidden">
+                    <div class="p-2 ms-auto"><a class="text-white text-decoration-none" href="#">Cadastre seu Restaurante</a></div>
+                    <div class="p-2"><a class="text-white text-decoration-none" href="#">Cupons</a></div>
+                    <div class="p-2"><a class="text-white text-decoration-none" href="#">Entrar</a></div>
+                </div>
+                <div class="hstack mobile only">
+                    <div class="ms-auto"><a class="d-lg-none text-white btn btn-link" data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+                        <i style="font-size:1.7em" class="bi bi-list"></i>
+                    </a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+-->
+
+<!-- MENU -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasExampleLabel">Menu</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <ul class="list-unstyled">
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary">
+                    <i class="bi bi-person-plus me-3 fw-600"></i> Criar Conta
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary">
+                    <i class="bi bi-plus-circle me-3 fw-600"></i> Cadastre seu Restaurante
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-box-arrow-in-right me-3 fw-600"></i> Entrar</a>
+            </li>
+            <li class="py-2">
+                <hr>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-chat-heart me-3 fw-600"></i> Fale Conosco
+                </a>
+            </li>
+        </ul>
+
+        <ul class="list-unstyled text-dark">
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-calendar fw-600 me-3"></i> Minhas Reservas
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-person fw-600 me-3"></i> Editar Perfil
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-star fw-600 me-3"></i> Avaliações
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-credit-card fw-600 me-3"></i> Gerenciar Cartões
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-ticket-perforated fw-600 me-3"></i> Recompensas
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-person-plus me-3 fw-600"></i> Criar Conta
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-plus-circle me-3 fw-600"></i> Cadastre seu Restaurante
+                </a>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-box-arrow-right fw-600 me-3"></i> Sair
+                </a>
+            </li>
+            <li class="py-2">
+                <hr>
+            </li>
+            <li class="py-2">
+                <a href="#" class="text-decoration-none text-body-secondary"><i class="bi bi-chat-heart me-3 fw-600"></i> Fale Conosco
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- CAMPO BUSCA -->
+<section class="marTop">
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <h1 class="inter-family letterSpa lh-1">Encontre as melhores ofertas<br> pertinho de você!</h1>
+                <p class="lead text-secondary">Na sua porta em minutos com o Delivery mais rápido do Brasil, pede agora!</p>
+            </div>
+        </div>
+        <div class="justify-content-md-center text-center row">
+            <div class="col-lg-5">
+                <form class="">
+                    <div class="d-grid mt-3">
+                        <button type="button" class="btn btn-outline-danger btnCity btn-lg" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-search mt-n2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg> Busque por sua cidade
+                        </button>
+                    </div>
+                    <p class="text-secondary"><small>Digite a cidade de onde quer comprar seu produto.</small></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- SLIDER CATEGORIAS -->
+@if(ambient === 'desktop')
+    <section class="py-lg-5 py-2 fullSlider overflow-hidden sliderCat sticky-top py-3 bg-white" style="top:30px !important">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <div class="swiper SwiperCategoria">
+                        <div class="swiper-wrapper">
+                        @each(tag in tags)
+                            <div class="swiper-slide text-center">
+                                <a href="/portal/{{ cityPath }}/listagem?tags={{ tag.id }}">
+                                    <img class="imgCat" src="{{ tag.image }}" alt=""><br class="mobile hidden">
+                                    <small class="text-secondary nameCat ps-1 ps-md-0">{{tag.name}}</small>
+                                </a>
+                            </div>
+                        @endeach
+                        </div>
+                        <div class="swiper-button-prev mobile hidden"></div>
+                        <div class="swiper-button-next mobile hidden"></div>
+                        <div class="swiper-pagination mobile hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@else
+<section class="sticky-top py-3 bg-white" style="top:56px !important">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="scroller-wrapper">
+                    <div class="scroller">
+                        <div class="boxOption pe-2">
+                            <a class="btn bg-light border rounded-pill XsmallFont" href="#" role="button">
+                                <img src="/img/iconcategoria/arabe.webp" alt="" width="55">
+                                <span class="align-middle">Árabe</span>
+                            </a>
+                        </div>
+                        <div class="boxOption pe-2">
+                            <a class="btn bg-light border rounded-pill XsmallFont" href="#" role="button">
+                                <img src="/img/iconcategoria/acai.webp" alt="" width="55">
+                                <span class="align-middle">Açai</span>
+                            </a>
+                        </div>
+                        <div class="boxOption pe-2">
+                            <a class="btn bg-light border rounded-pill XsmallFont" href="#" role="button">
+                                <img src="/img/iconcategoria/carne.webp" alt="" width="55">
+                                <span class="align-middle">Carne</span>
+                            </a>
+                        </div>
+                        <div class="boxOption pe-2">
+                            <a class="btn bg-light border rounded-pill XsmallFont" href="#" role="button">
+                                <img src="/img/iconcategoria/Chinesa.webp" alt="" width="55">
+                                <span class="align-middle">Chinesa</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+@endif
+
+
+
+<!-- BANNER PROMO -->
+<section class="mt-2 mt-lg-4">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="swiper mySwiperPromo">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide"><img src="/img/1promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/2promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/3promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/4promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/1promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/2promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/3promo.webp" alt="" class="rounded rounded-4" /></div>
+                        <div class="swiper-slide"><img src="/img/4promo.webp" alt="" class="rounded rounded-4" /></div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SLIDER OS MAIS ACESSADOS -->
+@if(highlights.length)
+  <section class="py-lg-5 py-2 fullSlider overflow-hidden">
+      <div class="container">
+          <div class="row">
+              <div class="col">
+                  <h3>Os Mais Acessados</h3>
+                  <div class="swiper SwiperEmpresas">
+                      <div class="swiper-wrapper">
+                        @each(highlight in highlights)
+                          <div class="swiper-slide">
+                              <a href="#" class="border position-relative">
+                                  <div class="d-flex flex-row align-items-center align-self-center bg-white p-3">
+                                      <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="{{ highlight.logo }}" alt="" class=""/></span></div>
+                                      <div class="ms-3 corpRest">
+                                          {{--  <div class="small color-theme">Comida Chinesa</div>  --}}
+                                          <ul class="list-inline">
+                                              <li class="list-inline-item">
+                                                  <p class="text-truncate corpRest lead fw-600 text-dark align-items-center m-0">{{ highlight.name }}</p>
+                                              </li>
+                                          </ul>
+                                          <div class="text-truncate text-secondary small mt-n4 mobile hidden">{{ highlight.address.street }}, {{ highlight.address.number }} • {{ highlight.address.neigborhood }}</div>
+                                          {{--  <div class="small text-warning "><i class="bi bi-star-fill"></i> 4</div>  --}}
+                                      </div>
+                                  </div>
+                              </a>
+                          </div>
+                        @endeach
+                      </div>
+                      <div class="swiper-button-prev"></div>
+                      <div class="swiper-button-next"></div>
+                      <div class="swiper-pagination"></div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </section>
+@endif
+
+<!-- FAVORITOS -->
+<section class="py-lg-3 py-2 fullSlider">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Favoritos</h3>
+                <div class="swiper SwiperFavoritos">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+
+
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+
+
+
+                    </div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CUPONS -->
+@if(cupons.data.length)
+  <section class="py-lg-3 py-2 fullSlider">
+      <div class="container">
+          <div class="row align-items-center">
+              <div class="col-md-6 text-md-start text-center">
+                  <h3 class="py-4 d-block">{{ cupons.total }} Cupons de desconto em {{ atualCity }}</h3>
+              </div>
+              <div class="col-md-6 text-md-end text-center mb-md-0 mb-3 seeAll">
+                  <a href="/portal/{{ cityPath }}/cupom" class="color-theme">Ver todos</a>
+              </div>
+          </div>
+          <div class="row row-cols-2 row-cols-md-4">
+            @each(profile in cupons.data)
+              <div class="col-sm">
+                  <div class="border-cupom d-flex flex-md-row flex-column align-items-center align-self-center bg-white p-3 mb-3 position-relative">
+                      <div class="card_logoEmpresa"><span class="logoCupom"><img src="{{ profile.logo }}" alt="" class=""/></span></div>
+                      <div class="ms-0 ps-0 ms-md-2 ps-md-2 text-md-start text-center">
+                        @if(profile.cupons[0].type === 'freight')
+                          <div class="color-theme font18 fw-800">Entrega Grátis</div>
+                        @elseif(profile.cupons[0].type === 'percent')
+                          <div class="color-theme font18 fw-800">{{ profile.cupons[0].value }}% OFF</div>
+                        @else
+                        <div class="color-theme font18 fw-800">R$ {{ profile.cupons[0].value }} OFF</div>
+                        @endif
+
+                          <ul class="list-inline mb-1">
+                              <li class="list-inline-item">
+                                  <p class="cupomName fw-600 text-dark align-items-center d-flex m-0">{{ profile.cupons[0].code }}</p>
+                              </li>
+                          </ul>
+                          {{--  <div class="text-secondary small mt-n4">Válido no valor da entrega</div>  --}}
+
+                              <a href="https://whatsmenu.com.br/{{ profile.slug }}?linkCupom={{profile.cupons[0].code}}" target="_blank">Pegar Cupom</a>
+
+                      </div>
+                  </div>
+              </div>
+            @endeach
+          </div>
+      </div>
+  </section>
+@endif
+
+<!-- FAVORITOS -->
+<section class="py-lg-3 py-2 mb-md-4 mb-0 fullSlider">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <h3>Últimos Acessados</h3>
+                <div class="swiper SwiperFavoritos">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+
+
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div><div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logoEmpresa.webp" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+                        <div class="swiper-slide text-center">
+                            <a href="#">
+                                <div class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="/img/logo.jpg" alt=""></span></div>
+                                <small class="text-secondary">China in Box</small>
+                            </a>
+                        </div>
+
+
+
+                    </div>
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                    <div class="swiper-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RESTAURANTES -->
+<img src="/img/shadown.webp" alt="" class="mx-auto d-block shadownImage img-fluid" />
+<section class="bg-light py-2 py-lg-5 mb-5 mb-md-0">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-md-start text-center">
+                <h3 class="py-4 d-block">{{ profiles.total }} Restaurantes em {{ atualCity }}</h3>
+            </div>
+            <div class="col-md-6 text-md-end text-center mb-md-0 mb-3 seeAll">
+                <a href="/portal/{{ cityPath }}/listagem" class="color-theme">Ver todos</a>
+            </div>
+        </div>
+
+        <div class="row sticky-top py-3 bg-light mb-3" style="top:112px !important">
+            <div class="scroller-wrapper">
+                <div class="scroller">
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Entrega Grátis</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Com Cupons</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Opções Veganas</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Opções Vegetarianas</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">A partir de R$ 5</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Até R$ 25 off</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Até R$ 50 off</a>
+                    </div>
+                    <div class="boxOption pe-2">
+                        <a class="btn btn-outline-danger opacity-75 rounded-pill XsmallFont" href="#" role="button">Até 50% off</a>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <div class="row" itemscope itemtype="https://schema.org/Organization">
+          @each(profile in profiles.data)
+            <div class="col-lg-4 col-md-6">
+                <a itemprop="url" href="https://whatsmenu.com.br/{{ profile.slug }}{{ profile.cupons.length ? '?linkCupom=' + profile.cupons[0].code : '' }}" target="_blank">
+                    <div class="d-flex flex-row align-items-center align-self-center bg-white p-3 mb-3 position-relative">
+                        <div class="position-absolute top-0 end-0">
+                          <div data-slug="{{ profile.slug }}" class="btnHeart p-2">
+                             <svg height="25" width="25" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 0H24V24H0z" fill="none"></path>
+                                <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z"></path>
+                             </svg>
+                          </div>
+                       </div>
+                        <div itemprop="logo" class="card_logoEmpresa"><span class="logoEmpresa border rounded-4"><img src="{{ profile.logo }}" alt="" class=""/></span></div>
+                        <div class="ms-3 flex-fill">
+                            {{--  <div class="small color-theme">Comida Chinesa</div>  --}}
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <p itemprop="name" class="truncate-characters lead fw-600 text-dark align-items-center d-flex m-0">{{ profile.name }}</p>
+                                </li>
+                            </ul>
+                            @if(profile.deliveryLocal)
+                              <div class="truncate-words2 text-secondary small mt-n4" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                <span itemprop="streetAddress">{{ profile.address.street }}, {{ profile.address.number }}</span> •
+                                <span itemprop="itempropaddressLocality">{{ profile.address.neigborhood }} - {{ profile.address.city }}</span></div>
+                            @else
+                            <div class="text-secondary small mt-n4" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                              <span itemprop="itempropaddressLocality">{{ profile.address.neigborhood }} - {{ profile.address.city }}</span>
+                            </div>
+                            @endif
+
+                            <div class="small text-warning">
+                                {{--  <i class="bi bi-star-fill"></i>4  --}}
+                                @if(profile.cupons.length)
+                                  <span class="mt-2 float-end text-success-emphasis fw-400 p-1 border border-success border-2 badge bg-success-subtle">Cupom Disponível</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+          @endeach
+        </div>
+        <div class="row align-items-center">
+          <div class="col text-md-end mb-3 text-center">
+              <a href="/portal/{{ cityPath }}/listagem" class="color-theme">Ver todos {{ profiles.total }} deliveries em {{ atualCity }}</a>
+          </div>
+      </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+@include('include-portal/footer')
+
+<!-- FOOTER MOBILE -->
+<section class="pt-2 pb-3 bg-white border-top fixed-bottom mobile only">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-flex justify-content-around mobileMenu">
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+                    <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+                    <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+                  </svg>
+                </a>
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-receipt">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2m4 -14h6m-6 4h6m-2 4h2" />
+                      </svg>
+                </a>
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                        <path d="M21 21l-6 -6" />
+                      </svg>
+                </a>
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                      </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODAIS -->
+@include('portal/modal/localization')
+
+ @endsection
+
+ @section('javascript')
+   <script>
+       var swiper = new Swiper(".mySwiperPromo", {
+           slidesPerView: 1.2,
+           spaceBetween: 10,
+           pagination: {
+               el: ".swiper-pagination",
+               clickable: true,
+           },
+           autoplay: {
+               delay: 6500,
+               disableOnInteraction: false,
+           },
+           breakpoints: {
+               640: {
+                   slidesPerView: 2,
+                   spaceBetween: 20,
+               },
+               768: {
+                   slidesPerView: 4,
+                   spaceBetween: 40,
+               },
+               1024: {
+                   slidesPerView: 4,
+                   spaceBetween: 50,
+               },
+           },
+       });
+   </script>
+
+   <script>
+       var swiper = new Swiper(".SwiperEmpresas", {
+           slidesPerView: 1.5,
+           spaceBetween: 10,
+           navigation: {
+               nextEl: ".swiper-button-next",
+               prevEl: ".swiper-button-prev",
+           },
+           breakpoints: {
+               640: {
+                   slidesPerView: 1,
+                   spaceBetween: 20,
+               },
+               768: {
+                   slidesPerView: 4,
+                   spaceBetween: 40,
+               },
+               1024: {
+                   slidesPerView: 4,
+                   spaceBetween: 50,
+               },
+           },
+       });
+   </script>
+
+   <script>
+       var swiper = new Swiper(".SwiperCategoria", {
+           slidesPerView: 3,
+           spaceBetween: 10,
+           navigation: {
+               nextEl: ".swiper-button-next",
+               prevEl: ".swiper-button-prev",
+           },
+           breakpoints: {
+               640: {
+                   slidesPerView: 3,
+                   spaceBetween: 20,
+               },
+               768: {
+                   slidesPerView: 8,
+                   spaceBetween: 30,
+               },
+               1024: {
+                   slidesPerView: 8,
+                   spaceBetween: 30,
+               },
+           },
+       });
+   </script>
+
+<script>
+    var swiper = new Swiper(".SwiperFavoritos", {
+        slidesPerView: 3,
+        spaceBetween: 10,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 3,
+                spaceBetween: 10,
+            },
+            768: {
+                slidesPerView: 8,
+                spaceBetween: 10,
+            },
+            1024: {
+                slidesPerView: 8,
+                spaceBetween: 10,
+            },
+        },
+    });
+</script>
+
+   <script>
+       const truncateChar = new Cuttr('.truncate-characters', {
+           //options here
+           truncate: 'characters',
+           length: 22
+       });
+
+       new Cuttr('.truncate-words2', {
+           //options here
+           truncate: 'characters',
+           length: 30
+       });
+
+       new Cuttr('.truncate-words', {
+           //options here
+           truncate: 'words',
+           length: 5
+       });
+
+       new Cuttr('.truncate-sentences', {
+           //options here
+           truncate: 'sentences',
+           length: 3
+       });
+
+       let truncateReadMore = new Cuttr('.truncate-words-read-more', {
+           //options here
+           truncate: 'words',
+           length: 5,
+           readMore: true,
+           readMoreText: 'Show more',
+           readLessText: 'Show less'
+       });
+
+       new Cuttr('.truncate-words-title-attr', {
+           //options here
+           truncate: 'words',
+           length: 5,
+           title: true,
+       });
+   </script>
+   <script>
+    const listFavorites = JSON.parse(localStorage.listFavorites || '[]')
+    document.querySelectorAll('.btnHeart').forEach(favorite => {
+      if (listFavorites.find(f => f === favorite.dataset.slug)) {
+        favorite.classList.add('active')
+      }
+      favorite.onclick = () => {
+        if (!favorite.classList.contains('active')) {
+          listFavorites.unshift(favorite.dataset.slug)
+          localStorage.listFavorites = JSON.stringify(listFavorites)
+          favorite.classList.add('active')
+        } else {
+          const index = listFavorites.findIndex(f => f === favorite.dataset.slug)
+          console.log(index);
+          listFavorites.splice(index, 1)
+          localStorage.listFavorites = JSON.stringify(listFavorites)
+          favorite.classList.remove('active')
+        }
+
+        return false
+      }
+    });
+   </script>
+ @endsection

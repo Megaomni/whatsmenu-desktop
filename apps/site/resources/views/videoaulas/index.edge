@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visão Geral - WhatsMenu</title>
+    <link rel="stylesheet" type="text/css" href="dist/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="dist/style.css?v=2.1">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script src="dist/semantic.min.js"></script>
+</head>
+
+<body>
+    @include('videoaulas/include/sidebar')
+    <div class="pusher">
+        @!component('videoaulas/include/header', link = route('aula1'))
+        <section class="contentBody pd-y-medium bg-3">
+            <div class="ui container">
+                <div class="ui grid middle aligned">
+                    <div class="sixteen wide mobile eleven wide computer centered column center aligned">
+                        <h5>VISÃO GERAL</h5>
+                        <div class="ui embed">
+                          <iframe width="560" height="315" src="https://www.youtube.com/embed/wLZQUz84tOY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="ui hidden divider"></div>
+                        <h3>Veja todas as funcionalidades exclusivas da ferramenta <b>WhatsMenu</b>.</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {{--
+          <footer class="footer bg-1">
+              <div class="ui menu massive">
+                  <a href="#" class="item botLEFT border-right">
+                      <i class="list icon"></i> VER ÍNDICE DE AULAS
+                  </a>
+                  <a href="{{ route('aula1') }}" class="item right border-left">
+                      PRÓXIMA AULA  <i class="chevron circle right  icon"></i>
+                  </a>
+              </div>
+          </footer>
+        --}}
+    </div>
+    <script src="/videoaulas/dist/scripts.js"></script>
+</body>
+
+</html>

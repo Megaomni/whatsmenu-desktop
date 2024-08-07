@@ -1,0 +1,94 @@
+<div class="bg-2 text-center internal-space" >
+    <img src="/videoaulas-new/img/logo.png" alt="" class="ui image centered">
+    <p class="big-font"><b>Vídeo Aulas</b></p>
+</div>
+
+<div class="ui basic segment">
+
+    <div class="ui accordion">
+
+        <div class="active title">
+          <i class="dropdown icon"></i>
+          <span style="font-size: 20px; !important; font-weight:600; color: #f35;">PDV, Controle de Caixa</span>
+        </div>
+
+        <div class="{{!(type || type === "pdv") ? 'active ' : ''}}content">
+            <div class="ui list menu_ divided">
+                <a href="/videoaulas" class="item card ui lessonCard"> Visão Geral das Ferramentas PDV WhatsMenu</a>
+                @each(lesson in lessons.pdv)
+                <a href="/videoaulas/pdv/aula/{{$loop.index + 1}}" class="item card ui lessonCard"> <b>Aula {{$loop.index + 1}} -</b> {{ lesson.title }}</a>
+                @endeach
+            </div>
+        </div>
+
+
+        <div class="title">
+          <i class="dropdown icon"></i>
+          <span style="font-size: 20px; !important; font-weight:600; color: #f35;">Cadastrando o Cardápio</span>
+        </div>
+        <div class="{{type === "cadastro" ? 'active ' :  ''}}content">
+            <div class="ui list menu_ divided">
+                {{--  <a href="/videoaulas" class="item"> Visão Geral das Ferramentas PDV WhatsMenu</a>  --}}
+                @each(lesson in lessons.cadastro)
+                <a href="/videoaulas/cadastro/aula/{{$loop.index + 1}}" class="item card ui lessonCard"> <b>Aula {{$loop.index + 1}} -</b> {{ lesson.title }}</a>
+                @endeach
+            </div>
+        </div>
+
+        <div class="title">
+            <i class="dropdown icon"></i>
+            <span style="font-size: 20px; !important; font-weight:600; color: #f35;">Configurado Padrões</span>
+          </div>
+          <div class="{{type === "padrao" ? 'active ' :  ''}}content">
+              <div class="ui list menu_ divided">
+                  {{--  <a href="/videoaulas" class="item"> Visão Geral das Ferramentas PDV WhatsMenu</a>  --}}
+                  @each(lesson in lessons.padrao)
+                  <a href="/videoaulas/padrao/aula/{{$loop.index + 1}}" class="item card ui lessonCard"> <b>Aula {{$loop.index + 1}} -</b> {{ lesson.title }}</a>
+                  @endeach
+              </div>
+          </div>
+
+          <div class="title">
+            <i class="dropdown icon"></i>
+            <span style="font-size: 20px; !important; font-weight:600; color: #f35;">Impressão de Pedidos</span>
+          </div>
+          <div class="{{type === "impressao" ? 'active ' :  ''}}content">
+              <div class="ui list menu_ divided">
+                  {{--  <a href="/videoaulas" class="item"> Visão Geral das Ferramentas PDV WhatsMenu</a>  --}}
+                  @each(lesson in lessons.impressao)
+                  <a href="/videoaulas/impressao/aula/{{$loop.index + 1}}" class="item card ui lessonCard"> <b>Aula {{$loop.index + 1}} -</b> {{ lesson.title }}</a>
+                  @endeach
+              </div>
+          </div>
+
+          <div class="title">
+            <i class="dropdown icon"></i>
+            <span style="font-size: 20px; !important; font-weight:600; color: #f35;">Controle de Mesas</span>
+          </div>
+          <div class="{{type === "controle" ? 'active ' :  ''}}content">
+              <div class="ui list menu_ divided">
+                  {{--  <a href="/videoaulas" class="item"> Visão Geral das Ferramentas PDV WhatsMenu</a>  --}}
+                  @each(lesson in lessons.controle)
+                  <a href="/videoaulas/controle/aula/{{$loop.index + 1}}" class="item card ui lessonCard"> <b>Aula {{$loop.index + 1}} -</b> {{ lesson.title }}</a>
+                  @endeach
+              </div>
+          </div>
+
+
+          <div class="title">
+            <i class="dropdown icon"></i>
+            <span style="font-size: 20px; !important; font-weight:600; color: #f35;">Outros</span>
+          </div>
+          <div class="{{type === "restante" ? 'active ' :  ''}}content">
+              <div class="ui list menu_ divided">
+                  {{--  <a href="/videoaulas" class="item"> Visão Geral das Ferramentas PDV WhatsMenu</a>  --}}
+                  @each(lesson in lessons.restante)
+                  <a href="/videoaulas/restante/aula/{{$loop.index + 1}}" class="item card ui lessonCard"> <b>Aula {{$loop.index + 1}} -</b> {{ lesson.title }}</a>
+                  @endeach
+              </div>
+          </div>
+
+
+      </div>
+</div>
+

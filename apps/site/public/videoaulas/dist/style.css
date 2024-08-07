@@ -1,0 +1,286 @@
+:root {
+    --color-text: #718096;
+    --color-invert: #ffffff;
+    --color-heading: #2d3748;
+    --color-link: #2ecc71;
+    --bg-1: #ffffff;
+    --bg-2: #f0f3f6;
+    --bg-3: #222222;
+    --bg-4: #2ecc71;
+}
+
+body,
+html {
+    /* IE 10-11 didn't like using min-height */
+    height: 100%;
+    font-size: 16px;
+}
+
+.pusher {
+    display: flex;
+    flex-direction: column;
+}
+
+header .ui.menu {
+  box-shadow: none;
+  border: none;
+}
+
+header.mobile .ui.grid>.column:not(.row) {
+  padding-bottom: 0;
+}
+
+.contentBody {
+    display: flex;
+    flex: 1 0 auto;
+    /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
+    align-items: center;
+}
+
+.footer {
+    flex-shrink: 0;
+    /* Prevent Chrome, Opera, and Safari from letting these items shrink to smaller than their content's default minimum size. */
+    /* border-top: 1px solid #ecf0f1; */
+}
+
+
+/* ======================================= FONTS */
+
+@font-face {
+    font-family: 'Icons';
+    src: url("../dist/themes/default/assets/fonts/icons.eot");
+    src: url("../dist/themes/default/assets/fonts/icons.eot?#iefix") format('embedded-opentype'), url("../dist/themes/default/assets/fonts/icons.woff2") format('woff2'), url("../dist/themes/default/assets/fonts/icons.woff") format('woff'), url("../dist/themes/default/assets/fonts/icons.ttf") format('truetype'), url("../dist/themes/default/assets/fonts/icons.svg#icons") format('svg');
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-decoration: inherit;
+    text-transform: none;
+}
+
+.fontWeight-600 {
+    font-weight: 600;
+}
+
+
+/* ======================================= BACKGROUND AND COLORS */
+
+.bg-1 {
+    background-color: var(--bg-1) !important;
+}
+
+.bg-2 {
+    background: var(--bg-2) !important;
+}
+
+.bg-3 {
+    background: var(--bg-3) !important;
+}
+
+.bg-4 {
+    background-color: var(--bg-4) !important;
+}
+
+:is(.bg-3,
+.bg-4) :is(p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+a) {
+    color: var(--color-invert) !important;
+}
+
+p {
+    color: var(--color-text) !important;
+    font-size: 16px;
+}
+
+:is(a,
+a.item) {
+    color: var(--color-link) !important;
+}
+
+
+/* ======================================= MEASURES */
+
+.pd-y-small {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+
+.pd-y-medium {
+    padding-top: 50px !important;
+    padding-bottom: 50px !important;
+}
+
+.pd-y-big {
+    padding-top: 120px !important;
+    padding-bottom: 120px !important;
+}
+
+.lh-small {
+    line-height: 1 !important;
+}
+
+.mt-none {
+    margin-top: 0 !important;
+}
+
+
+/* ======================================= OBJECTS */
+
+.ui.menu {
+    margin: 0 !important;
+}
+
+.ui.left.sidebar {
+    width: 40%;
+}
+
+.border-left {
+    border-left: 1px solid #D4D4D5 !important;
+}
+
+.border-right {
+    border-right: 1px solid #D4D4D5 !important;
+}
+
+.float-right {
+    float: right;
+}
+
+a:not(href) {
+    cursor: pointer;
+}
+
+.ui.sidebar.left {
+    background: var(--bg-2) !important;
+}
+
+.ui.sidebar.left .ui.list>.item {
+    padding: 1em 0;
+}
+
+#logo {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+header .ui.button.green {
+    color: #fff !important;
+}
+
+
+/* ======================================= VISIBILITY */
+
+
+/* Mobile */
+
+@media only screen and (max-width: 767px) {
+    [class*="mobile hidden"],
+    [class*="tablet only"]:not(.mobile),
+    [class*="computer only"]:not(.mobile),
+    [class*="large screen only"]:not(.mobile),
+    [class*="widescreen only"]:not(.mobile),
+    [class*="or lower hidden"] {
+        display: none !important;
+    }
+    .center-mobile {
+        text-align: center !important;
+        margin: 0 auto;
+        position: relative;
+        display: block;
+    }
+     :is(.pd-y-small,
+    .pd-y-medium,
+    .pd-y-big) {
+        padding-top: 20px !important;
+        padding-bottom: 20px !important;
+    }
+    .content {
+        display: block;
+    }
+    .ui.left.sidebar {
+        width: 100%;
+    }
+    #logo img {
+        width: 150px !important;
+    }
+    .ui.massive.menu {
+        font-size: .92857143rem !important;
+    }
+}
+
+
+/* Tablet / iPad Portrait */
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    [class*="mobile only"]:not(.tablet),
+    [class*="tablet hidden"],
+    [class*="computer only"]:not(.tablet),
+    [class*="large screen only"]:not(.tablet),
+    [class*="widescreen only"]:not(.tablet),
+    [class*="or lower hidden"]:not(.mobile) {
+        display: none !important;
+    }
+     :is(.pd-y-small,
+    .pd-y-medium,
+    .pd-y-big) {
+        padding-top: 25px !important;
+        padding-bottom: 25px !important;
+    }
+    #logo {
+        border-top: 1px solid rgba(34, 36, 38, .15);
+        border-bottom: 1px solid rgba(255, 255, 255, .1);
+        padding-top: 15px !important;
+        padding-bottom: 15px !important;
+    }
+    .ui.left.sidebar {
+        width: 90%;
+    }
+}
+
+
+/* Computer / Desktop / iPad Landscape */
+
+@media only screen and (min-width: 992px) and (max-width: 1199px) {
+    [class*="mobile only"]:not(.computer),
+    [class*="tablet only"]:not(.computer),
+    [class*="computer hidden"],
+    [class*="large screen only"]:not(.computer),
+    [class*="widescreen only"]:not(.computer),
+    [class*="or lower hidden"]:not(.tablet):not(.mobile) {
+        display: none !important;
+    }
+}
+
+
+/* Large Monitor */
+
+@media only screen and (min-width: 1200px) and (max-width: 1919px) {
+    [class*="mobile only"]:not([class*="large screen"]),
+    [class*="tablet only"]:not([class*="large screen"]),
+    [class*="computer only"]:not([class*="large screen"]),
+    [class*="large screen hidden"],
+    [class*="widescreen only"]:not([class*="large screen"]),
+    [class*="or lower hidden"]:not(.computer):not(.tablet):not(.mobile) {
+        display: none !important;
+    }
+}
+
+
+/* Widescreen Monitor */
+
+@media only screen and (min-width: 1920px) {
+    [class*="mobile only"]:not([class*="widescreen"]),
+    [class*="tablet only"]:not([class*="widescreen"]),
+    [class*="computer only"]:not([class*="widescreen"]),
+    [class*="large screen only"]:not([class*="widescreen"]),
+    [class*="widescreen hidden"],
+    [class*="widescreen or lower hidden"] {
+        display: none !important;
+    }
+}

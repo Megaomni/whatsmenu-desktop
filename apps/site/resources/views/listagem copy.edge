@@ -1,0 +1,506 @@
+@layout('layoutportal')
+@section('body')
+
+<section class="bg-light py-4 py-md-5 listagem">
+    <div class="container">
+        <div class="gx-5 row">
+
+            <!-- FILTROS -->
+            <div class="mobile hidden tablet hidden col-lg-3">
+                <aside>
+                    <ul class="list-unstyled bg-white p-3 rounded-3 shadow">
+                        <li class="mb-4">
+                            <h4>Filtros</h4>
+                        </li>
+                        <li class="mb-2">
+                            <ul class="list-inline mt-4">
+                                <li class="list-inline-item">
+                                  @if(request.input('cupom') && request.input('cupom') === '1')
+                                    <a><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light active param" data-pname="cupom" data-pvalue="1">Com Cupom</span>
+                                  @else
+                                    <a href="{{ originalUrl }}{{ originalUrl.includes('?') ? '&cupom=1' : '?cupom=1' }}"><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">Com Cupom</span>
+                                  @endif
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="mb-2">
+                            <hr/>
+                        </li>
+                        <li class="mb-2">
+                            <h5 class="color-theme">Restricões Alimentares</h5>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <a href="#"><span class="text-secondary fw-400 p-2 border border-2 mb-2 active badge bg-light">Opções Vegetarianas</span>
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#"><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">Opções Veganas</span>
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#"><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">Opções sem Glúten</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+
+            <!-- FILTROS MOBILE -->
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+                <div class="offcanvas-header">
+                  <h5 class="offcanvas-title" id="offcanvasRightLabel">Filtros</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                  <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <ul class="list-inline mt-4">
+                                <li class="list-inline-item">
+                                  @if(request.input('cupom') && request.input('cupom') === '1')
+                                    <a><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light active param" data-pname="cupom" data-pvalue="1">Com Cupom</span>
+                                  @else
+                                    <a href="{{ originalUrl }}{{ originalUrl.includes('?') ? '&cupom=1' : '?cupom=1' }}"><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">Com Cupom</span>
+                                  @endif
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="mb-2">
+                            <hr/>
+                        </li>
+
+                        <li class="mb-2">
+                            <h5 class="color-theme">Restricões Alimentares</h5>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">
+                                    <a href="#"><span class="text-secondary fw-400 p-2 border border-2 mb-2 active badge bg-light">Opções Vegetarianas</span>
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#"><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">Opções Veganas</span>
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    <a href="#"><span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">Opções sem Glúten</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+              <!-- RESTAURANTES -->
+
+            <div class="col-lg-9">
+                <main>
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="align-items-center mb-2 mb-md-0 row">
+                                <div class="col-10">
+                                    <h4>Restaurantes em {{ atualCity }}</h4>
+                                </div>
+
+                                <div class="text-end mobile only col-2 ">
+                                    <a class="text-decoration-none fw-500 h5 color-theme d-block mt-n1 btnFiltro pe-2"><i class="bi bi-sliders" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        {{--
+                          <div class="text-md-end text-center mobile hidden col-md-3">
+                              <select aria-label="Default select example" class="form-select">
+                                  <option>Ordenar por</option>
+                                  <option value="1">Ordenação Padrão</option>
+                                  <option value="2">Preço</option>
+                                  <option value="4">Menor Distância</option>
+                              </select>
+                          </div>
+                        --}}
+                    </div>
+                    <div class="row my-4">
+                        <div class="col">
+                            <div class="swiper SwiperCategoria">
+                                <div class="swiper-wrapper Normal">
+                                  @each(tag in allTags)
+                                    <div class="swiper-slide text-center">
+                                        <a href="{{ originalUrl }}{{ hasFilter ? '&tags=' + tag.id : '?tags=' + tag.id }}">
+                                            <img src="{{ tag.image }}" alt="" width="100"><br>
+                                            <small class="text-secondary">{{ tag.name }}</small>
+                                        </a>
+                                    </div>
+                                  @endeach
+                                  {{--
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/arabe.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Arabe</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/carne.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Carne</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/chinesa.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Chinesa</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/doces.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Doces e Bolos</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/feijoada.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Feijoada</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/frutos-do-mar.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Frutos do Mar</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/goumert.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Goumert</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/italiana.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Italiana</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/japonesa.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Japonesa</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/lanche.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Japonesa</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/padaria.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Padaria</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/pizza.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Pizza</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/pub.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">PUB</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/salgados.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Salgados</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/saudavel.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Saudável</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/sushi.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Sushi</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/tradicional.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Tradicional</small>
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide text-center">
+                                        <a href="#">
+                                            <img src="/img/iconcategoria/vegetariana.webp" alt="" width="100"><br>
+                                            <small class="text-secondary">Tradicional</small>
+                                        </a>
+                                    </div>
+                                  --}}
+                                </div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-pagination"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mobile hidden row">
+                        <div class="col-md-12">
+                            <p class="mt-md-0 mt-2">
+                                <strong>{{ profiles.total }}</strong> resultados <span class="mobile hidden">correspondentes aos seu filtro</span>
+                                @if(originalUrl.includes('?'))
+                                • <a class="ps-2" href="/portal/{{ cityPath }}/listagem">Limpar Filtros</a>
+                                @endif
+                            </p>
+                        </div>
+                        <div class="col-md-12">
+                            <div id="scroller-wrapper">
+                                <ul class="list-inline py-2" id="scroller">
+                                  @if(request.input('cupom') && request.input('cupom') === '1')
+                                    <li class="list-inline-item pe-2 d-inline-block">
+                                      <a class="position-relative">
+                                        <span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">com cupom <i data-pname="cupom" data-pvalue="1" class="param bi bi-x fs-6 position-absolute top-0 start-100 translate-middle border border-2 rounded bg-white"></i></span>
+                                      </a>
+                                    </li>
+                                  @endif
+                                  @each(tag in tags)
+                                    <li class="list-inline-item pe-2 d-inline-block">
+                                      <a class="position-relative">
+                                        <span class="text-secondary fw-400 p-2 border border-2 mb-2 badge bg-light">{{ tag.name }} <i onclick="removeTag('{{tag.id}}')" class="bi bi-x fs-6 position-absolute top-0 start-100 translate-middle border border-2 rounded bg-white"></i></span>
+                                      </a>
+                                    </li>
+                                  @endeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                      function removeTag(id) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        urlParams.delete('tags', id)
+                        if ({{ urlParams.length }} != 1) {
+                          location.search = urlParams
+                        } else {
+                          location.href = location.href.replace(location.search, '')
+                        }
+                      };
+
+
+                      document.querySelectorAll('.param').forEach(param => param.addEventListener('click', () => removeParam(param.dataset.pname, param.dataset.pvalue)))
+
+                      function removeParam(param, value) {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        console.log(urlParams.length);
+                        urlParams.entries().forEach(param => {
+                          console.log(param);
+                        });
+                        urlParams.delete(param, value)
+                        urlParams.entries().forEach(param => {
+                          console.log(param);
+                        });
+                        if (urlParams.size) {
+                          location.search = urlParams
+                        } else {
+                          location.href = location.href.replace(location.search, '')
+                        }
+                      };
+
+                    </script>
+                    <div class="row">
+                      @each(profile in profiles.data)
+                        <div class="col-md-6">
+                            <a href="https://whatsmenu.com.br/{{ profile.slug }}{{ profile.cupons.length ? '?linkCupom=' + encodeURI(profile.cupons[0].code) : '' }}" target="_blank">
+                                <div class="d-flex flex-row align-items-center align-self-center bg-white p-3 mb-3 position-relative">
+                                    <div class="position-absolute top-0 end-0">
+                                        <div data-slug="{{ profile.slug }}" class="btnHeart p-2">
+                                           <svg height="25" width="25" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M0 0H24V24H0z" fill="none"></path>
+                                              <path d="M16.5 3C19.538 3 22 5.5 22 9c0 7-7.5 11-10 12.5C9.5 20 2 16 2 9c0-3.5 2.5-6 5.5-6C9.36 3 11 4 12 5c1-1 2.64-2 4.5-2z"></path>
+                                           </svg>
+                                        </div>
+                                     </div>
+
+
+
+                                    <div itemprop="logo" class="card_logoEmpresa"><span class="logoEmpresa"><img src="{{ profile.logo ? profile.logo : '/img/no-image.webp' }}" alt="logo da loja {{ profile.name }}" class=""/></span></div>
+                                    <div class="ms-3 flex-fill">
+                                        {{--  <div class="small color-theme">Comida Chinesa</div>  --}}
+                                        <ul class="list-inline">
+                                            <li class="list-inline-item">
+                                                <p itemprop="name" class="text-truncate corpRestListagem lead fw-600 text-dark align-items-center m-0">{{ profile.name }}</p>
+                                            </li>
+                                        </ul>
+                                        @if(profile.deliveryLocal)
+                                        <div class="truncate-words2 text-secondary small mt-n4" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                            <span itemprop="streetAddress">{{ profile.address.street }}, {{ profile.address.number }}</span> •
+                                            <span itemprop="itempropaddressLocality">{{ profile.address.neigborhood }} - {{ profile.address.city }}</span></div>
+                                        @else
+                                        <div class="text-secondary small mt-n4" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">
+                                        <span itemprop="itempropaddressLocality">{{ profile.address.neigborhood }} - {{ profile.address.city }}</span>
+                                        </div>
+                                        @endif
+
+                                        <div class="small text-warning">
+                                            {{--  <i class="bi bi-star-fill"></i>4  --}}
+                                            @if(profile.cupons.length)
+                                            <span class="mt-2 float-end text-success-emphasis fw-400 p-1 border border-success border-2 badge bg-success-subtle">Cupom Disponível</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                      @endeach
+                    </div>
+                    <div class="row align-items-center">
+                        <div class="col text-md-end mb-3 text-center">
+                            <a href="/portal/{{ cityPath }}/listagem" class="color-theme">Ver todos {{ profiles.total }} deliveries em {{ atualCity }}</a>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-dark text-bg-dark py-4 py-md-5 mobile hidden">
+    <div class="container">
+        <div class="row">
+            <div class="order-2 order-md-1 mt-5 mt-md-0 col-md-6">
+                <div class="row">
+                    <div class="col-md-4 col-6">
+                        <p class="mediumFont">Delivery em {{ atualCity }}</p>
+                    </div>
+                    <div class="col-md-6 col-6">
+                        <ul class="list-unstyled small">
+                            <li class="mb-3"><a href="#">Site Institucional</a></li>
+                            <li class="mb-3"><a href="#">Fale Conosco</a></li>
+                            <li class="mb-3"><a href="#">Cadastre seu Restaurante</a></li>
+                            <li class="mb-3"><a href="#">Blog</a></li>
+                        </ul>
+                        <ul class="list-inline small">
+                            <li class="list-inline-item"><a href="#"><i class="bi bi-facebook fs-3"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="bi bi-instagram fs-3 ms-3"></i></a></li>
+                            <li class="list-inline-item"><a href="#"><i class="bi bi-youtube fs-3 ms-3"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="order-1 order-md-4 col-md-6">
+                <h4 class="text-white fw-500">Explore por cidades</h4>
+                <div class="row">
+                  <div class="col">
+                    <ul class="list-unstyled small">
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(atualCity) }}-{{atualEstate}}">{{ atualCity }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(allCities[0]) }}">{{ citiesShuffle[0] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[1]) }}">{{ citiesShuffle[1] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[2]) }}">{{ citiesShuffle[2] }}</a></li>
+                    </ul>
+                  </div>
+                  <div class="col">
+                      <ul class="list-unstyled small">
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[3]) }}">{{ citiesShuffle[3] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[4]) }}">{{ citiesShuffle[4] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[5]) }}">{{ citiesShuffle[5] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[6]) }}">{{ citiesShuffle[6] }}</a></li>
+                      </ul>
+                  </div>
+                  <div class="col">
+                      <ul class="list-unstyled small">
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[7]) }}">{{ citiesShuffle[7] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[8]) }}">{{ citiesShuffle[8] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[9]) }}">{{ citiesShuffle[9] }}</a></li>
+                        <li class="mb-3"><a href="/portal/{{ CityToURL(citiesShuffle[10]) }}">{{ citiesShuffle[10] }}</a></li>
+                      </ul>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr style="opacity:.1!important" />
+    <div class="mt-5 container">
+        <div class="row">
+            <div class="text-center small col">Delivery em é desenvolvido e mantido por <a href="https://whatsmenu.com.br/">WhatsMenu</a><br/>Delivery em • Todos os direitos reservados<br/><span class="fw-600">Grove Company – Informática e Publicidade – Ltda. CNPJ 23.448.787/0001-54</span></div>
+        </div>
+    </div>
+</footer>
+
+<!-- FOOTER MOBILE -->
+<section class="pt-2 pb-3 bg-white border-top fixed-bottom mobile only">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="d-flex justify-content-around mobileMenu">
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-home">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M5 12l-2 0l9 -9l9 9l-2 0" />
+                    <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+                    <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+                  </svg>
+                </a>
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-receipt">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16l-3 -2l-2 2l-2 -2l-2 2l-2 -2l-3 2m4 -14h6m-6 4h6m-2 4h2" />
+                      </svg>
+                </a>
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-search">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                        <path d="M21 21l-6 -6" />
+                      </svg>
+                </a>
+                <a href="">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user">
+                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                        <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
+                        <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+                      </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- MODAIS -->
+@include('portal/modal/localization')
+
+ <!-- JavaScript Bundle with Popper -->
+ <script src="/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+    var swiper = new Swiper(".SwiperCategoria", {
+        slidesPerView: 3,
+        spaceBetween: 10,
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            640: {
+                slidesPerView: 3,
+                spaceBetween: 20,
+            },
+            768: {
+                slidesPerView: 8,
+                spaceBetween: 20,
+            },
+            1024: {
+                slidesPerView: 8,
+                spaceBetween: 20,
+            },
+        },
+    });
+</script>
+
+@endsection

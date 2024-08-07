@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{title}}</title>
+    <link rel="preconnect dns-prefetch" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://www.facebook.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://connect.facebook.net" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://www.youtube.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://unpkg.com/imask" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://www.google-analytics.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://analytics.google.com" crossorigin>
+    @include('prefetch')
+    <!-- CSS only -->
+    <link rel="stylesheet" href="/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="/bootstrap/tabler-icons.min.css" />
+    <link rel="stylesheet" href="/bootstrap/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="/bootstrap/font.css" />
+    <link rel="stylesheet" href="/bootstrap/novastyle.css?v=1" >
+    <link rel='preload' href='/bootstrap/font/proximanova-bold-webfont.woff2' as='font' type='font/woff2' crossorigin>
+    <link rel='preload' href='/bootstrap/font/proximanova-regular-webfont.woff2' as='font' type='font/woff2' crossorigin>
+    <link rel='preload' href='/bootstrap/font/proximanova-semibold-webfont.woff2' as='font' type='font/woff2' crossorigin>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#2ed573" />
+    <style>
+        /* WHATSAPP FIXO */
+        .whatsapp-fixo {
+            position: fixed;
+            bottom:60px;
+            right:10px;
+            z-index: 999;
+        }
+    </style>
+    <script src="https://unpkg.com/imask"></script>
+    {{--  Global site tag (gtag.js) - Google Analytics  --}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-178792505-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-178792505-1');
+      gtag('config', 'AW-649372379');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-NRQZW2K');</script>
+        <!-- End Google Tag Manager -->
+
+<!-- Meta Pixel Code -->
+<script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '513676703721378');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=513676703721378&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+</head>
+
+<body>
+    <!-- TOPO -->
+    <header class="py-3 bg-1">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-6 col-md-2 ">
+                    <img src="img/whatsmenuBlack.webp" alt="Whatsmenu" width="120">
+                </div>
+                <div class="col-md-8 text-center d-none d-sm-block">
+                    <a href="#1" class="fw-900 pe-3 text-dark">Como Funciona</a>
+                    <a href="#2" class="fw-900 pe-3 text-dark">Recursos WhatsMenu</a>
+                    <a href="#3" class="fw-900 pe-3 text-dark">Modelos</a>
+                    <a href="#4" class="fw-900 text-dark sendContact">Fale Conosco</a>
+                </div>
+                <div class="col-6 col-md-2  text-end">
+                    <a href="https://next.whatsmenu.com.br" class="btn btn-dark btn-sm">ACESSAR PAINEL</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    @!section('body')
+
+    <!-- FOOTER -->
+    <footer class="big-space bg-2">
+      <div class="container">
+          <div class="row align-items-center mb-3">
+              <div class="col-md-4 mb-4 d-none d-sm-block">
+                  <img src="img/logo.png" width="200" alt="">
+              </div>
+              <div class="col-md-4 mb-4">
+                  <h4 class="fw-bold text-white">WhatsMenu</h4>
+                  <ul class="list-unstyled">
+                      <li><a class="text-decoration-none fw-bold" href="https://blog.whatsmenu.com.br/">Blog</a></li>
+                      <li><a class="text-decoration-none fw-bold" href="https://www.whatsmenu.com.br/clientes">Clientes</a></li>
+                      <li><a class="text-decoration-none fw-bold" href="https://whatsmenu.com.br/?termo=open">Termo de Uso</a></li>
+                  </ul>
+              </div>
+              <div class="col-md-4">
+                  <h4 class="fw-bold text-white">Siga-nos</h4>
+                  <a href="https://www.facebook.com/gestordepedidos/" class="item"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-facebook-filled color-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 2a1 1 0 0 1 .993 .883l.007 .117v4a1 1 0 0 1 -.883 .993l-.117 .007h-3v1h3a1 1 0 0 1 .991 1.131l-.02 .112l-1 4a1 1 0 0 1 -.858 .75l-.113 .007h-2v6a1 1 0 0 1 -.883 .993l-.117 .007h-4a1 1 0 0 1 -.993 -.883l-.007 -.117v-6h-2a1 1 0 0 1 -.993 -.883l-.007 -.117v-4a1 1 0 0 1 .883 -.993l.117 -.007h2v-1a6 6 0 0 1 5.775 -5.996l.225 -.004h3z" stroke-width="0" fill="currentColor" /></svg></a>
+
+                  <a href="https://www.instagram.com/gestordepedidos/" class="item"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-instagram color-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 4m0 4a4 4 0 0 1 4 -4h8a4 4 0 0 1 4 4v8a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4z" /><path d="M12 12m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0" /><path d="M16.5 7.5l0 .01" /></svg></a>
+
+                  <a href="https://www.youtube.com/channel/UCe0FKwwwz_iyTeDT0UEatXw" class="item"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-youtube-filled color-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M18 3a5 5 0 0 1 5 5v8a5 5 0 0 1 -5 5h-12a5 5 0 0 1 -5 -5v-8a5 5 0 0 1 5 -5zm-9 6v6a1 1 0 0 0 1.514 .857l5 -3a1 1 0 0 0 0 -1.714l-5 -3a1 1 0 0 0 -1.514 .857z" stroke-width="0" fill="currentColor" /></svg></a>
+              </div>
+          </div>
+          <div class="row mt-3 text-center">
+              <hr style="border-color: aliceblue;">
+              <p class="small fw-bold mb-0 text-white">Copyright © 2019 Grove Company o Todos os direitos reservados.</p>
+              <p class="small text-white">Grove Company – Informática e Publicidade – Ltda. CNPJ 23.448.787/0001-54</p>
+          </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="/bootstrap/swiper-bundle.min.js"></script>
+    <script type="text/javascript">
+
+        const iconContainer = document.querySelector('div.box div.tabler-icons')
+        let icons = []
+
+        document.querySelectorAll('div.tabler-icon').forEach(icon => icons.push({
+            el: icon,
+            name: icon.querySelector('strong').innerHTML
+        }))
+
+    </script>
+    <script>
+        const modal = new bootstrap.Modal('#modalContact')
+        const formContact = document.querySelector('#modalContact form')
+        formContact.onsubmit = () => modal.hide()
+        document.querySelectorAll('.sendContact').forEach(element => {
+            element.onclick = () => {
+                // console.log('contact: lead');
+                // fbq('track', 'Contact');
+                modal.show()
+            }
+        })
+    </script>
+    <script>
+        var swiper = new Swiper(".mySwiperClientes", {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 40,
+                },
+                1024: {
+                    slidesPerView: 2,
+                    spaceBetween: 50,
+                },
+            },
+        });
+    </script>
+    <script>
+        var swiper = new Swiper(".mySwiperVideo", {
+            slidesPerView: 1.1,
+            spaceBetween: 10,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 3,
+                    spaceBetween: 50,
+                },
+                1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 10,
+                },
+            },
+        });
+    </script>
+    <script>
+        var swiper = new Swiper(".mySwiperDepoimento", {
+            slidesPerView: 1,
+            spaceBetween: 10,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 40,
+                },
+                1024: {
+                    slidesPerView: 2,
+                    spaceBetween: 50,
+                },
+            },
+        });
+    </script>
+    <script>
+        var swiper = new Swiper(".mySwiperVitrine", {
+            slidesPerView: 2,
+            spaceBetween: 20,
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 3,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 5,
+                    spaceBetween: 40,
+                },
+                1024: {
+                    slidesPerView: 5,
+                    spaceBetween: 50,
+                },
+            },
+        });
+    </script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+          var lazyImages = [].slice.call(document.querySelectorAll("img, iframe, source"));
+
+          if ("IntersectionObserver" in window) {
+            let lazyImageObserver = new IntersectionObserver((entries, observer) => {
+              entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                  let lazyImage = entry.target;
+
+                  if (lazyImage.dataset.src) {
+                    lazyImage.src = lazyImage.dataset.src;
+                  }
+
+                  if (lazyImage.dataset.srcset) {
+                    lazyImage.srcset = lazyImage.dataset.srcset;
+                  }
+
+                  lazyImage.classList.remove("lazy");
+                  lazyImageObserver.unobserve(lazyImage);
+                }
+              });
+            });
+
+            lazyImages.forEach(function(lazyImage) {
+              lazyImageObserver.observe(lazyImage);
+            });
+          } else {
+            // Possibly fall back to a more compatible method here
+          }
+        });
+
+        </script>
+    @!section('js')
+</body>
+</html>

@@ -1,0 +1,5 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target" : { "namespace": "android_app", "package_name": "br.com.whatsmenu.printer",
+               "sha256_cert_fingerprints": ["72:E0:8E:D5:6B:1C:F9:CB:C1:D5:39:E2:7D:60:DC:19:75:E9:AB:6E:03:F8:19:74:5C:8C:9E:37:A2:87:E8:8E"] }
+}]
