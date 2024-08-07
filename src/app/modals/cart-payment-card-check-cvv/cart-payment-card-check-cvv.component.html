@@ -1,0 +1,11 @@
+<div class="d-flex flex-column align-items-center p-4 gap-3">
+  <p class="text-center fw-bold" style="font-size: 1.25rem;">Digite o código CVV do seu Cartão para finalizar o pagamento!</p>
+  <img src="/assets/cvv-check.svg" alt="card cvv check" height="68px">
+  <form id="cvv-form" class="d-flex flex-column align-items-center">
+    <label for="cvv" class="form-label">CVV</label>
+    <input id="cvv" type="text" class="form-control" name="cvv" [(ngModel)]="cvv">
+  </form>
+  <p style="color: var(--wm-gray-550);">Este código fica atras do seu cartão!</p>
+  <button [disabled]="cvv.length < 3" form="cvv-form" type="submit" class="btn btn-danger mt-auto p-3 w-100 fw-bold" (click)="dismiss()">Finalizar Pagamento</button>
+  <!-- <button form="cvv-form" type="submit" class="btn bg-theme mt-auto p-3 w-100 fw-bold">Finalizar Pagamento</button> -->
+</div>

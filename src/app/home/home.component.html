@@ -1,0 +1,545 @@
+<app-loading *ngIf="!clientData"></app-loading>
+<!-- TOP LOGO -->
+<div *ngIf="clientData">
+  <!-- INF COMPANY SECTION -->
+
+  <section id="imgTop" class="position-relative bg-theme">
+    <picture>
+      <source media="(min-width: 576px)" srcset="{{ clientData.background }}" />
+      <img *ngIf="clientData.background" src="{{ clientData.background }}" width="120" alt="Logo do Cardápio" />
+    </picture>
+    <!-- <a id="companyOpen" class="text-decoration-none rounded position-absolute bottom-0 end-0 mb-3 me-3 shadow fw-semibold text-green" style="z-index:9;" data-bs-toggle="modal" data-bs-target="#horario"><i class="bi bi-shop"></i> Aberto</a> -->
+    <a
+      #companyButton
+      (click)="toggleOpenHour()"
+      class="text-decoration-none rounded position-absolute bottom-0 end-0 mb-3 ps-2 pe-2 me-3 shadow fw-semibold d-flex align-items-center gap-1 text-capitalize"
+      style="z-index: 9; font-size: 0.875rem"
+      ><fa-icon [icon]="storeIcon"></fa-icon>{{ disponibilityText }}</a
+    >
+  </section>
+
+  <section [id]="clientData.logo ? 'infCompany' : ''" class="bg-5">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <div *ngIf="clientData.logo" id="logo">
+            <img class="shadow rounded-circle position-relative" src="{{ clientData.logo }}" alt="Logo do Cardápio" style="z-index: 1" />
+          </div>
+          <div class="row d-flex justify-content-center">
+            <div class="col-md-6 mt-2 text-center">
+              <h1 class="fs-5 fw-semibold">{{ clientData.name }}</h1>
+              <div class="mb-2 mt-n2">
+                <div
+                  class="d-xl-flex justify-content-center gap-1"
+                  [ngClass]="clientData.description && clientData.description.includes('\n') ? 'flex-column' : 'flex-row'"
+                >
+                  <p innerHTML="{{ clientData.description ? clientData?.description?.slice(0, 42) : '' }}" class="mb-0 small wm-preline"></p>
+                  <div *ngIf="clientData.description && clientData.description.length > 42" style="padding: 2px"></div>
+                  <a (click)="openMoreInfo()" class="text-decoration-none fs-6 fw-bold color-theme" data-bs-toggle="modal" data-bs-target="#maisInfo"
+                    >...</a
+                  >
+                  <!-- <a
+                    (click)="openMoreInfo()"
+                    class="text-decoration-none d-none d-lg-block fs-6 fw-bold color-theme"
+                    data-bs-toggle="modal"
+                    data-bs-target="#maisInfo"
+                    >Mais Info</a
+                  > -->
+                </div>
+                <div *ngIf="table" class="d-xl-none m-auto">
+                  <div id="tableName" class="text-dark font-weight-bold d-flex justify-content-center align-items-center">
+                    <strong>{{ table?.name }}</strong>
+                    <span class="circle"></span>
+                    <span *ngIf="!timeDelivery" style="cursor: pointer; font-size: 1em" class="text-muted">{{
+                      commandSession ? commandSession.name : '-'
+                    }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NAVEGAÇÃO DELIVERY/ENCOMENDAS -->
+
+        <ng-container *ngIf="plansCategory() && clientData.options.package.active">
+          <section class="tabsProducts">
+            <div class="col-md-12">
+              <nav
+                ngbNav
+                #nav="ngbNav"
+                [destroyOnHide]="false"
+                [(activeId)]="viewContentAlternate"
+                class="nav nav-tabs justify-content-center bg-5"
+                role="tablist"
+              >
+                <div [ngbNavItem]="'D'">
+                  <!-- [ngStyle]="{ 'background-color': viewContentAlternate === 'delivery' ?  context.Luminosity(clientData.color).background : '', color : viewContentAlternate === 'delivery' ? context.Luminosity(clientData.color).color : ''}" -->
+                  <a ngbNavLink (click)="alternateButton('D')" style="font-size: 1rem" class="p-1 pt-0 text-capitalize">{{ translate.text().delivery }}</a>
+                </div>
+                <div *ngIf="clientData.options.package.active" [ngbNavItem]="'P'">
+                  <!-- [ngStyle]="{ 'background-color': viewContentAlternate === 'package' ? context.Luminosity(clientData.color, true).background : '', color: viewContentAlternate === 'package' ? context.Luminosity(clientData.color).color : ''}" -->
+                  <a ngbNavLink (click)="alternateButton('P')" style="font-size: 1rem" class="p-1 pt-0 text-capitalize">{{
+                    clientData.options.package.label2 ? translate.text().scheduling2  : translate.text().scheduling
+                  }}</a>
+                </div>
+              </nav>
+            </div>
+          </section>
+        </ng-container>
+
+        <div class="tab-content px-0" id="nav-tabContent" [ngStyle]="{ 'margin-bottom': cart?.length || cartPizza?.length ? '4rem' : 0 }">
+          <!-- BUSCA E INFO TAXAS -->
+          <div class="sticky-top mt-n1 bg-1" style="z-index: 20">
+            <section id="search" class="pt-3">
+              <div class="container d-block">
+                <div class="row d-flex align-items-start">
+                  <div class="order-3 order-md-1 mt-3 mt-md-0" [ngClass]="table ? 'col-xl-6' : taxDeliveryValue === null ? 'col-xl-6' : 'col-xl-7'">
+                    <div class="input-group searchProduct mb-2" id="menuSearch">
+                      <span class="input-group-text bg-1 border border-opacity-10" id="basic-addon1"><fa-icon [icon]="magnifying"></fa-icon></span>
+                      <input
+                        type="text"
+                        class="form-control border bordexr-start-0 form-control-sm"
+                        #filterinput
+                        placeholder="{{ translate.text().search_products_by_name_or_description }}"
+                        [(ngModel)]="filter"
+                        aria-label="Username"
+                        aria-describedby="basic-addon1"
+                      />
+                    </div>
+                  </div>
+
+                  <!-- SOBRE COMANDAS -->
+
+                  <ng-container *ngIf="table">
+                    <div
+                      id="table"
+                      class="d-none d-xl-flex order-1"
+                      [ngClass]="clientData.options.table.callBartender ? 'col-xl-2 px-xl-1' : 'col-xl-3'"
+                    >
+                      <button
+                        class="botMuted btn d-inline-flex w-100 gap-2 align-items-center rounded text-decoration-none fw-medium position-relative"
+                        style="height: 40px"
+                      >
+                        <fa-icon
+                          [icon]="faTable"
+                          class="d-flex align-items-center justify-content-center text-dark"
+                          style="font-size: 1.7em"
+                        ></fa-icon>
+                        <div id="tableName" class="d-flex flex-column text-dark font-weight-bold py-1">
+                          <span>{{ table.name }}</span>
+                          <span *ngIf="!timeDelivery" style="cursor: pointer; font-size: 1em" class="text-muted">{{
+                            commandSession ? commandSession.name : '-'
+                          }}</span>
+                        </div>
+                      </button>
+                    </div>
+                    <div *ngIf="!timeDelivery && clientData.options.table.callBartender" class="col-6 col-xl-2 order-2 px-xl-1">
+                      <button
+                        id="callBartender"
+                        class="btn bg-danger text-white w-100 d-inline-flex rounded text-decoration-none fw-medium botMuted"
+                        style="cursor: pointer; font-size: 1em"
+                        (click)="callBartender()"
+                      >
+                        <div class="d-flex">
+                          <fa-icon
+                            [icon]="faBellConcierge"
+                            [size]
+                            class="d-inline-flex align-items-center justify-content-center"
+                            style="font-size: 1.1em"
+                          ></fa-icon>
+                        </div>
+                        <div class="d-flex m-1">
+                          <small class="d-flex align-items-center justify-content-center">Chamar Garçom</small>
+                        </div>
+                      </button>
+                    </div>
+                    <div
+                      id="table"
+                      class="order-2 order-md-3"
+                      [ngClass]="clientData.options.table.callBartender ? 'col-6 col-xl-2 px-xl-1' : 'col-12 col-xl-3'"
+                    >
+                      <button
+                        class="botMuted btn d-inline-flex w-100 gap-2 align-items-center rounded text-decoration-none fw-medium position-relative"
+                        (click)="getTableRequests()"
+                        *ngIf="!timeDelivery"
+                        style="cursor: pointer; font-size: 1em"
+                      >
+                        <div class="d-flex m-0">
+                          <fa-icon [icon]="faMoneyCheck" class="d-flex align-items-center justify-content-center"></fa-icon>
+                        </div>
+                        <div class="d-flex m-1">
+                          <small class="d-flex align-items-center justify-content-center"> Minha Conta </small>
+                        </div>
+                        <div class="d-flex position-absolute px-2 my-1 align-items-center justify-content-center" style="right: 0">
+                          <fa-icon
+                            [icon]="chevronRight"
+                            id="chevron"
+                            style="font-size: 0.9em"
+                            class="d-flex align-items-center justify-content-center"
+                          ></fa-icon>
+                        </div>
+                      </button>
+                    </div>
+                  </ng-container>
+
+                  <!-- ICONES E BOTAO DE TAXA DE ENTREGA E TEMPO DE ESPERA -->
+
+                  <div
+                    class="d-flex align-items-center justify-content-center gap-2 text-center mb-2 mb-md-0 order-3 order-md-3 col-12 ml-1 m-0"
+                    [ngClass]="table ? 'col-xl-5' : taxDeliveryValue === null ? 'col-xl-6' : 'col-xl-5'"
+                  >
+                    <ng-container>
+                      <div
+                        class="d-inline-block flex-fill px-1 rounded text-decoration-none fw-medium botMuted m-0"
+                        role="button"
+                        *ngIf="!table"
+                        (click)="customer ? openLatestRequests() : openClientIdModal(true, true, 'lastRequests')"
+                        style="text-overflow: clip; overflow: hidden; white-space: nowrap"
+                      >
+                        <!-- BOTÃO ÚLTIMOS PEDIDOS -->
+                        <div *ngIf="!table" class="text-danger d-flex align-items-center gap-2 p-0 m-0">
+                          <i class="bi bi-ticket-perforated ps-1" style="font-size: 2rem"></i>
+                          <div class="py-2 p-0 m-0 text-capitalize">
+                            <span style="font-size: 1rem">{{ translate.text().my_orders }}</span>
+                          </div>
+
+                          <!-- <div
+                            *ngIf="
+                              ((viewContentAlternate === 'P' && !parse(clientData.options.package.shippingDelivery.active)) ||
+                                viewContentAlternate === 'D') &&
+                              !table
+                            "
+                          >
+                            <span *ngIf="clientData.options.delivery.disableDelivery">
+                              Opção de exibição quando taxDeliveryValue é null Somente retirada no local.
+                            </span>
+                          </div> -->
+                          <!-- <span *ngIf="taxDeliveryValue === null"> Fora da área de cobertura </span>
+                          <span
+                            *ngIf="
+                              ((viewContentAlternate === 'P' && !parse(clientData.options.package.shippingDelivery.active)) ||
+                                (viewContentAlternate === 'D' && !clientData.options.delivery.disableDelivery && !table)) &&
+                              taxDeliveryValue !== null
+                            "
+                            class="color-theme"
+                            >{{ taxDeliveryValue > 0 ? (taxDeliveryValue | currency) : 'ver' }}</span
+                          > -->
+                        </div>
+                      </div>
+
+                      <!-- BOTAO TEMPO DE ESPERA/DATA DE ENTREGA -->
+
+                      <ng-container *ngIf="!table && viewContentAlternate === 'D'">
+                        <div
+                          role="button"
+                          class="d-flex px-1 rounded text-decoration-none fw-medium botMuted text-danger flex-fill align-items-center gap-2 p-0 m-0"
+                          (click)="!clientData.options.delivery.disableDelivery && openClientIdModal(true, true)"
+                          style="text-overflow: clip; overflow: hidden; white-space: nowrap"
+                        >
+                          <i class="bi bi-exclamation-circle ps-1" style="font-size: 1.5rem"></i>
+                          <div class="py-2 m-0 d-flex flex-column gap-1 justfy-content-center align-items-center text-capitalize">
+                            <span style="font-size: 1rem">{{ translate.text().tax_and_time_of_shipping }}</span>
+
+                            <span *ngIf="!!customer" style="cursor: pointer" class="color-theme">
+                              {{ taxText()?.value | currency }} {{ taxText()?.time }}
+                            </span>
+                          </div>
+                          <span class="text-capitalize" *ngIf="taxDeliveryValue === null"> {{ translate.text().outside_the_coverage_area }} </span>
+                        </div>
+                      </ng-container>
+
+                      <!-- BOTÃO DATA ENCOMENDA -->
+
+                      <ng-container *ngIf="!table && viewContentAlternate === 'P'">
+                        <div
+                          role="button"
+                          class="d-flex px-1 rounded text-decoration-none fw-medium botMuted text-danger flex-fill align-items-center gap-2 p-0 m-0"
+                          (click)="(!clientData.options.delivery.disableDelivery)"
+                          style="text-overflow: clip; overflow: hidden; white-space: nowrap"
+                        >
+                          <i class="bi bi-calendar-event ps-1" style="font-size: 1.5rem"></i>
+                          <div
+                            style="cursor: pointer"
+                            (click)="updatePackageDate()"
+                            class="py-2 m-0 d-flex flex-column gap-1 justfy-content-center align-items-center"
+                          >
+                            <span *ngIf="packageDate !== null" style="font-size: 1rem"> Data de Entrega </span>
+                            <span *ngIf="packageDate === null" style="font-size: 1rem"> Escolher uma data </span>
+                            <span *ngIf="taxDeliveryValue !== null && packageDate !== null">
+                              {{ returnLuxonDate(packageDate, 'dd/MM') }} às {{ returnLuxonDate(packageDate, 'HH:mm') }}
+                            </span>
+                            <span *ngIf="taxDeliveryValue === null"> Fora da área de cobertura </span>
+                          </div>
+                          <span *ngIf="!clientData.options.delivery.disableDelivery && timeDelivery">{{ timeFreightText() }}</span>
+                        </div>
+                      </ng-container>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- MENU -->
+            <section class="navbar-expand-lg navbar-dark bg-1 menu border-bottom" style="overflow: auto">
+              <div class="container">
+                <div class="col-lg-12 w-100">
+                  <div class="hr-nav-1">
+                    <nav id="scrollmenu" class="nav-container no-scroll-bar p-1 px-md-2">
+                      <div>
+                        <ng-container *ngFor="let category of clientCategories">
+                          <a
+                            id="category{{ category.id }}"
+                            (click)="anchorScroll(category.id); clearSearchFilterMenu(category.id)"
+                            class="nav-item category-menu-item p-1 px-md-2"
+                            style="color: var(--color-text)"
+                            >{{ category.name }}</a
+                          >
+                        </ng-container>
+                      </div>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- SHADOWN -->
+          <section>
+            <div>
+              <img class="imgShadow d-none d-md-block" src="/assets2/big_shadow_full.png" alt="" />
+            </div>
+          </section>
+
+          <!-- CORPO DE PRODUTOS -->
+          <section class="vitrine bg-5">
+            <div *ngIf="!filter.length" class="container">
+              <!-- PUXAR AS CATEGORIAS -->
+
+              <ng-container *ngFor="let category of clientCategories">
+                <div class="row justify-content-center" id="category-{{ viewContentAlternate }}-{{ category.id }}">
+                  <div class="col-sm-12 title-category">
+                    <h5 class="fw-semibold py-3 mb-0">
+                      <fa-icon [icon]="chevronRight" style="color: var(--red)"></fa-icon>
+                      {{ category.name }}
+                    </h5>
+                  </div>
+
+                  <!-- PUXAR OS PRODUTOS -->
+
+                  <!-- PIZZA -->
+
+                  <div [ngSwitch]="category.type" class="row">
+                    <ng-container *ngSwitchCase="'pizza'">
+                      <ng-container *ngFor="let size of category.product.sizes">
+                        <div class="col-sm-6 p-0 px-md-2" *ngFor="let item of size.flavors">
+                          <div class="card img-product border rounded mb-4 bg-1">
+                            <div class="card-body pr-4" style="cursor: pointer !important">
+                              <h4
+                                *ngIf="
+                                  !category.product.status ||
+                                  (context.profile.options.inventoryControl && category.product.amount === 0 && !category.product.bypass_amount)
+                                "
+                                [ngStyle]="{
+                                  'color': 'red',
+                                  'font-weight': 600,
+                                  'font-size': '18px',
+                                  'position': 'absolute',
+                                  'width': '100%',
+                                  'text-align': 'center',
+                                  'left': '50%',
+                                  'top': '50%',
+                                  'transform': 'translate(-50%, -50%)',
+                                  'text-transform': 'uppercase'
+                                }"
+                              >
+                                {{ translate.text().product_unavilable }}
+                              </h4>
+                              <div class="d-flex position-relative mobile-align-items-center justify-content-between">
+                                <div class="pe-3">
+                                  <div
+                                    (click)="openModalPizza(category.product, size.name, size.covers[item - 1], item, category, size)"
+                                    class="stretched-link text-decoration-none text-reset"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#detalhe-produto"
+                                  >
+                                    <h5 class="fw-semibold lh-sm mt-0 titleProduct multi-line-truncate">
+                                      {{ size.name }}
+                                    </h5>
+                                  </div>
+                                  <p style="word-break: break-word" class="lh-sm fs-6 mt-2 descrProduct multi-line-truncate">
+                                    {{ item }} {{ item === 1 ? 'Sabor' : 'Sabores' }}
+                                  </p>
+                                </div>
+                                <div
+                                  class="img-dish"
+                                  [ngStyle]="{
+                                    opacity:
+                                      (!category.product.status ||
+                                        (context.profile.options.inventoryControl &&
+                                          category.product.amount === 0 &&
+                                          !category.product.bypass_amount)) &&
+                                      0.2
+                                  }"
+                                >
+                                  <img src="{{ size.covers[item - 1] }}" alt="..." clas s="adjust-cover" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </ng-container>
+                    </ng-container>
+
+                    <!-- PRODUTOS DEFAULT -->
+
+                    <ng-container *ngSwitchCase="'default'">
+                      <div class="col-sm-6 p-0 px-md-2" *ngFor="let product of category.products">
+                        <ng-container *ngTemplateOutlet="productCard; context: { product }"></ng-container>
+                      </div>
+                    </ng-container>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+
+            <!-- FILTRO DE PRODUTOS  -->
+
+            <div *ngIf="filter.length" class="container">
+              <div class="cell-12">
+                <h4 *ngIf="filter.length && filterProducts().length">
+                  Itens encontrados: {{ filterProducts().length }} {{ filterProducts().length != 1 ? 'itens encontrados' : 'item encontrado' }}
+                </h4>
+                <div *ngIf="filterProducts().length === 0" style="height: 500px; width: 100%; text-align: center">
+                  <h1 style="font-size: 3rem; margin-top: 100px; line-height: 58px">Nenhum produto encontrado</h1>
+                  <span style="cursor: pointer; color: #777">
+                    <p (click)="clearSearchFilter()">Clique aqui para ver a lista completa de produtos</p>
+                  </span>
+                </div>
+              </div>
+
+              <div class="row">
+                <div *ngFor="let product of filterProducts()" class="col-6">
+                  <div>
+                    <div *ngTemplateOutlet="productCard; context: { product, category: product.category }"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <footer [ngStyle]="{ 'padding-bottom': this.cart.length || this.cartPizza.length ? '0px' : '0' }">
+            <section class="bg-3">
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-12 text-center position-relative">
+                    <p class="m-0 fw-medium">{{ clientData.name }}</p>
+                    <p class="m-0 small">Fone: {{ formatPhone(clientData.whatsapp) }}</p>
+                    <p *ngIf="this.clientData.deliveryLocal" class="m-0 small">Endereço: {{ takeOutAddress() }}</p>
+                    <p class="m-0 mb-0 small">
+                      Tecnologia: <a class="text-decoration-none text-white fw-medium" href="https://www.whatsmenu.com.br">www.whatsmenu.com.br</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </footer>
+
+          <section class="fixed-bottom bg-theme w-100" id="cartBottomBar" (click)="openCart()" *ngIf="cart.length + cartPizza.length" role="button">
+            <div class="container">
+              <div class="d-flex justify-content-between align-items-center text-decoration-none fs-6">
+                <p class="py-3 d-flex align-items-center gap-2">
+                  <fa-icon [icon]="faShoppingBasket"></fa-icon>
+                  <span
+                    class="badge rounded-circle"
+                    [ngStyle]="{
+                      'background-color': context.Luminosity(clientData.color).color,
+                      'color': context.Luminosity(clientData.color).background
+                    }"
+                    >{{ cart.length + cartPizza.length }}</span
+                  >
+                </p>
+                <p *ngIf="viewContentAlternate === 'D'" class="text-capitalize">{{ translate.text().close_order }}</p>
+                <p *ngIf="viewContentAlternate === 'P'">Fechar Agendamento</p>
+                <p>{{ cartService.totalCartValue(cart, cartPizza, cartRequest) | currency }}</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <app-openhour [collapse]="openingHoursCollapse" (closeCollapse)="toggleOpenHour($event)"></app-openhour>
+
+        <ng-template #productCard let-product="product" let-category="category">
+          <div class="card img-product border rounded mb-4 bg-1" style="cursor: pointer !important">
+            <div class="card-body pr-4" id="product-{{ viewContentAlternate }}-{{ product.id }}" (click)="openModalProduct2(product, category)">
+              <div class="d-flex position-relative mobile-align-items-center justify-content-between">
+                <h4
+                  *ngIf="!product.status || (product.amount === 0 && !product.bypass_amount)"
+                  [ngStyle]="{
+                    'color': 'red',
+                    'font-weight': 600,
+                    'font-size': '18px',
+                    'position': 'absolute',
+                    'width': '100%',
+                    'text-align': 'center',
+                    'left': '50%',
+                    'top': '50%',
+                    'transform': 'translate(-50%, -50%)',
+                    'text-transform': 'uppercase'
+                  }"
+                >
+                  {{ translate.text().product_unavilable }}
+                </h4>
+                <div
+                  [ngStyle]="{ opacity: (!product.status || (product.amount === 0 && !product.bypass_amount)) && 0.2 }"
+                  class="pe-3 flex-grow-1 d-flex flex-column"
+                >
+                  <div class="stretched-link text-decoration-none text-reset" data-bs-toggle="modal" data-bs-target="#detalhe-produto">
+                    <h5 class="fw-semibold lh-sm mt-0 titleProduct multi-line-truncate">
+                      {{ product.name }}
+                    </h5>
+                  </div>
+                  <p style="word-break: break-word" class="lh-sm fs-6 descrProduct multi-line-truncate">
+                    {{ product.description }}
+                  </p>
+                  <div class="bottom-0 start-0 mt-auto">
+                    <p
+                      *ngIf="!table && (product.disponibility.store.delivery || product.disponibility.store.package) && product.promoteStatus"
+                      class="d-flex align-items-baseline gap-2 mb-0"
+                    >
+                      <span class="priceProduct mb-0">{{ product.promoteValue | currency }}</span>
+                      <span class="priceoff">{{ product.value | currency }}</span>
+                    </p>
+                    <p
+                      *ngIf="!table && (product.disponibility.store.delivery || product.disponibility.store.package) && !product.promoteStatus"
+                      class="d-flex align-items-baseline gap-2 mb-0"
+                    >
+                      <span class="priceProduct" *ngIf="product.value > 0">{{ product.value | currency }}</span>
+                    </p>
+
+                    <p
+                      *ngIf="table && product.disponibility.store.table && product.promoteStatusTable"
+                      class="d-flex align-items-baseline gap-2 mb-0"
+                    >
+                      <span class="priceProduct">{{ product.promoteValueTable | currency }}</span>
+                      <span class="priceoff">{{ product.valueTable | currency }}</span>
+                    </p>
+                    <p
+                      *ngIf="table && product.disponibility.store.table && !product.promoteStatusTable"
+                      class="d-flex align-items-baseline gap-2 mb-0"
+                    >
+                      <span class="priceProduct" *ngIf="product.valueTable > 0">{{ product.valueTable | currency }}</span>
+                    </p>
+                  </div>
+                </div>
+                <div [ngStyle]="{ opacity: (!product.status || (product.amount === 0 && !product.bypass_amount)) && 0.2 }" class="img-dish">
+                  <img *ngIf="product.image" src="{{ product.image }}" alt="..." class="adjust-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </section>
+</div>

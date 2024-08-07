@@ -1,0 +1,25 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between p-0 m-0">
+  <h4 class="modal-header p-0 m-0 p-2">Últimos Pedidos</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<mat-dialog-content class="m-1">
+  <Table class="w-100 table">
+    <thead>
+      <tr class="text-dark fs-5">
+        <th scope="col">Data</th>
+        <th scope="col">Total</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody class="p-3 m-3">
+      <tr  *ngFor="let request of customerReverse()" >
+        <th>{{ request.created_at | date : 'dd/MM/yyyy' }}</th>
+        <th>{{ calculateTotal(request) | currency }}</th>
+        <th class="d-flex justify-content-end pe-4">
+          <span class="text-primary" style="cursor: pointer" (click)="openRequestStatus(request.code)">Ver Pedido</span>
+        </th>
+      </tr>
+    </tbody>
+  </Table>
+</mat-dialog-content>

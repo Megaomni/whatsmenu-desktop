@@ -1,0 +1,12 @@
+<div class="container">
+    <section [ngStyle]="{'background-color': clientData && clientData.color, 'width': '100%', 'height': '100px', 'display': 'flex', 'justify-content': 'center', 'align-itens': 'center', 'margin-bottom': '60px'}" >
+        <img src="{{ clientData && clientData.logo }}" alt="Logo image">
+    </section>
+    <strong [ngStyle]="{'margin-bottom': '60px'}">{{ clientData && clientData.name }}</strong>
+    <div class="qrcode_container">
+        <p>Por favor aponte a sua câmera para o QRCode da mesa em que deseja realizar o pedido.</p>
+        <zxing-scanner (scanSuccess)="onCodeResult($event)" (scanError)="errorMessage()" ></zxing-scanner>
+    </div>
+    <div [ngStyle]="{'background-color': clientData && clientData.color, 'width': '100%', 'height': '100px', 'display': 'flex', 'justify-content': 'center', 'align-itens': 'center'}" ></div>
+
+</div>

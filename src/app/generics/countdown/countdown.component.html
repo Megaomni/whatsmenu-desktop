@@ -1,0 +1,52 @@
+<div>
+  <div class="position-relative" style="min-height: 150px;">
+    <h2 class="position-absolute top-50 start-50 translate-middle">
+      {{ minutes }}:{{ seconds < 10 ? "0" + seconds : seconds }}
+    </h2>
+    <div *ngIf="userAgent === 'iPhone'" class="position-absolute top-50 start-50 translate-middle">
+      <svg width="100" height="100">
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          stroke="#ff4757"
+          stroke-width="10"
+          fill="none"
+          
+        ></circle>
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          stroke="#ccc"
+          stroke-width="10"
+          fill="none"
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="progressOffset"
+        ></circle>
+      </svg>
+    </div>
+    <div *ngIf="userAgent !== 'iPhone'" class="position-absolute top-50 start-50 translate-middle">
+      <svg width="100" height="100">
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          stroke="#ccc"
+          stroke-width="10"
+          fill="none"
+        ></circle>
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          stroke="#ff4757"
+          stroke-width="10"
+          fill="none"
+          [attr.stroke-dasharray]="circumference"
+          [attr.stroke-dashoffset]="progressOffset"
+        ></circle>
+      </svg>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between"
+  style="margin: -1.5rem -1.5rem 0;">
+  <div class="d-flex align-items-center gap-3">
+    <!-- <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close()"></fa-icon> -->
+    <h3 class="m-0 fs-5">PDV Pedido</h3>
+  </div>
+</div>
+<mat-dialog-content class="d-flex flex-column align-items-center justify-content-center"
+  style="max-height: calc(100% - 3.625rem); height: 100%;">
+  <p class="fs-4 fw-bold">Pedido Tipo:</p>
+  <div class="d-flex align-items-center justify-content-center flex-column flex-md-row w-100 mt-3 gap-5">
+    <div class="type-container" (click)="close({ type: 'D' })">
+      <fa-icon [icon]="faFileAlt" style="font-size: 3.75rem; color: var(--wm-blue-900);"></fa-icon>
+      <p>Balcão/Delivery</p>
+    </div>
+    <div class="type-container" (click)="close({ type: 'P' })">
+      <fa-icon [icon]="faCalendarDay" style="font-size: 3.75rem; color: var(--wm-blue-900);"></fa-icon>
+      <p>{{ context.packageLabel }}</p>
+    </div>
+  </div>
+</mat-dialog-content>

@@ -1,0 +1,209 @@
+<div
+  mat-dialog-title
+  style="
+    margin-left: -24px;
+    font-size: 12px;
+    max-width: 100vw;
+    overflow: unset !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+  "
+>
+  <button mat-dialog-close m4-button btn-style="link">
+    <m4-icon icon="chevron-thin-left" color="red" size="2"></m4-icon>
+  </button>
+  <h3 [ngStyle]='{ "display": "inline-block", "font-weight": "bold", "margin": "unset"}'>Comanda: {{ command.name }}</h3>
+</div>
+
+<ul class="inline-list choice-dish requests-container">
+    <h1 *ngIf="!command || command.requests.length < 1" class="mt-6 mb-6">Sem pedidos ativos</h1>
+  <div class="requests">
+    <li
+      *ngFor="let request of command && command.requests; let index = index"
+      class="d-flex flex-justify-start flex-column"
+    >
+      <div
+        *ngFor="let item of request.cartPizza; let index = index"
+        class="cell-11"
+      >
+        <div *ngIf="clientData.options.pizza.higherValue" class="row">
+          <div class="cell-10">
+            <p class="dots">
+              <span
+                >{{ item.quantity }}x {{ item.size }} {{ item.flavors.length }}
+                {{ item.flavors.length === 1 ? "sabor" : "sabores" }}</span
+              >
+            </p>
+          </div>
+          <div class="cell-2">
+            <p class="dots">
+              <span>{{ item.valueTable | currency: "BRL" }}</span>
+            </p>
+          </div>
+        </div>
+        <div *ngIf="!clientData.options.pizza.higherValue" class="row">
+          <div class="cell-12">
+            <p class="dots">
+              <span
+                >{{ item.quantity }}x {{ item.size }} {{ item.flavors.length }}
+                {{ item.flavors.length === 1 ? "sabor" : "sabores" }}</span
+              >
+            </p>
+          </div>
+        </div>
+        <ul style="padding-left: 0" class="unstyled-list">
+          <li class="fg-gray" *ngIf="item.obs">{{ item.obs }}</li>
+          <li class="fg-gray">
+            <div class="row" *ngFor="let flavor of item.flavors">
+              <div class="cell-10">
+                <p class="dots'">
+                  <span>{{ flavor.name }}</span>
+                </p>
+              </div>
+              <div class="cell-2">
+                <p *ngIf="!clientData.options.pizza.higherValue">
+                  {{
+                    flavor.valuesTable[item.size] / item.flavors.length
+                      | currency: "BRL"
+                  }}
+                </p>
+              </div>
+            </div>
+            <div
+              class="row"
+              *ngFor="let implementation of item.implementations"
+            >
+              <div class="cell-10">
+                <p class="dots'">
+                  <span>{{ implementation.name }}</span>
+                </p>
+              </div>
+              <div class="cell-2">
+                <p>{{ implementation.value | currency: "BRL" }}</p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="row">
+              <div class="cell-10">
+                <p class=""><span></span></p>
+              </div>
+              <div class="cell-2">
+                <p>{{ item.valueTable * item.quantity | currency: "BRL" }}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div *ngFor="let item of request.cart; let index = index" class="cell-11">
+        <ul style="padding-left: 0" class="unstyled-list">
+          <li>
+            <div class="row">
+              <div class="cell-10">
+                <p class="dots">
+                  <span>{{ item.quantity }}x {{ item.name }}</span>
+                </p>
+                <p class="fg-gray" *ngIf="item.obs">Obs.: {{ item.obs }}</p>
+              </div>
+              <div class="cell-2">
+                <p class="dots">
+                  <span>{{
+                    (item.promoteStatusTable
+                      ? item.promoteValueTable
+                      : item.valueTable) * item.quantity | currency: "BRL"
+                  }}</span>
+                </p>
+              </div>
+            </div>
+          </li>
+          <li class="fg-gray" *ngFor="let complement of item.complements">
+            <div class="row" *ngFor="let itemComplement of complement.itens">
+              <div class="cell-10">
+                <p class="dots">
+                  <span
+                    >{{ itemComplement.quantity }}x
+                    {{ itemComplement.name }}</span
+                  >
+                </p>
+              </div>
+              <div class="cell-2">
+                <p>
+                  {{
+                    itemComplement.value * itemComplement.quantity
+                      | currency: "BRL"
+                  }}
+                </p>
+              </div>
+            </div>
+          </li>
+          <li>
+            <div class="row">
+              <div class="cell-10">
+                <p class=""><span></span></p>
+              </div>
+              <div class="cell-2">
+                <p>{{ calcProductTotalValue(item) | currency: "BRL" }}</p>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <!-- <div class="cell-11" style="background-color: tomato;">
+          <ul style="padding-left: 0" class="unstyled-list">
+            <li>
+              <div class="row">
+                <div class="cell-10">
+                  <p class="dots">
+                    <span>{{ item.quantity }}x {{ item.name }}</span>
+                  </p>
+                  <p class="fg-gray" *ngIf="item.obs">Obs.: {{ item.obs }}</p>
+                </div>
+                <div class="cell-2">
+                  <p class="dots">
+                    <span>{{
+                      (item.promoteStatus ? item.promoteValue : item.valueTable) *
+                        item.quantity | currency: "BRL"
+                    }}</span>
+                  </p>
+                </div>
+              </div>
+            </li>
+            <li class="fg-gray" *ngFor="let complement of item.complements">
+              <div class="row" *ngFor="let itemComplement of complement.itens">
+                <div class="cell-10">
+                  <p class="dots">
+                    <span
+                      >{{ itemComplement.quantity }}x
+                      {{ itemComplement.name }}</span
+                    >
+                  </p>
+                </div>
+                <div class="cell-2">
+                  <p>
+                    {{
+                      itemComplement.value * itemComplement.quantity
+                        | currency: "BRL"
+                    }}
+                  </p>
+                </div>
+              </div>
+            </li>
+            <li>
+              <div class="row">
+                <div class="cell-10">
+                  <p class=""><span></span></p>
+                </div>
+                <div class="cell-2">
+                  <p>{{ calcProductTotalValue(item) | currency: "BRL" }}</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div> -->
+      </div>
+    </li>
+  </div>
+</ul>
+<b><p class="mt-7">Total: {{ total | currency: "BRL"}}</p></b>

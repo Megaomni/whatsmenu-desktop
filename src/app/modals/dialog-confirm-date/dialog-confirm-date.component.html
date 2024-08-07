@@ -1,0 +1,64 @@
+<div class="d-flex flex-column bg-5 flex-grow-1">
+  <h1 mat-dialog-title>
+    <!-- <button class="dialog-close" [mat-dialog-close]="false" title="Fechar">
+            <fa-icon [icon]="faArrowLeft"></fa-icon>
+        </button> -->
+    {{ clientData.options.package.label2 === 'false' || !clientData.options.package.label2 ? 'Encomendas' : 'Agendamento' }}
+  </h1>
+  <mat-dialog-content>
+    <div class="my-3 px-3 w-100">
+      <p class="fs-5 fw-bold mb-3">Selecione uma data para entrega</p>
+      <app-calendar [dataObject]="dataToPackageCalendar" (changePackageCalendar)="updatePackageCalendar($event)"></app-calendar>
+    </div>
+
+    <div *ngIf="clientData.options.package.active && hoursOptionsLength" class="package-time" [ngStyle]="{ padding: '10px 0' }">
+      <p *ngIf="timeZoneDiff">
+        Indentificamos que seu fuso horário é diferente do fuso horário do estabelecimento, ao lado do horário estará o seu respectivo horário de
+        recebimento.
+      </p>
+      <p *ngIf="weekProfileOpen.length > 1">Escolha um horário de entrega entre os periodos</p>
+      <div *ngIf="weekProfileOpen.length === 1" [ngStyle]="{ padding: '10px 0' }">
+        <p>Escolha um horário de entrega para sua encomenda</p>
+      </div>
+    </div>
+
+    <div class="dialog-profile-obs" [ngStyle]="{ 'text-align': 'center' }" *ngIf="messageDuplicate || notVacancies">
+      <h3>Observações do estabelecimento</h3>
+      <div>
+        <p *ngIf="notVacancies">
+          Não temos mais vagas disponíveis para encomendas, entre em contato com nosso estabelecimento.
+          <button class="button-link" (click)="sendWhatsapp()">Fale com estabelecimento</button>
+        </p>
+        <p *ngIf="messageDuplicate && !notVacancies">
+          Não temos mais vagas para encomendas no dia {{ dataDuplicate }}. Por favor, selecione outra data.
+        </p>
+      </div>
+    </div>
+
+    <div class="dialog-profile-obs" [ngStyle]="{ 'text-align': 'center' }" *ngIf="errorType">
+      <h3>Observações do estabelecimento</h3>
+      <div *ngIf="errorType === 418">
+        <p>
+          {{ 'Infelizmente o horário ' + dateChoiced.toFormat('dd/MM/yyyy HH:mm') + ' está indisponível. Por favor escolher outro horário.' }}
+        </p>
+      </div>
+      <div *ngIf="errorType === 409">
+        <p>
+          {{ 'Infelizmente a data ' + dateChoiced.toFormat('dd/MM/yyyy HH:mm') + ' está indisponível. Por favor escolher outra data.' }}
+        </p>
+      </div>
+      <div *ngIf="errorType === '403-D'">
+        <p>{{ 'A data escolhida é anterior à atual. Por gentileza, escolha outro horário.' }}</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="bg-5 d-flex justify-content-end" style="margin-top: auto !important;" >
+    <button class="btn bg-theme float-right d-flex gap-2" [disabled]="!packageCalendar || !packageHour" (click)="!notVacancies && applyTime()">
+      Continuar
+    </button>
+    <div>
+      <!-- <button *ngIf="localStorageDate" class="button primary default rounded button_finish"
+                [mat-dialog-close]="null">Remover Data</button> -->
+    </div>
+  </mat-dialog-actions>
+</div>

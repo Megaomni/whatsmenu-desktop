@@ -1,0 +1,150 @@
+<div [ngSwitch]="type" style="margin-bottom: 50px">
+  <div *ngSwitchCase="'default'" class="table-scroll-container" [ngStyle]="{ 'max-height': tableMaxHeight }" style="padding-bottom: 5rem">
+    <table>
+      <tbody>
+        <ng-container *ngFor="let product of dataSource; trackBy: trackBy">
+          <tr
+            class="menu-row"
+            (click)="
+              product.status &&
+                product.isAvaliable &&
+                cartService.verifyProductAvailability(cart, product, 'greater').availability &&
+                openInfoModal(product)
+            "
+            [ngStyle]="{ opacity: !product.status || !product.isAvaliable ? '0.5' : 1 }"
+          >
+            <td>
+              <div *ngIf="product.status && product.isAvaliable" class="d-flex flex-align-center pl-2">
+                <fa-icon
+                  [icon]="faMinusCircle"
+                  [ngStyle]="{ opacity: product.quantity > 1 ? 1 : 0 }"
+                  (click)="cartService.decreaseProduct(product); $event.stopPropagation()"
+                  style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                >
+                </fa-icon>
+                <span class="mx-2" style="font-weight: bold">{{ product.quantity }}</span>
+                <fa-icon
+                  *ngIf="cartService.verifyProductAvailability(cart, product, 'greaterOrEqual').availability"
+                  [icon]="faPlusCircle"
+                  (click)="cartService.increaseProduct(product); $event.stopPropagation()"
+                  style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+                >
+                </fa-icon>
+              </div>
+            </td>
+            <td>
+              <span>{{ product.name }}</span>
+            </td>
+            <td>
+              <span *ngIf="product.status && product.isAvaliable">
+                {{ cartService.getProductFinalValue(product, valueType) * product.quantity | currency }}
+              </span>
+              <span *ngIf="!product.status || !product.isAvaliable" style="color: var(--red)">INDISPONÍVEL</span>
+            </td>
+            <td>
+              <div class="d-flex justify-content-end px-4">
+                <fa-icon
+                  [icon]="cartService.denyAddItemToCart(product.complements) ? faExclamationCircle : faCartPlus"
+                  [ngStyle]="{
+                    fontSize: '1.5rem',
+                    cursor: 'pointer',
+                    color: cartService.denyAddItemToCart(product.complements) ? 'var(--orange)' : 'var(--green)',
+                    opacity: cartService.verifyProductAvailability(cart, product, 'greater').availability ? 1 : 0.5,
+                    pointerEvents: cartService.verifyProductAvailability(cart, product, 'greater').availability ? 'all' : 'none'
+                  }"
+                  (click)="
+                    cartService.denyAddItemToCart(product.complements) ? '' : $event.stopPropagation(); cartService.addProductToCart(product, cart)
+                  "
+                >
+                </fa-icon>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+  <div *ngSwitchCase="'pizza'" class="table-scroll-container" [ngStyle]="{ 'max-height': tableMaxHeight }">
+    <table>
+      <tbody>
+        <tr
+          *ngFor="let pizza of dataSource.products; trackBy: trackBy"
+          class="menu-row"
+          (click)="
+            cartService.verifyCartFlavorAvailability(cartPizza, pizza, 'greater').availability &&
+              cartService.verifyPizzaProductAvailability(cartPizza, pizza, dataSource.product, 'greater').availability &&
+              openInfoModal(pizza)
+          "
+        >
+          <td>
+            <div class="d-flex flex-align-center pl-2">
+              <fa-icon
+                style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                [icon]="faMinusCircle"
+                [ngStyle]="{ opacity: pizza.quantity > 1 ? 1 : 0 }"
+                (click)="cartService.decreasePizza(pizza); $event.stopPropagation()"
+              >
+              </fa-icon>
+              <span class="mx-2" style="font-weight: bold">{{ pizza.quantity }}</span>
+              <fa-icon
+                *ngIf="
+                  cartService.verifyCartFlavorAvailability(cartPizza, pizza, 'greaterOrEqual').availability &&
+                  cartService.verifyPizzaProductAvailability(cartPizza, pizza, undefined, 'greaterOrEqual').availability
+                "
+                style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+                [icon]="faPlusCircle"
+                (click)="cartService.increasePizza(pizza); $event.stopPropagation()"
+              >
+              </fa-icon>
+            </div>
+          </td>
+          <td>{{ pizza.flavors[0].name }}</td>
+          <td (click)="$event.stopPropagation()">
+            <div ngbDropdown class="d-inline-block w-100 flex-grow-1" [autoClose]="true">
+              <div class="d-flex align-items-center justify-content-between p-2 w-100" id="dropdownBasic1" ngbDropdownToggle>
+                {{ cartService.getSizeByCode(pizza).name }} -
+                {{ cartService.pizzaTotalValue(pizza, valueType, cartService.getSizeByCode(pizza).name) * (pizza.quantity || 1) | currency }}
+              </div>
+              <div ngbDropdownMenu class="w-100" aria-labelledby="dropdownBasic1">
+                <div class="d-flex flex-column">
+                  <ng-container *ngFor="let size of pizza.sizes; index as index; trackBy: trackBy">
+                    <button ngbDropdownItem class="p-1" (click)="pizza.sizeCode = size.code">
+                      {{ size.name }} - {{ cartService.pizzaTotalValue(pizza, valueType, size.name) * (pizza.quantity || 1) | currency }}
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex justify-content-end pr-4">
+              <fa-icon
+                [icon]="!cartService.getSizeByCode(pizza)?.flavors.includes(pizza.flavors.length) ? faExclamationCircle : faCartPlus"
+                [ngStyle]="{
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  color: !cartService.getSizeByCode(pizza)?.flavors.includes(pizza.flavors.length) ? 'var(--orange)' : 'var(--green)',
+                  opacity:
+                    cartService.verifyCartFlavorAvailability(cartPizza, pizza, 'greater').availability &&
+                    cartService.verifyPizzaProductAvailability(cartPizza, pizza, dataSource.product, 'greater').availability
+                      ? 1
+                      : 0.5,
+                  pointerEvents:
+                    cartService.verifyCartFlavorAvailability(cartPizza, pizza, 'greater').availability &&
+                    cartService.verifyPizzaProductAvailability(cartPizza, pizza, dataSource.product, 'greater').availability
+                      ? 'all'
+                      : 'none'
+                }"
+                (click)="
+                  !cartService.getSizeByCode(pizza)?.flavors.includes(pizza.flavors.length) ? '' : $event.stopPropagation();
+                  cartService.addPizzaToCart(pizza, cartPizza)
+                "
+              >
+              </fa-icon>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

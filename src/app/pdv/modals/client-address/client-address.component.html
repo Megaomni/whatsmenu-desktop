@@ -1,0 +1,51 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center gap-3">
+    <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="goBack()"></fa-icon>
+    <h3 class="m-1 fs-5">Endereços</h3>
+  </div>
+</div>
+<mat-dialog-content class="d-flex flex-column align-items-center justify-content-start">
+  <div [ngSwitch]="data.type" class="w-100 px-3">
+    <div *ngSwitchCase="'list'" class="mb-2 w-100 overflow-auto">
+      <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Endereço</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let address of data?.addresses; index as index" style="cursor: pointer;" (click)="setAddress(address)">
+            <td>{{ index + 1 }}</td>
+            <td>{{ address.street }}, {{ address.number ? address.number : 'SN' }} - {{ address.neighborhood }} - {{ address.city }} - {{ address.uf}}</td>
+            <td>
+              <button class="btn btn-primary" (click)="updateAddress(address)">
+                Editar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngSwitchCase="'create'" class="mb-2">
+      <app-address-form [index]="0" [(address)]="address" ></app-address-form>
+    </div>
+    <div *ngSwitchCase="'update'" class="mb-2">
+      <app-address-form [index]="0" [(address)]="address" ></app-address-form>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions *ngIf="data.type !== 'list'" class="justify-content-between">
+  <button type="button" class="btn  btn-outline-secondary"
+    (click)="goBack()">Cancelar</button>
+    <button *ngIf="fromList" type="button" class="btn  btn-secondary"
+    (click)="data.type = 'list'">Lista</button>
+  <button type="button" class="btn" style="color: var(--wm-white); background-color: var(--wm-green-500);"
+    (click)="saveAddress()">Salvar</button>
+</mat-dialog-actions>
+
+<mat-dialog-actions *ngIf="data.type === 'list'" class="justify-content-end">
+  <button type="button" class="btn  btn-primary"
+    (click)="toCreateFromList()">Novo</button>
+</mat-dialog-actions>

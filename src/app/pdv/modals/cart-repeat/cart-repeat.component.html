@@ -1,0 +1,19 @@
+<ng-container *ngIf="data.cart && data.client">
+  <div mat-dialog-title class="d-flex align-items-center justify-content-between"
+    style="margin: -1.5rem -1.5rem 0;">
+    <div class="d-flex align-items-center gap-3">
+      <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close({ confirm: false })"></fa-icon>
+      <h3 class="m-0 fs-5">Pedido wm{{ data.request.code }}-{{ data.request.type }}</h3>
+    </div>
+  </div>
+  <mat-dialog-content>
+    <div class="p-2">
+      <p>{{ data.client?.name }} - Data: {{ requestDate(data.request.created_at) }}</p>
+    <app-cart-itens [(cart)]="cart" [(cartPizza)]="cartPizza" [itens]="itens" [repeatCart]="true" [valueType]="data.request"></app-cart-itens>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="justify-content-between">
+    <button class="btn btn-outline-secondary" style="color: var(--wm-gray-300);" (click)="close({ confirm: false })">Cancelar</button>
+    <button class="btn" style="color: var(--wm-white); background-color: var(--wm-blue-500);" (click)="close({ confirm: true })">Repetir Pedido</button>
+  </mat-dialog-actions>
+</ng-container>

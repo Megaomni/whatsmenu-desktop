@@ -1,0 +1,120 @@
+.open-cashier {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+
+  background-color: var(--wm-green-500);
+  color: var(--wm-white);
+
+  border-radius: 84px;
+  padding: 2rem 4rem;
+}
+
+.cashier-content {
+  height: 100%;
+  width: 100%;
+  padding: 0 8rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.resume-accordion {
+  position: fixed;
+  bottom: 0;
+  margin-bottom: 92px;
+  left: 0;
+
+  &[open] {
+    max-height: 100%;
+
+    summary {
+      position: relative;
+      z-index: 10;
+
+      #resume-accordion-header {
+        z-index: 999;
+        margin: 0 !important;
+        margin-bottom: -3rem !important;
+        opacity: 0;
+      }
+    }
+
+    #resume-accordion-container {
+      overflow-y: auto;
+      height: 81vh;
+    }
+  }
+}
+
+.table thead tr {
+  display: block;
+  position: relative;
+}
+
+.table td,
+.table th {
+  width: 14vw;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.5rem 0;
+}
+
+.table tbody {
+  display: block;
+  overflow: scroll;
+  width: 100%;
+  max-height: 62vh;
+  z-index: 9999;
+}
+
+@media only screen and (max-width: 425px) {
+  .open-cashier {
+    border-radius: 0;
+    width: 100%;
+    height: 100%;
+    padding-block: 0;
+  }
+
+  .mat-dialog-container {
+    padding-bottom: 0 !important;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .cashier-content {
+    padding: 0;
+  }
+
+  .table td,
+  .table th {
+    width: 20vw;
+    max-width: 20vw;
+  }
+
+  .table tbody {
+    padding-bottom: 175px;
+  }
+}
+
+.price-highlight {
+  font-size: 3rem;
+}
+
+@media screen and (max-width: 600px) {
+  .price-highlight {
+    font-size: 1.5rem;
+  }
+
+  td {
+    font-size: 0.875rem;
+    padding-inline: 0.25rem !important;
+  }
+}
+
+@media screen and (max-width: 1030px) {
+  .price-highlight {
+    font-size: 2rem;
+  }
+}

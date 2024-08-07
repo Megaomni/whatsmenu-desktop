@@ -1,0 +1,686 @@
+<div *ngIf="clientData" class="d-flex flex-column justify-content-start bg-5" [ngStyle]="{ height: '100%' }">
+  <div mat-dialog-title class="d-flex align-items-center">
+    <fa-icon
+      [icon]="arrowLeft"
+      size="lg"
+      class="color-theme"
+      role="button"
+      (click)="onlineOrLocal = null; close({ targetModal: 'delivery' })"
+    ></fa-icon>
+    <h5 class="mb-0 ms-2 mt-n1">
+      {{ onlineOrLocal === 'local' ? 'Pagamento na entrega' : onlineOrLocal === 'online' ? 'Pagamento Online' : 'Como Pagar'
+      }}{{ cartRequest?.formsPayment[0].label && ' - ' + cartRequest?.formsPayment[0].label }}
+    </h5>
+  </div>
+
+  <mat-dialog-content>
+    <div *ngIf="!onlineOrLocal && (clientData.options.onlineCard || clientData.options.onlinePix)" style="height: 100%">
+      <ng-container *ngTemplateOutlet="pickOnlineOrLocal" />
+    </div>
+    <div *ngIf="onlineOrLocal === 'online'" style="height: 100%">
+      <ng-container *ngTemplateOutlet="onlinePayment" />
+    </div>
+    <div *ngIf="onlineOrLocal === 'local' || (!clientData.options.onlineCard && !clientData.options.onlinePix)" style="height: 100%">
+      <ng-container *ngTemplateOutlet="localPayment" />
+    </div>
+  </mat-dialog-content>
+  <app-total-form-payment [(cartRequest)]="cartRequest" />
+  <div *ngIf="onlineOrLocal === 'online'">
+    <ng-container *ngTemplateOutlet="onlinePaymentActions" />
+  </div>
+  <div *ngIf="onlineOrLocal === 'local' || (!clientData.options.onlineCard && !clientData.options.onlinePix)">
+    <ng-container *ngTemplateOutlet="localPaymentActions" />
+  </div>
+</div>
+
+<ng-template #pickOnlineOrLocal>
+  <div class="d-flex h-100 flex-column justify-content-evenly">
+    <div
+      role="button"
+      (click)="onlineOrLocal = 'online'"
+      class="d-inline-block px-1 rounded text-decoration-none mx-4 mt-1 mt-lg-3 mb-2 py-2 shadow online-local"
+    >
+      <div class="px-2 py-3 py-lg-0 d-flex justify-content-center flex-column">
+        <div class="d-flex justify-content-center">
+          <fa-icon [icon]="creditCard" size="3x" class="color-theme text-center my-3 mx-2" role="button"></fa-icon>
+          <fa-icon [icon]="pix" size="3x" class="color-theme text-center my-3 mx-2" role="button"></fa-icon>
+        </div>
+        <h4 class="text-center">Pagar Online</h4>
+        <span class="optionDescr text-black-50">Escolha esta opção para realizar o pagamento de forma segura através de nosso sistema online. </span>
+      </div>
+    </div>
+    <div
+      role="button"
+      (click)="onlineOrLocal = 'local'"
+      class="d-inline-block px-1 rounded text-decoration-none mx-4 mt-2 mb-2 mb-lg-3 mt-lg-3 py-2 shadow online-local"
+    >
+      <div class="px-2 py-3 py-lg-0 d-flex justify-content-center flex-column">
+        <fa-icon [icon]="deliver" size="3x" class="color-theme text-center my-3" role="button"></fa-icon>
+        <h4 class="text-center">Pagar na Entrega</h4>
+        <span class="optionDescr text-black-50">Prefere pagar ao receber seu pedido? Escolha esta opção. </span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+<ng-template #onlinePayment>
+  <section class="d-flex justify-content-evenly h-100">
+    <div class="d-flex justify-content-center p-2 p-lg-4 w-100" *ngIf="!cartRequest.formsPayment[0].label">
+      <div
+        role="button"
+        (click)="cartRequest.formsPayment[0] = getPayment('pix')"
+        *ngIf="clientData.options.onlinePix"
+        class="d-inline-block w-50 px-1 rounded text-decoration-none mx-4 my-auto py-2 shadow online-local"
+      >
+        <div class="px-2 py-3 d-flex justify-content-center flex-column" (click)="cartRequest.formsPayment[0] = getPayment('pix')">
+          <fa-icon [icon]="pix" size="2x" class="color-theme text-center my-3" role="button"></fa-icon>
+          <h4 class="text-center">Pix</h4>
+        </div>
+      </div>
+      <div
+        role="button"
+        (click)="cartRequest.formsPayment[0] = getPayment('credit')"
+        *ngIf="clientData.options.onlineCard"
+        class="d-inline-block w-50 px-1 rounded text-decoration-none mx-4 my-auto py-2 shadow online-local"
+      >
+        <div class="px-2 py-3 d-flex justify-content-center flex-column" (click)="cartRequest.formsPayment[0] = getPayment('credit')">
+          <fa-icon [icon]="creditCard" size="2x" class="color-theme text-center my-3" role="button"></fa-icon>
+          <h4 class="text-center">Crédito</h4>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="cartRequest.formsPayment[0]?.label === 'Pix'" class="d-flex align-items-center flex-column px-3 my-1">
+      <div class="w-100" *ngIf="cartRequest.formsPayment[0].label === 'Pix' && !loading">
+        <div *ngIf="cardError" id="cardError" style="min-height: 15px"></div>
+        <div class="my-1">
+          <div *ngIf="cardError" class="alert alert-danger d-flex align-items-center my-2" role="alert">
+            <span><fa-icon [icon]="alert" size="lg"></fa-icon></span>
+            <div class="ms-2">
+              {{ cardError }}
+            </div>
+          </div>
+        </div>
+        <div>
+          <div *ngIf="!pixInvoice.qrCode" class="my-3">
+            <span class="p-1 px-2 my-3 me-1 bg-theme rounded-circle"><fa-icon [icon]="number1" size="sm"></fa-icon></span> Digite seu CPF para gerar
+            uma chave PIX
+          </div>
+          <div *ngIf="!pixInvoice.qrCode" class="my-3">
+            <span class="p-1 px-2 my-3 me-1 bg-theme rounded-circle"><fa-icon [icon]="number2" size="sm"></fa-icon></span>Acesse seu app de pagamentos
+          </div>
+          <div *ngIf="!pixInvoice.qrCode" class="my-3">
+            <span class="p-1 px-2 my-3 me-1 bg-theme rounded-circle"><fa-icon [icon]="number3" size="sm"></fa-icon></span>Escaneie o QR code ou copie
+            e cole o código do pagamento
+          </div>
+          <div *ngIf="!pixInvoice.qrCode" class="my-3">
+            <span class="p-1 px-2 my-3 me-1 bg-theme rounded-circle"><fa-icon [icon]="number4" size="sm"></fa-icon></span> Pague e será creditado na
+            hora
+          </div>
+        </div>
+        <div *ngIf="!pixInvoice.qrCode">
+          <label for="">Digite seu CPF</label>
+          <input
+            type="text"
+            inputmode="numeric"
+            class="form-control"
+            placeholder="000.000.000-00"
+            id="pix-cpf-input"
+            mask="000.000.000-00"
+            [(ngModel)]="cartRequest.secretNumber"
+          />
+          <button [disabled]="validatePixCPF()" class="btn btn-success form-control my-2" (click)="generatePix()">
+            {{ validatePixCPF() || 'Gerar chave PIX' }}
+          </button>
+        </div>
+      </div>
+
+      <ng-container *ngIf="loading">
+        <div>
+          <app-loading />
+        </div>
+      </ng-container>
+      <ng-container *ngIf="pixInvoice.qrCode">
+        <div *ngIf="error" class="alert alert-danger mb-2" role="alert">Pagamento ainda pendente. Por favor tente novamente.</div>
+        <div *ngIf="!pixRegeneration" class="d-flex align-items-center flex-column">
+          <img src="data:image/jpeg;base64, {{ pixInvoice.qrCode }}" alt="QR Code Pix" width="250px" height="250px" />
+
+          <label for="exampleFormControlTextarea1" class="form-label">Pix Copia e Cola</label>
+          <div class="input-group mb-3">
+            <input class="form-control" id="exampleFormControlTextarea1" [value]="pixInvoice.copyPaste" readonly />
+            <button
+              id="copy-paste"
+              class="btn btn-outline-secondary"
+              type="button"
+              (click)="t.open(); tooltipAutoClose(t); copyToClipboard(pixInvoice.copyPaste)"
+              #t="ngbTooltip"
+              triggers="manual"
+              [ngbTooltip]="'Chave PIX copiada!'"
+            >
+              <fa-icon [icon]="paste" />
+            </button>
+          </div>
+        </div>
+        <div *ngIf="!pixRegeneration">
+          <app-countdown [minutes]="5" [radius]="45" />
+        </div>
+        <div *ngIf="pixRegeneration" class="h-100 d-flex flex-column justify-content-center align-items-center">
+          <div role="button" class="d-flex justify-content-center w-50 px-1 rounded-3 text-decoration-none mx-4 py-2 shadow online-local">
+            <fa-icon [icon]="rotate" (click)="generatePix(true)" size="7x" class="text-center"></fa-icon>
+          </div>
+          <p class="text-center mt-4">Sua chave PIX expirou. Clique no botão para gerar uma nova.</p>
+        </div>
+        <p *ngIf="!pixRegeneration" class="text-center">Se a confirmação estiver demorando muito, clique no botão para continuar.</p>
+      </ng-container>
+    </div>
+    <div *ngIf="cartRequest.formsPayment[0]?.label === 'Crédito'" class="d-flex align-items-center flex-column flex-fill px-3 my-1">
+      <div id="cardError" class="my-1 w-100">
+        <div *ngIf="cardError" class="alert alert-danger d-flex align-items-center my-2" role="alert">
+          <span><fa-icon [icon]="alert" size="lg"></fa-icon></span>
+          <div class="ms-2">
+            {{ cardError }}
+          </div>
+        </div>
+      </div>
+      <div *ngFor="let card of customer.controls?.asaas?.cards; let index = index" class="d-flex m-3 w-100">
+        <div
+          role="button"
+          class="select-card-button shadow rounded p-2 w-100 d-flex"
+          (click)="selectedCard = card; showForm = false"
+          [ngStyle]="
+            selectedCard === card
+              ? {
+                  'background-color': 'rgba(0, 0, 0, 0.08)',
+                  'border': '1px solid rgba(0, 0, 0, 0.1)'
+                }
+              : { 'background-color': 'transparent', 'border': 'none' }
+          "
+          for="btn-check-outlined"
+        >
+          <fa-icon
+            [icon]="creditCardIcon(card.creditCardBrand)"
+            size="2x"
+            [ngClass]="card.creditCardBrand === 'VISA' ? 'text-primary' : card.creditCardBrand === 'MASTERCARD' ? 'color-theme' : 'black'"
+            class="text-center"
+          />
+          <span class="h4 mb-0 ms-2 me-1 lh-sm align-middle">{{ card.creditCardBrand }}</span>
+          <span class="text-muted lh-lg align-middle flex-grow-1">- final {{ card.creditCardNumber }}</span>
+          <fa-icon
+            role="button"
+            [icon]="xIcon"
+            class="lh-lg remove-card-button d-flex align-items-center"
+            size="lg"
+            (click)="deleteCreditCard(card.creditCardNumber); $event.stopPropagation()"
+          />
+        </div>
+        <br />
+      </div>
+
+      <div
+        *ngIf="!showForm && customer.controls?.asaas?.cards.length"
+        class="color-theme fw-500 my-2"
+        role="button"
+        (click)="showForm = true; selectedCard = null; scrollTo('divider', 350)"
+      >
+        <fa-icon [icon]="addCard" /> Adicionar outro cartão
+      </div>
+
+      <hr id="divider" *ngIf="showForm && customer.controls?.asaas?.cards.length" />
+
+      <div *ngIf="!loading && ((showForm && !selectedCard) || !customer.controls?.asaas?.cards.length)" class="w-100 mb-2">
+        <div class="my-2">
+          <h3 id="credit">Dados do Cartão</h3>
+        </div>
+        <div class="my-2">
+          <label for="holder_name">Nome no Cartão</label>
+          <input type="text" class="form-control" [(ngModel)]="billing.card.holder_name" (ngModelChange)="resetCardError()" />
+        </div>
+        <div class="my-2">
+          <label for="number">Número do Cartão</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text" style="background-color: white; border-right: none" id="basic-addon1"
+              ><fa-icon [icon]="creditCardIcon(billing.card.number[0])" size="lg"></fa-icon
+            ></span>
+            <input
+              type="text"
+              inputmode="numeric"
+              style="border-left: none"
+              class="form-control ps-1"
+              name="number"
+              id="number"
+              placeholder="0000 0000 0000 0000"
+              mask="0000 0000 0000 0000"
+              [(ngModel)]="billing.card.number"
+              (ngModelChange)="resetCardError()"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6">
+            <label for="exp">Validade</label>
+            <input
+              type="text"
+              inputmode="numeric"
+              class="form-control"
+              name="exp"
+              id="exp"
+              mask="00/00"
+              placeholder="MM/AA"
+              [(ngModel)]="billing.card.exp"
+              (ngModelChange)="resetCardError()"
+            />
+          </div>
+          <div class="col-6">
+            <label for="cvv">CVV</label>
+            <input
+              type="text"
+              inputmode="numeric"
+              class="form-control"
+              name="cvv"
+              id="cvv"
+              mask="0000"
+              [(ngModel)]="billing.card.cvv"
+              (ngModelChange)="resetCardError()"
+            />
+          </div>
+        </div>
+        <div class="my-2">
+          <label for="document">CPF</label>
+          <input
+            type="text"
+            inputmode="numeric"
+            class="form-control ps-1"
+            mask="000.000.000-00"
+            name="document"
+            id="document"
+            [(ngModel)]="billing.document"
+          />
+        </div>
+        <hr />
+        <div class="my-2">
+          <h3>Endereço de Cobrança</h3>
+        </div>
+        <div *ngIf="enableSameAddress()" class="my-3">
+          <div class="form-check form-switch">
+            <input [(ngModel)]="sameAddress" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" />
+            <label class="form-check-label" for="flexSwitchCheckDefault">Usar endereço de entrega</label>
+          </div>
+        </div>
+        <div *ngIf="!sameAddress">
+          <div class="my-2">
+            <label for="line_1">Logradouro</label>
+            <input
+              type="text"
+              class="form-control"
+              name="line_1"
+              id="line_1"
+              (ngModelChange)="resetCardError()"
+              [disabled]="sameAddress"
+              [(ngModel)]="billing.address.line_1"
+            />
+          </div>
+          <div class="my-2">
+            <label for="city">Cidade</label>
+            <input
+              type="text"
+              class="form-control"
+              name="city"
+              id="city"
+              (ngModelChange)="resetCardError()"
+              [disabled]="sameAddress"
+              [(ngModel)]="billing.address.city"
+            />
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <div class="my-2">
+                <label for="number">State</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="state"
+                  (ngModelChange)="resetCardError()"
+                  id="state"
+                  [disabled]="sameAddress"
+                  [(ngModel)]="billing.address.state"
+                />
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="my-2">
+                <label for="zip_code">CEP</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  name="zip_code"
+                  (ngModelChange)="resetCardError()"
+                  id="zip_code"
+                  mask="00000-000"
+                  [disabled]="sameAddress"
+                  [(ngModel)]="billing.address.zip_code"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-container *ngIf="loading">
+        <div>
+          <app-loading />
+        </div>
+      </ng-container>
+    </div>
+  </section>
+</ng-template>
+<ng-template #localPayment>
+  <section class="py-2" id="localPayment">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="d-flex py-2 align-items-center border-bottom">
+            <h5>Forma de Pagamento</h5>
+            <div class="ms-auto col-auto">
+              <span class="badge text-bg-danger"><span class="small">OBRIGATÓRIO</span></span>
+            </div>
+          </div>
+          <ul class="list-group list-group-flush">
+            <ng-container *ngFor="let formPayment of clientData.formsPayment">
+              <ng-container [ngSwitch]="formPayment.payment">
+                <ng-container *ngSwitchCase="'pix'">
+                  <ng-container *ngIf="clientData.options.onlinePix">
+                    <ng-container *ngTemplateOutlet="formPaymentListItem; context: { formPayment }"></ng-container>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngSwitchCase="'credit'">
+                  <ng-container *ngIf="clientData.options.onlineCard">
+                    <ng-container *ngTemplateOutlet="formPaymentListItem; context: { formPayment }"></ng-container>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngSwitchDefault>
+                  <ng-container *ngTemplateOutlet="formPaymentListItem; context: { formPayment }"></ng-container>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </ul>
+          <hr />
+          <div class="form-group m-3" *ngIf="onlineOrLocal === 'local'">
+            <label for="">CPF na nota?</label>
+            <input type="text" class="form-control" placeholder="000.000.000-00" id="" mask="000.000.000-00" [(ngModel)]="cartRequest.secretNumber" />
+          </div>
+          <div class="bg-white mx-3" id="paymentOptions">
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'Dinheiro'">
+              <ul class="list-unstyled">
+                <li>
+                  <b class="title" id="paymentScrollAnchor">Pagamento em Dinheiro</b>
+                </li>
+              </ul>
+              <ng-container *ngIf="!notNeedTransshipment">
+                <div class="col-12">
+                  <label for="">Preciso de troco para: </label>
+                  <input
+                    class="form-control"
+                    placeholder="exemplo: 10,00"
+                    mask="separator.2"
+                    separatorLimit="100000"
+                    thousandSeparator="."
+                    [(ngModel)]="change"
+                  />
+                </div>
+              </ng-container>
+              <div class="form-check mx-3 mt-2">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [(ngModel)]="notNeedTransshipment"
+                  (ngModelChange)="resetTransshipment($event)"
+                  id="not-transhippment"
+                />
+                <label class="form-check-label" for="not-transhippment"> Não preciso de troco </label>
+              </div>
+            </div>
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'Débito'">
+              <div class="cell-lg-12 cell-sm-full cell-md-full">
+                <b class="title" id="paymentScrollAnchor">Pagamento em Cartão de Débito</b>
+                <table class="table striped">
+                  <tr *ngIf="getPayment('debit').flags.length > 0">
+                    <td>Bandeira:</td>
+                    <td>
+                      <select (change)="handlePaymentFlag($event.target.value, 'debit')" class="form-select payment-flags" placeholder="Selecione">
+                        <option value="" selected disabled>Selecione</option>
+                        <option *ngFor="let flag of getPayment('debit').flags" [value]="flag.code">
+                          {{ flag.name }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'Crédito'">
+              <div class="cell-lg-12 cell-sm-full cell-md-full">
+                <b class="title" id="paymentScrollAnchor">Pagamento em Cartão de Crédito</b>
+                <table class="table striped">
+                  <tr *ngIf="getPayment('credit').flags.length > 0">
+                    <td><span>Bandeira:</span></td>
+                    <td>
+                      <select (change)="handlePaymentFlag($event.target.value, 'credit')" class="form-select payment-flags">
+                        <option value="" selected disabled>Selecione</option>
+                        <option *ngFor="let flag of getPayment('credit').flags" [value]="flag.code">
+                          {{ flag.name }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'Vale Refeição'">
+              <div class="cell-lg-12 cell-sm-full cell-md-full">
+                <b class="title" id="paymentScrollAnchor">Pagamento em Vale Refeição</b>
+                <table class="table striped">
+                  <tr *ngIf="getPayment('snack').flags.length > 0">
+                    <td><span>Bandeira:</span></td>
+                    <td>
+                      <select (change)="handlePaymentFlag($event.target.value, 'snack')" class="form-select payment-flags">
+                        <option value="" selected disabled>Selecione</option>
+                        <option *ngFor="let flag of getPayment('snack').flags" [value]="flag.code">
+                          {{ flag.name }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'Vale Alimentação'">
+              <div class="cell-lg-12 cell-sm-full cell-md-full">
+                <b class="title" id="paymentScrollAnchor">Pagamento em Vale Alimentação</b>
+                <table class="table striped">
+                  <tr *ngIf="getPayment('food').flags.length > 0">
+                    <td><span>Bandeira:</span></td>
+                    <td>
+                      <select (change)="handlePaymentFlag($event.target.value, 'food')" class="form-select payment-flags">
+                        <option value="" selected disabled>Selecione</option>
+                        <option *ngFor="let flag of getPayment('food').flags" [value]="flag.code">
+                          {{ flag.name }}
+                        </option>
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'PicPay'">
+              <div class="cell-lg-12 cell-sm-full cell-md-full">
+                <table class="table striped">
+                  <tr>
+                    <td>
+                      <span class="title" id="paymentScrollAnchor">PicPay:</span>
+                    </td>
+                    <td>{{ getPayment('picpay').key.value }}</td>
+                  </tr>
+                  <tr>
+                    <td><span>Total a transferir:</span></td>
+                    <td>
+                      {{
+                        convertToNumber(totalCart()) -
+                          cupomValue() +
+                          (taxDeliveryValue > 0 && cartRequest.addressId ? convertToNumber(taxDeliveryValue) : 0) | currency
+                      }}
+                    </td>
+                  </tr>
+                </table>
+                <br />
+                <strong class="pt-2">Envie o comprovante em nosso WhatsApp para agilizar o seu atendimento.</strong>
+              </div>
+            </div>
+            <div class="row" *ngIf="cartRequest.formsPayment[0].label === 'Pix'">
+              <div class="cell-lg-12 cell-sm-full cell-md-full">
+                <table class="table striped">
+                  <tr>
+                    <td>
+                      <span class="title" id="paymentScrollAnchor">Tipo de chave:</span>
+                    </td>
+                    <td>{{ getPayment('pix').key.type }}</td>
+                  </tr>
+                  <tr>
+                    <td><span>Chave Pix:</span></td>
+                    <td>{{ getPayment('pix').key.value }}</td>
+                  </tr>
+                  <tr>
+                    <td><span>Total a transferir:</span></td>
+                    <td>
+                      {{
+                        convertToNumber(totalCart()) -
+                          cupomValue() +
+                          (taxDeliveryValue > 0 && cartRequest.addressId ? convertToNumber(taxDeliveryValue) : 0) | currency
+                      }}
+                    </td>
+                  </tr>
+                </table>
+                <div
+                  role="button"
+                  (click)="copyToClipboard(getPayment('pix').key.value)"
+                  id="copy-code-button"
+                  ngbTooltip="Chave copiada!"
+                  [autoClose]="true"
+                  triggers="click:blur"
+                  class="px-1 py-2 my-2 d-flex bg-white shadow-sm rounded-2 justify-content-center flex-column"
+                >
+                  <div class="d-flex justify-content-center">
+                    <fa-icon [icon]="pix" size="lg" class="color-theme text-center mx-2"></fa-icon>
+                    <h6 class="text-center mb-0">Copiar Chave</h6>
+                  </div>
+                </div>
+                <strong>Envie o comprovante em nosso WhatsApp para agilizar o seu atendimento.</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-template>
+<ng-template #onlinePaymentActions>
+  <mat-dialog-actions *ngIf="onlineOrLocal === 'online' && (selectedCard || showForm) && !pixInvoice.qrCode">
+    <div *ngIf="cartRequest.formsPayment[0].label === 'Crédito'" class="w-100">
+      <div *ngIf="showForm && !selectedCard" class="form-check mb-1 d-flex">
+        <input class="form-check-input me-2" type="checkbox" [(ngModel)]="saveCard" id="flexCheckDefault" />
+        <label class="form-check-label" for="flexCheckDefault">
+          <h6>Salvar para compras futuras</h6>
+        </label>
+      </div>
+      <div class="row">
+        <div *ngIf="selectedCard" class="col-3 pe-1">
+          <input [(ngModel)]="billing.card.cvv" type="text" class="form-control" placeholder="CVV" />
+        </div>
+        <div [class]="selectedCard ? 'col-9' : 'col-12'">
+          <button
+            id="credit-button"
+            class="btn btn-success form-control flex-grow-2"
+            [disabled]="enableCreditCardOrder()"
+            (click)="processCardOrder()"
+          >
+            {{ enableCreditCardOrder()?.message || 'Finalizar Pedido - ' + (totalAmount / 100 | currency) }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- <div *ngIf="cartRequest.formsPayment[0].label === 'Pix'" class="w-100">
+      <button
+        id="pix-button"
+        class="btn btn-success form-control"
+        (click)="generatePix()"
+        [disabled]="validatePixCPF() === 'Gerar chave PIX' ? false : true"
+        *ngIf="!pixInvoice.qrCode"
+      >
+        {{ validatePixCPF() }}
+      </button>
+    </div> -->
+  </mat-dialog-actions>
+  <mat-dialog-actions *ngIf="pixInvoice.qrCode && !pixRegeneration">
+    <button id="px-button" class="btn btn-success form-control flex-grow-2" (click)="verifyPix()">Verificar pagamento do PIX</button>
+  </mat-dialog-actions>
+</ng-template>
+<ng-template #localPaymentActions>
+  <mat-dialog-actions *ngIf="onlineOrLocal === 'local'">
+    <div *ngIf="cartRequest.formsPayment[0].label === 'Dinheiro'" class="w-100">
+      <button
+        id="cash-button"
+        class="btn btn-success form-control"
+        [disabled]="!isChangeButtonEnabled() && !notNeedTransshipment"
+        (click)="submitRegularOrder()"
+      >
+        {{
+          isChangeButtonEnabled() || notNeedTransshipment || !change
+            ? 'Finalizar\
+                Pedido - ' + (totalAmount / 100 | currency)
+            : 'Troco abaixo do valor da compra'
+        }}
+      </button>
+    </div>
+    <div *ngIf="cartRequest.formsPayment[0].label !== 'Dinheiro' && cartRequest.formsPayment[0].label.length" class="w-100">
+      <button id="pix-button" class="btn btn-success form-control" (click)="submitRegularOrder()">
+        Finalizar Pedido -
+        {{ totalAmount / 100 | currency }}
+      </button>
+    </div>
+    <div *ngIf="!cartRequest.formsPayment[0].label.length" class="w-100">
+      <button id="pix-button" disabled="{{ true }}" class="btn btn-success form-control" (click)="submitRegularOrder()">
+        Finalizar Pedido -
+        {{ totalAmount / 100 | currency }}
+      </button>
+    </div>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #formPaymentListItem let-formPayment="formPayment">
+  <li class="list-group-item" *ngIf="getPayment(formPayment.payment).status">
+    <label class="w-100" [htmlFor]="formPayment.payment + 'radio'">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="ps-4 py-1">
+          <span class="optionDescr text-black-50">{{ formPayment.label }}</span>
+        </div>
+        <div class="ps-4 py-1">
+          <span
+            class="optionDescr text-black-70"
+            *ngIf="cartRequest.formsPayment[0]?.addon?.status && cartRequest.formsPayment[0]?.payment === formPayment.payment"
+          >
+            <b class="color-theme">{{ addonType() + addonValueType() }}</b>
+          </span>
+        </div>
+        <div class="ms-auto py-1 me-2 col-auto">
+          <div class="form-check">
+            <input
+              class="form-check-input radioCuston"
+              [(ngModel)]="cartRequest.formsPayment[0]"
+              [value]="getPayment(formPayment.payment)"
+              (click)="scrollTo('paymentScrollAnchor', 300)"
+              type="radio"
+              name="exampleRadios"
+              [id]="formPayment.payment + 'radio'"
+            />
+          </div>
+        </div>
+      </div>
+    </label>
+  </li>
+</ng-template>

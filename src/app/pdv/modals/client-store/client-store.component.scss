@@ -1,0 +1,12 @@
+.input-container {
+  padding: 0.5rem;
+
+  input {
+    width: 100%;
+  }
+}
+
+.address-form-container:nth-child(even) {
+  background-color: var(--wm-gray-light-300);
+  border-radius: 6px;
+}

@@ -1,0 +1,202 @@
+<div mat-dialog-title class="d-flex align-items-center gap-2">
+  <fa-icon mat-dialog-close [icon]="faArrowLeft" style="cursor: pointer; color: var(--red)"></fa-icon>
+  <div class="d-flex align-items-center gap-4 w-100">
+    <mat-label>Resumo</mat-label>
+    <mat-select [value]="table.id">
+      <mat-option [value]="table.id" (click)="changeResume('table')"> Mesa - {{ table.name }} </mat-option>
+      <mat-option *ngFor="let command of commands" [value]="command.id" (click)="changeResume('command', command.id)">
+        Comanda - {{ command.name }}
+      </mat-option>
+    </mat-select>
+  </div>
+</div>
+
+<mat-dialog-content *ngIf="!cart?.length && !cartPizza?.length">
+  <h3 class="p-4" [ngStyle]="{ 'text-align': 'center' }">{{ resume === 'command' ? 'Comanda' : 'Mesa' }} sem pedidos no momento!</h3>
+</mat-dialog-content>
+
+<mat-dialog-content *ngIf="cart?.length || cartPizza?.length" class="content" style="max-height: 35rem">
+  <ul class="p-4" style="max-height: 35rem">
+    <ng-container *ngTemplateOutlet="itensList"></ng-container>
+  </ul>
+</mat-dialog-content>
+
+<mat-dialog-actions *ngIf="cart?.length || cartPizza?.length" class="actions">
+  <b>
+    <p class="mt-7">Total: {{ totalsWithoutCanceled() + feesTotalValue(resume === 'table' ? table.fees : command?.fees) | currency }}</p>
+  </b>
+</mat-dialog-actions>
+
+<ng-template #itensList>
+  <!-- PIZZAS -->
+  <!-- <div *ngFor="let item of false ? cartPizza : command?.cartPizza; let index = index">
+    <div *ngIf="">
+      <ul style="padding-left: 0">
+        <li>
+          <div class="d-flex justify-content-between w-100 my-2">
+            <div>
+              <p>
+                <span>{{ item.quantity }}x {{ item.name }}</span>
+              </p>
+              <p class="text-gray" *ngIf="item.obs">Obs.: {{ item.obs }}</p>
+            </div>
+            <div>
+              <p>
+                <span>{{ item.value * item.quantity | currency }}</span>
+              </p>
+            </div>
+          </div>
+        </li>
+        <li class="text-gray" *ngFor="let flavor of item.flavors">
+          <div>
+            <p>
+              <span>{{ flavor.name }}</span>
+            </p>
+          </div>
+        </li>
+        <li class="fg-gray" *ngFor="let implementation of item.details.implementations">
+          <div class="d-flex">
+            <div>
+              <span>{{ implementation.name }}</span>
+            </div>
+            <div>
+              <span>{{ implementation.value | currency }}</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div> -->
+
+  <!-- PRODUTOS -->
+  <div *ngFor="let item of resume === 'table' ? cart : command?.cart; let index = index">
+    <div>
+      <ul style="padding-left: 0">
+        <li>
+          <div class="d-flex justify-content-between gap-2 w-100 my-2">
+            <div>
+              <p>
+                <span>{{ item.quantity }}x {{ item.name }}</span>
+              </p>
+              <p class="text-gray" *ngIf="item.obs">Obs.: {{ item.obs }}</p>
+            </div>
+            <div>
+              <p>
+                <span>
+                  {{ item.details.value | currency }}
+                </span>
+              </p>
+            </div>
+          </div>
+        </li>
+        <div *ngIf="item.details.complements.length > 0">
+          <li class="fg-gray" *ngFor="let complement of item.details.complements">
+            <div *ngFor="let itemComplement of complement.itens">
+              <div>
+                <p>
+                  <span>{{ itemComplement.quantity }}x {{ itemComplement.name }}</span>
+                </p>
+              </div>
+              <div>
+                <p>
+                  {{ itemComplement.value * itemComplement.quantity | currency }}
+                </p>
+              </div>
+            </div>
+            <div>
+              <div></div>
+              <div>
+                <p>
+                  {{ cartService.getProductFinalValue(item, 'T') | currency }}
+                </p>
+              </div>
+            </div>
+          </li>
+        </div>
+        <div *ngIf="item.details.flavors || item.details.implementations">
+          <div *ngFor="let itImpl of item.details.implementations">
+            <p>
+              {{ itImpl.name }}
+            </p>
+            <p>
+              {{ itImpl.value | currency }}
+            </p>
+          </div>
+          <li class="fg-gray" *ngFor="let complements of item.details.flavors">
+            <div *ngFor="let iComplement of complements.complements">
+              <div *ngFor="let valueComp of iComplement.itens">
+                <p>
+                  <span>{{ valueComp.name }}</span>
+                </p>
+                <p>
+                  {{ valueComp.value * valueComp.quantity | currency }}
+                </p>
+              </div>
+            </div>
+            <div>
+              <div>
+                <p>
+                  {{ cartService.getProductFinalValue(item, 'T') | currency }}
+                </p>
+              </div>
+            </div>
+          </li>
+        </div>
+      </ul>
+    </div>
+  </div>
+
+  <ng-container *ngIf="resume === 'table'">
+    <hr />
+    <div>
+      <p><b>Comandas</b></p>
+      <span *ngFor="let command of allCommands">
+        <div *ngIf="command.carts.length" class="d-flex align-items-center justify-content-between">
+          <div [ngClass]="command.status === 0 ? 'cell-4' : 'cell-8'">
+            <p>{{ command.name }}</p>
+          </div>
+          <div *ngIf="command.status === 0" class="cell-4">
+            <p>(PAGO)</p>
+          </div>
+          <div>
+            <p>{{ getTotalCommand(command) | currency }}</p>
+          </div>
+        </div>
+      </span>
+    </div>
+
+    <!-- TAXAS MESA -->
+    <hr />
+    <div>
+      <p><b>Taxas</b></p>
+      <span *ngFor="let fee of table.fees">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="cell-8">
+            <p>{{ fee.code }}</p>
+          </div>
+          <div>
+            <p>{{ formatFeeValue(fee, 'table') | currency }}</p>
+          </div>
+        </div>
+      </span>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="resume === 'command'">
+    <!-- TAXAS COMANDA -->
+    <hr />
+    <div>
+      <p><b>Taxas</b></p>
+      <span *ngFor="let fee of command.fees">
+        <div *ngIf="fee.status && fee.automatic" class="d-flex align-items-center justify-content-between">
+          <div>
+            <p>{{ fee.code }}</p>
+          </div>
+          <div>
+            <p>{{ formatFeeValue(fee, 'command') | currency }}</p>
+          </div>
+        </div>
+      </span>
+    </div>
+  </ng-container>
+</ng-template>

@@ -1,0 +1,228 @@
+<div class="d-flex flex-column justify-content-between bg-5" [ngStyle]="{ height: '100%' }">
+  <div dialog-title>
+    <div class="modal-header">
+      <h5 class="modal-title pe-2" id="exampleModalLabel">Endereço de Entrega</h5>
+      <!-- <div *ngIf="addressRevalidation && data.clientData.deliveryLocal">
+            <button *ngIf="data.clientData.deliveryLocal" btn-style="alert" class="btn-deliveryLocal"
+                (click)="close({deliveryLocal: true})">Retirar no Local</button>
+        </div> -->
+      <button type="button" class="btn-close" (click)="closeAddressModal()" aria-label="Close"></button>
+    </div>
+  </div>
+  <mat-dialog-content *ngIf="data.clientData.typeDelivery === 'km'">
+    <div dialog-content>
+      <div class="container py-3" *ngIf="geoActived">
+        <div class="grid div row">
+          <div class="cell-12 centerer">
+            <app-loading></app-loading>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-box container-fluid mt-3" *ngIf="!geoActived">
+        <div *ngIf="!hiddenCEP" class="row mb-1 gap-2">
+          <div class="col-12">
+            <div class="mb-1">
+              <label for="">CEP</label>
+              <input type="tel" mask="00000-000" class="form-control" (keyup)="searchZipCode()" [(ngModel)]="address.zipcode" />
+            </div>
+            <div>
+              <button class="btn btn-link" (click)="showFields = true" *ngIf="!showFields && !address.city">Não sei meu CEP</button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="hiddenCEP && !address.city" class="row gap-2">
+          <div class="col-12">
+            <label for="">Cidade</label>
+            <input class="form-control" [(ngModel)]="address.city" />
+          </div>
+        </div>
+        <div *ngIf="address.city || showFields" class="gap-2">
+          <div class="row mb-1">
+            <div class="col-12">
+              <label for="">Endereço</label>
+              <input class="form-control" [(ngModel)]="address.street" />
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-12">
+              <label for="">Nº</label>
+              <div class="input-group">
+                <input class="form-control" [disabled]="sn" type="text" [(ngModel)]="address.number" />
+                <div class="input-group-text">
+                  <div class="d-flex align-items-center form-check">
+                    <input class="form-check-input mt-0" id="semnumero" type="checkbox" (change)="changeSN()" [(ngModel)]="sn" />
+                    <label class="form-check-label ms-1" for="semnumero"> Sem número </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-1">
+            <div class="col-12">
+              <label for="">Complemento</label>
+              <input class="form-control" [(ngModel)]="address.complement" />
+            </div>
+          </div>
+          <div class="row mb-1">
+            <div class="col-12">
+              <label for="">Ponto de Referencia</label>
+              <input class="form-control" [(ngModel)]="address.reference" />
+            </div>
+          </div>
+          <div class="row mb-1" *ngIf="address.city || showFields">
+            <div class="col-12">
+              <label for="">UF</label>
+              <select class="form-select" disabled [(ngModel)]="address.uf">
+                <option value="AC">AC</option>
+                <option value="AL">AL</option>
+                <option value="AP">AP</option>
+                <option value="AM">AM</option>
+                <option value="BA">BA</option>
+                <option value="CE">CE</option>
+                <option value="DF">DF</option>
+                <option value="ES">ES</option>
+                <option value="GO">GO</option>
+                <option value="MA">MA</option>
+                <option value="MT">MT</option>
+                <option value="MS">MS</option>
+                <option value="MG">MG</option>
+                <option value="PA">PA</option>
+                <option value="PB">PB</option>
+                <option value="PR">PR</option>
+                <option value="PE">PE</option>
+                <option value="PI">PI</option>
+                <option value="RJ">RJ</option>
+                <option value="RN">RN</option>
+                <option value="RS">RS</option>
+                <option value="RO">RO</option>
+                <option value="RR">RR</option>
+                <option value="SC">SC</option>
+                <option value="SP">SP</option>
+                <option value="SE">SE</option>
+                <option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-1" *ngIf="address.city || showFields">
+            <div class="col-12">
+              <label for="">Cidade</label>
+              <input class="form-control" [(ngModel)]="address.city" />
+            </div>
+          </div>
+          <div class="row mb-1" *ngIf="address.city || showFields">
+            <div class="col-12">
+              <label for="">Bairro</label>
+              <input class="form-control" [(ngModel)]="address.neighborhood" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-content *ngIf="data.clientData.typeDelivery === 'neighborhood'">
+    <div dialog-content>
+      <div class="dialog-box container-fluid mt-3 d-flex gap-2 flex-column">
+        <!-- <div class="row">
+                    <div class="cell-lg-6 cell-sm-full cell-md-full">
+                        <label for="">Cep</label>
+                        <input type="tel" mask="00000-000" (keyup)="searchZipCode()" [(ngModel)]="address.zipCode">
+                    </div>
+                </div> -->
+        <div class="row mb-3" *ngIf="address.neighborhood">
+          <div class="col-12">
+            <label for="">Endereço</label>
+            <input class="form-control" [(ngModel)]="address.street" />
+          </div>
+        </div>
+        <div class="row mb-3" *ngIf="address.neighborhood">
+          <div class="col-12">
+            <label for="">Nº</label>
+            <div class="input-group">
+              <input class="form-control" [disabled]="sn" type="number" [(ngModel)]="address.number" />
+              <div class="input-group-text">
+                <div class="d-flex align-items-center form-check">
+                  <input class="form-check-input mt-0" id="semnumero" type="checkbox" (change)="changeSN()" [(ngModel)]="sn" />
+                  <label class="form-check-label ms-1" for="semnumero"> Sem número </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3" *ngIf="address.neighborhood">
+          <div class="col-12">
+            <label for="">Complemento</label>
+            <input class="form-control" [(ngModel)]="address.complement" />
+          </div>
+        </div>
+        <div class="row mb-3" *ngIf="address.neighborhood">
+          <div class="col-12">
+            <label for="">UF</label>
+            <select class="form-select" [(ngModel)]="address.uf">
+              <option value="AC">AC</option>
+              <option value="AL">AL</option>
+              <option value="AP">AP</option>
+              <option value="AM">AM</option>
+              <option value="BA">BA</option>
+              <option value="CE">CE</option>
+              <option value="DF">DF</option>
+              <option value="ES">ES</option>
+              <option value="GO">GO</option>
+              <option value="MA">MA</option>
+              <option value="MT">MT</option>
+              <option value="MS">MS</option>
+              <option value="MG">MG</option>
+              <option value="PA">PA</option>
+              <option value="PB">PB</option>
+              <option value="PR">PR</option>
+              <option value="PE">PE</option>
+              <option value="PI">PI</option>
+              <option value="RJ">RJ</option>
+              <option value="RN">RN</option>
+              <option value="RS">RS</option>
+              <option value="RO">RO</option>
+              <option value="RR">RR</option>
+              <option value="SC">SC</option>
+              <option value="SP">SP</option>
+              <option value="SE">SE</option>
+              <option value="TO">TO</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="">Cidade</label>
+            <select class="form-select" [(ngModel)]="address.city" (change)="loadNeighborhoods()">
+              <option value="" selected disabled>Selecione</option>
+              <option *ngFor="let item of data.clientData.taxDelivery" value="{{ item.city }}">{{ item.city }}</option>
+              <option *ngIf="!data.clientData.options.expose"  value="others">Outras</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-12">
+            <label for="">Bairro</label>
+            <select class="form-select" [(ngModel)]="address.neighborhood" [disabled]="!address.city">
+              <option value="">Selecione</option>
+              <option *ngFor="let item of neighborhoods" value="{{ item.name }}">{{ item.name }}</option>
+              <option *ngIf="!data.clientData.options.expose" value="others">Outros</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3" *ngIf="address.neighborhood">
+          <div class="col-12">
+            <label for="">Ponto de Referencia</label>
+            <input class="form-control" [(ngModel)]="address.reference" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="align-items-center justify-content-end p-2">
+    <button class="btn btn-primary form-control" (click)="close()" [disabled]="validation() !== 'Entregar neste endereço'">{{ validation() }}</button>
+    <!-- <div dialog-actions class="pt-3 pb-3 text-center"> -->
+    <!-- <button class="fluid" m4-button btn-style="alert" [rounded]="true" (click)="saveAddress();sendMessage()">Finalizar Pedido</button> -->
+    <!-- <a class="fluid button alert" target="_blank" m4-button btn-style="alert" href="https://wa.me/{{data.clientData.whatsapp}}?text={{getMessage()}}" (click)="saveAddress();">Enviar Pedido</a> -->
+    <!-- </div> -->
+  </mat-dialog-actions>
+</div>

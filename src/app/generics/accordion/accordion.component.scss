@@ -1,0 +1,41 @@
+details {
+  margin: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--wm-gray-600);
+  box-shadow: 0 3px 6px rgba($color: #000000, $alpha: .16);
+  max-height: 100px;
+
+  .accordion-container {
+    padding: 0.75rem;
+  }
+
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    font-size: 1.125rem;
+    list-style: none;
+  
+    color: var(--wm-gray-900);
+  
+    .header-icon {
+      color: var(--wm-gray-300);
+    }
+  }
+
+  &[open] {
+    overflow-y: auto;
+    max-height: 60vh;
+    height: 100%;
+    transition: all 0.25s;
+    summary {
+      border-bottom: 1px solid var(--wm-gray-600);
+
+      .header-icon {
+        transform: rotate(180deg);
+        transition: all 0.5s;
+      }
+    }
+  }
+}

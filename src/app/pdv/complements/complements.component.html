@@ -1,0 +1,48 @@
+<div [id]="complement.id" *ngFor="let complement of displayComplements; index as indexComplement; trackBy: trackBy" class="w-100 mt-2">
+  <h4>
+    <div [ngClass]="" class="d-flex justify-content-between align-items-center">
+      <h4 class="info-complementName">{{ complement.name }}</h4>
+      <small [ngStyle]="{ visibility: complement.required ? 'visible' : 'hidden' }">
+        <span class="badge bg-danger p-2 rounded">Obrigatório</span>
+      </small>
+    </div>
+  </h4>
+  <p class="my-2">Quantidade mínima: {{ complement.min }}</p>
+  <p class="my-2">Quantidade máxima: {{ complement.max }}</p>
+  <ul class="complementList mt-3">
+    <ng-container *ngFor="let item of complement.itens; index as index; trackBy: trackBy">
+      <li class="itemComplement">
+        <div class="m-2 d-flex justify-content-between align-items-center">
+          <span style="flex-basis: 40%">{{ item.name }}</span>
+          <span *ngIf="item.status" style="flex-basis: 4rem">
+            {{ item.value | currency }}
+          </span>
+          <span *ngIf="item.status" class="d-flex align-items-center">
+            <fa-icon
+              [icon]="faMinusCircle"
+              [ngStyle]="{ opacity: item.quantity >= 1 ? 1 : 0.5 }"
+              style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+              (click)="decrease(item); $event.stopPropagation()"
+            >
+            </fa-icon>
+            <span class="mx-2">{{ item.quantity }}</span>
+            <fa-icon
+              [icon]="faPlusCircle"
+              *ngIf="cartService.verifyAvailableComplements(item, { default: cart || [], pizza: cartPizza || [] }, 'greaterOrEqual')"
+              [ngStyle]="{ opacity: cartService.complementTotalItens(complement) < complement.max ? 1 : 0.5 }"
+              style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+              (click)="
+                cartService.complementTotalItens(complement) < complement.max && increase(item);
+                $event.stopPropagation();
+                cartService.complementTotalItens(complement) >= complement.max && scrollToElement(complements[indexComplement + 1]?.id)
+              "
+            >
+            </fa-icon>
+          </span>
+          <span *ngIf="!item.status" style="color: var(--red)">INDISPONÍVEL</span>
+        </div>
+      </li>
+    </ng-container>
+    <li class="pb-4" style="list-style: none"></li>
+  </ul>
+</div>

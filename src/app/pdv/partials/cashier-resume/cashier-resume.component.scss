@@ -1,0 +1,18 @@
+.cashier-resume-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  height: 100%;
+  background-color: var(--wm-gray-light-100);
+
+  &>* {
+    padding: 0 0.875rem;
+  }
+
+  .summary-footer {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+  }
+}

@@ -1,0 +1,161 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between" style="margin: -1.5rem -1.5rem 0">
+  <div class="d-flex align-items-center gap-3">
+    <fa-icon [icon]="faArrowLeft" style="cursor: pointer" (click)="close({})"></fa-icon>
+    <h3 class="m-0 fs-5">
+      Carrinho
+      <ng-container [ngSwitch]="data.cartRequest?.type">
+        <span *ngSwitchCase="'D'">Balcão/Delivery</span>
+        <span *ngSwitchCase="'T'">Mesa: {{ context.getActiveTable()?.name }}</span>
+        <span *ngSwitchCase="'P'">{{ context.packageLabel }}</span>
+      </ng-container>
+    </h3>
+  </div>
+</div>
+<mat-dialog-content
+  *ngIf="data.client || data.cartRequest?.type === 'T'"
+  class="d-flex flex-column"
+  style="padding: 0 !important; overflow-x: hidden"
+>
+  <ng-container *ngIf="context.profile.options.activeCupom && data.cartRequest?.type !== 'T'">
+    <div class="d-flex justify-content-center mt-3">
+      <form class="input-group mb-3" (submit)="verifyCupom(cupomCodeInput.value)">
+        <input type="text" class="form-control" placeholder="Ative seu Cupom" #cupomCodeInput required />
+        <button type="submit" class="btn btn-outline-secondary rounded-end" style="border-radius: 0">Ativar</button>
+      </form>
+    </div>
+    <span class="text-center text-success mb-3 fw-bold" *ngIf="cupom">
+      Desconto de {{ cupom.type === 'freight' ? 'Frete Grátis' : cupom.type === 'value' ? (cupom.value | currency) : cupom.value + '%' }} Aplicado!
+    </span>
+  </ng-container>
+  <div *ngIf="data.cartRequest?.type === 'P'" class="my-3 px-3 w-100">
+    <p class="fs-5 fw-bold mb-3">Selecione uma data para entrega</p>
+    <app-calendar [dataObject]="{ packageHours: data.packageHours }" (changePackageCalendar)="updatePackageCalendar($event)"></app-calendar>
+  </div>
+  <div class="border-top container">
+    <ng-container *ngIf="data.cartRequest?.type !== 'T'">
+      <div class="d-flex align-items-center justify-content-between my-2">
+        <p class="fs-5">ENTREGA</p>
+        <div class="fw-bold py-1 px-2 rounded-pill" style="background-color: var(--wm-green-500); color: var(--wm-white); font-size: 0.75rem">
+          Obrigatório
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="p-2 col-12 col-md-6">
+            <label for="counter" class="address-radio" style="height: 100%">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="addressId"
+                id="counter"
+                style="margin-top: 2px"
+                (click)="alternateTypeDelivery(null)"
+                [checked]="context.profile.options.delivery.disableDelivery || addressId === null"
+              />
+              <div>
+                <p style="font-size: 1.125rem">Retirar no Balcão</p>
+                <p class="mt-3">GRÁTIS</p>
+              </div>
+            </label>
+          </div>
+          <div
+            *ngIf="!context.profile.options.delivery.disableDelivery && (data?.client?.addAddress?.length || addressSelected)"
+            class="p-2 col-12 col-md-6"
+          >
+            <label for="delivery" class="address-radio">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="addressId"
+                id="delivery"
+                style="margin-top: 2px"
+                (click)="alternateTypeDelivery(addressSelected.id); setTaxDeliveryValue()"
+                [checked]="!context.profile.options.delivery.disableDelivery && addressId === addressSelected.id"
+              />
+              <div>
+                <p style="font-size: 1.125rem">ENDEREÇO {{ selectedAddressIndex() + 1 }}</p>
+                <p class="my-1">{{ addressSelected.street }}, {{ addressSelected.number ? addressSelected.number : 'SN' }}</p>
+                <p class="my-1">{{ addressSelected.neighborhood }} - {{ addressSelected.city }} - {{ addressSelected.uf }}</p>
+                <button type="button" class="btn btn-link px-0" (click)="openAddress()">
+                  <!-- openClientRegister({ type: 'update', refId: selectedAddressIndex() }) -->
+                  Mudar Endereço
+                </button>
+              </div>
+            </label>
+          </div>
+          <div *ngIf="!context.profile.options.delivery.disableDelivery && !addressSelected" class="p-2 col-12 col-md-6">
+            <div class="address-radio align-items-center justify-content-center" style="height: 100%">
+              <button class="btn btn-link p-0" (click)="openAddress()">Adicionar endereço</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="data.cartRequest?.type === 'T'">
+      <p class="mt-3" style="font-size: 1.125rem">COMANDA: {{ context.getActiveCommand()?.name }}</p>
+    </ng-container>
+  </div>
+  <div class="border-top container py-2 flex-grow-1 my-3">
+    <p style="font-size: 1.125rem">RESUMO</p>
+    <app-cart-itens [cartPizza]="data.cartPizza" [cart]="data.cart" [valueType]="data.cartRequest?.type"></app-cart-itens>
+  </div>
+  <div class="d-flex justify-content-center border-top container py-2">
+    <button type="button" class="btn btn-link text-decoration-none" (click)="close({})" style="font-size: 1.125rem; color: var(--wm-red-300)">
+      ADICIONAR MAIS ITENS
+    </button>
+  </div>
+</mat-dialog-content>
+<mat-dialog-content
+  *ngIf="!data.client && data.cartRequest?.type !== 'T'"
+  class="d-flex flex-column justify-content-center align-items-center"
+  style="max-height: calc(100% - 3.625rem); height: 100%; padding: 0 1rem !important"
+>
+  <p class="fs-3 fw-bold text-center">
+    Nenhum cliente selecionado para este pedido, busque por um cliente cadastrado o cadastre um para poder prosseguir.
+  </p>
+  <div class="d-flex align-items-center gap-2 mt-3">
+    <button type="button" class="btn btn-primary" (click)="close({ focusSearch: true })">Buscar cliente</button>
+    <button type="button" class="btn btn-primary" (click)="openClientRegister({ type: 'create' })">Cadastrar cliente</button>
+  </div>
+</mat-dialog-content>
+<div *ngIf="data.client || data.cartRequest?.type === 'T'" class="border-top p-3 w-100">
+  <div class="d-flex align-items-center justify-content-between">
+    <p>SUBTOTAL</p>
+    <p style="color: var(--wm-red-300); font-size: 20px">{{ data.cartRequest?.total | currency }}</p>
+  </div>
+  <div *ngIf="cupom" class="d-flex align-items-center justify-content-between">
+    <p>CUPOM</p>
+    <p style="color: var(--wm-red-300)">-{{ cartService.cupomValue(cupom, data.cartRequest) | currency }}</p>
+  </div>
+  <div *ngIf="data.cartRequest?.type !== 'T'" class="d-flex align-items-center justify-content-between">
+    <p>TAXA DE ENTREGA</p>
+    <p *ngIf="cupom?.type !== 'freight'" style="color: var(--wm-red-300)">
+      {{
+        addressId ? (data.cartRequest.taxDelivery !== -1 ? (data.cartRequest.taxDelivery || 0 | currency) : 'FORA DA ÁREA DE COBERTURA') : 'Grátis'
+      }}
+    </p>
+    <p *ngIf="cupom?.type === 'freight'" style="color: var(--wm-red-300)">FRETE GRÁTIS</p>
+  </div>
+  <div class="d-flex align-items-center justify-content-between fw-bold" style="font-size: 1.125rem">
+    <p>TOTAL</p>
+    <p style="color: var(--wm-red-300)">
+      {{ data.cartRequest?.total + (addressId ? taxDelivery || 0 : 0) - cartService.cupomValue(cupom, data.cartRequest) | currency }}
+    </p>
+  </div>
+</div>
+<mat-dialog-actions *ngIf="data.client || data.cartRequest?.type === 'T'" class="justify-content-between">
+  <button type="button" class="btn btn-outline-secondary" style="color: var(--wm-gray-300)" (click)="close({})">Cancelar</button>
+  <button
+    type="button"
+    class="btn"
+    style="color: var(--wm-white); background-color: var(--wm-green-500)"
+    [disabled]="
+      (!data.cart.length && !data.cartPizza.length) ||
+      (data.cartRequest?.type === 'P' && !data.cartRequest.packageDate || data.cartRequest.packageDate === 'Invalid DateTime') ||
+      (data.cartRequest.taxDelivery === -1 && addressId !== null)
+    "
+    (click)="close({ toPayment: data.cartRequest?.type !== 'T', finishCartRequest: data.cartRequest?.type === 'T' })"
+  >
+    Prosseguir
+  </button>
+</mat-dialog-actions>

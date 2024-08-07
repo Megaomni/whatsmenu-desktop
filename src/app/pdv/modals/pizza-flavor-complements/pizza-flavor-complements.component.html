@@ -1,0 +1,10 @@
+<div mat-dialog-title>Complementos {{ data.flavor.name }}</div>
+<mat-dialog-content class="flex-grow-1">
+  <div class="p-3">
+    <pdv-complements [complements]="data.complements"></pdv-complements>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="d-flex align-items-center justify-content-end gap-2">
+  <button class="btn btn-danger" mat-dialog-close >Cancelar</button>
+  <button class="btn btn-primary" [mat-dialog-close]="data" >Adicionar</button>
+</mat-dialog-actions>

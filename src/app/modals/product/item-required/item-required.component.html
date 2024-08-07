@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Atenção!</h1>
+<mat-dialog-content>
+    <p class="p-3">Complete o seu pedido com os itens obrigatórios:</p>
+    <ul>
+        <li *ngFor="let item of itens">{{ item }}</li>
+    </ul>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button *ngIf="!bartenderStyle" mat-dialog-close m4-button style="width: 100%;margin-left: 12px;" btn-style="alert"
+        class="fluid alert">OK</button>
+    <button *ngIf="bartenderStyle" mat-dialog-close class="primary-button">OK</button>
+</mat-dialog-actions>

@@ -1,0 +1,28 @@
+details {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  max-height: 3.5rem;
+
+  .accordion-content {
+    padding: 0.75rem 0;
+    max-height: 33.75rem;
+    overflow-y: auto;
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    width: 100%;
+    padding: 1.125rem;
+    font-size: 1.125rem;
+    background-color:  var(--wm-gray-light-300);
+  }
+
+  &[open] {
+    max-height: 33.75rem;
+    height: auto;
+    transition: all 0.5s;
+  }
+}

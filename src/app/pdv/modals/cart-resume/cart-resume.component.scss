@@ -1,0 +1,12 @@
+.address-radio {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  background-color: var(--wm-gray-light-300);
+  padding: 1rem !important;
+}
+
+.dropdown-item.disabled {
+  color: var(--wm-red-400);
+  background-color: var(--wm-red-100);
+}

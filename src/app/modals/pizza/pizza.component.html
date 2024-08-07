@@ -1,0 +1,382 @@
+<div class="d-flex flex-column justify-content-start bg-5 h-100">
+  <div mat-dialog-title>
+    <button class="button-icon">
+      <fa-icon [icon]="faArrowLeft" (click)="previousStep()"></fa-icon>
+    </button>
+    Escolha {{ step === 'flavors' ? 'os Sabores' : step === 'implementations' ? 'as Bordas' : 'os Complementos' }}
+  </div>
+  <mat-dialog-content class="flex-fill" style=" overflow-y: auto">
+    <section class="tabsProducts">
+      <div class="col-md-12">
+        <div class="hr-nav-1">
+          <div [ngSwitch]="step">
+            <ng-container *ngSwitchCase="'flavors'">
+              <div style="overflow: auto; position: sticky; top: 0; z-index: 99999" class="bg-white">
+                <div class="input-group p-2" style="overflow: auto; position: sticky; top: 0; z-index: 99999">
+                  <span class="input-group-text bg-1 border border-opacity-10" id="basic-addon1"><fa-icon [icon]="faSearch"></fa-icon></span>
+                  <input type="text" class="form-control" placeholder="Buscar sabores" [(ngModel)]="filter" (change)="(filterFlavors)" />
+                </div>
+                <ul ngbNav #nav="ngbNav" class="nav-container no-scroll-bar flex-nowrap pb-0 bg-white" id="flavor-navbar">
+                  <li
+                    *ngFor="let tabFlavor of tabs; let currentFlavorIndex = index"
+                    [ngbNavItem]="currentFlavorIndex + 1"
+                    (click)="nav.select(currentFlavorIndex + 1)"
+                    [disabled]="!pizza.details.flavors[currentFlavorIndex - 1] && currentFlavorIndex !== 0"
+                    class="border-0 px-1"
+                    [id]="currentFlavorIndex + 1"
+                  >
+                    <a *ngIf="tabs.length > 1" ngbNavLink class="nav-item px-1">
+                      {{
+                        pizza.details.flavors[currentFlavorIndex]?.name
+                          ? pizza.details.flavors[currentFlavorIndex]?.name
+                          : 'Escolha o ' + (pizza.details.flavors.length > 1 ? currentFlavorIndex + 1 + 'º Sabor' : 'seu sabor')
+                      }}
+                    </a>
+                    <ng-template ngbNavContent>
+                      <section class="bg-1 pb-3">
+                        <div class="container-fluid">
+                          <div class="row">
+                            <div class="col-12">
+                              <div id="title">
+                                <div class="d-flex align-items-center">
+                                  <div>
+                                    <h5 class="mb-0 ms-2" style="scroll-margin-top: 120px" id="pizzaAnchor{{ currentFlavorIndex + 1 }}">
+                                      {{ 'Escolha o ' + (pizza.details.flavors.length > 1 ? currentFlavorIndex + 1 + 'º Sabor' : 'seu sabor') }}
+                                    </h5>
+                                  </div>
+                                  <div class="ms-auto py-2 me-2 col-auto">
+                                    <span class="badge text-bg-danger"><span class="small">OBRIGATÓRIO</span></span>
+                                  </div>
+                                </div>
+                              </div>
+                              <ul class="list-group list-group-flush">
+                                <li *ngFor="let filteredFlavor of filterFlavors(); let filteredFlavorindex = index" class="list-group-item">
+                                  <label
+                                    class="w-100"
+                                    [ngStyle]="{ opacity: !cartService.checkInventoryDisponibility({ item: filteredFlavor }) && 0.3 }"
+                                  >
+                                    <div class="d-flex justify-content-between align-items-center" style="min-height: 120px">
+                                      <div>
+                                        <p class="optionTitle mb-0">{{ filteredFlavor.name }}</p>
+                                        <p class="small mt-n1 mb-0 fst-italic lh-sm color-text">{{ filteredFlavor.description }}</p>
+                                        <div class="text-danger small mt-n1 fw-500">
+                                          <b>+ {{ flavorDisplayValue(filteredFlavor) | currency }}</b>
+                                        </div>
+                                      </div>
+                                      <div
+                                        *ngIf="cartService.checkInventoryDisponibility({ item: filteredFlavor })"
+                                        class="ms-auto py-2 col-auto ps-0"
+                                      >
+                                        <label class="img-dishInternal">
+                                          <img
+                                            src="{{ filteredFlavor.image ? filteredFlavor.image : data.cover }}"
+                                            class="adjust-coverInternal"
+                                            alt="..."
+                                          />
+                                        </label>
+                                        <div class="form-check me-3">
+                                          <input
+                                            class="form-check-input radioCuston"
+                                            type="radio"
+                                            [name]="'pizzaFlavorRadio' + currentFlavorIndex"
+                                            [(ngModel)]="pizza.details.flavors[currentFlavorIndex]"
+                                            [value]="
+                                              pizza.details.flavors[currentFlavorIndex]?.code === filteredFlavor.code
+                                                ? pizza.details.flavors[currentFlavorIndex]
+                                                : filteredFlavor
+                                            "
+                                          />
+                                        </div>
+                                      </div>
+                                      <span
+                                        *ngIf="!cartService.checkInventoryDisponibility({ item: filteredFlavor })"
+                                        style="color: var(--red)"
+                                        class="fw-500"
+                                        >INDISPONÍVEL</span
+                                      >
+                                    </div>
+                                  </label>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+                    </ng-template>
+                  </li>
+                </ul>
+              </div>
+              <div [ngbNavOutlet]="nav"></div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'implementations'">
+              <ul ngbNav #implementationNav="ngbNav" class="nav-container no-scroll-bar flex-nowrap pb-0" id="flavor-navbar">
+                <li
+                  [ngbNavItem]="'singleImplementation'"
+                  id="singleImplementation"
+                  class="border-0 px-1"
+                  *ngIf="!contextService.profile.options.pizza.multipleBorders"
+                >
+                  <a ngbNavLink class="nav-item px-1">Borda Única</a>
+                  <ng-template ngbNavContent>
+                    <ng-container *ngTemplateOutlet="implementationsList; context: { implementations: pizza.details.implementations }"></ng-container>
+                  </ng-template>
+                </li>
+
+                <ng-container *ngIf="contextService.profile.options.pizza.multipleBorders">
+                  <li
+                    *ngFor="let implementationTab of tabs; let currentFlavorIndex = index"
+                    [ngbNavItem]="implementationTab"
+                    class="border-0 px-1"
+                    [id]="currentFlavorIndex + 1"
+                    (click)="implementationNav.select(currentFlavorIndex + 1)"
+                  >
+                    <a *ngIf="tabs.length > 1" ngbNavLink class="nav-item px-1">{{
+                      pizza.details.flavors[currentFlavorIndex]?.name
+                        ? pizza.details.flavors[currentFlavorIndex]?.name
+                        : currentFlavorIndex + 1 + 'º Sabor'
+                    }}</a>
+                    <ng-template ngbNavContent>
+                      <ng-container
+                        *ngTemplateOutlet="
+                          implementationsList;
+                          context: { implementations: pizza.details.flavors[currentFlavorIndex].implementations, currentFlavorIndex }
+                        "
+                      ></ng-container>
+                    </ng-template>
+                  </li>
+                </ng-container>
+              </ul>
+              <div [ngbNavOutlet]="implementationNav"></div>
+            </ng-container>
+            <ng-container *ngSwitchCase="'complements'">
+              <ul ngbNav #complementNav="ngbNav" class="nav-container no-scroll-bar flex-nowrap pb-0" id="flavor-navbar">
+                <li
+                  *ngIf="!contextService.profile.options.pizza.multipleComplements"
+                  [ngbNavItem]="'singleComplement'"
+                  id="singleComplement"
+                  class="border-0 px-1"
+                >
+                  <a ngbNavLink class="nav-item px-1">Complementos</a>
+                  <ng-template ngbNavContent>
+                    <ng-container *ngTemplateOutlet="complementsList; context: { complements: pizza.details.complements }"></ng-container>
+                  </ng-template>
+                </li>
+                <ng-container *ngIf="contextService.profile.options.pizza.multipleComplements">
+                  <li
+                    *ngFor="let complementTab of tabs; let currentFlavorIndex = index"
+                    [ngbNavItem]="complementTab"
+                    class="border-0 px-1"
+                    [id]="currentFlavorIndex + 1"
+                    (click)="complementNav.select(currentFlavorIndex + 1)"
+                  >
+                    <a *ngIf="tabs.length > 1" ngbNavLink class="nav-item px-1">
+                      {{
+                        pizza.details.flavors[currentFlavorIndex]?.name
+                          ? pizza.details.flavors[currentFlavorIndex]?.name
+                          : currentFlavorIndex + 1 + 'º Sabor'
+                      }}
+                    </a>
+                    <ng-template ngbNavContent>
+                      <ng-container
+                        *ngTemplateOutlet="complementsList; context: { complements: pizza.details.flavors[currentFlavorIndex].complements }"
+                      ></ng-container>
+                    </ng-template>
+                  </li>
+                </ng-container>
+              </ul>
+              <div [ngbNavOutlet]="complementNav"></div>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content" id="nav-tabContent"></div>
+    </section>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="bg-5"  
+  *ngIf="!data.table ? !contextService.profile.options.store.catalogMode?.delivery : !contextService.profile.options.store.catalogMode?.table"
+  >
+    <label for="">Observações</label>
+    <textarea
+      [(ngModel)]="pizza.obs"
+      class="form-control"
+      aria-describedby="characterCountDescr"
+      placeholder="{{ contextService.profile.options.placeholders.productObs }}"
+    ></textarea>
+    <div class="container-fluid mt-2">
+      <div class="d-flex align-items-center">
+        <div class="quantityFooter d-flex">
+          <div class="minus-btn disable" (click)="cartService.decreaseCartItem(pizza)" role="button" name="button+">
+            <fa-icon [icon]="faCircleMinus" size="lg"></fa-icon>
+          </div>
+          <input [ngStyle]="{ background: 'bottom' }" name="name" [value]="pizza.quantity" disabled />
+          <div class="plus-btn" (click)="cartService.increaseCartItem(pizza)" role="button" name="button-">
+            <fa-icon [icon]="faCirclePlus" size="lg"></fa-icon>
+          </div>
+        </div>
+        <div class="ms-auto py-2 col-auto">
+          <button #confirmPizzaButton class="btn btn-success" (click)="nextStep()">
+            {{ confirmButtonText() }} -
+            {{ pizza.details.value * pizza.quantity | currency }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-actions>
+</div>
+
+<ng-template #implementationsList let-implementations="implementations" let-currentFlavorIndex="currentFlavorIndex">
+  <section class="bg-1 py-3">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <div id="title">
+            <div class="d-flex align-items-center">
+              <div>
+                <h5 class="mb-0 ms-2">
+                  {{
+                    data.flavorsCount === 1
+                      ? 'Escolha a borda'
+                      : contextService.profile.options.pizza.multipleBorders
+                      ? 'Escolha a ' + (currentFlavorIndex + 1) + 'ª Borda'
+                      : 'Escolha a Borda Única'
+                  }}
+                </h5>
+              </div>
+              <div class="ms-auto py-2 me-2 col-auto">
+                <span class="badge text-bg-danger"><span class="small">OBRIGATÓRIO</span></span>
+              </div>
+            </div>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li *ngIf="!contextService.profile.options.pizza.hideBorderNone"  class="d-flex flex-justify-start pt-6 mb-6 list-group-item" [ngStyle]="{ position: 'relative' }" class="list-group-item">
+              <label class="d-flex align-items-center">
+                <div>
+                  <p class="optionTitle mb-0">Borda sem Recheio</p>
+                  <p class="small mt-n1 mb-0 fst-italic lh-sm color-text"></p>
+                  <div class="text-danger small mt-n1 fw-500">
+                    <b>+{{ 0 | currency }}</b>
+                  </div>
+                </div>
+                <div class="ms-auto py-2 col-auto ps-0">
+                  <div class="form-check me-3">
+                    <input
+                      class="form-check-input radioCuston"
+                      type="radio"
+                      [name]="'singleImplementationRadio' + currentFlavorIndex"
+                      [(ngModel)]="implementations[0]"
+                      [value]="null"
+                    />
+                  </div>
+                </div>
+              </label>
+            </li>
+            <li
+              *ngFor="let implementation of data.pizza.implementations; let implementationIndex = index"
+              class="d-flex flex-justify-start pt-6 mb-6 list-group-item"
+              [ngStyle]="{ position: 'relative', opacity: !implementation.status && 0.3 }"
+              class="list-group-item"
+            >
+              <label class="w-100">
+                <div class="d-flex align-items-center">
+                  <div>
+                    <p class="optionTitle mb-0">{{ implementation.name }}</p>
+                    <p class="small mt-n1 mb-0 fst-italic lh-sm color-text">{{ implementation.description }}</p>
+                    <div class="text-danger small mt-n1 fw-500">
+                      <b>+{{ implementation.value | currency }}</b>
+                    </div>
+                  </div>
+                  <div class="ms-auto py-2 col-auto ps-0">
+                    <span
+                      *ngIf="!cartService.checkInventoryDisponibility({ item: implementation, typeCheck: 'greater' })"
+                      style="color: var(--red)"
+                      class="fw-500"
+                      >INDISPONÍVEL</span
+                    >
+                    <div *ngIf="implementation.status" class="form-check me-3">
+                      <input
+                        class="form-check-input radioCuston"
+                        type="radio"
+                        [name]="'singleImplementationRadio' + currentFlavorIndex"
+                        [value]="implementations[0]?.code === implementation.code ? implementations[0] : implementation"
+                        [(ngModel)]="implementations[0]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-template>
+
+<ng-template #complementsList let-complements="complements">
+  <section class="bg-1 pb-3">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          <ul class="list-group list-group-flush">
+            <li *ngFor="let complement of complements; let complementIndex = index" class="list-group-item">
+              <div id="title">
+                <div class="d-flex align-items-center">
+                  <div>
+                    <h5 class="mb-0 ms-2">{{ complement.name }}</h5>
+                  </div>
+                  <div class="ms-auto py-2 me-2 col-auto">
+                    <div [ngSwitch]="complement.required">
+                      <span class="badge text-bg-danger" *ngSwitchCase="1"><span class="small">OBRIGATÓRIO</span></span>
+                      <span class="badge text-bg-success" *ngSwitchCase="0"><span class="small">OPCIONAL</span></span>
+                      <span class="badge text-bg-success" *ngSwitchDefault=""><span class="small">OPCIONAL</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li
+                  *ngFor="let item of complement.itens; let itemIndex = index"
+                  class="d-flex flex-justify-start pt-6 mb-6 list-group-item"
+                  [ngStyle]="{ opacity: !cartService.checkInventoryDisponibility({ item }) && 0.3 }"
+                  class="list-group-item position-relative"
+                >
+                  <div class="d-flex align-items-center">
+                    <div>
+                      <p class="optionTitle mb-0">{{ item.name }}</p>
+                      <p class="small mt-n1 mb-0 fst-italic lh-sm color-text">{{ item.description }}</p>
+                      <div class="text-danger small mt-n1 fw-500">
+                        <b>+{{ item.value | currency }}</b>
+                      </div>
+                    </div>
+                    <div class="ms-auto py-2 col-auto ps-0">
+                      <span *ngIf="!cartService.checkInventoryDisponibility({ item, typeCheck: 'greater' })" style="color: var(--red)" class="fw-500"
+                        >INDISPONÍVEL</span
+                      >
+                      <div *ngIf="item.status" class="quantityFooter">
+                        <div class="complement d-flex">
+                          <div *ngIf="item.quantity > 0" [ngStyle]="{ opacity: item.quantity > 0 ? 1 : 0 }" class="minus-btn" role="button">
+                            <fa-icon [icon]="faCircleMinus" (click)="cartService.decreaseItem(item)" size="lg"></fa-icon>
+                          </div>
+                          <span class="px-2" [ngStyle]="{ opacity: item.quantity > 0 ? 1 : 0, background: 'bottom' }">{{ item.quantity }}</span>
+                          <div *ngIf="cartService.complementItensCount(complement) < complement.max" class="plus-btn" role="button">
+                            <fa-icon
+                              *ngIf="cartService.checkInventoryDisponibility({ item, typeCheck: 'greaterOrEqual' })"
+                              [icon]="faCirclePlus"
+                              (click)="cartService.increaseItem(item)"
+                              size="lg"
+                            ></fa-icon>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+</ng-template>

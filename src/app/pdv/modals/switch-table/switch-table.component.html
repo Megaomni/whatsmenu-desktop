@@ -1,0 +1,82 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center gap-3">
+    <fa-icon [icon]="faArrowLeft" style="cursor: pointer" (click)="close(false)"></fa-icon>
+    <h3 class="m-0 fs-5">Troca de Mesa</h3>
+  </div>
+</div>
+<mat-dialog-content class="d-flex flex-column flex-md-row" style="max-height: calc(100% - 3.625rem); height: 100%; overflow: hidden">
+  <div class="drag-container ps-4" style="flex-basis: 48%">
+    <h2>
+      De: <span style="color: var(--wm-red-300)" class="mx-3">{{ oldTable?.name }}</span>
+    </h2>
+    <div
+      cdkDropList
+      #todoList="cdkDropList"
+      [cdkDropListData]="oldTable?.opened.commands || []"
+      [cdkDropListConnectedTo]="doneList"
+      (cdkDropListDropped)="drop($event)"
+      cdkDropListSortingDisabled
+    >
+      <div class="drop-list-container">
+        <div
+          role="button"
+          class="drag-box"
+          *ngFor="let command of oldTable?.opened.commands || []"
+          [cdkDragDisabled]="dragCondition(command)"
+          [ngClass]="dragCondition(command) ? 'bg-danger bg-opacity-50 text-danger' : ''"
+          cdkDrag
+        >
+          {{ command.name }}
+          <div class="d-flex align-items-center gap-3">
+            <span>Cód.</span>
+            <fa-icon *ngIf="deviceWidth <= 600" [icon]="faArrowsAlt" class="px-4 py-2" cdkDragHandle></fa-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="deviceWidth > 600" class="vr">
+    <fa-icon class="icon" [icon]="faArrowAltCircleRight"></fa-icon>
+  </div>
+  <div *ngIf="deviceWidth <= 600" class="hr">
+    <fa-icon class="icon" [icon]="faArrowAltCircleDown"></fa-icon>
+    <hr />
+  </div>
+  <div class="drag-container pe-4" style="flex-basis: 48%">
+    <h2 class="justify-content-between">
+      Para
+      <select class="form-select" [ngModel]="newTableId" (ngModelChange)="resetTables($event)">
+        <option *ngFor="let table of tablesToSwitch" [value]="table.id">{{ table.name }}</option>
+      </select>
+    </h2>
+
+    <div
+      cdkDropList
+      class="h-100"
+      #doneList="cdkDropList"
+      [cdkDropListData]="newTable()?.opened?.commands || []"
+      [cdkDropListConnectedTo]="todoList"
+      (cdkDropListDropped)="drop($event)"
+      cdkDropListSortingDisabled
+    >
+      <div class="drop-list-container">
+        <div
+          class="drag-box py-2 px-4"
+          *ngFor="let command of newTable()?.opened?.commands"
+          cdkDrag
+          [cdkDragDisabled]="true"
+          [ngClass]="command.tableOpenedId != newTable()?.opened.id ? 'bg-warning bg-opacity-50 border border-warning' : ''"
+        >
+          {{ command.name }}
+          <div class="d-flex align-items-center gap-3">
+            <span>Cód.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="justify-content-between">
+  <button class="btn btn-outline-secondary" style="background-color: var(--wm-gray-300)" (click)="close(false)">Cancelar</button>
+  <button class="btn" style="color: var(--wm-white); background-color: var(--wm-green-500)" (click)="close(true)">Salvar</button>
+</mat-dialog-actions>

@@ -1,0 +1,59 @@
+<!-- EXIBIÇÃO DO CALENDÁRIO  -->
+
+<div class="d-flex flex-column align-items-center gap-3">
+  <div class="input-group flex-grow-1" style="width: 100% !important">
+    <input
+      class="form-control"
+      placeholder="dd/mm/yyyy"
+      name="packageCalendar"
+      readonly
+      ngbDatepicker
+      [firstDayOfWeek]="7"
+      [ngModel]="packageCalendar"
+      (ngModelChange)="onChange($event, 'date')"
+      (click)="d.toggle()"
+      #d="ngbDatepicker"
+      [markDisabled]="cartService.markDisabled"
+      [maxDate]="endDate"
+      [minDate]="startDate"
+    />
+    <button type="button" class="btn btn-primary" (click)="d.toggle()" type="button">
+      <fa-icon [icon]="faCalendarDay"></fa-icon>
+    </button>
+  </div>
+
+  <!-- EXIBIÇÃO DOS HORÁRIOS -->
+
+  <div ngbDropdown class="d-inline-block w-100 flex-grow-1" [autoClose]="true">
+    <div class="position-relative d-flex align-items-center justify-content-between border rounded p-2 w-100" id="dropdownBasic1" ngbDropdownToggle>
+      <div *ngIf="!packageHour">
+        <!-- <span class="spinner-border text-primary position-absolute" style="max-width: 1.5rem; max-height: 1.5rem"></span> -->
+        <span class="ms-1">Escolha um horário:</span>
+      </div>
+      <div *ngIf="packageHour">{{ packageHour }}</div>
+    </div>
+    <div ngbDropdownMenu class="w-100" aria-labelledby="dropdownBasic1" style="max-height: 25rem; overflow-y: auto">
+      <div class="d-flex flex-column">
+        <input type="text" class="form-control m-2 w-auto" [(ngModel)]="hourFilter" mask="00:00" />
+        <ng-container *ngFor="let period of dataObject.packageHours[packageCalendar]; index as index">
+          <div *ngIf="filteredPeriod(period).length" class="dropdown-header" style="background-color: var(--wm-gray-light-300); color: black">
+            <span>Periodo {{ index + 1 }}</span>
+          </div>
+          <button
+            *ngFor="let hour of filteredPeriod(period)"
+            [disabled]="hour.quantity <= 0"
+            ngbDropdownItem
+            class="d-flex align-items-center justify-content-between"
+            [ngClass]="{ unavailable: hour.quantity <= 0 }"
+            (click)="dataObject.packageHour = hour.time; onChange(hour.time, 'time')"
+          >
+            <span>{{ hour.time }}</span>
+            <span style="font-size: 0.85rem">
+              {{ hour.quantity > 0 ? context.packageLabel + 's possíveis ' + hour.quantity : 'Indisponível' }}
+            </span>
+          </button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
