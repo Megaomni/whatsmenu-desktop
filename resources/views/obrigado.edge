@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>WhatsMenu - Parabéns!</title>
+        <link rel="stylesheet" type="text/css" href="/dist/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/dist/style.css">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+        <script src="/dist/semantic.min.js"></script>
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-NRQZW2K');</script>
+          <!-- End Google Tag Manager -->
+    </head>
+    <body>
+        <section class="bg-1 small-space">
+            <div class="ui container">
+                <div class="ui grid center aligned">
+                    <div class="sixteen wide column">
+                        <h1 class="title">Vamos te ajudar</h1>
+                        <p class="color-white font-medium">Menos erros, mais vendas e atendimento rápido</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="medium-space">
+            <div class="ui container">
+                <div class="ui grid ">
+                    <div class="row">
+                      <div class="sixteen wide mobile eleven wide tablet eleven wide computer column centered">
+                          <div class="ui basic segment center manual">
+                            <div class="ui active slow green double loader"></div>
+                            <br>
+                            <br>
+                            <br>
+                            <h3>Chamando atendente</h3>
+                        </div>
+                            {{--  <p class="font-medium center aligned manual" style="display: none;">Atenção, para validar o seu contato e ativar o acesso clique no botão abaixo!</p>  --}}
+                            <div class="ui hidden divider"></div>
+                            {{--
+                              <div class="ui embed">
+                                  <iframe width="560" height="315" src="https://www.youtube.com/embed/wLZQUz84tOY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                              </div>
+                              <div class="ui hidden divider mobile hidden"></div>
+                            --}}
+                            <div class="ui equal width grid stackable manual" style="display: none;">
+                                <div class="column center aligned">
+                                    {{--  <a class="ui button red" href="https://whatsmenu.com.br/videoaulas/">Aprenda como cadastrar seus produtos corretamente</a>  --}}
+                                    <a class="ui button orange huge" id="confirm" href="{{ link }}">
+                                      CLIQUE AQUI PRA FALAR AGORA!
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-space"></div>
+                                <img src="img/logo.png" alt="" class="ui image centered">
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </section>
+        <script>
+          setTimeout(() => {
+            window.location.href = '{{{ link }}}';
+
+            setTimeout(() => {
+              document.querySelectorAll('.manual').forEach(element => element.style.display = element.style.display === 'none' ? 'block' : 'none');
+              const confirmTansition = setInterval(() => {
+                $('#confirm').transition('jiggle');
+              }, 3000);
+
+              $('#confirm').click(() => clearInterval(confirmTansition))
+            }, 2000);
+
+          }, 5000);
+
+        </script>
+        <!-- Google Tag Manager (noscript) -->
+          <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NRQZW2K" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+    </body>
+</html>

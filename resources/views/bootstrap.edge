@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{title}}</title>
+    <!-- CSS only -->
+    <link href="/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/bootstrap/font/bootstrap-icons.css">
+    {{--  <link href="/bootstrap/aos.css" rel="stylesheet">  --}}
+    <link rel="stylesheet" href="/bootstrap/swiper-bundle.min.css"/>
+    <link href="/bootstrap/style.css?v=3" rel="stylesheet">
+    <style>
+        /* WHATSAPP FIXO */
+        .whatsapp-fixo {
+            position: fixed;
+            bottom:60px;
+            right:10px;
+            z-index: 999;
+        }
+    </style>
+    {{--  Global site tag (gtag.js) - Google Analytics  --}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-178792505-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-178792505-1');
+      gtag('config', 'AW-649372379');
+    </script>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-NRQZW2K');</script>
+    <!-- End Google Tag Manager -->
+
+        <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '513676703721378');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=513676703721378&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
+
+
+    @include('include/head')
+</head>
+<body>
+    <!-- HEADER DESKTOP -->
+    <header class="border-bottom border-success mobile hidden" style="position:relative; z-index:1 !important;">
+      <div class="container">
+          <div class="row flex-nowrap justify-content-between align-items-center py-3 py-md-4 ">
+              <div class="col-md-4">
+                  <img src="/img/logo.png" width="190" alt="">
+              </div>
+              <div class="col-md-8 d-flex justify-content-end align-items-center">
+                  <a class="text-decoration-none fw-bold text-black me-4" href="http://adm.whatsmenu.com.br/">ACESSAR PAINEL</a>
+                  <a class="btn btn-outline-success fw-bold text-black sendContact" href="#" role="button">{{ falec ? "FALE CONOSCO" : "CRIE SEU CARDÁPIO AGORA" }}</a>
+              </div>
+          </div>
+      </div>
+    </header>
+    <!-- HEADER MOBILE -->
+    <header class="border-bottom border-success bg-success mobile only">
+      <div class="container">
+          <div class="row text-center py-3 py-md-4 justify-content-between align-items-center">
+              <div class="col"></div>
+              <div class="col-5">
+                  <img src="/img/logo-white.png" width="150" alt="">
+              </div>
+              <div class="col">
+                  <a class="text-decoration-none fw-bold text-white lh-1" href="http://adm.whatsmenu.com.br/">ACESSAR PAINEL</a>
+              </div>
+          </div>
+      </div>
+    </header>
+
+    @!section('body')
+
+    <!-- FOOTER -->
+    <footer class="py-5 center-mobile">
+      <div class="container">
+          <div class="row">
+              <div class="col-md">
+                <h4 class="fw-bold">Ferramentas</h4>
+                <ul class="list-unstyled">
+                  <li><a class="text-decoration-none fw-bold" href="https://qrcodenamesa.com.br/">QR Code na Mesa</a></li>
+                  <li><a class="text-decoration-none fw-bold" href="https://whatsmenu.com.br/encomenda/">Encomendas</a></li>
+                  <li><a class="text-decoration-none fw-bold" href="https://www.whatsmenu.com.br/">Delivery</a></li>
+                </ul>
+              </div>
+              <div class="col-md">
+                <h4 class="fw-bold">WhatsMenu</h4>
+                <ul class="list-unstyled">
+                  <li><a class="text-decoration-none fw-bold" href="https://blog.whatsmenu.com.br/">Blog</a></li>
+                  <li><a class="text-decoration-none fw-bold" href="https://www.whatsmenu.com.br/clientes">Clientes</a></li>
+                  <li><a class="text-decoration-none fw-bold" href="https://whatsmenu.com.br/?termo=open">Termo de Uso</a></li>
+                </ul>
+              </div>
+              <div class="col-md">
+                <h4 class="fw-bold">Siga-nos</h4>
+                <ul class="list-inline mb-4">
+                  <li class="list-inline-item"><a href="https://www.facebook.com/gestordepedidos/"><i class="bi bi-facebook fs-3"></i></a></li>
+                  <li class="list-inline-item"><a href="https://www.instagram.com/gestordepedidos/"><i class="bi bi-instagram fs-3"></i></a></li>
+                  <li class="list-inline-item"><a href="https://www.youtube.com/channel/UCe0FKwwwz_iyTeDT0UEatXw"><i class="bi bi-youtube fs-3"></i></a></li>
+                </ul>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <div class="border-bottom border-success pt-3"></div><br>
+                <span class="fw-bold">Copyright © 2019 Grove Company o Todos os direitos reservados.</span><br>
+                <span class="small">Grove Company – Informática e Publicidade – Ltda. CNPJ 23.448.787/0001-54</span>
+            </div>
+          </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="/bootstrap/bootstrap.bundle.min.js"></script>
+    {{--  <script src="/bootstrap/aos.js"></script>  --}}
+    <script src="/bootstrap/swiper-bundle.min.js"></script>
+    <script>
+        // AOS.init();
+        const modal = new bootstrap.Modal('#modalContact')
+        const formContact = document.querySelector('#modalContact form')
+        formContact.onsubmit = () => modal.hide()
+        document.querySelectorAll('.sendContact').forEach(element => {
+            element.onclick = () => {
+                console.log('contact: lead');
+                fbq('track', 'Contact');
+                modal.show()
+            }
+        })
+        setTimeout(() => {
+            const image = document.querySelector('.whatsapp-fixo img')
+            image.src = '/img/whtasicon2.png'
+            image.classList.add('pulse');
+        }, 10000);
+
+        var swiper = new Swiper(".mySwiper", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        autoplay: {
+          delay: 4500,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 40,
+          },
+          1024: {
+            slidesPerView: 2,
+            spaceBetween: 50,
+          },
+        },
+      });
+      var swiper = new Swiper(".mySwiper2", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        autoplay: {
+          delay: 4500,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 40,
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 50,
+          },
+        },
+      });
+      var swiper = new Swiper(".mySwiperHotel", {
+        slidesPerView: 2,
+        spaceBetween: 30,
+        autoplay: {
+          delay: 4500,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 40,
+          },
+          1024: {
+            slidesPerView: 4,
+            spaceBetween: 50,
+          },
+        },
+      });
+      var swiper = new Swiper(".mySwiperDep", {
+        spaceBetween: 30,
+        centeredSlides: true,
+        autoplay: {
+          delay: 7000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+      });
+    </script>
+    @!section('js')
+</body>
+</html>

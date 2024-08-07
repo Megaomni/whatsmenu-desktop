@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html class="no-js" lang="pt">
+	<head>
+		<!-- Standard Meta -->
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <link rel="preconnect dns-prefetch" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://www.facebook.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://connect.facebook.net" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://www.youtube.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://www.google-analytics.com" crossorigin>
+    <link rel="preconnect dns-prefetch" href="https://analytics.google.com" crossorigin>
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#16ab39" />
+		<!-- Site Properties -->
+		<title>{{title}}</title>
+    @include('include/head')
+		<style>
+			/* WHATSAPP FIXO */
+			.whatsapp-fixo {
+				position: fixed;
+				bottom:60px;
+				right:10px;
+				z-index: 999;
+			}
+		</style>
+
+    {{--  Global site tag (gtag.js) - Google Ads: CONVERSION_ID  --}}
+    {{--
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-649372379"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments)};
+      gtag('js', new Date());
+
+      gtag('config', 'AW-649372379');
+    </script>
+    --}}
+
+    {{--  Global site tag (gtag.js) - Google Analytics  --}}
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-178792505-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-178792505-1');
+      gtag('config', 'AW-649372379');
+    </script>
+
+    <!-- Google Tag Manager -->
+<script defer>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NRQZW2K');</script>
+  <!-- End Google Tag Manager -->
+
+    <!-- Meta Pixel Code -->
+<script defer>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '513676703721378');
+  fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=513676703721378&ev=PageView&noscript=1"
+  /></noscript>
+  <!-- End Meta Pixel Code -->
+
+    <script>
+      function contact() {
+        const tablePrice = document.querySelector('#table_price');
+        tablePrice.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        })
+      }
+
+      function contact2() {
+        console.log('contact: lead');
+        fbq('track', 'Contact');
+        $('#formContact').modal('show')
+        // $('#formContact form').submit()
+        // window.open('')
+        // return gtag_report_conversion('https://whatsmenu.com.br/contact')
+      }
+    </script>
+	</head>
+	<body>
+    <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NRQZW2K"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+    <div id="fb-root"></div>
+		{{--  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v7.0&appId=468639929968884&autoLogAppEvents=1"></script>  --}}
+    {{--  @include('include/menu-mobile')  --}}
+		<div class="pusher">
+      @!section('pusher')
+    </div>
+{{--
+    <form id="formContact" action="{{route('numbers.router')}}" method="post" target="_blank">
+      {{ csrfField() }}
+      <input type="hidden" name="page" value="{{ request.url() }}">
+    </form>
+      --}}
+
+    @include('include/footer')
+    @include('include/script')
+    <script>
+      @if(request.input('termo'))
+        $('.ui.termo.modal').modal('show')
+      @endif
+
+      document.querySelectorAll('.sendContact').forEach(btn => {
+        btn.onclick = contact2
+      })
+
+    </script>
+      {{--  Start of Tawk.to Script  --}}
+    {{--
+      <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+        var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+        s1.async=true;
+        s1.src='https://embed.tawk.to/615b461425797d7a89024182/1fh68jgff';
+        s1.charset='UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1,s0);
+        })();
+        </script>
+      --}}
+        {{--  End of Tawk.to Script  --}}
+
+        <script>
+          $('img, iframe')
+            .visibility({
+                type       : 'image',
+                transition : 'fade in',
+                duration   : 1000
+            });
+        </script>
+    @!section('js')
+  </body>
+</html>

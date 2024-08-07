@@ -1,0 +1,58 @@
+<div class="ui basic modal" id="formContact">
+  <i class="close icon"></i>
+  <div class="header">
+
+  </div>
+  <div class="content">
+    <div class="ui segment">
+      <h2 class="color-green center">Fale com a gente no Whatsapp</h2>
+      {{route('numbers.router')}}
+      <br>
+      <form class="ui form" method="POST" action="{{route('double_opt-in')}}" target="_blank">
+        <input type="hidden" name="_csrf" value="{{token}}">
+        <input type="hidden" name="utm_source">
+        <input type="hidden" name="utm_medium">
+        <input type="hidden" name="utm_campaign">
+        <input type="hidden" name="utm_content">
+        <input type="hidden" name="utm_term">
+        <input type="hidden" name="userAgent">
+        <input type="hidden" name="spreadsheetId" value="1aLFUGESuS0TgigRetK1MA9vnf8zYyZ0cFJ0Npkr2VOA">
+        <input type="hidden" name="sheetHidden" value="whatsmenu">
+        <input type="hidden" name="page" value="{{page}}">
+        <div class="field">
+          <label for="name">Qual seu nome?</label>
+          <input type="text" name="name" placeholder="Qual seu nome?" required>
+        </div>
+        <div class="field">
+          <label for="whatsapp">Qual seu Whatsapp?</label>
+          <input type="tel" name="whatsapp" data-mask="(99) 99999-9999" required placeholder="Qual seu whatsapp com DDD?">
+        </div>
+        <div class="field">
+          <label for="work">Qual produto você vende?</label>
+          <input type="text" name="work" placeholder="Qual produto você vende?">
+        </div>
+        <div style="position: absolute; top: -100vh" class="field">
+          <label for="work">Por que escolher o WhatsMenu?</label>
+          <input type="text" name="why" placeholder="Por que escolher o WhatsMenu?">
+        </div>
+        <button class="fluid big ui button green" type="submit">Chamar Agora</button>
+      </form>
+    </div>
+  </div>
+  <script>
+    $('input[name="whatsapp"]').mask('(99) 99999-9999')
+    const url = new URLSearchParams(location.search)
+    document.querySelector('input[name="userAgent"]').value = navigator.userAgent
+    document.querySelectorAll('input[name^="utm"]').forEach(input => {
+      console.log(input)
+      input.value = url.get(input.name)
+    })
+  </script>
+{{--
+    <div class="actions">
+      <button onclick="document.querySelector('#formContact form').submit()" class="ui positive right labeled icon button">
+        Enviar
+      </button>
+    </div>
+  --}}
+</div>

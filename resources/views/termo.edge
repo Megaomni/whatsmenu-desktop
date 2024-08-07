@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html class="no-js" lang="pt">
+	<head>
+		<!-- Standard Meta -->
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+		<!-- Site Properties -->
+		<title>{{title}}</title>
+        {{--  <?php include "include/head.php";?>  --}}
+        @include('include/head')
+		<style>
+			/* WHATSAPP FIXO */
+			.whatsapp-fixo {
+				position: fixed;
+				bottom:60px;
+				right:10px;
+				z-index: 999;
+			}
+			.img-padding{
+				padding: 10px !important;
+				border: 1px solid #ecf0f1;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="fb-root"></div>
+		<script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v7.0&appId=468639929968884&autoLogAppEvents=1"></script>
+    {{--  <?php include "include/menu-mobile.php";?>  --}}
+    @include('include/menu-mobile')
+		<div class="pusher">
+	        {{--  <?php include "include/top-bar.php";?>  --}}
+	        @include('include/top-bar')
+	        
+			<section class="medium-space">
+				<div class="ui container">
+					<div class="ui grid padded stackable">
+						@include('include/modal')
+					</div>
+				</div>
+			</section>
+	     	<div class="ui termo longer modal">
+			    <i class="close icon"></i>
+			    <div class="header">Termo de Uso</div>
+			    <div class="content">
+			    	@include('include/modal')
+			    </div>
+		    </div>
+	        @include('include/footer')
+	        @include('include/script')
+		</div>
+	</body>
+</html>

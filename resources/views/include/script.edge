@@ -1,0 +1,114 @@
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<!-- Global site tag (gtag.js) - Google Ads: 649372379 -->
+{{--  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-649372379"></script>  --}}
+<script>
+  setTimeout(() => {
+    const image = document.querySelector('.whatsapp-fixo img')
+    if (image) {
+      image.src = '/img/whtasicon2.png'
+    }
+  }, 10000);
+
+{{--
+  $('.termo.modal')
+  .modal('attach events', '.bot-termo', 'show');
+--}}
+
+  {{--
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-649372379');
+  --}}
+</script>
+<script>
+  $('.ui.sidebar.left').sidebar('setting', 'transition', 'overlay');
+    $('.botLEFT').click(function () {
+        $('.ui.sidebar.left').sidebar('toggle');
+    });
+
+    $('.ui.accordion')
+    .accordion()
+  ;
+  $('.ui.dropdown')
+  .dropdown()
+;
+
+/*
+  var $doc = $('html, body');
+  $('a').click(function() {
+      $doc.animate({
+          scrollTop: $( $.attr(this, 'href') ).offset().top
+      }, 700);
+      return false;
+  });
+ */
+
+       var swiper = new Swiper(".mySwiper", {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        autoplay: {
+          delay: 4500,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: ".swiper-pagination",
+          clickable: true,
+        },
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+          640: {
+            slidesPerView: 2,
+            spaceBetween: 20,
+          },
+          768: {
+            slidesPerView: 2,
+            spaceBetween: 40,
+          },
+          1024: {
+            slidesPerView: 2,
+            spaceBetween: 50,
+          },
+        },
+      });
+      var swiper = new Swiper(".mySwiperT", {
+                slidesPerView: 1,
+                spaceBetween: 30,
+                pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+                },
+                navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+                },
+                breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 2,
+                    spaceBetween: 40,
+                },
+                1024: {
+                    slidesPerView: 2,
+                    spaceBetween: 50,
+                },
+                },
+            });
+</script>
+<script>
+$('.playVideo').click( e => {
+  $('#videoRecursos iframe').attr('src', 'https://www.youtube.com/embed/' + e.target.dataset.video)
+  $('#videoRecursos')
+   .modal({
+      onHidden: () => $('#videoRecursos iframe').attr('src', '')
+    })
+   .modal('show')
+})
+</script>

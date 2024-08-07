@@ -1,0 +1,1090 @@
+@layout('layout')
+@section('pusher')
+@include('include/top-bar')
+
+<section class="small-space center-mobile">
+    <div class="ui container">
+        <div class="ui equal width grid padded stackable middle aligned">
+            <div class="column">
+                <p class="font-biggest color-green">Imprima <b>AINDA HOJE</b> os pedidos <br>do seu Delivery</p>
+                <p class="strong">Do Whatsapp Direto para a Cozinha</p>
+                <p class="font-price strong no-marginBottom">A partir de R${{valueBase}}/mês</p>
+                <p class="strong mobile hidden">Não cobramos taxas, nem comissão sobre vendas<br> e não há limites de pedidos!</p>
+                <div class="mobile hidden">
+                    <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES</a>
+                    {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES</a>  --}}
+                    <div style="margin-top:15px; margin-bottom:35px"><img class="ui middle aligned mini image" src="img/like-heart.png"> <span class="font-large">Aprovado por mais de {{ count }} clientes</span></div>
+                    <img data-src="img/sociais.png" alt="" class="ui image" width="500">
+                </div>
+            </div>
+            <div class="eight wide column">
+                <video autoplay loop muted>
+                    <source src="/img/movsite.mp4" type="video/mp4">
+                </video>
+                <p class="strong mobile only" style="margin-top: 15px;">Não cobramos taxas, nem comissão sobre vendas e não há limites de pedidos!</p>
+                <div class="mobile only">
+                    <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact" style="margin-top:10px">QUERO MAIS INFORMAÇÕES</a>
+                    {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui button massive yellow sendContact" style="margin-top:35px">QUERO MAIS INFORMAÇÕES</a>  --}}
+                    <div style="margin-top:15px; margin-bottom:35px"><img class="ui middle aligned mini image" src="img/like-heart.png"> <span class="font-large">Aprovado por mais de {{ count }} clientes</span></div>
+                    <img data-src="img/sociais.png" alt="" class="ui image" width="500">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+<section class="small-space bg-whats center-mobile">
+    <div class="ui container">
+      {{--
+        <div class="ui equal width grid padded stackable middle aligned">
+            <div class="column">
+                <p class="title">Se você está<br> cansado de:</p>
+                <p class="font-medium"><i class="close icon red"></i> Anotar os Pedidos à Mão</p>
+                <p class="font-medium"><i class="close icon red"></i> Pedidos errados e Perdidos</p>
+                <p class="font-medium"><i class="close icon red"></i> Cozinha Atrasada</p>
+                <p class="font-medium"><i class="close icon red"></i> Clientes Reclamando no seu Whatsapp</p>
+                <p class="font-medium"><span class="strong">Parabéns, você achou a ferramenta certa!</span> <br>  Vamos <b>ACABAR</b> de vez com a bagunça no seu Atendimento</p>
+                <div class="mobile hidden">
+                    <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES AGORA</a>
+
+                    <p style="margin-top: 15px;"><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i> 4.9/5</p>
+                </div>
+            </div>
+            <div class="eight wide column">
+                @if(showVideo)
+                    <div class="ui embed">
+                        <div class="elementor-element elementor-element-50400e2 elementor-widget elementor-widget-html" data-id="50400e2" data-element_type="widget" data-widget_type="html.default">
+                            <div class="elementor-widget-container">
+                                <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                    <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" src="https://www.youtube.com/embed/bVLUCEh62EU?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                    <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                    <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+                <div class="mobile only">
+                    <div class="ui hidden divider"></div>
+                    <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES AGORA</a>
+
+                    <p style="margin-top: 15px;"><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i> 4.9/5</p>
+                </div>
+            </div>
+        </div>
+      --}}
+        <div class="ui equal width grid padded stackable middle aligned">
+          <div class="row">
+            <div class="sixteen wide colum center aligned">
+                <p class="title">Se você está cansado de:</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="column">
+                <p class="font-medium"><i class="close icon red"></i> Anotar os Pedidos à Mão</p>
+                <p class="font-medium"><i class="close icon red"></i> Pedidos errados e Perdidos</p>
+            </div>
+            <div class="column">
+                <p class="font-medium"><i class="close icon red"></i> Cozinha Atrasada</p>
+                <p class="font-medium"><i class="close icon red"></i> Clientes Reclamando no seu Whatsapp</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="sixteen wide colum center aligned">
+                <p class="font-medium"><span class="strong">Parabéns, você achou a ferramenta certa!</span> <br> Vamos <b>ACABAR</b> de vez com a bagunça no seu Atendimento</p>
+                <div class="mobile hidden">
+                    <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES AGORA</a>
+
+                    <p style="margin-top: 15px;"><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i> 4.9/5</p>
+                </div>
+                <div class="eight wide column">
+                    <div class="mobile only">
+                        <div class="ui hidden divider"></div>
+                        <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact">QUERO MAIS INFORMAÇÕES AGORA</a>
+
+                        <p style="margin-top: 15px;"><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i><i class="star icon orange"></i> 4.9/5</p>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+</section>
+<!-- VITRINE -->
+<section>
+  <div class="ui container fluid">
+      <div class="ui grid padded center aligned">
+          <div class="sixteen wide column">
+              <div class="ui basic segment center aligned">
+                  <p class="subtitle color-red">CONHEÇA A FERRAMENTA NA PRÁTICA</p>
+                  <p class="title">Veja os modelos e faça um pedido teste</p>
+              </div>
+              <div class="glide" id="options-breakpoints">
+                  <div class="glide__track" data-glide-el="track">
+                      <ul class="glide__slides">
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/mundoburguer.png" alt="">
+                                  <a href="https://whatsmenu.com.br/mundoburguer" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/aguanaboca.png" alt="">
+                                  <a href="https://whatsmenu.com.br/aguanaboca" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/emporiadaesfiha.png?v=1" alt="">
+                                  <a href="https://whatsmenu.com.br/emporiodaesfiha" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/pizzariafascina.png" alt="">
+                                  <a href="https://whatsmenu.com.br/pizzariafascina" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/docesedelicias.png" alt="">
+                                  <a href="https://whatsmenu.com.br/docesedelicias" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/saboreando.png" alt="">
+                                  <a href="https://whatsmenu.com.br/saboreando" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/marmitabomsabor.png" alt="">
+                                  <a href="https://whatsmenu.com.br/marmitariabomsabor" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/marmitadacidade.png" alt="">
+                                  <a href="https://whatsmenu.com.br/marmitadacidade" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/galeriadoespeto.png" alt="">
+                                  <a href="https://whatsmenu.com.br/galeriadoespeto" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/barbeque.png" alt="">
+                                  <a href="https://whatsmenu.com.br/barbeque" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/maxibatatas.png" alt="">
+                                  <a href="https://whatsmenu.com.br/maxibatatas" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/santocrepe.png" alt="">
+                                  <a href="https://whatsmenu.com.br/santocrepe" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/salgadocorreia.png" alt="">
+                                  <a href="https://whatsmenu.com.br/salgadoscorreia" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/cantinhodopastel.png" alt="">
+                                  <a href="https://whatsmenu.com.br/cantinhodopastel" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/adegacarioca.png" alt="">
+                                  <a href="https://whatsmenu.com.br/adegacarioca" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/restaurantetokyo.png" alt="">
+                                  <a href="https://whatsmenu.com.br/tokyojapones" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/imperiochines.png" alt="">
+                                  <a href="https://whatsmenu.com.br/imperiochines" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/vivamexico.png" alt="">
+                                  <a href="https://whatsmenu.com.br/vivamexico" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/lanchonetepaladar.png" alt="">
+                                  <a href="https://whatsmenu.com.br/paladarlanches" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/padariasantamonica.png" alt="">
+                                  <a href="https://whatsmenu.com.br/santamonica" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/churrosechurros.png" alt="">
+                                  <a href="https://whatsmenu.com.br/churrosechurros" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/lapasta.png" alt="">
+                                  <a href="https://whatsmenu.com.br/lapasta" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/gaseaguamaua.png" alt="">
+                                  <a href="https://whatsmenu.com.br/gaseaguamaua" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/icecream.png" alt="">
+                                  <a href="https://whatsmenu.com.br/icecream" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/hortifrutimaia.png" alt="">
+                                  <a href="https://whatsmenu.com.br/hortifrutimaia" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/lumary.png" alt="">
+                                  <a href="https://whatsmenu.com.br/lumary" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/marmitafitness.png" alt="">
+                                  <a href="https://whatsmenu.com.br/marmitafitness" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/vegan.png" alt="">
+                                  <a href="https://whatsmenu.com.br/vegan" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/acougueexpresso.png" alt="">
+                                  <a href="https://whatsmenu.com.br/acougueexpresso" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/chickensfrangofrito.png" alt="">
+                                  <a href="https://whatsmenu.com.br/chickensfrangofrito" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                              <div class="ui image">
+                                  <img data-src="img/front/emporio.png" alt="">
+                                  <a href="https://whatsmenu.com.br/emporio" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                              </div>
+                          </div>
+                          <div class="glide__slide">
+                            <div class="ui image">
+                                <img data-src="img/front/pontovariedades.jpg" alt="">
+                                <a href="https://whatsmenu.com.br/pontodasvariedades" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                            </div>
+                        </div>
+                        <div class="glide__slide">
+                            <div class="ui image">
+                                <img data-src="img/front/patinhaspetshop.jpg" alt="">
+                                <a href="https://whatsmenu.com.br/patinhaspetshop" target="_blank" class="ui button blue margin-top-30">Navegue</a>
+                            </div>
+                        </div>
+                      </ul>
+                  </div>
+              </div>
+              <div class="ui hidden divider"></div>
+              <a onclick="contact()" target="_blank" class="ui button massive yellow sendContact">FALAR COM UM ATENDENTE</a>
+              {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui button massive yellow sendContact">FALAR COM UM ATENDENTE</a>  --}}
+          </div>
+      </div>
+  </div>
+</section>
+<!-- Entenda em 15 segundos como funciona o WhatsMenu -->
+<section class="medium-space bg-5">
+  <div class="ui container">
+      <div class="ui equal width grid stackable padded">
+          <div class="row">
+              <div class="column center aligned">
+                  <p class="title color-white">Como funciona o WhatsMenu</p>
+              </div>
+          </div>
+          <div class="row">
+              <div class="ui hidden divider"></div>
+              <div class="column center aligned">
+                  <p class="font-medium color-white">Painel Gestor no Celular</p>
+                  <div class="ui embed">
+                      <div class="elementor-element elementor-element-50400e2 elementor-widget elementor-widget-html" data-id="50400e2" data-element_type="widget" data-widget_type="html.default">
+                            <div class="elementor-widget-container">
+                                <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                    <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/_jYvhbJFylI?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                    <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                    <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
+              </div>
+              <div class="column center aligned">
+                  <p class="font-medium color-white">Painel Gestor no Computador</p>
+                  <div class="ui embed">
+                      <div class="elementor-element elementor-element-50400e2 elementor-widget elementor-widget-html" data-id="50400e2" data-element_type="widget" data-widget_type="html.default">
+                            <div class="elementor-widget-container">
+                                <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                    <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/9AW58h2A4CQ?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                    <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                    <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                  </div>
+              </div>
+          </div>
+          <div class="row small-space mobile hidden center aligned">
+              <div class="sixteen wide column center aligned">
+                  <h2 class="color-white">São 4 passos simples:</h2>
+                  <div class="ui hidden divider"></div>
+              </div>
+              <div class="column">
+                  <a class="ui green circular label big">1</a><br><br>
+                  <p class="color-white">O cliente chama no Whatsapp</p>
+              </div>
+              <div class="column">
+                  <a class="ui teal circular label big">2</a><br><br>
+                  <p class="color-white">Recebe uma mensagem automática que direciona para o cardápio</p>
+              </div>
+              <div class="column">
+                  <a class="ui olive circular label big">3</a><br><br>
+                  <p class="color-white">Finaliza o pedido sem fazer cadastros</p>
+              </div>
+              <div class="column">
+                  <a class="ui blue circular label big">4</a><br><br>
+                  <p class="color-white">O pedido chega pronto para impressão</p>
+              </div>
+          </div>
+          <div class="row small-space mobile only">
+              <div class="sixteen wide column">
+                  <div class="row center aligned">
+                      <h2 class="color-white">São 4 passos simples:</h2>
+                      <div class="ui hidden divider"></div>
+                  </div>
+
+                  <div class="ui list passos">
+                      <div class="item">
+                          <span class="ui green circular label big">1</span>
+                          <div class="content color-white font-large"> O cliente chama no Whatsapp</div>
+                      </div>
+                      <div class="item">
+                          <span class="ui teal circular label big">2</span>
+                          <div class="content color-white font-large">Recebe uma mensagem automática que direciona para o cardápio</div>
+                      </div>
+                      <div class="item">
+                          <span class="ui olive circular label big">3</span>
+                          <div class="content color-white font-large">Finaliza o pedido sem fazer cadastros</div>
+                      </div>
+                      <div class="item">
+                          <span class="ui blue circular label big">4</span>
+                          <div class="content color-white font-large">O pedido chega pronto para impressão</div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="row">
+              <div class="column">
+                  <a onclick="contact()" target="_blank" class="ui fluid button font-button massive yellow sendContact">FALE COM UM CONSULTOR</a>
+                  {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui fluid button font-button massive yellow sendContact">FALE COM UM CONSULTOR</a>  --}}
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+<!-- QUEM UTILIZA RECOMENDA -->
+<section class="medium-space say bg-4">
+    <div class="ui container">
+        <div class="ui equal width grid stackable padded center aligned">
+            <div class="row">
+                <div class="column">
+                    <p class="title color-red">Quem utiliza, RECOMENDA!</p>
+                    <p style="margin-top: -35px !important">Mais de <b>{{ count }} clientes satisfeitos</b> em todo Brasil</p>
+                </div>
+            </div>
+              <div class="ui hidden divider"></div>
+            </div>
+            <!-- FOTOS PARA DESKTOP -->
+            <!--<div class="row mobile hidden">
+                <div class="swiper-container">
+                    <div class="swiper mySwiper noBK">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="/img/imgUser/1.jpg"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="/img/imgUser/2.jpg"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="/img/imgUser/3.jpg"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="/img/imgUser/4.jpg"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="/img/imgUser/5.jpg"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="/img/imgUser/6.jpg"></div>
+                            </div>
+                        </div>
+                        <div class="swiper-button-next mobile hidden"></div>
+                        <div class="swiper-button-prev mobile hidden"></div>
+                    </div>
+                </div>
+            </div>-->
+            <!-- FOTO PARA MOBILE -->
+            <div class="row">
+                <div class="three column ui grid">
+                    <div class="column">
+                        <img src="/img/imgUser/1.jpg" alt="" class="ui image centered">
+                    </div>
+                    <div class="column">
+                        <img src="/img/imgUser/2.jpg" alt="" class="ui image centered">
+                    </div>
+                    <div class="column">
+                        <img src="/img/imgUser/3.jpg" alt="" class="ui image centered">
+                    </div>
+                </div>
+                <div class="four column ui grid">
+                    <div class="column">
+                        <img src="/img/imgUser/4.jpg" alt="" class="ui image centered">
+                    </div>
+                    <div class="column">
+                        <img src="/img/imgUser/5.jpg" alt="" class="ui image centered">
+                    </div>
+                    <div class="column">
+                        <img src="/img/imgUser/6.jpg" alt="" class="ui image centered">
+                    </div>
+                    <div class="column">
+                        <img src="/img/imgUser/7.jpg" alt="" class="ui image centered">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- BENEFÍCIOS -->
+<section class="small-space beneficios">
+    <div class="ui container">
+        <div class="ui equal width grid stackable padded">
+            <div class="row">
+                <div class="eight wide column centered center aligned">
+                    <p class="title">Benefícios</p>
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="ui list bene mobile hidden">
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/whats.png" alt="" width="50">
+                                <span class="font-medium">Receba pedidos no WhatsApp sem interagir com os clientes</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/boy.png" alt="" width="50">
+                                <span class="font-medium">Seus clientes não ficarão mais aguardando atendimento</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/cross.png" alt="" width="50">
+                                <span class="font-medium">Sem mão de obra extra para anotar pedidos</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/printer.png" alt="" width="50">
+                                <span class="font-medium">Impressão automática</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/cross.png" alt="" width="50">
+                                <span class="font-medium">Reduz a zero os erros nos pedidos</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/cross.png" alt="" width="50">
+                                <span class="font-medium">Reduz a zero pedidos perdidos</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/chart2.png" alt="" width="50">
+                                <span class="font-medium">Aumenta o ticket médio de vendas pois oferece adicionais pagos</span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="ui segment">
+                                <img class="ui middle aligned image" data-src="img/motor.png" alt="" width="50">
+                                <span class="font-medium">Painel que organiza o seu delivery</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="ui list bene mobile only">
+                        <div class="item">
+                            <span><img data-src="img/whats.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Receba pedidos no WhatsApp sem interagir com os clientes</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/boy.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Seus clientes não ficarão mais aguardando atendimento</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/cross.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Sem mão de obra extra para anotar pedidos</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/printer.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Impressão automática</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/cross.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Reduz a zero os erros nos pedidos</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/cross.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Reduz a zero pedidos perdidos</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/chart2.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Aumenta o ticket médio de vendas pois oferece adicionais pagos</div>
+                        </div>
+                        <div class="item">
+                            <span><img data-src="img/motor.png" alt="" width="50"></span>
+                            <div class=" content font-medium">Painel que organiza o seu delivery</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="column">
+                    <a onclick="contact()" target="_blank" class="ui fluid button font-button massive yellow sendContact">TIRE SUAS DÚVIDAS COM UM CONSULTOR</a>
+                    {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui fluid button font-button massive yellow sendContact">TIRE SUAS DÚVIDAS COM UM CONSULTOR</a>  --}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- O QUE AS PESSOAS DIZEM? -->
+<section class="medium-space say bg-5">
+    <div class="ui container">
+        <div class="ui equal width grid stackable padded center aligned">
+            <div class="row">
+                <div class="column">
+                    <p class="subtitle color-red">CLIENTES</p>
+                    <p class="title color-white">Veja o que dizem sobre o WhatsMenu</p>
+                </div>
+            </div>
+            <div class="row">
+                    <div class="column">
+                        <div class="ui embed">
+                            <div class="elementor-widget-container">
+                                <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                    <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/O_P3XNIOAyM?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                    <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                    <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="ui embed">
+                            <div class="elementor-widget-container">
+                                <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                    <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/QzxfbJOKoMg?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                    <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                    <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <div class="ui hidden divider"></div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="ui embed">
+                        <div class="elementor-widget-container">
+                            <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/0Pxd_g6--30?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui embed">
+                        <div class="elementor-widget-container">
+                            <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/aN6mBypIQL4?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                            </div>
+                        </div>
+                        <div class="ui embed">
+                            <div class="elementor-widget-container">
+                                <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                    <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/xcHFFoQtVdk?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                    <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                    <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="ui embed">
+                        <div class="elementor-widget-container">
+                            <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/xcHFFoQtVdk?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui embed">
+                        <div class="elementor-widget-container">
+                            <div style="position: relative; height: 0; padding-bottom: 56.2%; padding-top: 0;">
+                                <iframe style="position: absolute !important; width: 100% !important; height: 100% !important; z-index: 100" data-src="https://www.youtube.com/embed/5Nn02UTfEeQ?enablejsapi=0&amp;autoplay=0&amp;modestbranding=1&amp;controls=0&amp;showinfo=0&amp;rel=0&amp;hd=1&amp;wmode=transparent&amp;enablejsapi=0" frameborder="0" allowfullscreen=""></iframe>
+                                <div style="position: absolute;top: 0;width: 100%;height: 70px;background-color: transparent;z-index: 101;left: 0;"></div>
+                                <div style="position: absolute;bottom: 0;width: 100%;height: 50px;background-color: transparent;z-index: 101;left: 0;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="swiper-container">
+                    <div class="swiper mySwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say0.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say1.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say2.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say3.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say4.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say5.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say6.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say7.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say8.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say9.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say10.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say11.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say12.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say13.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say14.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say16.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say17.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say18.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say19.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say20.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say21.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say22.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say23.png"></div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="ui image"><img data-src="img/say24.png"></div>
+                            </div>
+                        </div>
+                        <div class="swiper-button-next mobile hidden"></div>
+                        <div class="swiper-button-prev mobile hidden"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="ui hidden divider"></div>
+                    <a onclick="contact()" target="_blank" class="ui fluid button font-button massive yellow sendContact">FALAR COM UM CONSULTOR</a>
+                    {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui fluid button font-button massive yellow sendContact">FALAR COM UM CONSULTOR</a>  --}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- RECURSOS -->
+<section class="small-space bg-5">
+    <div class="ui container">
+        <div class="ui equal width grid stackable padded center aligned">
+            <div class="row">
+                <div class="column">
+                    <p class="subtitle color-red">RECURSOS</p> <br>
+                    <p class="font-medium color-white" style="margin-top:-20px">Sistema Completo <span class="strong">Delivery e Retirada</span> com os seguintes recursos:</p>
+                </div>
+            </div>
+            <div class="stretched row">
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/print.png" alt="">
+                        <h3>Impressão Automática de Pedidos</h3>
+                        <p>Imprima automaticamente seus pedidos seja na impressora do seu balcão ou da sua cozinha.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/chart.png" alt="">
+                        <h3>Relatórios Completos</h3>
+                        <p>Informações importantes sobre o seu negócio como faturamento mensal, diário e  pedidos.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/support.png" alt="">
+                        <h3>Suporte VIP</h3>
+                        <p>Trabalhamos junto com você. Suporte VIP todos os dias das 9:00h às 18:00h para ajudá-lo no que precisar.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stretched row">
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/location.png" alt="">
+                        <h3>Taxas de Entrega</h3>
+                        <p>Gerencie de forma fácil suas taxas de entrega, podendo ser por bairros ou por distância.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/list.png" alt="">
+                        <h3>Editor de Cardápio</h3>
+                        <p>Facilmente inclua, modifique ou retire temporariamente seus produtos.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/iphone.png" alt="">
+                        <h3>Status do Pedido</h3>
+                        <p>Envio de mensagem direto do sistema, para que o cliente acompanhe o andamento do pedido pelo Whatsapp.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stretched row">
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/padlock.png" alt="">
+                        <h3>Os dados do seu cliente ficam salvos</h3>
+                        <p>O cliente preenche as informações uma única vez e o sistema salva todas as informações para os próximos pedidos.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/watch.png" alt="">
+                        <h3>Horário de Funcionamento</h3>
+                        <p>Abertura e fechamento automática do cardápio.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/low-price.png" alt="">
+                        <h3>Valor do Pedido Mínimo</h3>
+                        <p>Atribua valores diferentes de pedido mínimo para entrega e retirada no local</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stretched row">
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/test.png" alt="">
+                        <h3>Adicionais dos Produtos</h3>
+                        <p>Aumente o ticket médio de venda, oferecendo complementos adicionais aos pratos.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/pizza.png" alt="">
+                        <h3>Vários sabores em uma mesma pizza</h3>
+                        <p>O sistema permite fazer pizzas de 1,2,3 e até 4 sabores.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/promotion.png" alt="">
+                        <h3>Promoções</h3>
+                        <p>Ative promoções em seu cardápio e venda ainda mais.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stretched row">
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/barcode.png" alt="">
+                        <h3>Qr Code Cardápio</h3>
+                        <p>Permite que os clientes visualizem o cardápio do seu estabelecimento de maneira rápida e simples.</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/social-media.png" alt="">
+                        <h3>Social Mídia</h3>
+                        <p>Banners gratuitos para divulgação nas redes sociais</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/credit-card.png" alt="">
+                        <h3>Formas de Pagamento</h3>
+                        <p>Várias opções disponíveis: dinheiro, débito, crédito, vale refeição e alimentação, pix e Picpay</p>
+                    </div>
+                </div>
+            </div>
+            <div class="stretched row">
+                <div class="column">
+                    <div class="ui segment">
+                        <img class="ui image centered" data-src="img/tap.png" alt="">
+                        <h3>Pausar Produtos</h3>
+                        <p>Pause um produto que não esteja disponível e reative quando repor</p>
+                    </div>
+                </div>
+                <div class="column">
+                  <div class="ui segment">
+                      <img class="ui image centered" data-src="img/programming.png" alt="">
+                      <h3>Pixel do Facebook</h3>
+                      <p>Crie campanhas assertivas no Facebook</p>
+                  </div>
+              </div>
+              <div class="column">
+                <div class="ui segment">
+                    <img class="ui image centered" data-src="img/password.png" alt="">
+                    <h3>Senha relatório financeiro</h3>
+                    <p>Apenas um gestor com senha terá acesso às informações financeiras</p>
+                </div>
+              </div>
+            </div>
+            <div class="stretched row">
+              <div class="column">
+                  <div class="ui segment">
+                      <img class="ui image centered" data-src="img/open-sign.png" alt="">
+                      <h3>Fechamento fora de horário</h3>
+                      <p>Feche seu estabelecimento quando necessário</p>
+                  </div>
+              </div>
+              <div class="column">
+                <div class="ui segment">
+                    <img class="ui image centered" data-src="img/discounts.png" alt="">
+                    <h3>Cupom de Desconto</h3>
+                    <p>Crie promoções excluivas e aumente suas vendas</p>
+                </div>
+              </div>
+              <div class="column">
+                <div class="ui segment">
+                    <img class="ui image centered" data-src="img/http.png" alt="">
+                    <h3>Domínio Próprio</h3>
+                    <p>Transforme o cardápio no site do seu restaurante inserindo o seu domínio (www.seurestaurante.com.br)</p>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                    <div class="small-space"></div>
+                    <a onclick="contact()" target="_blank" class="ui fluid button font-button massive yellow sendContact">TIRAR DÚVIDAS COM ATENDIMENTO</a>
+                    {{--  <a onclick="contact()" target="_blank" href="https://tawk.to/chat/615b461425797d7a89024182/1fh68jgff" class="ui fluid button font-button massive yellow sendContact">TIRAR DÚVIDAS COM ATENDIMENTO</a>  --}}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- SEM PEGADINHAS -->
+<section class="medium-space bg-4 center-mobile">
+    <div class="ui container">
+        <div class="ui equal width grid stackable middle aligned">
+            <div class="column">
+                <img src="img/whats-img.jpg" class="ui image centered" alt="whatsMenu" width="300">
+            </div>
+            <div class="column">
+                <p class="font-medium">ATENÇÃO, o WhatsMenu é sem pegadinha e sem surpresinhas adicionais na suas mensalidades.</span></p>
+                <p>
+                    <span class="strong color-pink">A partir de</span><br>
+                    <span class="font-biggest strong green">R$ {{ valueBase }}/mês.</span>
+
+                </p>
+                <p>Sem limites de pedidos, sem taxas e sem comissões.</p>
+                <a onclick="contact()" target="_blank"  class="ui button massive yellow sendContact">QUERO CONTRATAR O WHATSMENU</a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- TABELA DE PREÇOS -->
+  <section class="small-space" id="table_price"></section>
+
+<!-- DUVIDAS FREQUENTES -->
+<section class="medium-space bg-4">
+    <div class="ui container">
+        <div class="ui equal width grid stackable padded center aligned">
+            <div class="column">
+                <p class="subtitle color-red">DÚVIDAS FREQUENTES</p>
+                <h3>Já tenho um site. Posso colocar a ferramenta no meu site?</h3>
+                <p>Sim. O WhatsMenu pode ser colocado em seu site.</p>
+                <div class="ui divider"></div>
+                <h3>Preciso de um computador para usar o WhatsMenu?</h3>
+                <p>Não é necessário. O sistema é mobile, ou seja, ele funciona perfeitamente em qualquer tela, tanto no celular como no computador. </p>
+                <div class="ui divider"></div>
+                <h3>Vocês ajudam a cadastrar os produtos no sistema?</h3>
+                <p>Sim. Temos uma equipe de suporte à disposição. Temos também a opção de já te entregar o cardápio cadastrado. </p>
+                <div class="ui divider"></div>
+                <h3>Qual o prazo para liberar meu site delivery?</h3>
+                <p>Após a confirmação de pagamento a liberação do seu acesso é imediata.</p>
+                <div class="ui divider"></div>
+                <h3>Existe algum custo adicional?</h3>
+                <p>Não cobramos taxas, nem comissão sobre vendas e não há limites de pedidos</p>
+            </div>
+        </div>
+</section>
+
+@if(activeWhatsApp())
+
+@!component('formcontact', page = 'basic', token = csrfToken)
+
+  {{--  LINK WHATSAPP FLUTUANTE  --}}
+
+    <div class="whatsapp-fixo">
+        <a onclick="contact2()" target="_blank"  class="sendContact">
+            <img src="/img/whtasicon1.png"  alt="Fale Conosco pelo WhatsApp"/>
+        </a>
+    </div>
+@endif
+    <div class="ui termo longer modal">
+        <i class="close icon"></i>
+        <div class="header">Termo de Uso</div>
+        <div class="content">
+            @include('include/modal')
+        </div>
+    </div>
+        @endsection
+        @section('js')
+        <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+        <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+
+        {{--  <script crossorigin src="https://unpkg.com/react@16/umd/react.production.min.js"></script>  --}}
+        {{--  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js"></script>  --}}
+        <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+        {{--  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.25.0/babel.min.js"></script>  --}}
+        <script type="text/babel" src="/dist/react/table_price.jsx"></script>
+        {{--
+          <script>
+          const root = ReactDOM.createRoot(
+            document.getElementById('table_price')
+          );
+          root.render(<TablePrice/>);
+        </script>
+          --}}
+
+        <script>
+          document.querySelector('#formContact form').addEventListener('submit', () => $('#formContact').modal('hide'))
+        </script>
+        <script>
+        var glide = new Glide('#options-breakpoints', {
+        autoplay: 2500,
+        perView: 5,
+        breakpoints: {
+        1024: {
+        perView: 2
+        },
+        600: {
+        perView: 2
+        }
+        }
+        })
+        glide.mount()
+
+        document.querySelector('input[name="userAgent"]').value = navigator.userAgent
+        </script>
+
+        @endsection
+
+
+
