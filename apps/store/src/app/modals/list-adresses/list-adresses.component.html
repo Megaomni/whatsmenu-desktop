@@ -1,0 +1,71 @@
+<div class="d-flex flex-column justify-content-between bg-5" [ngStyle]="{ height: '100%' }">
+  <div dialog-title>
+    <div class="modal-header">
+      <h5 class="modal-title pe-2" id="exampleModalLabel">Editar Endereços</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+    </div>
+  </div>
+  <mat-dialog-content class="flex-fill">
+    <div>
+      <p>Crie um novo endereço ou use a lista abaixo</p>
+      <hr />
+      <a class="text-red" (click)="addAddress()">Cadastrar novo endereço</a>
+      <form action="">
+        <ul class="list-group list-group-flush small mt-3" *ngIf="customer.addresses">
+          <li class="list-group-item d-flex justify-content-between" *ngFor="let address of customer.addresses.sort(); let index = index">
+            <div class="form-check">
+              <input
+                class="form-check-input radioCuston"
+                type="radio"
+                name="exampleRadios"
+                [id]="'address-' + index"
+                [value]="address.id"
+                [(ngModel)]="data.clientInfo.defaultAddressId"
+                [checked]="index === selectedAddressIndex"
+              />
+              <label class="form-check-label fw-bold ms-2" [for]="'address-' + index">Endereço {{ index + 1 }}</label>
+              <p class="address-text">
+                {{ address.street }}. {{ address.number }} • {{ address.neighborhood === 'others' ? 'Outros' : address.neighborhood }} •
+                {{ address.city === 'others' ? 'Outros' : address.city }}/{{ address.uf }}
+              </p>
+            </div>
+            <div class="d-flex gap-2">
+              <div *ngIf="!isMobile" class="btn btn-primary my-auto" (click)="editAddress(address.id)">
+                <fa-icon [icon]="pencil" size="md" role="button"></fa-icon>
+              </div>
+              <div *ngIf="!isMobile" class="btn btn-danger my-auto" (click)="deleteAddress(address.id)">
+                <fa-icon [icon]="delete" size="md" role="button"></fa-icon>
+              </div>
+
+              <!-- Botão para dispositivos móveis -->
+              <div class="d-flex position-relative">
+                <button
+                  *ngIf="isMobile && clickedMobileButtonIndex !== index"
+                  class="btn"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  style="border-radius: 20%"
+                  aria-expanded="false"
+                  (click)="toggleMobileButtons(index)"
+                >
+                  <fa-icon [icon]="verticalEllipsis" size="md" role="button"></fa-icon>
+                </button>
+                <ul
+                  *ngIf="isMobile && clickedMobileButtonIndex === index"
+                  class="dropdown-menu show position-absolute"
+                  style="right: 0; bottom: 0px; text-align: center"
+                >
+                  <li class="dropdown-item" href="#" (click)="editAddress(address.id)">Editar</li>
+                  <li class="dropdown-item" href="#" (click)="deleteAddress(address.id)">Excluir</li>
+                </ul>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </form>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions class="align-items-center justify-content-end p-2">
+    <button class="btn btn-primary" (click)="saveAddress()">Salvar</button>
+  </mat-dialog-actions>
+</div>

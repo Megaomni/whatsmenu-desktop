@@ -1,0 +1,27 @@
+.online-local{
+    transition-duration: 0.3s;
+}
+
+.online-local:hover{
+    transform: scale(1.005);
+}
+
+.select-card-button{
+    transition-duration: 0.3s;
+}
+
+.select-card-button:hover{
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.remove-card-button{
+    transition-duration: 0.3s;
+}
+
+.remove-card-button:hover{
+    color: rgb(42, 52, 60)
+}
+
+.bg-theme:hover{
+    
+}

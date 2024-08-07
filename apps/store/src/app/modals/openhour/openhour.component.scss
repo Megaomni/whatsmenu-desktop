@@ -1,0 +1,33 @@
+#hourcontainer {
+    position: fixed;
+    overflow: hidden;
+    bottom:0;
+    right: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+#backdrop{
+    height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    background-color: rgba(0, 0, 0, .55);
+    z-index: -999;
+    opacity: 0;
+    transition: all .4s;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+}
+
+#backdrop.openingHourAnimation{
+    z-index: 998;
+    opacity: 1;
+}
+
+#backdropcontent{
+    width: 100vw;
+}

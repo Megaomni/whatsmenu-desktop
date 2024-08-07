@@ -1,0 +1,23 @@
+<div id="hourcontainer" [ngbCollapse]="collapse">
+    <div tabindex="-1" id="backdropcontent">
+        <div>
+            <div class="text-center">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item border-none wm-border-radius-top">
+                        <h5 class="mt-4">Horários de Funcionamento</h5>
+                    </li>
+                    <li *ngFor="let weekDay of weekDays; trackBy: render" class="list-group-item">
+                        <div class="d-flex gap-2 justify-content-center">
+                            <b>{{ weekDay.name }}:</b>
+                            <div *ngFor="let day of context?.profile?.week[weekDay.day]">
+                                <span>Das {{day.open}} até {{day.close}}</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="backdrop" class="{{collapse ? '' : 'openingHourAnimation'}}" (click)="close()"></div>

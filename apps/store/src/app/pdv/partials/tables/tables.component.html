@@ -1,0 +1,38 @@
+<div class="d-flex flex-wrap flex-column align-items-center w-100">
+  <h3 class="mt-3 fs-5 fw-bold">MESAS:</h3>
+  <div class="d-flex align-items-center gap-4 my-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="badge rounded-circle default p-1"></div>
+      <p class="fw-bold">Disponível</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div class="badge rounded-circle busy p-1"></div>
+      <p class="fw-bold">Ocupada</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div class="badge rounded-circle paused p-1"></div>
+      <p class="fw-bold">Pausada</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <div class="badge rounded-circle waiting p-1"></div>
+      <p class="fw-bold">Aguardando Atendimento</p>
+    </div>
+  </div>
+  <div class="tables-container" *ngIf="this.context.profile.options.queues">
+    <div *ngFor="let table of waitingService()" style="cursor: pointer" class="table-container waiting" (click)="setActiveTable(table)">
+      <p>{{ table.name }}</p>
+    </div>
+  </div>
+  <hr style="margin: black 1px solid; width: 720px" *ngIf="this.context.profile.options.queues?.bartender.length > 0" />
+  <div class="tables-container">
+    <div
+      *ngFor="let table of orderTables()"
+      style="cursor: pointer"
+      class="table-container"
+      [ngClass]="getTableStatusColor(table)"
+      (click)="setActiveTable(table)"
+    >
+      <p>{{ table.name }}</p>
+    </div>
+  </div>
+</div>

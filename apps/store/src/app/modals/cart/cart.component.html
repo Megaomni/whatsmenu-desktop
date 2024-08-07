@@ -1,0 +1,247 @@
+<!-- CARRINHO/ -->
+<div class="d-flex flex-column justify-content-start bg-5" [ngStyle]="{ height: '100%' }">
+  <div mat-dialog-title class="d-flex align-items-center">
+    <fa-icon [icon]="arrowLeft" size="lg" class="color-theme" role="button" (click)="closeCartBackToStore()"></fa-icon>
+    <h5 class="mb-0 ms-2 mt-n1 text-capitalize">{{ table && tableCookie ? table && translate.text().table + ': ' + table.name : translate.text().cart }}</h5>
+  </div>
+  <mat-dialog-content class="flex-fill flex-grow-1">
+    <!-- <m4-dialog  #dialog2 [overlay]="true" overlay-color="#000000" [overlay-alpha]="0.5" class="w-50-md w-25-lg modal"> -->
+    <div class="container-fluid mt-2">
+      <div class="d-flex py-2 align-items-center">
+        <div class="">
+          <h6 class="text-uppercase">{{ translate.text().items }}</h6>
+        </div>
+        <div class="ms-auto col-auto">
+          <h6 class="text-uppercase">{{ translate.text().price }}</h6>
+        </div>
+      </div>
+      <ul class="list-group list-group-flush basket">
+        <li class="list-group-item border-top" *ngIf="cart.length">
+          <div class="py-2" *ngFor="let item of cart; let index = index" (click)="openBottomSheet(index, item, 'default')">
+            <div class="row">
+              <div class="col-8">
+                <b>{{ item.quantity }}x • {{ item.name }}</b>
+              </div>
+              <div class="col-3 d-flex justify-content-end pe-0">
+                <b *ngIf="!table">{{ (item.promoteStatus ? item.promoteValue : item.value) * item.quantity | currency }} </b>
+                <b *ngIf="table" class="lead color-theme fw-500">{{ item.valueTable * item.quantity | currency }}</b>
+              </div>
+              <div class="col-1 d-flex justify-content-center" role="button"><fa-icon [icon]="verticalEllipsis" class="color-theme"></fa-icon></div>
+            </div>
+            <div *ngFor="let complement of item.complements">
+              <div class="row ms-2" *ngFor="let itemComplement of complement.itens">
+                <div class="col-8" *ngIf="itemComplement.quantity">
+                  <span class="text-black-50">{{ itemComplement.quantity }}x • {{ itemComplement.name }}</span>
+                </div>
+                <div class="col-3 d-flex justify-content-end pe-0" *ngIf="itemComplement.quantity">
+                  <span class="text-black-50">{{ itemComplement.value * itemComplement.quantity | currency }}</span>
+                </div>
+                <div class="col-1 d-flex justify-content-center"></div>
+              </div>
+            </div>
+            <div class="row ms-2" *ngIf="item.obs.length > 0">
+              <div class="col-12 pe-0">
+                <span class="text-black-50">{{ 'Obs: ' + item.obs }}</span>
+              </div>
+              <!-- <div class="col-3 px-0">
+                                <span *ngIf="item.complements.length > 0" class="text-black-50">{{ calcProductTotalValue(item) |
+                                    currency: 'BRL' }}</span>
+                            </div> -->
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item border-top" *ngIf="cartPizza.length">
+          <div class="py-2" *ngFor="let item of cartPizza; let index = index">
+            <div class="row">
+              <div class="col-8">
+                <b>{{ item.quantity }}x • {{ 'Pizza ' + item.size }}</b>
+              </div>
+              <div class="col-3 d-flex justify-content-end pe-0">
+                <b>{{ cartService.pizzaTotalValue(item, cartRequest.type, item.size) * item.quantity | currency }} </b>
+              </div>
+              <div class="col-1 d-flex justify-content-center" (click)="openBottomSheet(index, item, 'pizza')" role="button">
+                <fa-icon [icon]="verticalEllipsis" class="color-theme"></fa-icon>
+              </div>
+            </div>
+            <span class="text-black"><strong>Sabores</strong></span>
+            <div *ngFor="let flavor of item.flavors; let flavorIndex = index" class="ms-2">
+              <div class="row">
+                <div class="col-8 ps-0">
+                  <span class="ms-2 text-black"
+                    ><strong>{{ flavor.name }}</strong></span
+                  >
+                </div>
+              </div>
+              <div class="ms-2" *ngFor="let complement of flavor.complements">
+                <div *ngIf="checkComplement(complement.itens)">
+                  <span class="text-black-50"
+                    ><strong>{{ complement.name }}</strong></span
+                  >
+                  <div class="row ms-2" *ngFor="let complementItem of complement.itens">
+                    <div class="text-black-50 col-8" *ngIf="complementItem.quantity">{{ complementItem.quantity }}x • {{ complementItem.name }}</div>
+                    <div
+                      class="text-black-50 col-3 d-flex justify-content-end pe-0"
+                      *ngIf="cartService.mostExpensiveComplement(item, complementItem, flavorIndex)"
+                    >
+                      {{ complementItem.value * complementItem.quantity | currency }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="context.profile.options.pizza.multipleBorders && flavor.implementations.length">
+                <div class="text-black-50 ms-2"><strong>Borda</strong></div>
+                <div class="row ms-2" *ngFor="let implementation of flavor.implementations">
+                  <ng-container *ngIf="implementation">
+                    <div class="text-black-50 col-8">{{ implementation.name }}</div>
+                    <div
+                      class="text-black-50 col-3 d-flex justify-content-end pe-0"
+                      *ngIf="
+                        !this.clientData.options.pizza.higherValue ||
+                        (isFirstImplementationOccurrence(item, flavorIndex, implementation) &&
+                          implementation.value === cartService.mostExpensiveImplementationPrice(item, flavorIndex)?.maxPrice &&
+                          this.clientData.options.pizza.higherValue)
+                      "
+                    >
+                      {{ implementation.value / (this.clientData.options.pizza.higherValue ? 1 : item.flavors.length) | currency }}
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="!this.clientData.options.pizza.multipleComplements">
+              <div class="text-black"><strong>Complementos Gerais</strong></div>
+              <div *ngFor="let complement of item.details.complements">
+                <div class="row ms-2" *ngFor="let itemComplement of complement.itens">
+                  <div class="col-8" *ngIf="itemComplement.quantity">
+                    <span class="text-black-50">{{ itemComplement.quantity }}x • {{ itemComplement.name }}</span>
+                  </div>
+                  <div class="col-3 d-flex justify-content-end pe-0" *ngIf="itemComplement.quantity">
+                    <span class="text-black-50">{{ itemComplement.value * itemComplement.quantity | currency }}</span>
+                  </div>
+                  <div class="col-1 d-flex justify-content-center"></div>
+                </div>
+              </div>
+            </div>
+            <div *ngIf="item.details.implementations.length && !this.clientData.options.pizza.multipleBorders">
+              <div class="text-black ms-2"><strong>Borda Única</strong></div>
+              <div class="row ms-2">
+                <div class="col-8">
+                  <span class="text-black-50">{{ item.details.implementations[0]?.name }} </span>
+                </div>
+                <div class="col-3 d-flex justify-content-end pe-0">
+                  <span class="text-black-50">{{ item.details.implementations[0]?.value | currency }}</span>
+                </div>
+                <div class="col-1 d-flex justify-content-center"></div>
+              </div>
+            </div>
+            <div class="row ms-2" *ngIf="item.obs.length > 0">
+              <div class="col-12 pe-0">
+                <span class="text-black-50">{{ 'Obs: ' + item.obs }}</span>
+              </div>
+              <!-- <div class="col-3 px-0">
+                                <span *ngIf="item.complements.length > 0" class="text-black-50">{{ calcProductTotalValue(item) |
+                                    currency: 'BRL' }}</span>
+                            </div> -->
+            </div>
+          </div>
+        </li>
+        <li class="list-group-item text-center border-top">
+          <span class="btn btn-link text-decoration-none text-red fw-500 text-capitalize" (click)="closeCartBackToStore()">{{ translate.text().add_more_items }}</span>
+        </li>
+        <li *ngIf="clientData.options.activeCupom && !table && !tableCookie" class="list-group-item border-top">
+          <div style="margin: auto" class="p-2">
+            <div class="row">
+              <label class="text-capitalize" for="cupomCode">{{ translate.text().active_your_cupom }}</label>
+            </div>
+            <div class="row">
+              <div class="col-8">
+                <input matInput class="form-control" [(ngModel)]="cupomCode" placeholder="{{ translate.text().code_of_cupom }}" />
+              </div>
+              <div class="col-4">
+                <button class="btn btn-secondary form-control text-capitalize" (click)="verifyCupom()">{{ translate.text().verify }}</button>
+              </div>
+            </div>
+
+            <span class="text-center pt-2" *ngIf="cupom && cupom.type === 'value'"
+              >{{ translate.text().discont_of }} <strong>{{ cupom.value | currency }}</strong> {{ translate.text().activated }}!</span
+            >
+            <span class="text-center pt-2" *ngIf="cupom && cupom.type === 'percent'"
+              >{{ translate.text().discont_of }} <strong>{{ cupom.value }}%</strong> {{ translate.text().activated }}!</span
+            >
+            <span class="text-center pt-2" *ngIf="cupom && cupom.type === 'freight'">{{ translate.text().discont_of }} <strong class="text-capitalize">{{ translate.text().free_freight }}</strong> {{ translate.text().activated }}!</span>
+          </div>
+          <!-- <div class="p-2 fg-gray flex-self-center"><p class="text-small"><span class="tally success">Obrigatório</span></p></div> -->
+        </li>
+        <!-- <li class="list-group-item border-top">
+                    <div class="d-flex align-items-center mt-1">
+                        <div>
+                            <ul class="text-black-50 list-unstyled small">
+                                <li>Subtotal</li>
+                                <li *ngIf="cupom && cupom.type !== 'freight'" class="text-green">Desconto (<strong>{{cupom.code}}</strong>)</li>
+                            </ul>
+                            <span class="fs-4 text-red"><b>TOTAL</b></span>
+                        </div>
+                        <div class="ms-auto col-auto text-red">
+                            <ul class="text-black-50 list-unstyled small">
+                                <li>+ {{ totalCart().value | currency }}</li>
+                                <li *ngIf="cupom && cupom.type !== 'freight'">
+                                    <span class="float-right">- {{ cupomValue() | currency }}</span>
+                                </li>
+                                
+                            </ul>
+                            <span class="fs-4"><b>{{ finalValueCart() | currency }}</b></span>
+                        </div>  
+                    </div>
+                </li> -->
+      </ul>
+    </div>
+
+    <!-- </m4-dialog> -->
+  </mat-dialog-content>
+  <mat-dialog-actions class="d-flex justify-content-between bg-5">
+    <div class="container h-100 p-0 d-flex flex-column justify-content-around py-3" id="subtotal">
+      <div class="row">
+        <div class="col-8">
+          <div class="row">
+            <div class="col-4 pe-1 pe-lg-0"><span class="text-black-50">Subtotal</span></div>
+            <div class="col-8 ps-2 ps-lg-0">
+              <span class="text-black-50"
+                >+
+                {{ cartService.totalCartValue(cart, cartPizza, cartRequest) - cartService.cupomValue(cupom, cartRequest) | currency }}</span
+              >
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4 pe-1 pe-lg-0">
+              <span class="text-red fs-4"><b>TOTAL</b></span>
+            </div>
+            <div class="col-8 ps-2 ps-lg-0">
+              <span class="text-red fs-4"
+                ><b>{{
+                  cartService.totalCartValue(cart, cartPizza, cartRequest) - cartService.cupomValue(cupom, cartRequest) | currency
+                }}</b></span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-4 d-flex justify-content-end align-items-center">
+          <button *ngIf="!table && !tableCookie" class="btn btn-success text-capitalize" [disabled]="!validation()" (click)="moveToPaymentModal()">{{ translate.text().next }}</button>
+          <button
+            *ngIf="table && tableCookie"
+            id="btn-table"
+            class="btn btn-success"
+            [disabled]="(!enableSend && totalCart().quantity === 0) || (!isOpen() && !table) || cartRequest.type !== 'T'"
+            (click)="close()"
+          >
+            Pedir na mesa
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- <div dialog-actions class="pt-12 pb-12 text-center"> -->
+    <!-- <button class="fluid" m4-button btn-style="alert" [rounded]="true" (click)="dialog4.open()" *ngIf="!delivery.formPayment"  [disabled]="!delivery.formPayment">Escolha a forma de pagamento</button> -->
+    <!-- <button class="fluid" m4-button btn-style="alert" [rounded]="true" (click)="dialog4.open(); getRequestCode()" [disabled]="!cart.length && !cartPizza.length" *ngIf="delivery.formPayment">Próximo</button> -->
+    <!-- </div> -->
+  </mat-dialog-actions>
+</div>

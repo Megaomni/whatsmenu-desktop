@@ -1,0 +1,8 @@
+<h1 mat-dialog-title [innerHTML]="title" ></h1>
+<mat-dialog-content>
+    <p class="message_text" [innerHTML]="text"></p>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="button primary default rounded button_ok" *ngIf="button_ok" [mat-dialog-close]="true" [innerHTML]="button_ok" ></button>
+    <button class="button alert default rounded button_cancel" *ngIf="button_cancel" [mat-dialog-close]="false"[innerHTML]="button_cancel"></button>
+</mat-dialog-actions>

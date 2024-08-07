@@ -1,0 +1,86 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center gap-3">
+    <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close()"></fa-icon>
+    <h3 class="m-0 fs-5">Comanda: {{ context.getActiveCommand()?.name }} </h3>
+  </div>
+</div>
+<mat-dialog-content class="d-flex flex-column align-items-center justify-content-start">
+  <div class="d-flex flex-column flex-md-row align-items-center justify-content-center text-center gap-3 my-3">
+    <p style="font-size: 1.125rem;">Total</p>
+    <p style="font-size: 2rem; color: var(--wm-red-300);">{{ context.getActiveCommand()?.getTotalValue() | currency }}
+    </p>
+    <button class="btn btn-primary" (click)="close(context.getActiveCommand())">Fazer Pagamento</button>
+  </div>
+  <div class="overflow-auto w-100 h-100 pb-3 px-2">
+    <div *ngIf="command">
+    <ng-container *ngFor="let cart of command.carts; index as index">
+      
+      <details class="cart-accordion">
+        <summary [ngClass]="cart.status === 'canceled' ? 'text-bg-danger' : ''">
+          <p class="m-0">Pedido: wm{{ cart.code }}-{{ cart.type }}</p>
+          <fa-icon class="header-icon" [icon]="faChevronDown"></fa-icon>
+        </summary>
+        <div class="accordion-content">
+          <table class="table" [ngClass]="cart.status === 'canceled' ? 'table-danger' : ''">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Qtd.</th>
+                <th>Complementos</th>
+                <th>Obs.</th>
+                <th>Valor</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pizza of cartService.itemCart(cart).cartPizza">
+                <td>{{ pizza.name }}</td>
+                <td>{{ pizza.quantity }}</td>
+                <td>
+                  <ng-container *ngTemplateOutlet="complementAccordion; context: { complements: pizza.complements }" ></ng-container>
+                </td>
+                <td>{{ pizza.obs }}</td>
+                <td>{{ pizza.value | currency }}</td>
+                <td>{{ cartService.itemValueWithComplements({ item: pizza, valueType: 'T', type: 'pizza'}) | currency }}</td>
+              </tr>
+              <tr *ngFor="let product of cartService.itemCart(cart).cart" style="vertical-align: baseline;">
+                <td>{{ product.name }}</td>
+                <td>{{ product.quantity }}x</td>
+                <td>
+                  <ng-container *ngTemplateOutlet="complementAccordion; context: { complements: product.complements }" ></ng-container>
+                </td>
+                <td>{{ product.obs }}</td>
+                <td>{{ product.value | currency }}</td>
+                <td>{{ cartService.itemValueWithComplements({ item: product, valueType: 'T', type: 'product'}) | currency }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex align-items-center justify-content-between" style="color: var(--wm-red-300);">
+          <button *ngIf="cart.status !== 'canceled'" class="btn btn-link" style="color: var(--wm-red-300)"
+            (click)="changeCartStatus(cart, 'canceled')">Cancelar Pedido</button>
+          <button *ngIf="cart.status === 'canceled'" class="btn btn-outline-danger"
+          (click)="changeCartStatus(cart, null)">Descancelar Pedido</button>
+          <p class="m-0" [ngStyle]="{ 'text-decoration': cart.status === 'canceled' ? 'line-through': '' }">Valor Total do Pedido: {{ cart.total | currency }}</p>
+        </div>
+      </details>
+    </ng-container>
+  </div>
+  </div>
+</mat-dialog-content>
+
+<ng-template #complementAccordion let-complements="complements">
+  <app-accordion [margin]="0" [shadow]="'none'" [border]="'none'" >
+    <p class="m-0">Qtd. {{ complements.length }} - {{cartService.sumComplements(complements) | currency }}</p>
+    <ul>
+      <li *ngFor="let complement of complements">
+        <b>
+          {{ complement.name }}
+        </b>
+        <p *ngFor="let item of complement.itens">
+          {{ item.quantity }}x {{ item.name }} - {{ item.value * item.quantity | currency }}
+        </p>
+      </li>
+    </ul>
+  </app-accordion>
+</ng-template>

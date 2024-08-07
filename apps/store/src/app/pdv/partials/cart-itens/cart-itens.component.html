@@ -1,0 +1,129 @@
+<div class="d-flex flex-column h-100">
+  <h2 *ngIf="!cart.length && !cartPizza.length" class="text-normal text-center m-auto">Carrinho Vazio</h2>
+  <div *ngIf="cart.length || cartPizza.length" style="flex-grow: 1" class="no-scroll-bar">
+    <ul class="p-0">
+      <li *ngFor="let pizza of cartPizza; index as index; trackBy: trackBy" style="margin-block: 0.5rem">
+        <div class="d-flex justify-content-between my-2">
+          <span style="flex-basis: 60%">
+            <ul class="p-0">
+              <li class="d-flex justify-content-between">
+                <div style="display: flex; align-items: center; gap: 0.5rem">
+                  <div class="d-flex align-items-center">
+                    <fa-icon
+                      [ngStyle]="{ opacity: pizza.quantity > 1 ? 1 : 0 }"
+                      [icon]="faMinusCircle"
+                      (click)="cartService.decreasePizza(pizza); $event.stopPropagation()"
+                      style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                    >
+                    </fa-icon>
+                    <span class="mx-2" style="font-weight: bold">{{ pizza.quantity }} </span>
+                    <fa-icon
+                      *ngIf="
+                        cartService.verifyCartFlavorAvailability(cartPizza, pizza, 'greaterOrEqual', 'cart').availability &&
+                        cartService.verifyPizzaProductAvailability(cartPizza, pizza, undefined, 'greaterOrEqual', 'cart').availability
+                      "
+                      [icon]="faPlusCircle"
+                      (click)="cartService.increasePizza(pizza); $event.stopPropagation()"
+                      style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+                    >
+                    </fa-icon>
+                  </div>
+                  Pizza {{ pizza.size }} {{ pizza.flavors.length }} Sabor{{ pizza.flavors.length > 1 ? 'es' : '' }}
+                </div>
+              </li>
+              <li *ngFor="let flavor of pizza.flavors; index as index; trackBy: trackBy" class="ms-5" style="list-style: inside">
+                {{ flavor.name
+                }}{{
+                  flavor.implementations?.length ? ' - ' + flavor.implementations[0].name + ' - ' + (flavor.implementations[0].value | currency) : ''
+                }}
+                <ng-container *ngTemplateOutlet="complements; context: { complements: flavor.complements, flavors: pizza.flavors }"></ng-container>
+              </li>
+              <li *ngFor="let implementation of pizza.implementations; index as index; trackBy: trackBy" class="ms-5">
+                <span style="white-space: nowrap">{{ implementation.name }}</span>
+                <span class="ms-4">{{ implementation.value | currency }}</span>
+              </li>
+              <li>
+                <ng-container *ngTemplateOutlet="complements; context: { complements: pizza.complements }"></ng-container>
+              </li>
+            </ul>
+          </span>
+          <span style="flex-basis: 20%; font-weight: bold; text-align: end">
+            {{ cartService.pizzaTotalValue(pizza, valueType) * pizza.quantity | currency }}
+          </span>
+          <span class="d-flex justify-content-end" style="flex-basis: 20%">
+            <fa-icon
+              [icon]="faTimesCircle"
+              (click)="cartService.removePizzaCart(index, cartPizza)"
+              style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+            >
+            </fa-icon>
+          </span>
+        </div>
+        <div *ngIf="pizza.obs" class="observation-cart">*Obs: {{ pizza.obs }}</div>
+      </li>
+      <li *ngFor="let product of cart; index as index; trackBy: trackBy" class="d-flex flex-column" style="margin-block: 0.5rem">
+        <div class="d-flex justify-content-between my-2">
+          <div style="flex-basis: 60%; display: flex; align-items: center; gap: 0.5rem">
+            <div class="d-flex align-items-center">
+              <fa-icon
+                [icon]="faMinusCircle"
+                [ngStyle]="{ opacity: product.quantity > 1 ? 1 : 0 }"
+                (click)="cartService.decreaseProduct(product); $event.stopPropagation()"
+                style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+              >
+              </fa-icon>
+              <span class="mx-2" style="font-weight: bold">{{ product.quantity }}</span>
+              <fa-icon
+                *ngIf="
+                  cartService.verifyProductAvailability(cart, product, 'greaterOrEqual', 'cart').availability &&
+                  cartService.verifyCartComplementsAvailability({ default: cart })
+                "
+                [icon]="faPlusCircle"
+                (click)="cartService.increaseProduct(product); $event.stopPropagation()"
+                style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+              >
+              </fa-icon>
+            </div>
+            {{ product.name }}
+          </div>
+          <span style="flex-basis: 20%; font-weight: bold; text-align: end">
+            {{ this.cartService.getProductFinalValue(product, valueType) * product.quantity | currency }}
+          </span>
+          <span class="d-flex justify-content-end" style="flex-basis: 20%">
+            <fa-icon
+              [icon]="faTimesCircle"
+              (click)="cartService.removeProductCart(index, cart)"
+              style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+            >
+            </fa-icon>
+          </span>
+        </div>
+        <div *ngIf="product.obs" class="observation-cart" style="margin-top: -0.5rem">*Obs: {{ product.obs }}</div>
+        <ng-container *ngTemplateOutlet="complements; context: { complements: product.complements }"></ng-container>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<ng-template #complements let-complements="complements" let-flavors="flavors">
+  <div *ngFor="let complement of complements; index as index; trackBy: trackBy" class="w-100 complementsItensContainer no-scroll-bar ms-5">
+    <h4 class="fw-bold m-0 py-2 complementName" style="background-color: inherit !important; padding: 0 !important">
+      <div [ngClass]="complement.min > 0 ? 'minQuantity' : ''" class="d-flex justify-content-between align-items-center">
+        <span>{{ complement.name }}</span>
+      </div>
+    </h4>
+    <p *ngIf="complement.min > 0" class="text-small p-0 m-0">Quantidade mínima: {{ complement.min }}</p>
+    <p *ngIf="complement.max" class="text-small p-0 m-0">Quantidade máxima: {{ complement.max }}</p>
+    <ul class="px-0">
+      <li *ngFor="let item of complement.itens; index as index; trackBy: trackBy" class="d-flex justify-content-between">
+        <span style="flex-basis: 33.4%">{{ item.quantity }}x {{ item.name }}</span>
+        <span style="flex-basis: 33.3%" *ngIf="!item.sizes || item.quantity >= cartService.highestComplements(flavors, item)">{{
+          (item.sizes ? (item.isHigher ? item.value : 0) : item.value) | currency
+        }}</span>
+        <span style="flex-basis: 33.3%" *ngIf="!item.sizes || item.quantity >= cartService.highestComplements(flavors, item)">{{
+          (item.sizes ? (item.isHigher ? item.value : 0) : item.value) * item.quantity | currency
+        }}</span>
+      </li>
+    </ul>
+  </div>
+</ng-template>

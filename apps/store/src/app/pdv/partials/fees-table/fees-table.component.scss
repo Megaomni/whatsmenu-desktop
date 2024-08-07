@@ -1,0 +1,42 @@
+.fees-container {
+  padding: 1rem 0.5rem;
+  background-color: var(--wm-gray-light-300);
+  width: 100%;
+
+  header,
+  .command-row,
+  summary {
+    display: flex;
+    align-items: center;
+
+    &>div {
+      flex-basis: 25%;
+    }
+
+    &:first-child {
+      word-break: break-all;
+    }
+  }
+
+  details {
+    max-height: 3.875rem;
+
+    &[open] {
+      max-height: 400px;
+      transition: all 0.4s;
+      summary div .toggle-fee {
+        transform: rotate(180deg);
+        display: inline-block;
+        transition: all 0.2s;
+      }
+    }
+
+    summary {
+      padding: 0.75rem 0;
+
+      .toggle-fee {
+        margin-right: 1rem;
+      }
+    }
+  }
+}

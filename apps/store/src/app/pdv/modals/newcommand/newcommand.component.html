@@ -1,0 +1,15 @@
+<div mat-dialog-title class="d-flex align-items-center justify-content-between">
+  <div class="d-flex align-items-center gap-3">
+    <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close({ createCommand: false })"></fa-icon>
+    <h3 class="m-0 fs-5">Criar Comanda</h3>
+  </div>
+</div>
+<mat-dialog-content class="d-flex flex-column align-items-center justify-content-center">
+  <p class="text-center fs-5 my-4">Nome da Comanda</p>
+  <div class="d-grid d-md-flex flex-column align-items-center">
+    <div class="d-flex flex-column flex-md-row justify-content-center gap-3 ">
+      <input class="form-control" type="text" placeholder="Comanda" [(ngModel)]="name">
+    </div>
+    <button class="btn btn-primary mt-3" (click)="close({ createCommand: true })">Criar Comanda</button>
+  </div>
+</mat-dialog-content>

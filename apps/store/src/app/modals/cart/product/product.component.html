@@ -1,0 +1,236 @@
+<div class="d-flex flex-column justify-content-start bg-5" [ngStyle]="{ height: '100%' }">
+  <div mat-dialog-title class="d-flex">
+    <button mat-dialog-close m4-button btn-style="link" class="button-icon me-2">
+      <fa-icon [icon]="leftArrow"></fa-icon>
+    </button>
+    <span class="text-truncate" style="max-width: 300px">{{ cart.name }}</span>
+  </div>
+  <mat-dialog-content class="flex-fill" style="overflow-y: auto">
+    <section *ngIf="clientData.options.store.productModal.infoPosition === 'first'" class="bg-1" style="background-color: #f8f8f8">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <img *ngIf="product.image" src="{{ product.image }}" alt="" class="detailBanner mb-4 mt-4" />
+            <h5 class="title-product fw-500">{{ product.name }}</h5>
+            <p class="lh-sm">{{ product.description }}{{ product.description ? '.' : '' }}</p>
+            <p *ngIf="!storeTable && !table" class="lead color-theme fw-500">{{ product.value | currency }}</p>
+            <p *ngIf="storeTable && table" class="lead color-theme fw-500">{{ product.valueTable | currency }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="bg-1 p-3" id="c-{{ complement.id }}" *ngFor="let complement of cart.complements; let complementIndex = index">
+      <div class="" *ngIf="complement.itens.length">
+        <div class="row">
+          <div class="col-12 overflow-auto">
+            <div id="title">
+              <div class="d-flex align-items-center">
+                <div class="py-1">
+                  <h5 class="mb-0 ms-2">{{ complement.name }}</h5>
+                  <h5 class="text-muted small mt-n2 ms-2" *ngIf="complement">
+                    Escolha até {{ complement.max }} {{ complement.max > 1 ? 'opções' : 'opção' }}
+                  </h5>
+                </div>
+                <div class="ms-auto py-2 me-2 col-auto">
+                  <span class="badge" [ngClass]="complement.required ? 'text-bg-danger' : 'text-bg-success'">
+                    <span class="small text-uppercase">{{ complement.required ? translate.text().obrigatory : translate.text().optional }}</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- LISTA DE COMPLEMENTOS -->
+
+            <ul class="list-group list-group-flush">
+              <li
+                *ngFor="let item of complement.itens; let index = index"
+                class="d-flex flex-justify-start pt-6 mb-6"
+                [ngStyle]="{ position: 'relative' }"
+                class="list-group-item"
+              >
+                <div class="d-flex align-items-center">
+                  <div [ngStyle]="{ opacity: !item.status && 0.3 }">
+                    <p class="optionTitle mb-0">{{ item.name }}</p>
+                    <p class="small mt-n1 mb-0 fst-italic lh-sm color-text">{{ item.description }}</p>
+                    <div class="text-danger small mt-n1 fw-500">
+                      <b>+{{ item.value | currency }}</b>
+                    </div>
+                  </div>
+
+                  <div class="ms-auto py-2 col-auto ps-0">
+                    <span *ngIf="!cartService.checkInventoryDisponibility({ item })" style="color: var(--red); opacity: 0.3" class="fw-500"
+                      >INDISPONÍVEL</span
+                    >
+
+                    <div *ngIf="item.status" class="quantityFooter">
+                      <div class="d-flex complement">
+                        <div
+                          [ngStyle]="{ opacity: item.quantity > 0 ? 1 : 0 }"
+                          class="minus-btn"
+                          role="button"
+                          (click)="cartService.decreaseItem(item)"
+                        >
+                          <fa-icon [icon]="outlineCircleMinus" size="lg"></fa-icon>
+                        </div>
+                        <input
+                          type="text"
+                          name="name"
+                          class="bg-white"
+                          [value]="item.quantity"
+                          [ngStyle]="{ opacity: item.quantity > 0 ? 1 : 0 }"
+                          disabled
+                        />
+                        <div
+                          *ngIf="cartService.complementItensCount(complement) < complement.max && cartService.checkInventoryDisponibility({item, typeCheck: 'greaterOrEqual'})"
+                          (click)="cartService.increaseItem(item)"
+                          class="plus-btn"
+                          role="button"
+                        >
+                          <fa-icon [icon]="outlineCirclePlus" size="lg"></fa-icon>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="bg-1" *ngIf="clientData.options.store.productModal.infoPosition === 'last'">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <img *ngIf="product.image" src="{{ product.image }}" alt="" class="detailBanner mb-4 mt-4" />
+            <h5 class="title-product fw-500">{{ product.name }}</h5>
+            <p class="lh-sm">{{ product.description }}{{ product.description ? '.' : '' }}</p>
+            <p *ngIf="!storeTable && !table" class="lead color-theme fw-500">{{ product.value | currency }}</p>
+            <p *ngIf="storeTable && table" class="lead color-theme fw-500">{{ product.valueTable | currency }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </mat-dialog-content>
+  <mat-dialog-actions
+    class="bg-5"
+    *ngIf="!data.table ? !clientData.options.store.catalogMode?.delivery : !clientData.options.store.catalogMode?.table"
+  >
+    <div [class]="product.disponibility.store.package ? 'inline-list button-push' : 'inline-list'" style="width: 100%">
+      <div class="py-2 px-4">
+        <label for="" class="text-capitalize">{{ translate.text().obs }}</label>
+        <textarea
+          [(ngModel)]="cart.obs"
+          class="form-control"
+          aria-describedby="characterCountDescr"
+          placeholder="{{ clientData.options.placeholders.productObs }}"
+        ></textarea>
+
+        <div class="d-flex pt-2 align-items-center justify-content-between w-100">
+          <div>
+            <div class="quantityFooter d-flex">
+              <div class="minus-btn disable" (click)="changeQuantity('subtract')" role="button" name="button+">
+                <fa-icon [icon]="outlineCircleMinus" size="lg"></fa-icon>
+              </div>
+              <input [ngStyle]="{ background: 'bottom' }" name="name" [value]="cart.quantity" disabled />
+              <div class="plus-btn" (click)="changeQuantity('add')" role="button" name="button-">
+                <fa-icon [icon]="outlineCirclePlus" size="lg"></fa-icon>
+              </div>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <!-- BOTAO PARA ENCOMENDAS -->
+
+            <button
+              *ngIf="!table && viewContentAlternate === 'P' && verifyAvailableQuantity()"
+              title="Adicionar para encomenda"
+              (click)="
+                clientData.options.package.active
+                  ? product.status
+                    ? editProduct
+                      ? saveUpdatedCart()
+                      : addProductToCart(cart, cartOriginal)
+                    : alertProd()
+                  : null
+              "
+              class="btn bg-theme float-right d-flex gap-2"
+            >
+              <div
+                [ngStyle]="{
+                  'text-transform': !clientData.options.package.active && 'uppercase',
+                  'text-align': !clientData.options.package.active && 'center',
+                  'width': !clientData.options.package.active && '100%',
+                  'font-weight': !clientData.options.package.active && '600',
+                  'display': !clientData.options.package.active && 'inline-block'
+                }"
+              >
+                {{
+                  clientData.options.package.active
+                    ? clientData.options.package.label2 === false || !clientData.options.package.label2
+                      ? 'Encomendar'
+                      : 'Agendar'
+                    : clientData.options.package.label2 === false || !clientData.options.package.label2
+                    ? 'Fechado Encomendas'
+                    : 'Agendamento Fechado'
+                }}
+              </div>
+              <div *ngIf="clientData.options.package.active" class="float-right">
+                {{
+                  cartService.itemValueWithComplements({ item: cart, valueType: data.valueType, type: 'product', multiplyByQuantity: true })
+                    | currency
+                }}
+              </div>
+            </button>
+
+            <!-- BOTAO PARA DELIVERY -->
+
+            <button
+              class="btn bg-theme float-right d-flex gap-2"
+              *ngIf="viewContentAlternate === 'D' && verifyAvailableQuantity() && verifyAvailableComplements()"
+              [ngStyle]="{
+                'text-transform': !disponibility && !table && 'uppercase',
+                'text-align': !disponibility && !table && 'center',
+                'width': !disponibility && !table && '100%',
+                'font-weight': !disponibility && !table && '600',
+                'display': !disponibility && !table && 'inline-block'
+              }"
+              (click)="
+                (disponibility || table) && (product.status ? (editProduct ? saveUpdatedCart() : addProductToCart(cart, cartOriginal)) : alertProd())
+              "
+            >
+              <span class="text-capitalize">
+                {{
+                  disponibility || table ? (editProduct ? 'Salvar' : translate.text().add) : translate.text().closed + ' ' + translate.text().delivery
+                }}
+              </span>
+
+              <!-- EXIBIÇÃO DE VALOR DO PRODUTO  -->
+
+              <span *ngIf="disponibility || table">
+                {{
+                  cartService.itemValueWithComplements({ item: cart, valueType: data.valueType, type: 'product', multiplyByQuantity: true })
+                    | currency
+                }}
+              </span>
+            </button>
+
+            <button
+              disabled
+              class="btn bg-theme float-right d-flex gap-2"
+              *ngIf="!verifyAvailableComplements() || !verifyAvailableQuantity()"
+              [ngStyle]="{
+                'text-transform': !disponibility && !table && 'uppercase',
+                'text-align': !disponibility && !table && 'center',
+                'width': !disponibility && !table && '100%',
+                'font-weight': !disponibility && !table && '600',
+                'display': !disponibility && !table && 'inline-block'
+              }"
+            >
+              <span class="text-capitalize">{{ translate.text().unavilable_amount }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,33 @@
+.dialog-title-address{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dialog-title-flex{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.btn-deliveryLocal{
+    align-self: flex-end;
+}
+
+.modal-header{
+    padding: 16px;
+    border-bottom: 1px solid rgb(222, 226, 230)
+}
+
+label{
+    color: rgb(95, 125, 149);
+    font-size: 18px;
+}
+
+@media (max-width: 700px) {
+    mat-dialog-content{
+        height: 81vh;
+    }
+    
+}

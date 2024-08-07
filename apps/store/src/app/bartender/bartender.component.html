@@ -1,0 +1,528 @@
+<div style="overscroll-behavior: contain">
+  <div class="grid" *ngIf="!tables">
+    <div class="row flex-align-center" style="height: 100vh">
+      <div class="cell flex-align-self-center text-center">
+        <m4-activity style="margin: 0 auto" activity-style="color" type="metro"></m4-activity>
+        <br />
+        Carregando
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="tables" class="h-100">
+    <div
+      *ngIf="spinner"
+      style="position: fixed; top: 0; bottom: 0; right: 0; left: 0; z-index: 9999"
+      class="d-flex flex-align-center flex-justify-center"
+    >
+      <mat-progress-spinner mode="indeterminate" color="warn" style="opacity: 1 !important; z-index: 99999"> </mat-progress-spinner>
+      <div
+        style="position: absolute; top: 0; bottom: 0; right: 0; left: 0; z-index: 0; background-color: white; opacity: 0.5"
+        class="d-flex flex-align-center flex-justify-center"
+      ></div>
+    </div>
+
+    <div id="bartender-component">
+      <div class="header" *ngIf="!bartender">
+        <div class="header-content">
+          <h1>COMANDA DIGITAL</h1>
+          <p *ngIf="!bartender">{{ profile.name }}</p>
+        </div>
+      </div>
+
+      <div
+        *ngIf="!bartender"
+        style="background-color: var(--bartender-background); height: 100%; min-height: 100vh; width: 100%; max-width: 1024px; padding: 1rem 2rem"
+      >
+        <div class="tables-container w-100" id="tables">
+          <h2 class="title text-center mt-15">MESAS:</h2>
+          <div class="d-flex flex-row flex-align-center flex-justify-center" [ngStyle]="{ padding: '1rem 0 1.5rem 0', gap: '1.25rem' }">
+            <div class="d-flex flex-align-center" style="gap: 0.25rem">
+              <span class="default border border-radius-half p-2"></span>
+              <p class="m-0 legend-text">Disponível</p>
+            </div>
+            <div class="d-flex flex-align-center" style="gap: 0.25rem">
+              <span class="busy border border-radius-half p-2"></span>
+              <p class="m-0 legend-text">Ocupada</p>
+            </div>
+            <div class="d-flex flex-align-center" style="gap: 0.25rem">
+              <span class="paused border border-radius-half p-2"></span>
+              <p class="m-0 legend-text">Pausada</p>
+            </div>
+          </div>
+          <mat-grid-list cols="{{ tablesColumns }}" gutterSize="1rem" role="listitem" rowHeight="1:1">
+            <mat-grid-tile
+              *ngFor="let table of tables; index as index; trackBy: trackBy"
+              [ngClass]="'c-pointer wm-table ' + table.getStatus()"
+              (click)="persistBartender ? getTable(table) : setTable(table)"
+            >
+              {{ table.name }}
+            </mat-grid-tile>
+          </mat-grid-list>
+        </div>
+      </div>
+      <section *ngIf="bartender" id="selectedTable" style="background-color: #ffffff">
+        <div class="d-flex flex-justify-between" style="border-bottom: 1px solid #d4dae0">
+          <div class="header-content d-flex flex-align-center" style="flex-grow: 1; padding-top: 0.75rem" *ngIf="bartender && table">
+            <fa-icon [icon]="faArrowLeft" (click)="closeTable()" class="px-4" style="font-size: 1.25rem; font-weight: bold; cursor: pointer">
+            </fa-icon>
+            <p style="color: var(--primary); background: white; margin: auto 0; padding-left: 0; font-size: 1rem; font-weight: bold">
+              Mesa: {{ table.name }}
+            </p>
+          </div>
+          <div class="d-flex" style="gap: 0.25rem; padding: 0.75rem 0.75rem 0">
+            <button (click)="tabView = 'order'" class="button-tab" [ngClass]="tabView === 'order' ? 'active' : ''">Pedido</button>
+            <button
+              (click)="tabView = 'resume'"
+              class="button-tab"
+              [ngClass]="tabView === 'resume' ? 'active' : ''"
+              [disabled]="!table?.haveRequests()"
+            >
+              Resumo
+            </button>
+          </div>
+        </div>
+
+        <div [ngStyle]="{ height: tabView === 'order' ? '100%' : 0 }">
+          <div class="d-flex flex-self-start flex-align-center h-100 p-5" style="gap: 0.5rem">
+            <div *ngIf="tabView === 'order'" class="d-flex flex-align-center w-100">
+              <div *ngIf="!newCommandInput && !isEmptyCommand()" class="select-container">
+                <select [(ngModel)]="activeCommandId" (change)="activeCommand = findCommandByIdOption(activeCommandId)">
+                  <ng-container *ngFor="let command of table.activeCommands; index as index; trackBy: trackBy">
+                    <option [value]="command.id">
+                      {{ command.name }}
+                    </option>
+                  </ng-container>
+                </select>
+                <fa-icon
+                  *ngIf="!newCommandInput && !isEmptyCommand()"
+                  style="color: var(--wm-gray-300)"
+                  class="me-2"
+                  [icon]="faChevronDown"
+                ></fa-icon>
+              </div>
+              <form (ngSubmit)="createCommand()" *ngIf="newCommandInput || isEmptyCommand()" class="input-container">
+                <input
+                  id="newCommandInputKeyboard"
+                  autofocus
+                  class="text-center"
+                  placeholder="Nova Comanda"
+                  matInput
+                  name="newCommand"
+                  [(ngModel)]="newCommand"
+                  #newCommandInputKeyboard
+                  (focus)="openKeyboard('newCommandInputKeyboardElement', 'newCommandInputKeyboardControl')"
+                  (blur)="closeKeyboard()"
+                />
+                <fa-icon
+                  *ngIf="deviceWidth > 768 && (newCommandInput || isEmptyCommand())"
+                  [icon]="faKeyboard"
+                  class="mr-2"
+                  [ngStyle]="{ opacity: keyBoardIsEnable ? 1 : '0.5' }"
+                  style="border-radius: 0 6px 6px 0"
+                  (click)="toggleKeyboard('newCommandInputKeyboardElement')"
+                ></fa-icon>
+              </form>
+            </div>
+
+            <div class="d-flex flex-justify-between" style="gap: 0.5rem">
+              <button
+                *ngIf="newCommandInput && !isEmptyCommand()"
+                (click)="newCommandInput = false"
+                style="flex-grow: 1; padding: 0.5rem 1rem"
+                class="primary-button clear-cart"
+                [ngStyle]="{ fontSize: tablesColumns <= 4 ? '0.75rem' : '1.25rem' }"
+              >
+                Cancelar
+              </button>
+              <button
+                *ngIf="isEmptyCommand()"
+                (click)="closeTable()"
+                style="flex-grow: 1; padding: 0.5rem 1rem"
+                class="primary-button clear-cart"
+                [ngStyle]="{ fontSize: tablesColumns <= 4 ? '0.75rem' : '1.25rem' }"
+              >
+                Cancelar
+              </button>
+              <button
+                *ngIf="newCommandInput || isEmptyCommand()"
+                (click)="createCommand()"
+                style="flex-grow: 1; padding: 0.5rem 1rem"
+                class="primary-button request-cart"
+                [ngStyle]="{ fontSize: tablesColumns <= 4 ? '0.75rem' : '1.25rem' }"
+              >
+                Salvar
+              </button>
+            </div>
+            <fa-icon
+              [icon]="faPlusCircle"
+              *ngIf="!newCommandInput && !isEmptyCommand()"
+              (click)="newCommandInput = true"
+              style="color: var(--primary); font-size: 2rem; cursor: pointer"
+            >
+            </fa-icon>
+          </div>
+
+          <div *ngIf="activeCommand" class="w-100">
+            <div class="flex-column flex-justify-between h-100 w-100" style="min-height: 82vh; align-self: flex-start">
+              <!-- Barra Busca -->
+              <div *ngIf="profile.categories.length > 0" id="headerContainer" class="d-flex flex-column w-100">
+                <div id="searchBar">
+                  <div class="menu-tabs no-scroll-bar">
+                    <p
+                      class="menu-tab-item"
+                      [ngClass]="activeCategory === category.id ? 'active-tab' : ''"
+                      (click)="changeActiveCategory(category.id)"
+                      *ngFor="let category of bartender?.categories"
+                    >
+                      {{ category.name }}
+                    </p>
+                  </div>
+                  <div class="d-flex flex-align-center px-5 pb-2 border border-radius" style="gap: 0.5rem">
+                    <div class="input-container w-100" style="background-color: #fff">
+                      <div class="w-100">
+                        <input
+                          type="search"
+                          [placeholder]="tagFilterSearch === 'default' ? 'Buscar por nome' : 'Buscar por sabor'"
+                          data-role="input"
+                          data-clear-button="true"
+                          id="bartenderSearchInput"
+                          class="bartenderInput"
+                          autocomplete="off"
+                          [(ngModel)]="search"
+                          (focus)="clearSearchButton(); openKeyboard('bartenderSearchInputElement', 'bartenderSearchInputControl')"
+                          #bartenderSearchInput
+                          style="border-radius: 6px; border: 0; width: 100%"
+                        />
+                      </div>
+                      <fa-icon
+                        *ngIf="deviceWidth > 768"
+                        [icon]="faKeyboard"
+                        class="mr-2"
+                        [ngStyle]="{ opacity: keyBoardIsEnable ? 1 : '0.5' }"
+                        style="border-radius: 0 6px 6px 0"
+                        (click)="toggleKeyboard('bartenderSearchInputElement')"
+                      ></fa-icon>
+                    </div>
+                    <div
+                      class="d-flex flex-align-center"
+                      style="border: 1px solid gainsboro; background-color: white; color: gray; border-radius: 6px"
+                    >
+                      <select [value]="tagFilterSearch" [(ngModel)]="tagFilterSearch" style="font-size: 1rem">
+                        <option [value]="'default'">Padrão</option>
+                        <option [value]="'pizza'">Pizzas</option>
+                      </select>
+                      <mat-icon>keyboard_arrow_down</mat-icon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- *** -->
+
+              <!-- Menu -->
+              <div
+                *ngIf="!profile.categories.length"
+                class="d-flex flex-column flex-align-center flex-justify-center"
+                style="
+                  height: 50vh;
+                  font-size: 1.5rem;
+                  font-weight: bold;
+                  text-align: center;
+                  line-height: 130%;
+                  word-spacing: 0.25rem;
+                  padding: 1rem;
+                "
+              >
+                <p>Nenhuma categoria disponível para pedidos do tipo mesa no momento.</p>
+                <p>Verifique no painel de administrador se as categorias estão ativas e disponíveis para pedidos de tipo mesa.</p>
+              </div>
+              <div style="overflow-y: hidden" class="no-scroll-bar">
+                <div
+                  style="transition: opacity 0.5s"
+                  [ngStyle]="{
+                    height: activeCategory === category.id && !search && tabView === 'order' ? '100%' : 0,
+                    opacity: activeCategory === category.id && !search ? 1 : 0
+                  }"
+                  *ngFor="let category of profile.categories; index as index; trackBy: trackBy"
+                  class="p-0"
+                >
+                  <bartender-menu
+                    [type]="category.type"
+                    [dataSource]="category.type === 'default' ? category.products : category.product.flavors"
+                    [profile]="profile"
+                    [cart]="cart"
+                    [cartPizza]="cartPizza"
+                    [bartender]="bartender"
+                    [closeTable]="closeTable"
+                  >
+                  </bartender-menu>
+                </div>
+
+                <div id="searchSearch" [ngStyle]="{ height: search ? '100%' : 0 }" style="overflow-y: hidden" class="no-scroll-bar">
+                  <bartender-menu
+                    [search]="search"
+                    [type]="tagFilterSearch"
+                    [dataSource]="
+                      tagFilterSearch === 'default'
+                        ? cartService.filterProducts(allProducts, search, tagFilterSearch)
+                        : cartService.filterProducts(allPizzas, search, tagFilterSearch)
+                    "
+                    [profile]="profile"
+                    [cart]="cart"
+                    [cartPizza]="cartPizza"
+                    [bartender]="bartender"
+                    [closeTable]="closeTable"
+                    [valueType]="cartService.valueType"
+                  >
+                  </bartender-menu>
+                </div>
+              </div>
+              <!-- *** -->
+              <!-- Carrinho -->
+              <ng-container *ngIf="tabView === 'order'">
+                <mat-accordion class="bartender-footer-accordion">
+                  <div (click)="toogleAccordionButton()" [class]="'toggle-accordion-button ' + footerToggleButton"></div>
+                  <mat-expansion-panel
+                    [expanded]="false"
+                    hideToggle="true"
+                    (opened)="footerToggleButton = 'opened'"
+                    (closed)="footerToggleButton = 'closed'"
+                    style="background-color: var(--bartender-background); box-shadow: none"
+                  >
+                    <mat-expansion-panel-header style="padding: 2.25rem 1rem; margin: 0">
+                      <mat-panel-description
+                        style="justify-content: space-between; gap: 0.5rem; padding: 0.625rem 0; font-size: 1.5rem; color: var(--red)"
+                      >
+                        <div>{{ cart.length + cartPizza.length }} {{ cart.length + cartPizza.length > 1 ? 'Itens' : 'Item' }}</div>
+                        <div>
+                          <div class="mif-shopping-basket mif-2x"></div>
+                          <!-- <span style="line-height: 130%;">{{ currency(cartService.totalCartValue(cart, cartPizza))}}</span> -->
+                        </div>
+                      </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <div style="max-height: 40vh; overflow-y: scroll" class="no-scroll-bar">
+                      <h2 *ngIf="!cart.length && !cartPizza.length" class="text-normal text-center">Carrinho Vazio</h2>
+                      <div *ngIf="cart.length || cartPizza.length" style="flex-grow: 1" class="no-scroll-bar">
+                        <ul>
+                          <li *ngFor="let pizza of cartPizza; index as index; trackBy: trackBy" style="margin-block: 0.5rem">
+                            <div class="d-flex flex-justify-between my-2">
+                              <span style="flex-basis: 60%">
+                                <ul class="p-0">
+                                  <li class="d-flex flex-justify-between">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem">
+                                      <div class="d-flex flex-align-center">
+                                        <fa-icon
+                                          [ngStyle]="{ opacity: pizza.quantity > 1 ? 1 : 0 }"
+                                          [icon]="faMinusCircle"
+                                          (click)="decreasePizza(pizza); $event.stopPropagation()"
+                                          style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                                        >
+                                        </fa-icon>
+                                        <span class="mx-2" style="font-weight: bold">{{ pizza.quantity }}</span>
+                                        <fa-icon
+                                          [icon]="faPlusCircle"
+                                          (click)="increasePizza(pizza); $event.stopPropagation()"
+                                          style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+                                        >
+                                        </fa-icon>
+                                      </div>
+                                      Pizza {{ pizza.size }} {{ pizza.flavors.length }} Sabor{{ pizza.flavors.length > 1 ? 'es' : '' }}
+                                    </div>
+                                  </li>
+                                  <li *ngFor="let flavor of pizza.flavors; index as index; trackBy: trackBy" class="ml-10" style="list-style: inside">
+                                    {{ flavor.name }}
+                                  </li>
+                                  <li *ngFor="let implementation of pizza.implementations; index as index; trackBy: trackBy" class="ml-10">
+                                    <span style="white-space: nowrap">{{ implementation.name }}</span>
+                                    <span class="ml-6">{{ currency(implementation.value) }}</span>
+                                  </li>
+                                </ul>
+                              </span>
+                              <span style="flex-basis: 20%; font-weight: bold; text-align: end">
+                                {{ currency(pizza.value * pizza.quantity) }}
+                              </span>
+                              <span class="d-flex justify-content-end" style="flex-basis: 20%">
+                                <fa-icon
+                                  [icon]="faTimesCircle"
+                                  (click)="removePizzaCart(index)"
+                                  style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                                >
+                                </fa-icon>
+                              </span>
+                            </div>
+                            <div *ngIf="pizza.obs" class="observation-cart">*Obs: {{ pizza.obs }}</div>
+                          </li>
+                          <li *ngFor="let product of cart; index as index; trackBy: trackBy" class="d-flex flex-column" style="margin-block: 0.5rem">
+                            <div class="d-flex flex-justify-between my-2">
+                              <div style="flex-basis: 60%; display: flex; align-items: center; gap: 0.5rem">
+                                <div class="d-flex flex-align-center">
+                                  <fa-icon
+                                    [icon]="faMinusCircle"
+                                    [ngStyle]="{ opacity: product.quantity > 1 ? 1 : 0 }"
+                                    (click)="decreaseProduct(product); $event.stopPropagation()"
+                                    style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                                  >
+                                  </fa-icon>
+                                  <span class="mx-2" style="font-weight: bold">{{ product.quantity }}</span>
+                                  <fa-icon
+                                    [icon]="faPlusCircle"
+                                    (click)="increaseProduct(product); $event.stopPropagation()"
+                                    style="color: var(--green); font-size: 1.25rem; cursor: pointer"
+                                  >
+                                  </fa-icon>
+                                </div>
+                                {{ product.name }}
+                              </div>
+                              <span style="flex-basis: 20%; font-weight: bold; text-align: end">
+                                {{ currency(productValueWithComplements(product)) }}
+                              </span>
+                              <span class="d-flex justify-content-end" style="flex-basis: 20%">
+                                <fa-icon
+                                  [icon]="faTimesCircle"
+                                  (click)="removeProductCart(index)"
+                                  style="color: var(--red); font-size: 1.25rem; cursor: pointer"
+                                >
+                                </fa-icon>
+                              </span>
+                            </div>
+                            <div *ngIf="product.obs" class="observation-cart">*Obs: {{ product.obs }}</div>
+                            <div
+                              *ngFor="let complement of product.complements; index as index; trackBy: trackBy"
+                              class="w-100 complementsItensContainer no-scroll-bar ml-10"
+                            >
+                              <h4 class="text-bold m-0 py-2 complementName" style="background-color: inherit !important; padding: 0 !important">
+                                <div [ngClass]="complement.min > 0 ? 'minQuantity' : ''" class="d-flex flex-justify-between flex-align-center">
+                                  <span>{{ complement.name }}</span>
+                                </div>
+                                <p *ngIf="complement.min > 0" class="text-small p-0 m-0">Quantidade mínima: {{ complement.min }}</p>
+                              </h4>
+                              <ul class="px-0">
+                                <li *ngFor="let item of complement.itens; index as index; trackBy: trackBy" class="d-flex flex-justify-between">
+                                  <span style="flex-basis: 33.4%">{{ item.quantity }}x {{ item.name }}</span>
+                                  <span style="flex-basis: 33.3%">{{ currency(item.value) }}</span>
+                                  <span style="flex-basis: 33.3%">{{ currency(item.value * item.quantity) }}</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <mat-action-row class="d-flex flex-justify-between" style="padding: 1rem">
+                      <button mat-button class="primary-button clear-cart" (click)="this.cart = []; this.cartPizza = []">Limpar</button>
+                      <button
+                        mat-button
+                        class="primary-button request-cart"
+                        (click)="sendRequestToADM()"
+                        [disabled]="!this.cart.length && !this.cartPizza.length"
+                      >
+                        Pedir
+                      </button>
+                    </mat-action-row>
+                  </mat-expansion-panel>
+                </mat-accordion>
+              </ng-container>
+              <!-- *** -->
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="tabView === 'resume'">
+          <div class="d-flex flex-column" style="padding-bottom: 72px; min-height: 94vh">
+            <div *ngFor="let command of table?.activeCommands; index as index; trackBy: trackBy">
+              <div
+                *ngIf="command.requests.length"
+                style="background-color: var(--bartender-background); padding: 1.25rem; border-top: 1px solid #d4daef"
+              >
+                <h4 style="font-size: 1.5rem; color: var(--red); font-weight: bold">{{ command.name }}</h4>
+                <div *ngFor="let request of command.sortRequests(); index as index; trackBy: trackBy">
+                  <p class="d-flex flex-justify-between w-100" style="font-size: 1.125rem; color: var(--legend-color)">
+                    <span style="flex-basis: 100%">WM{{ request.code }}-T</span>
+                    <span style="flex-basis: 100%; color: gray; text-align: end"
+                      >Pedido por {{ request.bartenderId ? getBartender(request.bartenderId).name : 'Cliente' }} <br />
+                      <span style="font-size: 0.85rem">{{ diffTime(request.created_at) }}</span></span
+                    >
+                  </p>
+                  <div *ngFor="let pizza of request.cartPizza; index as index; trackBy: trackBy">
+                    <p class="d-flex flex-justify-between w-100" style="font-size: 1.125rem">
+                      {{ pizza.quantity }}x {{ pizza.size }} <span style="font-weight: bold">{{ currency(pizza.value * pizza.quantity) }}</span>
+                    </p>
+                    <div class="pl-3 fg-gray" style="margin-top: -0.75rem">
+                      <p *ngFor="let flavor of pizza.flavors; index as index; trackBy: trackBy">{{ flavor.name }}</p>
+                    </div>
+                    <p *ngIf="pizza.obs" class="pl-3 fg-gray" style="margin-top: -0.75rem">*Obs: {{ pizza.obs }}</p>
+                  </div>
+                  <div *ngFor="let product of request.cart; index as index; trackBy: trackBy">
+                    <p class="d-flex flex-justify-between w-100" style="font-size: 1.125rem">
+                      {{ product.quantity }}x {{ product.name }}
+                      <span style="font-weight: bold">{{ currency(productValueWithComplements(product)) }}</span>
+                    </p>
+                    <p *ngIf="product.obs" class="pl-3 fg-gray" style="margin-top: -0.75rem">*Obs: {{ product.obs }}</p>
+                  </div>
+                  <div class="d-flex justify-content-end">
+                    <button
+                      *ngIf="bartender.controls.type === 'manager'"
+                      class="primary-button"
+                      style="background-color: var(--red); margin-bottom: 0.75rem; font-size: 0.75rem"
+                      (click)="cancelRequest(request.id, command.id)"
+                    >
+                      Cancelar Pedido
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <mat-accordion class="bartender-footer-accordion">
+            <div (click)="toogleAccordionButton()" [class]="'toggle-accordion-button ' + footerToggleButton"></div>
+            <mat-expansion-panel
+              [expanded]="false"
+              hideToggle="true"
+              (opened)="footerToggleButton = 'opened'"
+              (closed)="footerToggleButton = 'closed'"
+              togglePosition="before"
+              style="background-color: var(--bartender-background); box-shadow: none"
+            >
+              <mat-expansion-panel-header style="padding: 2.25rem 1rem">
+                <mat-panel-description style="justify-content: flex-end; gap: 0.5rem; padding: 0.625rem 0; font-size: 1.5rem; color: var(--red)">
+                  <div class="mif-shopping-basket mif-2x"></div>
+                  <span style="line-height: 130%">{{ currency(table?.opened.getTotalValue()) }}</span>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <div class="d-flex flex-column">
+                <div class="d-flex flex-justify-between pb-3" style="color: var(--red); font-size: 1.5rem; font-weight: bold"></div>
+                <div *ngFor="let command of table?.activeCommands; index as index; trackBy: trackBy" class="mb-5">
+                  <div class="d-flex flex-justify-between">
+                    <h4 style="font-size: 1.25rem; color: var(--red); font-weight: bold; margin: 0">
+                      {{ command.name }}
+                    </h4>
+                    <span style="color: black; font-weight: bold; font-size: 1.125rem">{{ currency(command.getTotalValue('command')) }}</span>
+                  </div>
+                  <div *ngFor="let fee of command.fees; index as index; trackBy: trackBy">
+                    <div *ngIf="fee.type === 'fixed'" class="d-flex flex-justify-between pl-3" style="font-weight: bold">
+                      <span>
+                        {{ fee.code }}
+                      </span>
+                      <span>
+                        {{ currency(fee.value * fee.quantity) }}
+                      </span>
+                    </div>
+                    <div *ngIf="fee.type === 'percent'" class="d-flex flex-justify-between pl-3" style="font-weight: bold">
+                      <span>
+                        {{ fee.code }}
+                      </span>
+                      <span>
+                        {{ currency((command.getTotalValue('command') / 100) * fee.value) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

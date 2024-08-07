@@ -1,0 +1,14 @@
+<h1 mat-dialog-title style="text-align: center;">{{ title }}</h1>
+<mat-dialog-content>
+    <p class="text-left p-3" [innerHTML]="message"></p>
+    
+</mat-dialog-content>
+<mat-dialog-actions>
+    <div class="d-flex justify-content-center p-2 gap-3" style="width: 100%;">
+        <!-- <button style="width: 100%; margin-left: 12px" (click)="table ? goToAnotherCommand() : reloadPage() " mat-dialog-close>{{ textButton }}</button> -->
+        <button class="btn bg-theme" (click)="data.goToAnotherCommand ? goToAnotherCommand() : close()"
+            id="alertCloseButton">{{ textButton }}</button>
+        <button *ngIf="secondTextButton" class="btn btn-secondary" (click)="close()" mat-dialog-close>{{
+            secondTextButton }}</button>
+    </div>
+</mat-dialog-actions>

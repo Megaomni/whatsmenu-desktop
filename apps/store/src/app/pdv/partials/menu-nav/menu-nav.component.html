@@ -1,0 +1,68 @@
+<div class="menu-container">
+  <ul
+    ngbNav
+    #nav_menu_content="ngbNav"
+    class="nav-pills gap-2 align-self-end flex-nowrap no-scroll-bar"
+    [destroyOnHide]="false"
+    style="overflow-x: auto"
+    (navChange)="scrollToCategory($event)"
+    [(activeId)]="activeCategory"
+  >
+    <li ngbNavItem *ngFor="let category of context.profile?.categories; index as index; trackBy: trackBy">
+      <a ngbNavLink class="menu-tab text-nowrap">{{ category.name }}</a>
+      <ng-template ngbNavContent>
+        <div [ngStyle]="{ height: !search ? '100%' : 0, visibility: !search ? 'visible' : 'collapse' }">
+          <bartender-menu
+            [type]="category.type"
+            [dataSource]="category.type === 'default' ? category.products : { products: category.pizzas, product: category.product }"
+            [valueType]="valueType"
+            [profile]="context.profile"
+            [cart]="cart"
+            [cartPizza]="cartPizza"
+            [bartender]="this.context.profile?.bartenders[0]"
+            [tableMaxHeight]="tableMaxHeight"
+          >
+          </bartender-menu>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+  <div class="search-container">
+    <div class="input-group px-2" style="flex: 1; color: var(--wm-white)">
+      <input
+        type="text"
+        class="form-control border-end-0"
+        [(ngModel)]="search"
+        [placeholder]="filter === 'default' ? 'Buscar por nome' : 'Buscar por sabor'"
+      />
+      <fa-icon
+        class="border border-start-0 rounded-end p-2 ps-3"
+        style="font-size: 1.125rem; color: var(--wm-gray-300); background-color: var(--wm-white)"
+        [icon]="faSearch"
+      ></fa-icon>
+    </div>
+    <select class="form-select" [(ngModel)]="filter">
+      <option value="default">Padrão</option>
+      <option value="pizza">Pizza</option>
+    </select>
+  </div>
+</div>
+<div [ngbNavOutlet]="nav_menu_content"></div>
+<div [ngStyle]="{ height: search ? '100%' : 0, visibility: search ? 'visible' : 'collapse' }">
+  <bartender-menu
+    [search]="search"
+    [type]="filter"
+    [dataSource]="
+      filter === 'default'
+        ? cartService.filterProducts(allProducts, search, filter)
+        : { products: cartService.filterProducts(allPizzas, search, filter) }
+    "
+    [valueType]="valueType"
+    [profile]="context.profile"
+    [cart]="cart"
+    [cartPizza]="cartPizza"
+    [bartender]="this.context.profile?.bartenders[0]"
+    [tableMaxHeight]="tableMaxHeight"
+  >
+  </bartender-menu>
+</div>

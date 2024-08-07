@@ -1,0 +1,82 @@
+<div *ngIf="address" class="row mt-2" style="font-size: 1rem; gap: 1rem 0 !important;">
+  <div class="col-6 col-md-4">
+    <label class="mb-2">CEP</label>
+    <input class="form-control" mask="00000-000" placeholder="00000-000" (keyup)="getInfoByZipCode(address, index)"
+      [name]="'zipcode' + index" [(ngModel)]="address.zipcode" [id]="'zipcode-input-' + index">
+  </div>
+  <div class="col-9 col-md-8">
+    <label class="mb-2">Logradouro</label>
+    <input class="form-control" placeholder="Av. Brasil" [name]="'street' + index" [(ngModel)]="address.street">
+  </div>
+  <div class="col col-md-2">
+    <label class="mb-2">N°</label>
+    <input class="form-control" [name]="'number' + index" [(ngModel)]="address.number">
+  </div>
+  <div class="col-6 col-md">
+    <label class="mb-2">Complemento</label>
+    <input class="form-control" placeholder="Ex: Bloco, Apto" [name]="'complement' + index"
+      [(ngModel)]="address.complement">
+  </div>
+  <div class="col-6 col-md">
+    <label class="mb-2">Bairro</label>
+    <div [ngSwitch]="context.profile.typeDelivery">
+      <div *ngSwitchCase="'neighborhood'">
+        <select class="form-select" id="neighborhood" [name]="'neighborhood' + index" [(ngModel)]="address.neighborhood" list="neighborhoods">
+          <option *ngFor="let neighborhood of neighborhoods"  value="{{ neighborhood.name }}">{{ neighborhood.name }}</option>
+        </select>
+      </div>
+      <div *ngSwitchDefault>
+        <input class="form-control" placeholder="Centro" [name]="'neighborhood' + index"
+          [(ngModel)]="address.neighborhood" list="neighborhoods">
+      </div>
+    </div>
+    <datalist id="neighborhoods" *ngIf="context.profile.typeDelivery === 'neighborhood'">
+      <ng-container *ngFor="let neighborhood of neighborhoods">
+        <option [value]="neighborhood.name"></option>
+      </ng-container>
+    </datalist>
+  </div>
+  <div class="col-6 col-md-6">
+    <label class="mb-2">Cidade</label>
+    <div class="input-group">
+      <select class="form-select" style="max-width: 35% !important;" [name]="'uf' + index" [(ngModel)]="address.uf">
+        <option value="AC">AC</option>
+        <option value="AL">AL</option>
+        <option value="AP">AP</option>
+        <option value="AM">AM</option>
+        <option value="BA">BA</option>
+        <option value="CE">CE</option>
+        <option value="DF">DF</option>
+        <option value="ES">ES</option>
+        <option value="GO">GO</option>
+        <option value="MA">MA</option>
+        <option value="MT">MT</option>
+        <option value="MS">MS</option>
+        <option value="MG">MG</option>
+        <option value="PA">PA</option>
+        <option value="PB">PB</option>
+        <option value="PR">PR</option>
+        <option value="PE">PE</option>
+        <option value="PI">PI</option>
+        <option value="RJ">RJ</option>
+        <option value="RN">RN</option>
+        <option value="RS">RS</option>
+        <option value="RO">RO</option>
+        <option value="RR">RR</option>
+        <option value="SC">SC</option>
+        <option value="SP">SP</option>
+        <option value="SE">SE</option>
+        <option value="TO">TO</option>
+      </select>
+      <input *ngIf="context.profile.typeDelivery === 'km'"  class="form-control" placeholder="São Paulo" [name]="'city' + index" [(ngModel)]="address.city">
+      <select *ngIf="context.profile.typeDelivery  !== 'km'" (change)="setNeighborhoodList()"  class="form-select" placeholder="São Paulo" [name]="'city' + index" [(ngModel)]="address.city">
+        <option *ngFor="let city of context.profile.taxDelivery"  value="{{ city.city }}">{{ city.city }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="col-6 col-md">
+    <label class="mb-2 text-nowrap">Ponto de Referência</label>
+    <input class="form-control" placeholder="Ex: Casa da esquina" [name]="'reference' + index"
+      [(ngModel)]="address.reference">
+  </div>
+</div>
