@@ -1,16 +1,16 @@
-name: Deploy API to EC2
+name: Deploy API 2 to EC2
 
 on:
   pull_request:
     types: [closed]
     branches:
       - main
-    paths: 
-      - 'apps/api/v3'
-    
+    paths:
+      - "apps/api/v2"
+
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.changed_files, 'apps/api/v2/')
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -66,16 +66,16 @@ jobs:
 
           ssh-keyscan -H ${{ matrix.ec2_host }} >> ~/.ssh/known_hosts
 
-          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:/home/whatsmenu/api3.whatsmenu.com.br/public_html
+          scp -i private_key.pem deploy.tar.gz ubuntu@${{ matrix.ec2_host }}:/home/whatsmenu/api2.whatsmenu.com.br/public_html
 
-          ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
-            cd /home/whatsmenu/api3.whatsmenu.com.br/public_html
+          ssh -i private_key.pem ubuntu@${{ matrix.ec2_host }} << 'EOF'
+            cd /home/whatsmenu/api2.whatsmenu.com.br/public_html
             rm -rf build
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
             export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v20.14.0/bin:/home/ubuntu/.local/share/pnpm
             pnpm install
-            scp ${{ secrets.EC2_ENV_HOST }}:/home/environments/whatsmenu/api3/production.env .env
+            scp ${{ secrets.EC2_ENV_HOST }}:/home/environments/whatsmenu/api2/production.env .env
             cd build
             ln -s ../.env .env
             pm2 start ../ecosystem.config.cjs
