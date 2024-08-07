@@ -1,5 +1,5 @@
 {
-  "name": "whatsmenu-print-v2",
+  "name": "mobile_printer",
   "version": "1.0.10",
   "scripts": {
     "start": "expo start --dev-client",

@@ -1,9 +1,10 @@
 {
-  "name": "whatsmenu",
+  "name": "store",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "dev": "ng serve",
     "build:prod": "ng build -c='production'",
     "build:prod-auto": "npm run build:prod && chmod +x automate_build.sh && ./automate_build.sh",
     "test": "ng test",
