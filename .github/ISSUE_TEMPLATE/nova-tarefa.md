@@ -1,10 +1,9 @@
 ---
-name: Novo recurso
+name: Nova Tarefa
 about: Descreva a ideia do novo recurso
-title: Nova Tarefa - API
+title: Nova Tarefa
 labels: enhancement
-assignees: ''
-
+assignees: ""
 ---
 
 ## Descrição da Tarefa
@@ -13,7 +12,9 @@ assignees: ''
 
 ## Branch
 
-- `**Branch:** [Inserir o nome da nova branch aqui, para que os desenvolvedores possam acessá-la.]`
+```shell
+feat/***
+```
 
 ## Tarefas
 
@@ -24,4 +25,4 @@ assignees: ''
 
 ## Links úteis
 
-- Documentação de uma lib
+- [Documentação de uma lib]()
