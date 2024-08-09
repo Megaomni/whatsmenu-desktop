@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "20.11.1"
+  },
   "license": "UNLICENSED",
   "scripts": {
     "setup": "chmod +x setup.sh && ./setup.sh",
