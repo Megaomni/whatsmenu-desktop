@@ -6,7 +6,7 @@ import { NotePrint, NotePrintProps } from "@components/Modals/PrinterRequests/No
 import Cart from "../../types/cart";
 import Table from "../../types/table";
 import Command from "../../types/command";
- 
+
 /** Layout text-only de impressão */
 export default async function PrintLayout(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
