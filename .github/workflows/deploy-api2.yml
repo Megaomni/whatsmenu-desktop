@@ -64,9 +64,9 @@ jobs:
 
       - name: Deploy to EC2 $BRANCH
         env:
-          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_USER: ${{ vars.EC2_USER_1 }}
           EC2_KEY: ${{ secrets.EC2_KEY }}
-          PROJECT_PATH: ${{ env.BRANCH == 'beta' && vars.API2_BETA_PATH || vars.AP2_PROD_PATH }}
+          PROJECT_PATH: ${{ env.BRANCH == 'beta' && vars.API2_BETA_PATH || vars.API2_PROD_PATH }}
           ENV_PATH: ${{ env.BRANCH == 'beta' && vars.API2_BETA_ENV_HOST || vars.API2_PROD_ENV_HOST }}
         run: |
           echo "$EC2_KEY" > private_key.pem
