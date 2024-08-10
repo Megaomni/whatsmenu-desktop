@@ -17,32 +17,37 @@ env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
-  build:
-    if: github.event.pull_request.merged == true && contains(github.event.pull_request.changed_files, 'apps/api/v2/')
+  package:
+    if: github.ref_name == 'beta' || github.event.pull_request.merged == true && contains(github.event.pull_request.changed_files, 'apps/api/v2/')
     runs-on: ubuntu-latest
 
+    outputs:
+      ec2_deploy_hosts: ${{ steps.set_output.outputs.ec2_deploy_hosts }}
     steps:
+      - name: Set EC2 Deploy Hosts
+        id: set_output
+        run: |
+          if [ "${{ env.BRANCH }}" == "beta" ]; then
+            echo "::set-output name=ec2_deploy_hosts::${{ vars.EC2_DEPLOY_HOSTS_1}}"
+          else
+            echo "::set-output name=ec2_deploy_hosts::${{ vars.EC2_DEPLOY_HOSTS}}"
+          fi
+
       - name: Check out the repository
         uses: actions/checkout@v2
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "20"
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+          node-version: "10"
 
       - name: Install dependencies
-        run: pnpm install
-
-      - name: Build the API
-        run: pnpm run build
+        run: npm install
 
       - name: Package application
         run: |
-          tar -czf deploy.tar.gz build
-
+          sudo tar -czf deploy.tar.gz ./apps/api/v2
+      
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -50,11 +55,11 @@ jobs:
           path: deploy.tar.gz
 
   deploy:
-    needs: build
+    needs: package
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ec2_host: ${{ fromJson(vars.EC2_DEPLOY_HOSTS) }}
+        ec2_host: ${{ fromJson(needs.package.outputs.ec2_deploy_hosts) }}
 
     steps:
       - name: Download artifact
@@ -62,7 +67,7 @@ jobs:
         with:
           name: deploy-package
 
-      - name: Deploy to EC2 $BRANCH
+      - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
           EC2_USER: ${{ vars.EC2_USER_1 }}
           EC2_KEY: ${{ secrets.EC2_KEY }}
@@ -76,19 +81,20 @@ jobs:
 
           ssh-keyscan -H ${{ matrix.ec2_host }} >> ~/.ssh/known_hosts
 
-          scp -i private_key.pem deploy.tar.gz ubuntu@${{ matrix.ec2_host }}:$PROJECT_PATH
+          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH/public_html
 
-          ssh -i private_key.pem ubuntu@${{ matrix.ec2_host }} << 'EOF'
-            cd $PROJECT_PATH
-            rm -rf build
+          ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
+            cd ${{ env.PROJECT_PATH }}
+            ls -la
+            find /public_html ! -name 'deploy.tar.gz' -type f -exec rm -f {} +
+            find /public_html ! -name 'deploy.tar.gz' -type d -exec rm -rf {} +
+            cd public_html
             tar -xzf deploy.tar.gz
+            mv apps/api/v2/* .
+            rm -rf apps
             rm deploy.tar.gz
-            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v20.14.0/bin:/home/ubuntu/.local/share/pnpm
-            pnpm install
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
-            cd build
-            ln -s ../.env .env
-            pm2 start ../${{ env.BRANCH == 'beta' && 'ecosystem_beta.config.cjs' || 'ecosystem.config.cjs' }}.json
+            pm2 start server.js
           EOF
 
           rm private_key.pem
