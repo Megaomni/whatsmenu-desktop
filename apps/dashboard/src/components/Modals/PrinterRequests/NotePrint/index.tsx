@@ -9,8 +9,7 @@ import { ComplementType } from '../../../../types/complements'
 import { PizzaImplementationType } from '../../../../types/pizza-product'
 import Profile, { ProfileFee, ProfileTaxDeliveryNeighborhood } from '../../../../types/profile'
 import Table from '../../../../types/table'
-import { textPackage } from '../../../../utils/wm-functions'
-import { useTranslation } from 'react-i18next'
+import { currency, textPackage } from '../../../../utils/wm-functions'
 
 import { CartsContext } from '@context/cart.ctx'
 
@@ -31,8 +30,7 @@ export const NotePrint = forwardRef(function NotePrint(
   { profile, cart, printType, report = false, table, detailedTable, command, pdf, electron, paperSize }: NotePrintProps,
   ref: Ref<HTMLPreElement>
 ) {
-  const { t } = useTranslation()
-  const { profile: profileContext, currency } = useContext(AppContext)
+  const { profile: profileContext } = useContext(AppContext)
   const { motoboys } = useContext(CartsContext)
   if (!profile) {
     profile = profileContext
@@ -98,7 +96,7 @@ export const NotePrint = forwardRef(function NotePrint(
           cupomDisplayValue = currency({ value, withoutSymbol: true })
           break
         case 'freight':
-          cupomDisplayValue = t('fee_shipping')
+          cupomDisplayValue = 'Frete Grátis'
           break
         default:
           break
@@ -112,10 +110,10 @@ export const NotePrint = forwardRef(function NotePrint(
     if (cart.formsPayment[0]?.addon.status) {
       switch (cart.formsPayment[0]?.addon.type) {
         case 'fee':
-          type = `${t('fee')} ${cart.formsPayment[0]?.label}`
+          type = `Taxa ${cart.formsPayment[0]?.label}`
           break
         case 'discount':
-          type = `${t('disc')} ${cart.formsPayment[0]?.label}`
+          type = `Desc. ${cart.formsPayment[0]?.label}`
           break
       }
     }
@@ -197,10 +195,7 @@ export const NotePrint = forwardRef(function NotePrint(
         {complement.itens?.map((complementItem, index) => {
           const complementItemTotal =
             complementItem.value > 0
-              ? `(${currency({
-                  value: complementItem.value * (complementItem.quantity || 1) * (item.details.value > 0 ? 1 : item.quantity),
-                  withoutSymbol: true,
-                })})`
+              ? `(${currency({ value: complementItem.value * (complementItem.quantity || 1) * (item.details.value > 0 ? 1 : item.quantity), withoutSymbol: true })})`
               : ''
           return (
             <Print.Row
@@ -235,8 +230,7 @@ export const NotePrint = forwardRef(function NotePrint(
       const cartItemTotal = cartItem.details.value > 0 ? `${currency({ value: cartItem.getTotal(cartItem.type === 'default') })}` : ''
       // const cartItemTotalWithOutSymbol = cartItem.details.value > 0 ? `(${currency({ value: cartItem.type === 'pizza' ? cartItem.getTotal(true) - cartItem.details.implementations.reduce((total, i) => total += i.value, 0) : cartItem.details.value, withoutSymbol: true })})` : ''
       const cartItemTotalWithOutSymbol = cartItem.details.value > 0 ? `(${currency({ value: cartItem.details.value, withoutSymbol: true })})` : ''
-      const flavorsString =
-        cartItem.type === 'pizza' && cartItem.details.flavors.length > 1 ? `${cartItem.details.flavors.length} ${t('flavors')}` : ''
+      const flavorsString = cartItem.type === 'pizza' && cartItem.details.flavors.length > 1 ? `${cartItem.details.flavors.length} Sabores` : ''
       const specialCharsRegex = new RegExp(/(\W)/, 'g')
       const regex =
         cartItem.type === 'pizza'
@@ -329,20 +323,20 @@ export const NotePrint = forwardRef(function NotePrint(
         return tax?.neighborhoods.filter((n) => n.name === cart?.address?.neighborhood)
       })
       if (verifyNeighborood[0][0]?.value === null) {
-        return t('be_determined')
+        return 'À Consultar'
       } else {
         if (cart.taxDelivery === 0 || (cart.cupomId && cart.cupom?.type === 'freight')) {
-          return t('free')
+          return 'Grátis'
         }
         return `+ ${currency({ value: cart.taxDelivery, withoutSymbol: true })}`
       }
     }
     if (profile.typeDelivery === 'km') {
       if (cart.taxDelivery === null) {
-        return t('be_determined')
+        return 'À Consultar'
       } else {
         if (cart.taxDelivery === 0 || (cart.cupomId && cart.cupom?.type === 'freight')) {
-          return t('free')
+          return 'Grátis'
         }
         return `+ ${currency({ value: cart.taxDelivery, withoutSymbol: true })}`
       }
@@ -363,45 +357,38 @@ export const NotePrint = forwardRef(function NotePrint(
       <Print.Row center={profile.name} className="print-title" />
       <Print.Breakline />
       <Print.Row
-        left={DateTime.fromSQL(cart.created_at, { zone: 'America/Sao_Paulo' })
-          .setZone(profile.timeZone)
-          .toFormat(`${t('date_format')} HH:mm:ss`)
-          .trim()}
+        left={DateTime.fromSQL(cart.created_at, { zone: 'America/Sao_Paulo' }).setZone(profile.timeZone).toFormat('dd/MM/yyyy HH:mm:ss').trim()}
       />
-      {!printType && <Print.Row left={`${t('order')}: wm${cart.code}-${cart.type} ${cart.status === 'canceled' ? t('cancelled_up') : ''}`} />}
+      {!printType && <Print.Row left={`Pedido: wm${cart.code}-${cart.type} ${cart.status === 'canceled' ? ' (CANCELADO)' : ''}`} />}
       {cart.type === 'T' ? (
         <Print.Row
-          left={`${t('table')}: ${
-            table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), t('disabled')) : table?.name
-          }`}
+          left={`Mesa: ${table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), ' (Desativada)') : table?.name}`}
         />
       ) : null}
       {printType !== 'table' && (
         <Print.Row
-          left={`${printType === 'command' || cart.type === 'T' ? t('order_slip') : t('client')}: ${
-            (cart.type === 'T' ? cart.command : cart.client)?.name
-          }`}
+          left={`${printType === 'command' || cart.type === 'T' ? 'Comanda' : 'Cliente'}: ${(cart.type === 'T' ? cart.command : cart.client)?.name}`}
         />
       )}
       {cart.type === 'T' && !printType && cart.bartender && (
         <Print.Row
           left={`Garçom: ${
             cart.bartender.deleted_at
-              ? cart.bartender.name.replace(cart.bartender.name.substring(cart.bartender.name.length - 19), t('disabled'))
+              ? cart.bartender.name.replace(cart.bartender.name.substring(cart.bartender.name.length - 19), ' (Desativado)')
               : cart.bartender.name
           }`}
         />
       )}
-      {cart.type === 'P' && <Print.Row left={`${t('delivery_date')}: ${cart.date().formatted}`} />}
-      {cart.type !== 'T' && <Print.Row left={`${t('ph')}: ${cart.returnMaskedContact()}`} />}
-      {cart.secretNumber && <Print.Row left={`${t('ssn')}: ${cart.secretNumber}`} />}
-      {printType === 'table' && <Print.Row left={`${t('duration')}: ${cart.permenance(false, table?.opened)}`} />}
+      {cart.type === 'P' && <Print.Row left={`Data Entrega: ${cart.date().formatted}`} />}
+      {cart.type !== 'T' && <Print.Row left={`Tel: ${cart.returnMaskedContact()}`} />}
+      {cart.secretNumber && <Print.Row left={`CPF: ${cart.secretNumber}`} />}
+      {printType === 'table' && <Print.Row left={`Permanência: ${cart.permenance(false, table?.opened)}`} />}
       <Print.LineSeparator />
       {detailedTable
         ? table?.opened?.getCarts()?.map((cart) => {
             return cart.status !== 'canceled' ? (
               <>
-                <Print.Row left={`${t('order')}: wm${cart.code}-${cart.type}`} />
+                <Print.Row left={`Pedido: wm${cart.code}-${cart.type}`} />
                 {getItemsToPrint(cart.groupItens(profile.options.print.groupItems))}
               </>
             ) : null
@@ -440,7 +427,7 @@ export const NotePrint = forwardRef(function NotePrint(
                   <Print.Row
                     key={command.id}
                     left={`${command.name} `}
-                    center={`${command.fullPaid() ? t('paid_up') : ''}`}
+                    center={`${command.fullPaid() ? ' PAGO ' : ''}`}
                     right={` ${commandTotalValue}`}
                   />
                 )
@@ -455,71 +442,52 @@ export const NotePrint = forwardRef(function NotePrint(
         </>
       ) : null}
       <>
-        {cart.cupom && <Print.Row left={`${t('coupon_used')}:`} right={`${cart.cupom.code}`} />}
-        <Print.Row left={`${t('order')}:`} right={`+${currency({ value: getTotal('subtotal'), withoutSymbol: true })}`} />
-        {cart.addressId && cart.type !== 'T' && <Print.Row left={`${t('delivery')}:`} right={`${tax()}`} />}
+        {cart.cupom && <Print.Row left={`Cupom usado:`} right={`${cart.cupom.code}`} />}
+        <Print.Row left={`Pedido:`} right={`+${currency({ value: getTotal('subtotal'), withoutSymbol: true })}`} />
+        {cart.addressId && cart.type !== 'T' && <Print.Row left={`Entrega:`} right={`${tax()}`} />}
         {cart.formsPayment && cart.formsPayment[0]?.addon?.status && (
           <Print.Row
             left={`${addonTypeLabel()}:`}
-            right={`${cart.formsPayment[0]?.addon.type === 'fee' ? '+' : '-'}${currency({
-              value: cart.getTotalValue('addon'),
-              withoutSymbol: true,
-            })}`}
+            right={`${cart.formsPayment[0]?.addon.type === 'fee' ? '+' : '-'}${currency({ value: cart.getTotalValue('addon'), withoutSymbol: true })}`}
           />
         )}
-        {cart.cupom && <Print.Row left={`${t('coupon')}:`} right={`-${getCupomValue().cupomDisplayValue}`} />}
+        {cart.cupom && <Print.Row left={`Cupom:`} right={`-${getCupomValue().cupomDisplayValue}`} />}
         {getFormsPaymentToPrint(false).some((formPayment) => formPayment.payment === 'cashback') && (
           <Print.Row left={`Cashback:`} right={`-${currency({ value: cart.getTotalValue('cashback'), withoutSymbol: true })}`} />
         )}
         <Print.Row left={`Total:`} right={`${currency({ value: getTotal('total'), withoutSymbol: true })}`} />
         {haveTransshipment && cart.formsPayment.filter((formPayment) => formPayment.payment !== 'cashback').length ? (
           <>
-            <Print.Row left={`${t('change_for')}:`} right={`${currency({ value: getTransshipment(), withoutSymbol: true })}`} />
-            <Print.Row
-              left={`${t('change')}:`}
-              right={`${currency({ value: Math.max(getTransshipment() - getTotal('total'), 0), withoutSymbol: true })}`}
-            />
+            <Print.Row left={`Troco para:`} right={`${currency({ value: getTransshipment(), withoutSymbol: true })}`} />
+            <Print.Row left={`Troco:`} right={`${currency({ value: Math.max(getTransshipment() - getTotal('total'), 0), withoutSymbol: true })}`} />
           </>
         ) : null}
         {getFormsPaymentToPrint()?.length < 2 && !printType ? (
           <>
             {getFormsPaymentToPrint()[0] ? (
               <Print.Row
-                left={`${t('payment_in')}:`}
-                right={`${t(getFormsPaymentToPrint()[0]?.payment)}${
-                  (
-                    typeof getFormsPaymentToPrint()[0]?.flag === 'string'
-                      ? getFormsPaymentToPrint()[0]?.flag
-                      : getFormsPaymentToPrint()[0]?.flag?.name
-                  )
-                    ? ' - ' +
-                      (typeof getFormsPaymentToPrint()[0]?.flag === 'string'
-                        ? getFormsPaymentToPrint()[0]?.flag
-                        : getFormsPaymentToPrint()[0]?.flag?.name)
-                    : ''
-                }`}
+                left={`Pagamento em:`}
+                right={`${getFormsPaymentToPrint()[0]?.label}${(typeof getFormsPaymentToPrint()[0]?.flag === 'string' ? getFormsPaymentToPrint()[0]?.flag : getFormsPaymentToPrint()[0]?.flag?.name) ? ' - ' + (typeof getFormsPaymentToPrint()[0]?.flag === 'string' ? getFormsPaymentToPrint()[0]?.flag : getFormsPaymentToPrint()[0]?.flag?.name) : ''}`}
               />
             ) : null}
           </>
         ) : (
           <>
-            <Print.Row left={`${t('total_paid')}:`} right={`${getPaidValue()}`} />
+            <Print.Row left={`Total Pago:`} right={`${getPaidValue()}`} />
             {getFormsPaymentToPrint()?.map((formPayment, index) => {
               return (
                 <>
                   <Print.Row
                     key={`${formPayment.code}-${index}`}
                     leftClass="transshipment-space"
-                    left={`${formPayment.change ? t('change_for') : formPayment.label}${
-                      formPayment.flag && formPayment.flag.name ? ' - ' + formPayment.flag.name : ''
-                    }`}
+                    left={`${formPayment.change ? 'Troco para' : formPayment.label}${formPayment.flag && formPayment.flag.name ? ' - ' + formPayment.flag.name : ''}`}
                     right={`${currency({ value: formPayment.change ?? formPayment.value, withoutSymbol: true })}`}
                   />
                   {formPayment.change ? (
                     <>
                       {/* <Print.Row left={`  Troco para`} leftClass='transshipment-space' right={`${currency({ value: formPayment.change, withoutSymbol: true })}`} /> */}
                       <Print.Row
-                        left={`  ${t('change')}`}
+                        left={`  Troco`}
                         leftClass="transshipment-space"
                         right={`${currency({ value: formPayment.change - formPayment.value, withoutSymbol: true })}`}
                       />
@@ -528,36 +496,34 @@ export const NotePrint = forwardRef(function NotePrint(
                 </>
               )
             })}
-            {Number(getLackValue()) > 0 && <Print.Row left={`${t('missing')}:`} right={`${getLackValue()}`} />}
+            {Number(getLackValue()) > 0 && <Print.Row left={`Faltam:`} right={`${getLackValue()}`} />}
             {cart.getTotalValue('paid') - cart.getTotalValue('total') > 0 && (
               <Print.Row
-                left={`${t('checkout')}:`}
+                left={'Fechamento:'}
                 right={`${currency({ value: cart.getTotalValue('paid') - cart.getTotalValue('total'), withoutSymbol: true })}`}
               />
             )}
           </>
         )}
-        {cart.statusPayment === 'paid' && <Print.Row center={t('paid_online_up')} />}
+        {cart.statusPayment === 'paid' && <Print.Row center="PAGO ONLINE" />}
         {/* )} */}
         <Print.LineSeparator />
       </>
       {cart.address ? (
         <>
           <Print.Row left={`${cart.address.street},`} />
-          <Print.Row left={`${cart.address.number || t('s_n')} ${cart.address.complement || ''}`} />
+          <Print.Row left={`${cart.address.number || 'S/N'} ${cart.address.complement || ''}`} />
           <Print.Row left={`${cart.address.neighborhood} - ${cart.address.city}`} />
           {cart.address.reference && <Print.Row left={`${cart.address.reference}`} />}
           {cart && cart.motoboyId && (
-            <Print.Row
-              left={`${t('delivery_person')}: ${electron ? cart.motoboy?.name : motoboys?.find((motoboy) => motoboy.id === cart.motoboyId)?.name}`}
-            />
+            <Print.Row left={`Entregador: ${electron ? cart.motoboy?.name : motoboys?.find((motoboy) => motoboy.id === cart.motoboyId)?.name}`} />
           )}
           <Print.LineSeparator />
         </>
       ) : null}
       <>
         <Print.Row center={`${cart?.typeDeliveryText(textPackage(profile.options.package.label2))}`} />
-        <Print.Row center={t('technology')} />
+        <Print.Row center="Tecnologia" />
         <Print.Row center="www.whatsmenu.com.br" />
       </>
       {profile.options.print.textOnly && !profile.options.print.web && (
