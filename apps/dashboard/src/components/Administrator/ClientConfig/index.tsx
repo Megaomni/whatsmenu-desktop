@@ -840,7 +840,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   id="Habilitar Pix Online"
                   label={t('enable_pix_online')}
                   disabled={user.profile.options.legacyPix}
-                  checked={user.profile.options.legacyPix ? false : user.profile.options.onlinePix ?? false}
+                  checked={user.profile.options.legacyPix ? false : (user.profile.options.onlinePix ?? false)}
                   onChange={(e) => {
                     if (user.profile) {
                       setUser({
@@ -862,7 +862,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   id="Habilitar Cartão Online"
                   label={t('enable_online_card')}
                   disabled={user.profile.options.legacyPix}
-                  checked={user.profile.options.legacyPix ? false : user.profile.options.onlineCard ?? false}
+                  checked={user.profile.options.legacyPix ? false : (user.profile.options.onlineCard ?? false)}
                   onChange={(e) => {
                     if (user.profile) {
                       setUser({
@@ -916,7 +916,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                 </Form.Label>
                 <Form.Select
                   aria-label={t('select_language')}
-                  value={user.profile.options.locale.language}
+                  value={user.profile?.options?.locale?.language}
                   onChange={(e) => {
                     if (user.profile) {
                       setUser({
@@ -945,7 +945,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                 </Form.Label>
                 <Form.Select
                   aria-label={t('select_currency')}
-                  value={user.profile.options.locale.currency}
+                  value={user.profile.options?.locale?.currency}
                   onChange={(e) => {
                     if (user.profile) {
                       setUser({
