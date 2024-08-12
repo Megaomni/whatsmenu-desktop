@@ -353,7 +353,7 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
       case 'shipping_delivery':
         return t('delivery')
       case 'shipping_local':
-        return 'Entrega Local'
+        return t('local_delivery')
     }
   }
 

@@ -1102,5 +1102,6 @@
   "password_recovery_token": "Token de recuperação de senha expirado ou ínvalido",
   "use_printer": "Usar Impressora",
   "enable_stock_control": "Habilitar Controle de Estoque",
-  "layout_options": "Opções de Layout"
+  "layout_options": "Opções de Layout",
+  "security_password_registered": "Senha de segurança cadastrada com sucesso"
 }

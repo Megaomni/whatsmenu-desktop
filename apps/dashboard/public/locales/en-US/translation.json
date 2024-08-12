@@ -1114,5 +1114,6 @@
   "password_recovery_token": "Password recovery token expired or invalid",
   "use_printer": "Use Printer",
   "enable_stock_control": "Enable Stock Control",
-  "layout_options": "Layout Options"
+  "layout_options": "Layout Options",
+  "security_password_registered": "Security password registered successfully"
 }
