@@ -65,7 +65,7 @@ export const currency = ({
     style: 'currency',
     currency,
   }).format(value)
-}
+} //
 
 export const getNow = ({ timeZone, format }: { timeZone?: string; format?: string } = {}) => {
   const now = DateTime.local()
