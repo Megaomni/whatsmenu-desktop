@@ -48,6 +48,7 @@ type ChangeType = {
   // setChangeState: Dispatch<SetStateAction<boolean>>;
   // setConfirmSave: Dispatch<SetStateAction<boolean | undefined>>;
 }
+//
 
 export type PackagePages = {
   data: Request[]
@@ -573,9 +574,9 @@ export function AppProvider({ children }: AppProviderProps) {
    */
   const currency = ({ value = 0, symbol = false, withoutSymbol = false }: { value: number; symbol?: boolean; withoutSymbol?: boolean }) => {
     if (!profile || !profile.options?.locale) {
-      return new Intl.NumberFormat(user.controls.currency ?? 'pt-BR', {
+      return new Intl.NumberFormat(user.controls?.currency ?? 'pt-BR', {
         style: 'currency',
-        currency: user.controls.currency ?? 'BRL',
+        currency: user.controls?.currency ?? 'BRL',
       }).format(value)
     }
     if (!value || isNaN(value)) {
