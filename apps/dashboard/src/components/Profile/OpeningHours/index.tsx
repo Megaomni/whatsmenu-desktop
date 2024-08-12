@@ -223,7 +223,7 @@ export function ProfileOpeningHours() {
                     setFuso(e.target.value)
                   }}
                 >
-                  {t('timezones', { returnObjects: true }).map((fuso) => (
+                  {(t('timezones', { returnObjects: true }) as any[]).map((fuso) => (
                     <option key={fuso.label} value={fuso.value}>
                       {fuso.label}
                     </option>
