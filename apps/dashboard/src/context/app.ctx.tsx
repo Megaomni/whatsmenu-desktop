@@ -600,7 +600,7 @@ export function AppProvider({ children }: AppProviderProps) {
         currency,
       })
         .format(value)
-        .replace(/[^-\d]+/, '')
+        .replace(/\D+/, '')
     }
 
     return new Intl.NumberFormat(language, {

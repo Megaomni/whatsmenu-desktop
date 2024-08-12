@@ -58,7 +58,7 @@ export const currency = ({
       currency,
     })
       .format(value)
-      .replace(/\d+(,|\.)\d+/, '')
+      .replace(/\D+/, '')
   }
 
   return new Intl.NumberFormat(language, {
