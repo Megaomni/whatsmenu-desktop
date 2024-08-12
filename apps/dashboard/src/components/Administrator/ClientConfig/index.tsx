@@ -175,8 +175,8 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         slug: user.profile.slug,
         legacyPix: user.profile.options.legacyPix,
         locale: {
-          language: user.profile.options.locale.language,
-          currency: user.profile.options.locale.currency,
+          language: user.profile.options.locale?.language || 'pt-BR',
+          currency: user.profile.options.locale?.currency || 'BRL',
         },
       }
       try {

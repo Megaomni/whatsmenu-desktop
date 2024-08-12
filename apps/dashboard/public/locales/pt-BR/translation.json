@@ -1099,5 +1099,8 @@
   "recover_financial_password": "Recuperar Senha Financeira",
   "confirm_new_password": "Confirmar Nova Senha",
   "authentication_failure": "Falha na autenticação",
-  "password_recovery_token": "Token de recuperação de senha expirado ou ínvalido"
+  "password_recovery_token": "Token de recuperação de senha expirado ou ínvalido",
+  "use_printer": "Usar Impressora",
+  "enable_stock_control": "Habilitar Controle de Estoque",
+  "layout_options": "Opções de Layout"
 }

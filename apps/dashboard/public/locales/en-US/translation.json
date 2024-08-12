@@ -1111,5 +1111,8 @@
   "recover_financial_password": "Recover Financial Password",
   "confirm_new_password": "Confirm New Password",
   "authentication_failure": "Authentication Failure",
-  "password_recovery_token": "Password recovery token expired or invalid"
+  "password_recovery_token": "Password recovery token expired or invalid",
+  "use_printer": "Use Printer",
+  "enable_stock_control": "Enable Stock Control",
+  "layout_options": "Layout Options"
 }
