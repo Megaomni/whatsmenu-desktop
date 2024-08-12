@@ -9,14 +9,13 @@ const BankSettings = ({ paymentMethod }: PaymentSettingsProps) => {
   const { profileState, showResponseAlert } = useContext(PaymentMethodContext)
   const [showPresentation, setShowPresentation] = useState<boolean | null>(true)
 
-
   useEffect(() => {
     if (profileState?.options?.asaas) setShowPresentation(false)
   }, [])
 
   return (
     <div className="d-flex">
-      {!profileState?.options.asaas ? (
+      {!profileState?.options?.asaas ? (
         <Card className="position-relative w-100">
           <div>
             <BankForm paymentMethod={paymentMethod} profileState={profileState} showPresentation={showPresentation} />

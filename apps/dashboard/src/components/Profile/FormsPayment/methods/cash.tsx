@@ -41,7 +41,7 @@ const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
         <form onSubmit={handleSubmit((data) => onSubmit(data, toggleSpinner, reset))}>
           <Card.Header className="text-dark d-flex justify-content-between">
             <h4 className="text-capitalize">
-              <b>{t(cashSettings!.payment)}</b>
+              <b>{cashSettings?.payment}</b>
             </h4>
 
             <Form.Switch
