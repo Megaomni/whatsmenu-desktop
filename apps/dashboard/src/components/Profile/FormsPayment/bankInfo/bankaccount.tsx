@@ -16,7 +16,7 @@ const BankSettings = ({ paymentMethod }: PaymentSettingsProps) => {
 
   return (
     <div className="d-flex">
-      {!profileState?.options.asaas ? (
+      {!profileState?.options?.asaas ? (
         <Card className="position-relative w-100">
           <div>
             <BankForm paymentMethod={paymentMethod} profileState={profileState} showPresentation={showPresentation} />
