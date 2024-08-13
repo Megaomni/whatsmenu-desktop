@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node server.js",
     "test": "nyc --reporter=html node ace test",
-    "dev": "chmod +x nvm_exec.sh && ./nvm_exec.sh && adonis serve --dev"
+    "dev": "chmod +x nvm_exec.sh && ./nvm_exec.sh && adonis serve --dev",
+    "format": "prettier --write ."
   },
   "keywords": [
     "adonisjs",
@@ -42,13 +43,16 @@
     "moment": "^2.30.1",
     "mysql": "^2.18.1",
     "stripe": "^11.18.0",
-    "uuid": "^10.0.0",
+    "uuid": "3.4.0",
     "web-push": "^3.6.7"
   },
   "autoload": {
     "App": "./app"
   },
   "devDependencies": {
+    "@whatsmenu/eslint-config": "workspace:*",
+    "@whatsmenu/prettier": "workspace:*",
+    "@whatsmenu/typescript-config": "workspace:*",
     "@faker-js/faker": "^8.4.0",
     "eslint-plugin-jsdoc": "^46.8.2",
     "nyc": "^15.1.0",
