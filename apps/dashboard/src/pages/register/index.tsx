@@ -15,6 +15,7 @@ import { Plan, SelectedPlan, SystemProduct } from '../../types/plan'
 import { apiRoute, currency, getPlanProperty, getProductAndPrice, mask } from '../../utils/wm-functions'
 import { AppContext } from '@context/app.ctx'
 import i18n from 'i18n'
+import { useTranslation } from 'react-i18next'
 
 interface RegisterProps {
   sellers: Seller[]
@@ -70,6 +71,7 @@ RegisterProps) {
 
   const [showToast, setShowToast] = useState(false)
   const [toast, setToast] = useState<WMToastProps>({})
+  const { t } = useTranslation()
 
   const productPrinter = products.find((pr) => pr.service === 'printer')
   const productMenu = products.find((pr) => pr.service === 'menu')
@@ -83,8 +85,8 @@ RegisterProps) {
   const handleCreateNewUser = async () => {
     if (!gateway && newUser.controls?.disableInvoice) {
       handleShowToast({
-        title: 'Criação',
-        content: 'Selecione o gateway de pagamento para o usuário antes de continuar.',
+        title: i18n.t('creation'),
+        content: i18n.t('select_payment_gateway_for_user'),
       })
       return
     }
@@ -105,14 +107,14 @@ RegisterProps) {
               handleShowToast({
                 type: 'erro',
                 content: erro.message,
-                title: 'Nome',
+                title: i18n.t('name'),
               })
               break
             case 'secretNumber':
               handleShowToast({
                 type: 'erro',
                 content: erro.message,
-                title: 'CPF/CNPJ',
+                title: i18n.t('ssn_ein'),
               })
               break
             case 'email':
@@ -126,14 +128,14 @@ RegisterProps) {
               handleShowToast({
                 type: 'erro',
                 content: erro.message,
-                title: 'Whatsapp',
+                title: i18n.t('whatsapp'),
               })
               break
             case 'password':
               handleShowToast({
                 type: 'erro',
                 content: erro.message,
-                title: 'Senha',
+                title: i18n.t('password'),
               })
               break
             default:
@@ -209,23 +211,23 @@ RegisterProps) {
   return (
     <>
       <Head>
-        <title>Cadastrar Cliente - WhatsMenu</title>
+        <title>{t('register_customer')} - WhatsMenu</title>
       </Head>
       <div className="d-flex">
         <Card className="mx-auto mt-5 w-75 text-center">
           <Card.Header>
             <Image src="/images/logoWhatsVertical.png" height={80} width={140} alt="Logo" />
-            <h4 className="mt-4">Cadastrar Cliente</h4>
+            <h4 className="mt-4">{t('register_customer')}</h4>
           </Card.Header>
           <Card.Body>
             <div className="col-md-7 mx-auto">
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>Nome Completo</b>
+                    <b>{t('full_name')}</b>
                   </Form.Label>
                   <Form.Control
-                    placeholder="Nome do dono do estabelecimento"
+                    placeholder={t('owner_name')}
                     value={newUser.name}
                     onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
                   />
@@ -234,11 +236,11 @@ RegisterProps) {
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>CPF/CNPJ</b>
+                    <b>{t('ssn_ein')}</b>
                   </Form.Label>
                   <div className="position-relative">
                     <Form.Control
-                      placeholder="CPF ou CNPJ"
+                      placeholder={t('ssn_ein')}
                       value={newUser.secretNumber}
                       isInvalid={secretNumberInvalid && !secretNumberInvalid?.valid}
                       isValid={secretNumberInvalid?.valid}
@@ -253,7 +255,7 @@ RegisterProps) {
                       maxLength={18}
                     />
                     <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
-                      {secretNumberInvalid?.type} inválido
+                      {secretNumberInvalid?.type} {t('invalid')}
                     </Form.Control.Feedback>
                   </div>
                 </Col>
@@ -266,7 +268,7 @@ RegisterProps) {
                   <div className="position-relative">
                     <Form.Control
                       type="email"
-                      placeholder="Email do dono do estabelecimento"
+                      placeholder={t('owner_email_address')}
                       value={newUser.email}
                       isInvalid={emailInvalid}
                       isValid={emailInvalid !== undefined && !emailInvalid}
@@ -276,7 +278,7 @@ RegisterProps) {
                       }}
                     />
                     <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
-                      Email inválido
+                      {t('invalid_email')}
                     </Form.Control.Feedback>
                   </div>
                 </Col>
@@ -284,10 +286,12 @@ RegisterProps) {
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>WhatsApp (com DDD)</b>
+                    <b>
+                      {t('whatsapp')} ({t('with_area_code')})
+                    </b>
                   </Form.Label>
                   <Form.Control
-                    placeholder="Celular do dono do estabelecimento"
+                    placeholder={t('owner_cell_phone')}
                     value={newUser.whatsapp}
                     autoComplete="off"
                     id="whatsRegister"
@@ -301,12 +305,12 @@ RegisterProps) {
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>Senha</b>
+                    <b>{t('password')}</b>
                   </Form.Label>
                   <Form.Control
                     type="password"
                     autoComplete="new-password"
-                    placeholder="Cadastre uma Senha"
+                    placeholder={t('register_password')}
                     value={newUser.password}
                     id="passwordRegister"
                     onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
@@ -314,7 +318,7 @@ RegisterProps) {
                 </Col>
               </Row>
               <Form.Label>
-                <b>Vendedor</b>
+                <b>{t('salesperson')}</b>
               </Form.Label>
               <Form.Select
                 defaultValue={currentSeller ?? newUser.sellerId}
@@ -392,7 +396,7 @@ RegisterProps) {
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>Período</b>
+                    <b>{t('period')}</b>
                   </Form.Label>
                   <Form.Select
                     onChange={(e) => {
@@ -408,15 +412,15 @@ RegisterProps) {
                       }
                     }}
                   >
-                    <option value="monthly">Mensal</option>
-                    <option value="semester">Semestral</option>
-                    <option value="yearly">Anual</option>
+                    <option value="monthly">{t('monthly')}</option>
+                    <option value="semester">{t('semiannual')}</option>
+                    <option value="yearly">{t('annual')}</option>
                   </Form.Select>
                 </Col>
               </Row>
               <Row className="mt-2">
                 <Col className="d-flex gap-2 flex-row-reverse justify-content-end mt-4">
-                  <Form.Label htmlFor="cardMensality">Mensalidade no cartão</Form.Label>
+                  <Form.Label htmlFor="cardMensality">{t('monthly_payment')}</Form.Label>
                   <Form.Check
                     id="cardMensality"
                     checked={newUser.controls?.disableInvoice ?? false}
@@ -437,7 +441,7 @@ RegisterProps) {
               </Row>
               <Row className="d-flex gap-2 ">
                 <Col className="d-flex flex-row-reverse gap-2 justify-content-end">
-                  <Form.Label htmlFor="registerService">Adicionar serviço de cadastro</Form.Label>
+                  <Form.Label htmlFor="registerService">{t('add_registration_service')}</Form.Label>
                   <Form.Check
                     id="registerService"
                     checked={newUser.controls?.serviceStart ?? false}
@@ -527,7 +531,7 @@ RegisterProps) {
                 <Col sm>
                   <div className="d-flex gap-2 flex-row-reverse justify-content-end">
                     <Form.Label htmlFor="withPrinter" className="mb-0">
-                      Com impressora
+                      {t('with_printer')}
                     </Form.Label>
                     <Form.Check
                       id="withPrinter"
@@ -583,7 +587,7 @@ RegisterProps) {
                     />
                   </div>
                   <InputGroup>
-                    <InputGroup.Text>Quant.</InputGroup.Text>
+                    <InputGroup.Text>{t('quantity')}</InputGroup.Text>
                     <Form.Control
                       type="number"
                       disabled={!newUser.controls?.salePrint || false}
@@ -676,7 +680,7 @@ RegisterProps) {
                 <Row>
                   <Col md className="text-center">
                     <Form.Label>
-                      <b>Quantidade de Parcelas</b>
+                      <b>{t('number_installments')}</b>
                     </Form.Label>
                     <Form.Select
                       value={installments}
@@ -711,7 +715,7 @@ RegisterProps) {
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>Gateway de Pagamento</b>
+                    <b>{t('payment_gateway')}</b>
                   </Form.Label>
                   <Form.Select
                     disabled={!newUser.controls?.disableInvoice}
@@ -721,7 +725,7 @@ RegisterProps) {
                     }}
                   >
                     <option selected disabled>
-                      Selecione uma opção
+                      {t('select_option')}
                     </option>
                     {/* <option value="stripe">Stripe</option> */}
                     <option value="pagarme">Pagar.me</option>
@@ -738,7 +742,7 @@ RegisterProps) {
                 products={products}
               />
               <br />
-              <h4 className="text-start fw-bold">Carrinho</h4>
+              <h4 className="text-start fw-bold">{t('cart')}</h4>
               <hr />
               {cart.map((item) => {
                 return (
@@ -778,10 +782,7 @@ RegisterProps) {
                 )}
               </div>
               <br />
-              <p className="fs-8 mt-3">
-                Ao prosseguir, aceito que o WhatsMenu entre em contato comigo por telefone, e-mail ou WhatsApp (incluindo mensagens automáticas para
-                fins comerciais).
-              </p>
+              <p className="fs-8 mt-3">{t('proceeding_whatsmenu_contact')}</p>
             </div>
             <Button
               variant="success"
@@ -789,7 +790,7 @@ RegisterProps) {
               onClick={handleCreateNewUser}
               disabled={emailInvalid || !secretNumberInvalid?.valid}
             >
-              Começar Cadastro
+              {t('start_registration')}
             </Button>
           </Card.Body>
         </Card>
