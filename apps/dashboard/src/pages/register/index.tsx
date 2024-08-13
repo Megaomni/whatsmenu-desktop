@@ -336,6 +336,7 @@ RegisterProps) {
                   </Form.Label>
                   <Form.Select
                     onChange={(e) => {
+                      i18n.changeLanguage(e.target.value)
                       setNewUser((old) => {
                         return {
                           ...newUser,

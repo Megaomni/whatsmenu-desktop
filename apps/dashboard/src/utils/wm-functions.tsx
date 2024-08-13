@@ -271,15 +271,14 @@ export const mask = (
               .replace(/-(\d{4})$/, '-$1') // Adiciona o quarto grupo de dígitos
 
             return { type: 'SSN', valid: rawValue.length === 9 } // Verifica se a quantidade de dígitos é 9
-          } else if (rawValue.length <= 9) {
-            e.currentTarget.maxLength = 10
+          } else {
+            e.currentTarget.maxLength = 9
 
             // Formatação para EIN (no formato XX-XXXXXXX)
-            e.currentTarget.value = rawValue.replace(/^(\d{2})(\d+)/, '$1-$2') // Adiciona o hífen após os dois primeiros dígitos
+            e.currentTarget.value = rawValue.replace(/^(\d{2})(\d{7})$/, '$1-$2') // Adiciona o hífen após os dois primeiros dígitos e antes dos últimos 7 dígitos
 
             return { type: 'EIN', valid: rawValue.length === 9 } // Verifica se a quantidade de dígitos é 9
           }
-          break
         }
       }
 
