@@ -1,0 +1,98 @@
+<form method="POST" id="step1" action="{{route('profileStoreStep1')}}/?_method=PATCH" enctype="multipart/form-data" class="ui form">
+  {{ csrfField() }}
+
+<div style="display: flex; align-items: flex-end;">
+
+  <div>
+    <div class="ui image small-space">
+      <img id="logoImg" src="{{profile.logo ? profile.logo : assetsUrl('img/no-img.jpg')}}" alt="">
+    </div>
+    <p class="inf">Imagem com até 8mb</p>
+    <label for="logo" class="add-file">Adicionar Logotipo</label>
+    <input id="logo" type="file" name="logo" style="display: none;" accept=".png, .jpg, .jpeg, .gif, .tiff, .bmp">
+  </div>
+
+  <div style="margin-left: 144px">
+    <div class="ui image small-space">
+      <img id="" src="{{profile.options.favicon ? profile.options.favicon : assetsUrl('img/no-img.jpg')}}" alt="" style="max-width: 128px; max-height: 128px;" >
+    </div>
+    <p class="inf">Resolução recomendada de 16x16</p>
+    <label for="favicon" class="add-file">Adicionar Icone</label>
+    <input id="favicon" type="file" name="favicon" style="display: none;" accept=".png, .jpg, .jpeg, .gif, .tiff, .bmp">
+  </div>
+
+</div>
+<div>
+  <div>
+    <div class="ui image small-space">
+      <img id="backgroundImg" src="{{profile.background ? profile.background : assetsUrl('img/no-img.jpg')}}" alt="">
+    </div>
+  <p class="inf">Imagem com até 24mb (resolução recomendada de 768x307)</p>
+  <label for="background" class="add-file">Adicionar Imagem de Fundo</label>
+    <input id="background" type="file" name="background" style="display: none;" accept=".png, .jpg, .jpeg, .gif, .tiff, .bmp">
+  </div>
+</div>
+
+<div class="small-space"></div>
+    <div class="fields">
+        <div class="eight wide field">
+            <label for="name">NOME DA LOJA {{ elIf('<span>$self</span>', getErrorFor('name'), hasErrorFor('name')) }}</label>
+            <input type="text" id="name" name="name" value="{{old('name', profile.name)}}">
+        </div>
+    </div>
+    <div class="fields">
+        <div class="eight wide field" id="slugField">
+          <label for="slug">http://whatsmenu.com.br/{{ elIf('<span>$self</span>', getErrorFor('slug'), hasErrorFor('slug')) }}</label>
+          <input type="text" id="slug" name="slug" value="{{old('slug', profile.slug)}}" />
+          {{ elIf('<span class="danger">$self</span>', getErrorFor('slug'), hasErrorFor('slug')) }}
+        </div>
+    </div>
+    <div class="fields">
+        <div class="eight wide field">
+            <label for="">TELEFONE DE CONTATO</label>
+            <input type="tel" name="whatsapp" data-mask="00 0 0000-0000" value="{{old('whatsapp', profile.whatsapp)}}">
+            <p class="inf">Este telefone só ficará disponível para clientes que estiverem com pedidos em andamento.</p>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="eight wide field">
+            <label for="">DESCRIÇÃO</label>
+            <textarea name="description" id="description" rows="2" maxlength="500">{{old('description', profile.description)}}</textarea>
+            <div class="text-right"><small><b><span id="counter">0</span>/500 caracteres</b></small></div>
+        </div>
+    </div>
+    <div class="fields">
+        <div class="eight wide field">
+            <label for="">PEDIDO MÍNIMO ENTREGA</label>
+            <input type="tel" class="inputCurrency" name="minval" value="{{old('minval', formatCurrency(profile.minval))}}">
+            <p class="inf">Menor valor de um pedido, sem contar a taxa de entrega.</p>
+        </div>
+
+        <div class="eight wide field">
+          <label for="">PEDIDO MÍNIMO RETIRADA LOCAL</label>
+          <input type="tel" class="inputCurrency" name="minvalLocal" value="{{old('minvalLocal', formatCurrency(profile.minvalLocal))}}">
+          <p class="inf">Menor valor de um pedido.</p>
+      </div>
+    </div>
+    {{--
+      <div class="fields">
+          <div class="eight wide field">
+            <div class="ui toggle checkbox">
+              <input type="checkbox" name="showTotal" {{profile.showTotal == true ? 'checked' : ''}} class="hidden">
+              <label>Exibir valores no pedido?</label>
+            </div>
+          </div>
+      </div>
+    --}}
+
+    <div class="fields">
+        <div class="eight wide field">
+            <label for="">Cor da loja</label>
+            <input style="width: 90px; border: none;" type="color" class="inputCurrency" name="color" value="{{old('color', profile.color === '#f90' ? '#FD9B3E' : profile.color)}}">
+        </div>
+    </div>
+
+
+    <div class="small-space"></div>
+    <button class="ui button green big">Salvar</button>
+</form>

@@ -1,0 +1,42 @@
+<div class="itemComplement">
+  <div class="ui segment secondary">
+      <div class="ui form">
+          <div class="fields">
+              <div class="fifteen wide field">
+                  <input required type="text" name="complements[$C][name]" placeholder="Nome">
+                  <div class="text-right"><small><b>0/25 caracteres</b></small></div>
+              </div>
+              <div class="field">
+                  <span class="mt-action-input"><a class="color-red delca" data-category="$ELECA">Excluir</a></span>
+              </div>
+          </div>
+          <div class="ui two column grid stackable middle aligned">
+              <div class="column">
+                  <div class="ui form">
+                      <div class="inline fields">
+                          <div class="field">
+                              <label>Qtd. min.</label>
+                              <input required class="small-input" name="complements[$C][min]" type="number">
+                          </div>
+                          <div class="field">
+                              <label>máx.</label>
+                              <input required class="small-input" name="complements[$C][max]" type="number">
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                <div class="ui checkbox">
+                    <input type="checkbox" name="complements[$C][required]">
+                    <label>Complemento Obrigatório</label>
+                </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div id="complementItem$C"></div>
+
+  <div>
+    <a class="font-16 addItemComponent" data-item="$C"><i class="plus icon"></i> Adicionar item</a>
+  </div>
+</div>

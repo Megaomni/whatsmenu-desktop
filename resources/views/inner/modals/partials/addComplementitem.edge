@@ -1,0 +1,28 @@
+<div class="ui segment basic complements$CItens">
+  <div class="ui horizontal list">
+      <div class="item">
+          <div class="ui form">
+              <div class="fields">
+                  <div class="field">
+                      <input type="text" required name="complements[$C][itens][$INDEX][name]" placeholder="Nome do Complemento">
+                      <div class="text-right"><small><b>0/45 caracteres</b></small></div>
+                  </div>
+                  <div class="field">
+                      <input type="text" name="complements[$C][itens][$INDEX][description]" placeholder="Descrição">
+                      <div class="text-right"><small><b>0/100 caracteres</b></small></div>
+                  </div>
+                  <div class="field">
+                      <input type="text" required name="complements[$C][itens][$INDEX][value]" placeholder="Preço">
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="item">
+          {{--  <a class="inative align-elements" href="#0"><i class="pause circle outline icon large"></i> Pausar vendas</a>  --}}
+      </div>
+      <div class="item"></div>
+      <div class="item">
+          <a class="color-red align-elements deleteComplement" data-complement="$ID">Excluir</a>
+      </div>
+  </div>
+</div>

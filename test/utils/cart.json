@@ -1,0 +1,1246 @@
+{
+  "type": "D",
+  "commandId": 14694,
+  "total": 10,
+  "cartItens": [
+    {
+      "type": "default",
+      "quantity": 3,
+      "productId": 286,
+      "details": {
+        "value": 10,
+        "complements": [
+          {
+            "id": 373498,
+            "name": "Sabores",
+            "order": 1,
+            "min": 1,
+            "max": 10,
+            "required": 1,
+            "itens": [
+              {
+                "code": "5fd21d",
+                "name": "Coca-Cola",
+                "value": 12,
+                "status": true,
+                "description": "",
+                "quantity": 1
+              }
+            ],
+            "created_at": "2022-11-17 09:56:42",
+            "updated_at": "2023-01-25 18:00:54",
+            "pivot": {
+              "complementId": 373498,
+              "productId": 808079
+            }
+          }
+        ]
+      }
+    },
+    {
+      "quantity": 1,
+      "pizzaId": 11,
+      "obs": "",
+      "details": {
+        "flavors": [
+          {
+            "code": "2f45c5",
+            "name": "Muçarela",
+            "image": "https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca2/pizza-products/11/2f45c5/aguanaboca2lL1YmXxyeRJYaStwebp}",
+            "status": true,
+            "values": {
+              "Broto": 21,
+              "Grande": 31
+            },
+            "schedule": {
+              "type": 0
+            },
+            "description": "Mussarela e tomate",
+            "valuesTable": {
+              "Broto": 21,
+              "Grande": 31,
+              "brotoss": 0,
+              "***Broto UM SABOR 25cm (4 pedaços)": 0,
+              "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+            },
+            "disponibility": {
+              "store": "full"
+            },
+            "selectOptions": [
+              {
+                "name": "Broto",
+                "value": 21
+              },
+              {
+                "name": "Grande",
+                "value": 31
+              },
+              {
+                "name": "brotoss",
+                "value": 0
+              },
+              {
+                "name": "***Broto UM SABOR 25cm (4 pedaços)",
+                "value": 0
+              },
+              {
+                "name": "Pizza Grande UM SABOR 35 cm  (8 pedaços)",
+                "value": 0
+              }
+            ],
+            "pizzaId": 11,
+            "categoryId": 88,
+            "quantity": 1,
+            "size": "Broto",
+            "implementations": [
+              {
+                "code": "b388ec",
+                "name": "Borda de Catupiry original",
+                "value": 5,
+                "status": true
+              }
+            ],
+            "complements": [],
+            "otherFlavors": [],
+            "pizza": {
+              "obs": "",
+              "flavors": [
+                {
+                  "code": "2f45c5",
+                  "name": "Muçarela",
+                  "image": "https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca2/pizza-products/11/2f45c5/aguanaboca2lL1YmXxyeRJYaStwebp}",
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Mussarela e tomate",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": 0,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "66fe51",
+                  "name": "Palmito",
+                  "image": "https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca2/pizza-products/11/66fe51/aguanaboca249L8ccuKiQ9sKhowebp}",
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Mussarela e palmito",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": "28.00",
+                    "brotoss": 0,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": {
+                      "store": "full"
+                    }
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "481421",
+                  "name": "teste",
+                  "image": "https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca/pizza-products/11/481421/tusuario19325a1b7911dfda6e3c351c30de564da267jpeg}",
+                  "status": true,
+                  "values": {
+                    "Broto": 12,
+                    "Grande": 12
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Calabresas, cebola e catupiry",
+                  "valuesTable": {
+                    "Broto": 0,
+                    "Grande": 12,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": {
+                      "table": false,
+                      "package": false,
+                      "delivery": false
+                    }
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "481420",
+                  "name": "Paulista",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Calabresa, cebola e catupiry",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "7452e4",
+                  "name": "Milho",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Mussarela com milho",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": {
+                      "store": "full"
+                    }
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "6c09c6",
+                  "name": "Margherita",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Mussarela, tomate e manjericão",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "157df6",
+                  "name": "Peito de peru",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Peito de peru, catupiry e tomate",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "d196a9",
+                  "name": "Pepperoni",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Pepperoni e Mussarela",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "3c4470",
+                  "name": "Portuguesa",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Presunto, ovo, cebola, ervilha e mussarela",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "d5fcb1",
+                  "name": "Imirim",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 32
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Calabresa, cebola, bacon e mussarela",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "1c2300",
+                  "name": "Grega",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Mussarela,milho e bacon",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "21c25b",
+                  "name": "Frango II",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 31,
+                    "Grande": 21
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Frango e cheddar",
+                  "valuesTable": {
+                    "Broto": 31,
+                    "Grande": 21,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "743720",
+                  "name": "Primavera",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 21,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Mussarela, palmito, milho e ervilha",
+                  "valuesTable": {
+                    "Broto": 21,
+                    "Grande": 31,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "12c0ba",
+                  "name": "Frango I",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Frango e catupiry",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "a508be",
+                  "name": "2 queijos",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 30
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nMussarela e catupiry",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "30",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "4dc017",
+                  "name": "Vegetariana",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 35
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nMussarela, escarola, palmito, milho e champignon",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "35",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "d4de0a",
+                  "name": "Escarola",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 30
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nEscarola, mussarela e bacon",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "30",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "4fdfd5",
+                  "name": "3 queijos",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nMussarela, catupiry e parmesão",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "d659e1",
+                  "name": "4 queijos",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 32
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nMussarela, catupiry, parmesão e cheddar",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "32",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "f865d3",
+                  "name": "Champignon",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nChampignon, catupiry e bacon",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "6d1d13",
+                  "name": "Siciliana",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 35
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCalabresa, champignon, bacon e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "35",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "c1b216",
+                  "name": "Catupiry",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 27
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCatupiry derretido",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "27",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "c61afc",
+                  "name": "Toscana",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCalabresa e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "1ed7da",
+                  "name": "Carne seca",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 35
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCarne seca e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "35",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "06144d",
+                  "name": "Calabresa",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 27
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCalabresa e cebola",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "27",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "da8661",
+                  "name": "Caipira",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 32
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nFrango, milho e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "32",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "2fe9ac",
+                  "name": "Brocolis",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nBrocolis, catupiry e bacon",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "af75e2",
+                  "name": "Brasileira",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 34
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nPresunto, frango, bacon e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "34",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "a335a6",
+                  "name": "Bauru",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "Presunto, tomate e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "f98e10",
+                  "name": "Baiana",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 35
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCalabresa moida, ovo, cebola, pimenta e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "35",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "8d834d",
+                  "name": "Bacon",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nMussarela e bacon",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "57c0c2",
+                  "name": "Atum II",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": null,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nAtum e mussarela",
+                  "valuesTable": {
+                    "Broto": null,
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "fcc2f0",
+                  "name": "Atum I",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 0,
+                    "Grande": 31
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nAtum e cebola",
+                  "valuesTable": {
+                    "Broto": "",
+                    "Grande": "31",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "daa890",
+                  "name": "Americana",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 0,
+                    "Grande": 36
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nAtum, palmito, ervilha e mussarela",
+                  "valuesTable": {
+                    "Broto": "",
+                    "Grande": "36",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "f475e7",
+                  "name": "A moda do pizzaiolo",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 0,
+                    "Grande": 36
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nPresunto, ovo, milho, bacon e mussarela",
+                  "valuesTable": {
+                    "Broto": "",
+                    "Grande": "36",
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                },
+                {
+                  "code": "e2a886",
+                  "name": "Bolonhesa",
+                  "image": null,
+                  "status": true,
+                  "values": {
+                    "Broto": 22,
+                    "Grande": 35
+                  },
+                  "schedule": {
+                    "type": 0
+                  },
+                  "description": "\r\nCarne moida",
+                  "valuesTable": {
+                    "Broto": 22,
+                    "Grande": 22,
+                    "brotoss": null,
+                    "***Broto UM SABOR 25cm (4 pedaços)": 0,
+                    "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+                  },
+                  "disponibility": {
+                    "store": "full"
+                  },
+                  "otherFlavors": [],
+                  "implementations": [],
+                  "quantity": 1
+                }
+              ],
+              "sizes": [
+                {
+                  "code": "46735e",
+                  "name": "Grande",
+                  "covers": [
+                    "https://adm.whatsmenu.com.br/pizzas/1.jpg",
+                    "https://adm.whatsmenu.com.br/pizzas/2.jpg",
+                    "https://adm.whatsmenu.com.br/pizzas/3.jpg",
+                    "https://adm.whatsmenu.com.br/pizzas/4.jpg"
+                  ],
+                  "status": true,
+                  "flavors": [
+                    1,
+                    2,
+                    3,
+                    4
+                  ]
+                },
+                {
+                  "code": "cdeff3",
+                  "name": "Broto",
+                  "covers": [
+                    "https://s3.us-west-2.amazonaws.com/whatsmenu/production/aguanaboca/covers/cdeff3/pizza-2.jpg",
+                    "https://s3.us-west-2.amazonaws.com/whatsmenu/production/aguanaboca/covers/cdeff3/pizza-salgada-9.jpg",
+                    "https://whatsmenu.com.br/pizzas/3.jpg",
+                    "https://whatsmenu.com.br/pizzas/4.jpg"
+                  ],
+                  "status": true,
+                  "flavors": [
+                    1,
+                    3
+                  ]
+                }
+              ],
+              "implementations": [
+                {
+                  "code": "b388ec",
+                  "name": "Borda de Catupiry original",
+                  "value": 5,
+                  "status": true
+                },
+                {
+                  "code": "9609ac",
+                  "name": "Borda de cheddar",
+                  "value": 3,
+                  "status": true
+                }
+              ],
+              "status": 1
+            },
+            "obs": ""
+          },
+          {
+            "code": "481420",
+            "name": "Paulista",
+            "image": null,
+            "status": true,
+            "values": {
+              "Broto": 21,
+              "Grande": 31
+            },
+            "schedule": {
+              "type": 0
+            },
+            "description": "Calabresa, cebola e catupiry",
+            "valuesTable": {
+              "Broto": 21,
+              "Grande": 31,
+              "brotoss": null,
+              "***Broto UM SABOR 25cm (4 pedaços)": 0,
+              "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+            },
+            "disponibility": {
+              "store": "full"
+            },
+            "otherFlavors": [],
+
+            "implementations": [
+              {
+                "code": "b388ec",
+                "name": "Borda de Catupiry original",
+                "value": 5,
+                "status": true
+              }
+            ],
+            "complements": [],
+            "quantity": 1
+          },
+          {
+            "code": "66fe51",
+            "name": "Palmito",
+            "image": "https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca2/pizza-products/11/66fe51/aguanaboca249L8ccuKiQ9sKhowebp}",
+            "status": true,
+            "values": {
+              "Broto": 21,
+              "Grande": 31
+            },
+            "schedule": {
+              "type": 0
+            },
+            "description": "Mussarela e palmito",
+            "valuesTable": {
+              "Broto": 21,
+              "Grande": "28.00",
+              "brotoss": 0,
+              "***Broto UM SABOR 25cm (4 pedaços)": 0,
+              "Pizza Grande UM SABOR 35 cm  (8 pedaços)": 0
+            },
+            "disponibility": {
+              "store": {
+                "store": "full"
+              }
+            },
+            "otherFlavors": [],
+            "implementations": [],
+            "quantity": 1
+          }
+        ],
+        "sizes": [
+          {
+            "code": "46735e",
+            "name": "Grande",
+            "covers": [
+              "https://adm.whatsmenu.com.br/pizzas/1.jpg",
+              "https://adm.whatsmenu.com.br/pizzas/2.jpg",
+              "https://adm.whatsmenu.com.br/pizzas/3.jpg",
+              "https://adm.whatsmenu.com.br/pizzas/4.jpg"
+            ],
+            "status": true,
+            "flavors": [
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          {
+            "code": "cdeff3",
+            "name": "Broto",
+            "covers": [
+              "https://s3.us-west-2.amazonaws.com/whatsmenu/production/aguanaboca/covers/cdeff3/pizza-2.jpg",
+              "https://s3.us-west-2.amazonaws.com/whatsmenu/production/aguanaboca/covers/cdeff3/pizza-salgada-9.jpg",
+              "https://whatsmenu.com.br/pizzas/3.jpg",
+              "https://whatsmenu.com.br/pizzas/4.jpg"
+            ],
+            "status": true,
+            "flavors": [
+              1,
+              3
+            ]
+          }
+        ],
+        "size": "Broto",
+        "value": 26
+      }
+    }
+  ],
+  "packageDate": null
+}

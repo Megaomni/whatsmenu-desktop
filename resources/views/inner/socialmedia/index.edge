@@ -1,0 +1,51 @@
+@layout('inner/layout')
+@section('content')
+<section class="medium-space">
+  <div class="">
+      <div class="ui equal width grid padded stackable center aligned">
+          <div class="row">
+              <div class="sixteen wide column">
+                  <h1>Social Media</h1>
+                  <p class="medium-font">
+                      Para te ajudar na divulgação criamos artes para suas redes sociais, não esqueça de colocar o link do cardápio nas descrições dos posts.
+                  </p>
+              </div>
+          </div>
+      </div>
+      <div class="ui grid">
+        @each(image in images)
+          @if($loop.index % 4 === 0)
+            <div class="doubling four column row">
+              <div class="column">
+                <a href="{{downloadPath}}{{images[$loop.index]}}">
+                  <img src="{{imagePath}}{{images[$loop.index]}}" alt="" class="ui image">
+                </a>
+              </div>
+              @if(images[$loop.index + 1])
+                <div class="column">
+                  <a href="{{downloadPath}}{{images[$loop.index + 1]}}">
+                    <img src="{{imagePath}}{{images[$loop.index + 1]}}" alt="" class="ui image">
+                  </a>
+                </div>
+              @endif
+              @if(images[$loop.index + 2])
+                <div class="column">
+                  <a href="{{downloadPath}}{{images[$loop.index + 2]}}">
+                    <img src="{{imagePath}}{{images[$loop.index + 2]}}" alt="" class="ui image">
+                  </a>
+                </div>
+              @endif
+              @if(images[$loop.index + 3])
+                <div class="column">
+                  <a href="{{downloadPath}}{{images[$loop.index + 3]}}">
+                    <img src="{{imagePath}}{{images[$loop.index + 3]}}" alt="" class="ui image">
+                  </a>
+                </div>
+              @endif
+            </div>
+          @endif
+        @endeach
+    </div>
+  </div>
+</section>
+@endsection
