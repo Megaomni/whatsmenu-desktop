@@ -38,14 +38,21 @@ export function Recover(props: RecoverProps) {
           </Form.Label>
           <InputGroup>
             <InputGroup.Text>Email</InputGroup.Text>
-            <Form.Control required type="email" id="recovery_email" defaultValue={props.email ?? ''} />
+            <Form.Control
+              required
+              type="email"
+              id="recovery_email"
+              defaultValue={props.email ?? ''}
+            />
           </InputGroup>
         </Modal.Body>
         <Modal.Footer>
           <Button
             variant="success"
             onClick={async () => {
-              const recovery_email = (document.querySelector('#recovery_email') as HTMLInputElement)?.value
+              const recovery_email = (
+                document.querySelector('#recovery_email') as HTMLInputElement
+              )?.value
               if (!recovery_email) {
                 setToast({
                   type: 'alert',

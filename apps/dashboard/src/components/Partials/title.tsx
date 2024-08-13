@@ -1,17 +1,17 @@
-import Head from "next/head";
-import Link from "next/link";
-import { Col, Row } from "react-bootstrap";
+import Head from 'next/head'
+import Link from 'next/link'
+import { Col, Row } from 'react-bootstrap'
 
 interface TitleProps {
-  title: string;
-  componentTitle?: string;
-  className?: string;
-  child?: string[];
-  children?: React.ReactNode;
+  title: string
+  componentTitle?: string
+  className?: string
+  child?: string[]
+  children?: React.ReactNode
 }
 
 export function Title(props: TitleProps) {
-  const { title, componentTitle, className, child } = props;
+  const { title, componentTitle, className, child } = props
   return (
     <div className={className}>
       <Head>
@@ -19,7 +19,7 @@ export function Title(props: TitleProps) {
       </Head>
       <Row className="pagetitle justify-content-between">
         <Col lg="8" md="7" className="d-flex align-items-center gap-3">
-          <h1 className="fs-3 align-middle text-uppercase mb-0">
+          <h1 className="fs-3 text-uppercase mb-0 align-middle">
             {componentTitle ? componentTitle : title}
           </h1>
           {props.children}
@@ -30,18 +30,19 @@ export function Title(props: TitleProps) {
               <nav>
                 <ol className="breadcrumb">
                   <li className="breadcrumb-item active">
-                    <Link href="/dashboard">
-                      Home
-                    </Link>
+                    <Link href="/dashboard">Home</Link>
                   </li>
-                  <li className={`breadcrumb-item ${child ? "" : "active"}`}>
+                  <li className={`breadcrumb-item ${child ? '' : 'active'}`}>
                     {title}
                   </li>
                   {child?.map((c, index) => {
                     return (
                       <li
-                        className={`breadcrumb-item ${child.length && index === child.length - 1 ? "active" : ""
-                          }`}
+                        className={`breadcrumb-item ${
+                          child.length && index === child.length - 1
+                            ? 'active'
+                            : ''
+                        }`}
                         key={c}
                       >
                         {c}
@@ -55,5 +56,5 @@ export function Title(props: TitleProps) {
         </Col>
       </Row>
     </div>
-  );
+  )
 }

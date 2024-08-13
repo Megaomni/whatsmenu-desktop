@@ -22,12 +22,20 @@ export interface RequestProperties {
   method: 'POST' | 'PATCH' | 'GET' | 'PUT' | 'DELETE'
 }
 
-const FinPasswordModal = ({ setUpdateSuccess, dataToBeUpdated, request, showToast = true }: ModalProps) => {
+const FinPasswordModal = ({
+  setUpdateSuccess,
+  dataToBeUpdated,
+  request,
+  showToast = true,
+}: ModalProps) => {
   const { data: session } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const { profile, handleShowToast, user } = useContext(AppContext)
-  const { showFinPassModal, toggleModal, setDataResponse, updateDataCallback } = useContext(PaymentMethodContext)
-  const settings = profile.formsPayment?.find((method) => method.payment === dataToBeUpdated?.payment)
+  const { showFinPassModal, toggleModal, setDataResponse, updateDataCallback } =
+    useContext(PaymentMethodContext)
+  const settings = profile.formsPayment?.find(
+    (method) => method.payment === dataToBeUpdated?.payment
+  )
   const {
     register,
     handleSubmit,
@@ -56,14 +64,15 @@ const FinPasswordModal = ({ setUpdateSuccess, dataToBeUpdated, request, showToas
     }
     try {
       const result = await apiRoute(
-        request?.url ?? `/dashboard/profile/formpayment/${settings?.payment}/update`,
+        request?.url ??
+          `/dashboard/profile/formpayment/${settings?.payment}/update`,
         session,
         request?.method ?? 'PATCH',
         body,
         isFormData
           ? {
               'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${session?.accessToken}`,
+              Authorization: `Bearer ${session?.accessToken}`,
             }
           : null
       )
@@ -91,7 +100,11 @@ const FinPasswordModal = ({ setUpdateSuccess, dataToBeUpdated, request, showToas
 
   const handleRecoverSecurity = async () => {
     try {
-      await apiRoute('/dashboard/account/recoverySecurityPassword', session, 'POST')
+      await apiRoute(
+        '/dashboard/account/recoverySecurityPassword',
+        session,
+        'POST'
+      )
 
       handleShowToast({
         type: 'success',
@@ -111,7 +124,11 @@ const FinPasswordModal = ({ setUpdateSuccess, dataToBeUpdated, request, showToas
 
   const { t } = useTranslation()
   return (
-    <Modal show={showFinPassModal || false} onExit={() => reset()} onHide={() => handleClose()}>
+    <Modal
+      show={showFinPassModal || false}
+      onExit={() => reset()}
+      onHide={() => handleClose()}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{t('confirm_financial_password')}</Modal.Title>
       </Modal.Header>
@@ -119,11 +136,21 @@ const FinPasswordModal = ({ setUpdateSuccess, dataToBeUpdated, request, showToas
         <Modal.Body>
           <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
             <Form.Label>{t('financial_password')}</Form.Label>
-            <Form.Control {...register('password', { required: true })} type="password" placeholder="••••••••" autoFocus />
+            <Form.Control
+              {...register('password', { required: true })}
+              type="password"
+              placeholder="••••••••"
+              autoFocus
+            />
           </Form.Group>
         </Modal.Body>
         <Modal.Footer className="d-flex justify-content-between">
-          <Button variant="link" className="text-decoration-none" style={{ boxShadow: 'none' }} onClick={handleRecoverSecurity}>
+          <Button
+            variant="link"
+            className="text-decoration-none"
+            style={{ boxShadow: 'none' }}
+            onClick={handleRecoverSecurity}
+          >
             {t('recover_password')}
           </Button>
           <Button variant="success" type="submit">

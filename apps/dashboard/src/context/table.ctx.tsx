@@ -1,4 +1,14 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useReducer, useState } from 'react'
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
 import { AppContext } from './app.ctx'
 import { ConfirmModal } from '../components/Modals/Confirm'
 import Command, { CommandType } from '../types/command'
@@ -25,7 +35,11 @@ interface TablesContextData {
   commandInfo: boolean
   setCommandInfo: Dispatch<SetStateAction<boolean>>
   haveFees: boolean
-  handleTableModal: (show: boolean, modal: 'fees' | 'formsPayment' | 'switchCommands' | 'confirm' | 'print', typeModal?: 'command' | 'table') => void
+  handleTableModal: (
+    show: boolean,
+    modal: 'fees' | 'formsPayment' | 'switchCommands' | 'confirm' | 'print',
+    typeModal?: 'command' | 'table'
+  ) => void
   setTables: (tables: Table[]) => void
   setCurrentTableId: (tableId: number) => void
   handleCloseTable: () => void
@@ -49,7 +63,9 @@ interface TablesProviderProps {
   children: ReactNode
 }
 
-export const TableContext = createContext<TablesContextData>({} as TablesContextData)
+export const TableContext = createContext<TablesContextData>(
+  {} as TablesContextData
+)
 
 export function TablesProvider({ children }: TablesProviderProps) {
   const { data: session } = useSession()
@@ -65,7 +81,12 @@ export function TablesProvider({ children }: TablesProviderProps) {
     user,
     currency,
   } = useContext(AppContext)
-  const [tablesState, dispatch] = useReducer(tablesReducer, { tables: [], activeTableId: 0, activeCommandId: 0, command: null } as TablesState)
+  const [tablesState, dispatch] = useReducer(tablesReducer, {
+    tables: [],
+    activeTableId: 0,
+    activeCommandId: 0,
+    command: null,
+  } as TablesState)
   const [tablesFetched, setTablesFetched] = useState(false)
 
   const { tables, activeTableId, activeCommandId } = tablesState
@@ -75,7 +96,11 @@ export function TablesProvider({ children }: TablesProviderProps) {
 
   const [commandInfo, setCommandInfo] = useState(false)
 
-  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>('defaultDomain', null, 'sessionStorage')
+  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
+    'defaultDomain',
+    null,
+    'sessionStorage'
+  )
 
   // MODALS
   const [typeModal, setTypeModal] = useState<'command' | 'table'>('command')
@@ -108,18 +133,29 @@ export function TablesProvider({ children }: TablesProviderProps) {
         handleTableModal(true, 'fees', 'table')
       } else {
         try {
-          const { data } = await apiRoute(`/dashboard/table/closeAllTableCommands`, session, 'PATCH', {
-            id: table.id,
-            tableId: table.opened?.id,
-            fees: table.opened?.fees,
-            formsPayment: [],
-          })
+          const { data } = await apiRoute(
+            `/dashboard/table/closeAllTableCommands`,
+            session,
+            'PATCH',
+            {
+              id: table.id,
+              tableId: table.opened?.id,
+              fees: table.opened?.fees,
+              formsPayment: [],
+            }
+          )
           if (table.opened) {
             table.opened.commands.forEach((c) => (c.status = false))
             table.opened.status = false
             table.status = data.status
             // setTable((state) => ({ ...state, status: true, opened: undefined } as Table));
-            dispatch(updateTableAction({ ...table, status: data.status, opened: undefined }))
+            dispatch(
+              updateTableAction({
+                ...table,
+                status: data.status,
+                opened: undefined,
+              })
+            )
           }
         } catch (error) {
           console.error(error)
@@ -133,7 +169,10 @@ export function TablesProvider({ children }: TablesProviderProps) {
       setCommandInfo(false)
       setShowSpinner(true)
       try {
-        const { data }: { data: TableType } = await apiRoute(`/dashboard/getTable/${table.id}`, session)
+        const { data }: { data: TableType } = await apiRoute(
+          `/dashboard/getTable/${table.id}`,
+          session
+        )
         updateTable({ ...data })
         return new Table(data)
       } catch (error) {
@@ -145,7 +184,11 @@ export function TablesProvider({ children }: TablesProviderProps) {
   }
 
   const handleTableModal = useCallback(
-    (show: boolean, modal: 'fees' | 'formsPayment' | 'switchCommands' | 'confirm' | 'print', typeModal?: 'command' | 'table') => {
+    (
+      show: boolean,
+      modal: 'fees' | 'formsPayment' | 'switchCommands' | 'confirm' | 'print',
+      typeModal?: 'command' | 'table'
+    ) => {
       if (typeModal) {
         setTypeModal(typeModal)
       }
@@ -165,7 +208,10 @@ export function TablesProvider({ children }: TablesProviderProps) {
     dispatch(updateCommandAction(command))
   }
 
-  const changeCommands = async (switchTable: Partial<Table>, commandsIds: number[]) => {
+  const changeCommands = async (
+    switchTable: Partial<Table>,
+    commandsIds: number[]
+  ) => {
     const body = {
       oldTableId: table?.opened?.id,
       newTableId: switchTable?.id,
@@ -180,10 +226,21 @@ export function TablesProvider({ children }: TablesProviderProps) {
       })
     }
     try {
-      const { data } = await apiRoute('/dashboard/command/changeTable', session, 'PATCH', body)
+      const { data } = await apiRoute(
+        '/dashboard/command/changeTable',
+        session,
+        'PATCH',
+        body
+      )
 
       if (switchTable.id) {
-        dispatch(switchTablesAction(switchTable.id, data.oldTableOpened, data.newTableOpened))
+        dispatch(
+          switchTablesAction(
+            switchTable.id,
+            data.oldTableOpened,
+            data.newTableOpened
+          )
+        )
       }
 
       // const newTable = tables.find((t) => t.id === switchTable?.id);
@@ -215,11 +272,16 @@ export function TablesProvider({ children }: TablesProviderProps) {
         handleTableModal(true, 'fees', 'command')
       } else {
         try {
-          const { data }: { data: CommandType } = await apiRoute(`/dashboard/commandChangeStatus/${currentCommand.id}`, session, 'PATCH', {
-            fees: currentCommand.fees,
-            formsPayment: currentCommand.formsPayment,
-            tableId: table?.id,
-          })
+          const { data }: { data: CommandType } = await apiRoute(
+            `/dashboard/commandChangeStatus/${currentCommand.id}`,
+            session,
+            'PATCH',
+            {
+              fees: currentCommand.fees,
+              formsPayment: currentCommand.formsPayment,
+              tableId: table?.id,
+            }
+          )
 
           if (table?.activeCommands()?.length === 0) {
             handleShowToast({
@@ -242,7 +304,10 @@ export function TablesProvider({ children }: TablesProviderProps) {
     socketCommands.forEach((commandWs) => {
       const tableWs = tables.find((t) => t?.id === commandWs.tableId)
       if (tableWs) {
-        if (!tableWs.opened || !(tableWs?.opened?.id === commandWs.tableOpenedId)) {
+        if (
+          !tableWs.opened ||
+          !(tableWs?.opened?.id === commandWs.tableOpenedId)
+        ) {
           tableWs.opened = new TableOpened({
             id: commandWs.tableOpenedId,
             tableId: commandWs.tableId as number,
@@ -255,7 +320,9 @@ export function TablesProvider({ children }: TablesProviderProps) {
           })
         } else {
           if (finishCommand === 'command') {
-            tableWs.opened.commands = tableWs.opened.commands.filter((c) => c.id !== commandWs.id)
+            tableWs.opened.commands = tableWs.opened.commands.filter(
+              (c) => c.id !== commandWs.id
+            )
           } else if (finishCommand === 'table') {
             tableWs.opened.commands.forEach((c) => (c.status = false))
             tableWs.opened.status = false
@@ -275,7 +342,9 @@ export function TablesProvider({ children }: TablesProviderProps) {
       if (table) {
         table.activeCommands().forEach((activeCommand) => {
           if (activeCommand) {
-            const commandFee = activeCommand.fees?.find((f) => f.code === profileFee.code)
+            const commandFee = activeCommand.fees?.find(
+              (f) => f.code === profileFee.code
+            )
             if (commandFee) {
               // commandFee.status = profileFee.status;
             } else {
@@ -300,7 +369,10 @@ export function TablesProvider({ children }: TablesProviderProps) {
   useEffect(() => {
     const getTables = async () => {
       try {
-        const { data }: { data: TableType[] } = await apiRoute('/dashboard/tables', session)
+        const { data }: { data: TableType[] } = await apiRoute(
+          '/dashboard/tables',
+          session
+        )
         dispatch(setTablesAction(data))
         setTablesFetched(true)
         if (!defaultDomain) {
@@ -341,7 +413,9 @@ export function TablesProvider({ children }: TablesProviderProps) {
       const updatedTables = data.map((table: TableType) => new Table(table))
       setTables([...updatedTables])
       if (table) {
-        const updatedTable = updatedTables.find((t: TableType) => t.id === table.id)
+        const updatedTable = updatedTables.find(
+          (t: TableType) => t.id === table.id
+        )
         if (updatedTable) {
           updateTable(updatedTable)
         }
@@ -356,7 +430,9 @@ export function TablesProvider({ children }: TablesProviderProps) {
   const baseUrl = process.env.WHATSMENU_BASE_URL
   const haveFees = !!(
     profile?.fees?.filter((f) => f.status).length ||
-    (typeModal === 'command' ? command?.fees.length : table?.opened && table?.opened.getUpdatedFees(false, true).length)
+    (typeModal === 'command'
+      ? command?.fees.length
+      : table?.opened && table?.opened.getUpdatedFees(false, true).length)
   )
 
   return (
@@ -413,7 +489,12 @@ export function TablesProvider({ children }: TablesProviderProps) {
                 onFinished: () => {
                   if (table) {
                     setTimeout(() => {
-                      updateTable({ ...table, opened: table.activeCommands().length ? ({ ...table.opened } as TableOpened) : undefined })
+                      updateTable({
+                        ...table,
+                        opened: table.activeCommands().length
+                          ? ({ ...table.opened } as TableOpened)
+                          : undefined,
+                      })
                     }, 100)
                   }
                 },
@@ -431,7 +512,12 @@ export function TablesProvider({ children }: TablesProviderProps) {
                 show: true,
                 onFinished: () => {
                   setTimeout(() => {
-                    updateTable({ ...table, opened: table.activeCommands().length ? ({ ...table.opened } as TableOpened) : undefined })
+                    updateTable({
+                      ...table,
+                      opened: table.activeCommands().length
+                        ? ({ ...table.opened } as TableOpened)
+                        : undefined,
+                    })
                   }, 100)
                 },
               })
@@ -444,11 +530,23 @@ export function TablesProvider({ children }: TablesProviderProps) {
           }}
           actionCancel={() => {
             if (table) {
-              updateTable({ ...table, opened: table.activeCommands().length ? ({ ...table.opened } as TableOpened) : undefined })
+              updateTable({
+                ...table,
+                opened: table.activeCommands().length
+                  ? ({ ...table.opened } as TableOpened)
+                  : undefined,
+              })
             }
           }}
         />
-        <OverlaySpinner show={showSpinner} width={150} weight={10} textSpinner="Atualizando Mesa..." className="fs-4" position="fixed" />
+        <OverlaySpinner
+          show={showSpinner}
+          width={150}
+          weight={10}
+          textSpinner="Atualizando Mesa..."
+          className="fs-4"
+          position="fixed"
+        />
       </section>
     </TableContext.Provider>
   )

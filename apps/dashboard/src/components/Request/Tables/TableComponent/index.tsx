@@ -7,7 +7,11 @@ import { AppContext } from '../../../../context/app.ctx'
 import { TableContext } from '../../../../context/table.ctx'
 import useLocalStorage from '../../../../hooks/useLocalStorage'
 import { TableType } from '../../../../types/table'
-import { apiRoute, encryptEmoji, handleCopy } from '../../../../utils/wm-functions'
+import {
+  apiRoute,
+  encryptEmoji,
+  handleCopy,
+} from '../../../../utils/wm-functions'
 import { OverlaySpinner } from '../../../OverlaySpinner'
 import { useTranslation } from 'react-i18next'
 
@@ -15,7 +19,8 @@ export function TableComponent() {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { profile, handleShowToast } = useContext(AppContext)
-  let { table, setCurrentTableId, tables, setTables, updateTable } = useContext(TableContext)
+  let { table, setCurrentTableId, tables, setTables, updateTable } =
+    useContext(TableContext)
 
   // QRCODE
   const [qrCode, setQrCode] = useState<HTMLCanvasElement>()
@@ -24,7 +29,11 @@ export function TableComponent() {
     fgColor: '#000000',
     bgColor: '#FFFFFF',
   })
-  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>('defaultDomain', null, 'sessionStorage')
+  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
+    'defaultDomain',
+    null,
+    'sessionStorage'
+  )
   const [newName, setNewName] = useState('')
 
   const [overlayShow, setOverlayShow] = useState(false)
@@ -34,7 +43,13 @@ export function TableComponent() {
   const handleEditTable = async () => {
     if (newName !== '' && newName !== table?.name) {
       if (table) {
-        if (tables.some((t) => t.name.trim().toLocaleLowerCase() === newName.trim().toLocaleLowerCase())) {
+        if (
+          tables.some(
+            (t) =>
+              t.name.trim().toLocaleLowerCase() ===
+              newName.trim().toLocaleLowerCase()
+          )
+        ) {
           return handleShowToast({
             type: 'alert',
             content: t('table_name_already_exists'),
@@ -46,7 +61,12 @@ export function TableComponent() {
           setOverlayShow(true)
           const body = { ...table, name: encryptEmoji(newName) }
           delete body.tablesOpened
-          const { data } = await apiRoute('/dashboard/table/update', session, 'PATCH', body)
+          const { data } = await apiRoute(
+            '/dashboard/table/update',
+            session,
+            'PATCH',
+            body
+          )
           updateTable(data)
           // setTables([...tables]);
           handleShowToast({
@@ -103,7 +123,11 @@ export function TableComponent() {
     if (table) {
       if (!table.opened?.commands.length || !table.status) {
         try {
-          const { data }: { data: TableType } = await apiRoute(`/dashboard/table/status/${table.id}`, session, 'PATCH')
+          const { data }: { data: TableType } = await apiRoute(
+            `/dashboard/table/status/${table.id}`,
+            session,
+            'PATCH'
+          )
           const alteredTable = tables.find((t) => t.id === data.id)
 
           if (alteredTable) {
@@ -131,18 +155,33 @@ export function TableComponent() {
 
   useEffect(() => {
     const QRCode = document.querySelector('#qrcode') as HTMLCanvasElement
-    const QRCodePreview = document.querySelector('#qrcodePreview') as HTMLCanvasElement
-    const QRCodeCanvas = document.querySelector('#qrcodeCanvas') as HTMLCanvasElement
+    const QRCodePreview = document.querySelector(
+      '#qrcodePreview'
+    ) as HTMLCanvasElement
+    const QRCodeCanvas = document.querySelector(
+      '#qrcodeCanvas'
+    ) as HTMLCanvasElement
 
     if (QRCode && QRCodeCanvas && table && QRCodePreview) {
       // QRCODE PREVIEW
       const canvasContextPreview = QRCodePreview.getContext('2d')
       if (canvasContextPreview) {
         canvasContextPreview.fillStyle = qrCodeOptions.bgColor
-        canvasContextPreview.fillRect(0, 0, QRCodePreview.width, QRCodePreview.height)
+        canvasContextPreview.fillRect(
+          0,
+          0,
+          QRCodePreview.width,
+          QRCodePreview.height
+        )
         canvasContextPreview.font = `${0.9}rem sans-serif`
         canvasContextPreview.fillStyle = qrCodeOptions.fgColor
-        canvasContextPreview.fillText(table?.name, (QRCodePreview.width - canvasContextPreview.measureText(table?.name).width) / 2, 15)
+        canvasContextPreview.fillText(
+          table?.name,
+          (QRCodePreview.width -
+            canvasContextPreview.measureText(table?.name).width) /
+            2,
+          15
+        )
         canvasContextPreview.drawImage(QRCodeCanvas, 15, 25, 158 - 30, 158 - 30)
       }
       // QRCODE GERADO
@@ -154,7 +193,11 @@ export function TableComponent() {
         canvasContext.fillRect(0, 0, QRCode.width, QRCode.height)
         canvasContext.font = `${0.9 + 0.05 * qrCodeOptions.size}rem sans-serif`
         canvasContext.fillStyle = qrCodeOptions.fgColor
-        canvasContext.fillText(table?.name, (QRCode.width - canvasContext.measureText(table?.name).width) / 2, 15 + 0.65 * qrCodeOptions.size)
+        canvasContext.fillText(
+          table?.name,
+          (QRCode.width - canvasContext.measureText(table?.name).width) / 2,
+          15 + 0.65 * qrCodeOptions.size
+        )
         canvasContext.drawImage(
           QRCodeCanvas,
           15 + 0.1 * qrCodeOptions.size,
@@ -169,7 +212,9 @@ export function TableComponent() {
   // ***
 
   useEffect(() => {
-    const newNameInput = document.querySelector('#newNameInput') as HTMLInputElement
+    const newNameInput = document.querySelector(
+      '#newNameInput'
+    ) as HTMLInputElement
     if (newNameInput && table) {
       newNameInput.value = table.name
       setNewName(table.name)
@@ -258,15 +303,20 @@ export function TableComponent() {
           <h6>{t('table_options_up')}</h6>
         </Card.Header>
         <Card.Body className="text-dark">
-          <Container fluid className="px-0 mx-0">
+          <Container fluid className="mx-0 px-0">
             <Row>
               <Col sm>
-                <Container fluid className="pb-2 mx-0">
+                <Container fluid className="mx-0 pb-2">
                   <Row className="d-flex gap-2">
-                    <Col className="text-nowrap d-flex flex-column align-items-center gap-2">
+                    <Col className="d-flex flex-column align-items-center gap-2 text-nowrap">
                       <h6 className="text-center">QRCODE</h6>
                       <canvas id="qrcodePreview" height={168} width={158} />
-                      <canvas id="qrcode" height={168} width={158} className="d-none">
+                      <canvas
+                        id="qrcode"
+                        height={168}
+                        width={158}
+                        className="d-none"
+                      >
                         <QRCodeCanvas
                           value={`${defaultDomain ?? 'whatsmenu.com.br'}/${t('table')}/${table.id}/${profile.slug}`}
                           id="qrcodeCanvas"
@@ -294,14 +344,21 @@ export function TableComponent() {
                         <Button
                           className="flex-grow-1"
                           onClick={() =>
-                            handleCopy(`${defaultDomain ?? 'whatsmenu.com.br'}/${t('table')}/${table?.id}/${profile.slug}`, handleShowToast)
+                            handleCopy(
+                              `${defaultDomain ?? 'whatsmenu.com.br'}/${t('table')}/${table?.id}/${profile.slug}`,
+                              handleShowToast
+                            )
                           }
                         >
                           <FaShareAlt />
                         </Button>
                       </div>
                     </Col>
-                    <Col lg="6" md="6" className="d-flex flex-column justify-content-end gap-2 mt-3">
+                    <Col
+                      lg="6"
+                      md="6"
+                      className="d-flex flex-column justify-content-end mt-3 gap-2"
+                    >
                       <div>
                         <Form.Label>{t('points')}</Form.Label>
                         <Form.Control
@@ -359,13 +416,24 @@ export function TableComponent() {
                 <h6>{t('settings_up')}</h6>
                 <Col sm="10">
                   <Form.Label className="mt-4">{t('table_name')}</Form.Label>
-                  <Form.Control id="newNameInput" onChange={(e) => setNewName(e.target.value)} />
+                  <Form.Control
+                    id="newNameInput"
+                    onChange={(e) => setNewName(e.target.value)}
+                  />
                 </Col>
                 <Col sm="10" className="d-flex gap-3">
-                  <Button className="flex-grow-1 mt-2" variant="success" onClick={handleEditTable}>
+                  <Button
+                    className="flex-grow-1 mt-2"
+                    variant="success"
+                    onClick={handleEditTable}
+                  >
                     {t('save')}
                   </Button>
-                  <Button variant="danger" className="flex-grow-1 mt-2 " onClick={handleDeleteTable}>
+                  <Button
+                    variant="danger"
+                    className="flex-grow-1 mt-2 "
+                    onClick={handleDeleteTable}
+                  >
                     {t('delete')}
                   </Button>
                 </Col>

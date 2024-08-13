@@ -11,7 +11,14 @@ type ActionsProp = {
   disabledButtonSave: boolean
   invalid?: boolean
 }
-export function ActionsFooterButton({ deleteFunction, handleClose, createOrUpdate, type, disabledButtonSave, invalid }: ActionsProp) {
+export function ActionsFooterButton({
+  deleteFunction,
+  handleClose,
+  createOrUpdate,
+  type,
+  disabledButtonSave,
+  invalid,
+}: ActionsProp) {
   const { t } = useTranslation()
   const { handleShowToast } = useContext(AppContext)
 
@@ -20,15 +27,27 @@ export function ActionsFooterButton({ deleteFunction, handleClose, createOrUpdat
       {type === 'update' && (
         <Col sm="12" md className="d-flex">
           {deleteFunction && (
-            <Button variant="outline-danger" className="flex-grow-1 flex-md-grow-0" onClick={deleteFunction}>
+            <Button
+              variant="outline-danger"
+              className="flex-grow-1 flex-md-grow-0"
+              onClick={deleteFunction}
+            >
               {t('delete')}
             </Button>
           )}
         </Col>
       )}
-      <Col sm="12" md className="d-flex flex-column flex-md-row my-2 my-md-0 justify-content-end gap-2">
+      <Col
+        sm="12"
+        md
+        className="d-flex flex-column flex-md-row my-md-0 justify-content-end my-2 gap-2"
+      >
         {handleClose && (
-          <Button variant="danger" className="order-1 order-md-0" onClick={() => handleClose()}>
+          <Button
+            variant="danger"
+            className="order-md-0 order-1"
+            onClick={() => handleClose()}
+          >
             {t('cancel')}
           </Button>
         )}
@@ -36,7 +55,7 @@ export function ActionsFooterButton({ deleteFunction, handleClose, createOrUpdat
         {createOrUpdate && (
           <Button
             variant="success"
-            className="px-4 order"
+            className="order px-4"
             type="submit"
             form="form-size"
             disabled={disabledButtonSave}

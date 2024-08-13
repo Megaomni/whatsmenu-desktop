@@ -20,17 +20,26 @@ export default function AdmReportLeads({ initialLeads }: AdmReportLeadsProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { handleShowToast } = useContext(AppContext)
-  const [month, setMonth] = useState(DateTime.local().month.toString().padStart(2, '0'))
+  const [month, setMonth] = useState(
+    DateTime.local().month.toString().padStart(2, '0')
+  )
   const [year, setYear] = useState(DateTime.local().year.toString())
   const [leads, setLeads] = useState<Array<any>>(initialLeads)
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     try {
-      const { data } = await apiRoute(`/adm/registers/${year}/${month}`, session, 'GET')
+      const { data } = await apiRoute(
+        `/adm/registers/${year}/${month}`,
+        session,
+        'GET'
+      )
       setLeads(data as any[])
     } catch (error) {
-      handleShowToast({ type: 'erro', content: (error as any)?.response?.data?.message })
+      handleShowToast({
+        type: 'erro',
+        content: (error as any)?.response?.data?.message,
+      })
       console.error(error)
     }
   }
@@ -41,7 +50,12 @@ export default function AdmReportLeads({ initialLeads }: AdmReportLeadsProps) {
         state[index].loading = true
         return [...state]
       })
-      const { data } = await apiRoute(`/adm/registers/${year}/${month}/update/${index}`, session, 'PATCH', { sellerId: session?.user?.id })
+      const { data } = await apiRoute(
+        `/adm/registers/${year}/${month}/update/${index}`,
+        session,
+        'PATCH',
+        { sellerId: session?.user?.id }
+      )
       setLeads((state) => {
         state[index] = { ...state[index], ...data.lead, loading: false }
         return [...state]
@@ -53,7 +67,12 @@ export default function AdmReportLeads({ initialLeads }: AdmReportLeadsProps) {
 
   return (
     <>
-      <Title title="ADM" componentTitle="Leads" className="mb-4" child={['Leads']} />
+      <Title
+        title="ADM"
+        componentTitle="Leads"
+        className="mb-4"
+        child={['Leads']}
+      />
       <Row>
         <section>
           <article>
@@ -61,7 +80,10 @@ export default function AdmReportLeads({ initialLeads }: AdmReportLeadsProps) {
               <Row>
                 <Col sm className="flex-grow">
                   <Form.Label className="fs-7">Ano:</Form.Label>
-                  <Form.Select value={year} onChange={(e) => setYear(e.target.value)}>
+                  <Form.Select
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                  >
                     <option key={year} value={year}>
                       {year}
                     </option>
@@ -69,11 +91,18 @@ export default function AdmReportLeads({ initialLeads }: AdmReportLeadsProps) {
                 </Col>
                 <Col sm>
                   <Form.Label className="fs-7">Mês:</Form.Label>
-                  <Form.Select value={month} onChange={(e) => setMonth(e.target.value)}>
+                  <Form.Select
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                  >
                     {Array.from(Array(12).keys())
                       .filter((m) => {
                         m = Number(m + 1)
-                        return m >= DateTime.local().month, m, DateTime.local().month >= m
+                        return (
+                          m >= DateTime.local().month,
+                          m,
+                          DateTime.local().month >= m
+                        )
                       })
                       .map((month) => {
                         month += 1
@@ -118,37 +147,63 @@ export default function AdmReportLeads({ initialLeads }: AdmReportLeadsProps) {
                       .map((lead) => (
                         <tr key={`${lead.id}`} className="fs-7 text-center">
                           <td>{lead.id}</td>
-                          <td style={{ maxWidth: '200px', overflow: 'hidden' }}>{lead.name}</td>
+                          <td style={{ maxWidth: '200px', overflow: 'hidden' }}>
+                            {lead.name}
+                          </td>
                           <td onClick={(e) => handleCopy(e, handleShowToast)}>
-                            <div className="d-flex align-items-center justify-content-center gap-2 cursor-pointer">
+                            <div className="d-flex align-items-center justify-content-center cursor-pointer gap-2">
                               <FaCopy color="#a1a1a1" />
                               {lead.whatsapp}
                             </div>
                           </td>
-                          <td style={{ maxWidth: '200px', overflow: 'hidden' }}>{lead.work}</td>
                           <td style={{ maxWidth: '200px', overflow: 'hidden' }}>
-                            {DateTime.fromISO(lead.date).toFormat(`${t('date_format')} HH:mm:ss`)}
+                            {lead.work}
                           </td>
-                          <td style={{ maxWidth: '200px', overflow: 'hidden' }}>{lead?.seller?.name ?? '-'}</td>
+                          <td style={{ maxWidth: '200px', overflow: 'hidden' }}>
+                            {DateTime.fromISO(lead.date).toFormat(
+                              `${t('date_format')} HH:mm:ss`
+                            )}
+                          </td>
+                          <td style={{ maxWidth: '200px', overflow: 'hidden' }}>
+                            {lead?.seller?.name ?? '-'}
+                          </td>
                           <td>
                             <Button
                               id={`lead-${lead.id}`}
                               className="w-100"
-                              variant={lead.contacted_at ? 'outline-success' : 'primary'}
+                              variant={
+                                lead.contacted_at
+                                  ? 'outline-success'
+                                  : 'primary'
+                              }
                               onClick={() => handleUpdateLead(lead.id)}
                               disabled={!!lead.contacted_at === true}
                             >
                               {lead.loading ? (
                                 <>
-                                  <Spinner size="sm" animation="border" variant="light" className="d-inline-block ms-1" />
-                                  <span className="d-inline-block ms-1">Aguarde</span>
+                                  <Spinner
+                                    size="sm"
+                                    animation="border"
+                                    variant="light"
+                                    className="d-inline-block ms-1"
+                                  />
+                                  <span className="d-inline-block ms-1">
+                                    Aguarde
+                                  </span>
                                 </>
                               ) : (
                                 <>
                                   {lead.contacted_at ? (
                                     <>
                                       <BsCheck />
-                                      <span>Contatado em {DateTime.fromISO(lead.contacted_at).toFormat(`${t('date_format')} HH:mm:ss`)}</span>
+                                      <span>
+                                        Contatado em{' '}
+                                        {DateTime.fromISO(
+                                          lead.contacted_at
+                                        ).toFormat(
+                                          `${t('date_format')} HH:mm:ss`
+                                        )}
+                                      </span>
                                     </>
                                   ) : (
                                     `Contatado`
@@ -176,7 +231,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const initialMonth = DateTime.local().month.toString().padStart(2, '0')
   let initialLeads: any[] = []
   try {
-    const { data } = await apiRoute(`/adm/registers/${initialYear}/${initialMonth}`, session, 'GET')
+    const { data } = await apiRoute(
+      `/adm/registers/${initialYear}/${initialMonth}`,
+      session,
+      'GET'
+    )
     initialLeads = data as any[]
   } catch (error) {
     console.error(error)

@@ -1,16 +1,42 @@
 import { FormEvent, useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Figure, Form, Modal, Nav, Row, Tab, InputGroup, Spinner, FormGroup } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Figure,
+  Form,
+  Modal,
+  Nav,
+  Row,
+  Tab,
+  InputGroup,
+  Spinner,
+  FormGroup,
+} from 'react-bootstrap'
 import { Dates } from '../../../Dates'
 import Complement, { ComplementType } from '../../../../types/complements'
 import { CropModal } from '../../CropModal'
 import Week from '../../../../types/dates'
-import { copy, encryptEmoji, hash, mask, modifyFontValues, scrollToElement, verifyEmptyNameLength } from '../../../../utils/wm-functions'
+import {
+  copy,
+  encryptEmoji,
+  hash,
+  mask,
+  modifyFontValues,
+  scrollToElement,
+  verifyEmptyNameLength,
+} from '../../../../utils/wm-functions'
 import { useSession } from 'next-auth/react'
 import { OverlaySpinner } from '../../../OverlaySpinner'
 import { AppContext } from '../../../../context/app.ctx'
 import Product, { ProductType } from '../../../../types/product'
 import { MenuContext } from '../../../../context/menu.ctx'
-import { BsExclamationCircle, BsFillArrowDownCircleFill, BsFillArrowUpCircleFill } from 'react-icons/bs'
+import {
+  BsExclamationCircle,
+  BsFillArrowDownCircleFill,
+  BsFillArrowUpCircleFill,
+} from 'react-icons/bs'
 import { ComponentComplement } from '../Complements'
 import { ActionsFooterButton } from '../../ModalFooter/Actions'
 import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
@@ -25,18 +51,36 @@ interface ProductProps {
 
 export function ProductModal({ show, handleClose }: ProductProps) {
   const { t } = useTranslation()
-  const { profile, handleShowToast, handleConfirmModal, plansCategory, modalFooterOpened, user, setLowInventoryItems, currency } =
-    useContext(AppContext)
-  const { product: productMenu, setProduct: setProductMenu, category, categories, setCategories, typeModal: type } = useContext(MenuContext)
+  const {
+    profile,
+    handleShowToast,
+    handleConfirmModal,
+    plansCategory,
+    modalFooterOpened,
+    user,
+    setLowInventoryItems,
+    currency,
+  } = useContext(AppContext)
+  const {
+    product: productMenu,
+    setProduct: setProductMenu,
+    category,
+    categories,
+    setCategories,
+    typeModal: type,
+  } = useContext(MenuContext)
 
-  const [recicledComplements, setRecicledComplements] = useState<{ id: number; link: boolean }[]>([])
+  const [recicledComplements, setRecicledComplements] = useState<
+    { id: number; link: boolean }[]
+  >([])
   const [removeComplements, setRemoveComplements] = useState<number[]>([])
 
   //PROPRIEDADES DO PRODUTO
 
   const [product, setProduct] = useState<Product | ProductType>(productMenu)
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
-  const [invalidComplementName, setInvalidComplementName] = useState<boolean>(false)
+  const [invalidComplementName, setInvalidComplementName] =
+    useState<boolean>(false)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
   const [invalidItemName, setInvalidItemName] = useState<boolean>(false)
   const [nameInvalid, setNameInvalid] = useState<boolean>(false)
@@ -45,8 +89,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const [showSpinner, setShowSpinner] = useState<boolean>(false)
   const [showActionsButton, setShowActionsButton] = useState<boolean>(true)
 
-  const [eventKeyTab, setEventKeyTab] = useState<'details' | 'complements' | 'promotion' | 'disponibility'>('details')
-  const [week, setWeek] = useState<Week>(new Week(productMenu.disponibility.week))
+  const [eventKeyTab, setEventKeyTab] = useState<
+    'details' | 'complements' | 'promotion' | 'disponibility'
+  >('details')
+  const [week, setWeek] = useState<Week>(
+    new Week(productMenu.disponibility.week)
+  )
   const [imageCropped, setImageCroped] = useState<Blob>()
 
   /** Input tipo file, se input crop modal aparece */
@@ -62,10 +110,19 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   // LABELS
 
   const labels = {
-    basic: plansCategory.includes('basic') && plansCategory.some((plan) => plan !== 'basic') ? 'Delivery' : '',
-    table: plansCategory.includes('table') && plansCategory.some((plan) => plan !== 'table') ? t('table') : '',
+    basic:
+      plansCategory.includes('basic') &&
+      plansCategory.some((plan) => plan !== 'basic')
+        ? 'Delivery'
+        : '',
+    table:
+      plansCategory.includes('table') &&
+      plansCategory.some((plan) => plan !== 'table')
+        ? t('table')
+        : '',
     package:
-      plansCategory.includes('package') && plansCategory.some((plan) => plan !== 'package')
+      plansCategory.includes('package') &&
+      plansCategory.some((plan) => plan !== 'package')
         ? profile.options.package.label2
           ? t('appointment')
           : t('package')
@@ -89,7 +146,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       show={!!inputFileImage}
       inputFile={inputFileImage}
       setImageBlob={(blob, url) => {
-        const image = document.getElementById('productImage') as HTMLImageElement
+        const image = document.getElementById(
+          'productImage'
+        ) as HTMLImageElement
         if (image) {
           image.src = url
         }
@@ -110,7 +169,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const createOrUpdateProduct = async (e: FormEvent) => {
     e.preventDefault()
-    const inputName = document.getElementById(`productName-${product?.id}`) as HTMLInputElement
+    const inputName = document.getElementById(
+      `productName-${product?.id}`
+    ) as HTMLInputElement
     const form = document.getElementById('form-products') as HTMLFormElement
     try {
       if (invalidWeek) {
@@ -183,14 +244,20 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       dataProducts.append('recicle', copy(recicledComplements, 'json'))
       dataProducts.append('disponibility', copy(product.disponibility, 'json'))
       dataProducts.append('promoteStatus', copy(product.promoteStatus, 'json'))
-      dataProducts.append('promoteStatusTable', copy(product.promoteStatusTable, 'json'))
+      dataProducts.append(
+        'promoteStatusTable',
+        copy(product.promoteStatusTable, 'json')
+      )
       dataProducts.append('bypass_amount', copy(product.bypass_amount, 'json'))
 
       setShowSaveSpinner(true)
 
       if (type === 'update') {
         dataProducts.append('order', String(product.order))
-        dataProducts.append('removeComplements', copy(removeComplements, 'json'))
+        dataProducts.append(
+          'removeComplements',
+          copy(removeComplements, 'json')
+        )
       } else {
         dataProducts.append('order', String(category?.products?.length ?? 0))
       }
@@ -283,7 +350,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     let interval
     if (show && window.innerWidth < 450) {
       interval = setInterval(() => {
-        const inputs = document.querySelectorAll(`[data-hidde-actions=products]`)
+        const inputs = document.querySelectorAll(
+          `[data-hidde-actions=products]`
+        )
         inputs?.forEach((input: unknown) => {
           ;(input as HTMLElement).onfocus = () => setShowActionsButton(false)
           ;(input as HTMLElement).onblur = () => setShowActionsButton(true)
@@ -343,15 +412,20 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            {type === 'create' ? t('add') : t('edit')} {t('product')} {type === 'update' && `(${productMenu.name})`}
+            {type === 'create' ? t('add') : t('edit')} {t('product')}{' '}
+            {type === 'update' && `(${productMenu.name})`}
           </Modal.Title>
         </Modal.Header>
 
-        <Modal.Body id={`create-product-modal`} className={`position-relative`} style={{ height: '80vmin' }}>
+        <Modal.Body
+          id={`create-product-modal`}
+          className={`position-relative`}
+          style={{ height: '80vmin' }}
+        >
           <form id="form-products" onSubmit={createOrUpdateProduct}>
             {showSpinner && (
               <div
-                className="position-absolute top-0 start-0 bottom-0 end-0 d-flex justify-content-center align-items-center"
+                className="position-absolute d-flex justify-content-center align-items-center bottom-0 end-0 start-0 top-0"
                 style={{ zIndex: 1000, background: 'rgba(255, 255, 255, .5)' }}
               >
                 <Spinner animation="border" />
@@ -366,19 +440,27 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                         {t('details')}
                         {eventKeyTab !== 'details' && nameInvalid && (
                           <span className="ms-2">
-                            <BsExclamationCircle className="pulseElement" color="red" size={20} />
+                            <BsExclamationCircle
+                              className="pulseElement"
+                              color="red"
+                              size={20}
+                            />
                           </span>
                         )}
                       </Nav.Link>
                     </Nav.Item>
                     <Nav.Item onClick={() => setEventKeyTab('complements')}>
-                      <Nav.Link eventKey="complements">{t('complements')}</Nav.Link>
+                      <Nav.Link eventKey="complements">
+                        {t('complements')}
+                      </Nav.Link>
                     </Nav.Item>
                     <Nav.Item onClick={() => setEventKeyTab('promotion')}>
                       <Nav.Link eventKey="promotion">{t('promotion')}</Nav.Link>
                     </Nav.Item>
                     <Nav.Item onClick={() => setEventKeyTab('disponibility')}>
-                      <Nav.Link eventKey="disponibility">{t('availability')}</Nav.Link>
+                      <Nav.Link eventKey="disponibility">
+                        {t('availability')}
+                      </Nav.Link>
                     </Nav.Item>
                   </Nav>
 
@@ -386,7 +468,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                     <Tab.Pane eventKey="details">
                       <Card className="mt-4">
                         <Card.Body>
-                          <Container fluid className="px-0 mx-0">
+                          <Container fluid className="mx-0 px-0">
                             <Row className="text-dark">
                               <Col
                                 sm="12"
@@ -396,31 +478,47 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                 style={{
                                   position: 'relative',
                                   width: '100%',
-                                  maxWidth: window.innerWidth >= 1024 ? '400px' : undefined,
+                                  maxWidth:
+                                    window.innerWidth >= 1024
+                                      ? '400px'
+                                      : undefined,
                                 }}
                               >
-                                <label className="cursor-pointer" htmlFor={`product-image-${productMenu.id}`}>
+                                <label
+                                  className="cursor-pointer"
+                                  htmlFor={`product-image-${productMenu.id}`}
+                                >
                                   <Figure>
                                     <Figure.Image
                                       width={600}
                                       // height={450}
                                       alt="Imagem do Produto"
-                                      src={product?.image || '/images/no-img.jpeg'}
+                                      src={
+                                        product?.image || '/images/no-img.jpeg'
+                                      }
                                       id="productImage"
-                                      style={{ /* objectFit: "cover",*/ maxHeight: 270 }}
+                                      style={{
+                                        /* objectFit: "cover",*/ maxHeight: 270,
+                                      }}
                                     />
                                     <Figure.Caption className="text-center">
-                                      {t('image_up_8')} ({t('recomended_resolution_600')})
+                                      {t('image_up_8')} (
+                                      {t('recomended_resolution_600')})
                                     </Figure.Caption>
                                   </Figure>
-                                  <Button variant="outline-success w-100" style={{ position: 'relative' }}>
+                                  <Button
+                                    variant="outline-success w-100"
+                                    style={{ position: 'relative' }}
+                                  >
                                     {t('add_image')}
                                     <Form.Control
                                       type="file"
                                       accept="image/*"
                                       id={`product-image-${productMenu.id}`}
                                       onChange={(e) => {
-                                        setInputFileImage(e.target as HTMLInputElement)
+                                        setInputFileImage(
+                                          e.target as HTMLInputElement
+                                        )
                                       }}
                                       style={{
                                         opacity: 0,
@@ -457,15 +555,30 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                             name: e.target.value,
                                           })
                                         }}
-                                        onKeyDown={(e) => modifyFontValues(e, { prop: product.name })}
+                                        onKeyDown={(e) =>
+                                          modifyFontValues(e, {
+                                            prop: product.name,
+                                          })
+                                        }
                                       />
-                                      <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }}>
+                                      <Form.Control.Feedback
+                                        tooltip
+                                        type="invalid"
+                                        style={{ zIndex: 0 }}
+                                      >
                                         {t('please_valid_name')}!
                                       </Form.Control.Feedback>
                                     </div>
                                     <div className="d-flex justify-content-end">
-                                      <p className={(product.name.length || 0) >= 55 ? 'text-red-500' : ''}>
-                                        {product.name.length || 0}/55 {t('characters')}
+                                      <p
+                                        className={
+                                          (product.name.length || 0) >= 55
+                                            ? 'text-red-500'
+                                            : ''
+                                        }
+                                      >
+                                        {product.name.length || 0}/55{' '}
+                                        {t('characters')}
                                       </p>
                                     </div>
                                   </Col>
@@ -486,7 +599,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       {categories
                                         .filter((c) => c.type === 'default')
                                         .map((category) => (
-                                          <option key={`${category.id}-${hash()}`} value={category.id}>
+                                          <option
+                                            key={`${category.id}-${hash()}`}
+                                            value={category.id}
+                                          >
                                             {category.name}
                                           </option>
                                         ))}
@@ -495,27 +611,35 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                 </Row>
 
                                 <Row className="mb-4">
-                                  {(plansCategory.includes('basic') || plansCategory.includes('package')) && (
+                                  {(plansCategory.includes('basic') ||
+                                    plansCategory.includes('package')) && (
                                     <Col sm="6">
                                       <Form.Label>
                                         <b className="text-nowrap">
                                           {t('price')}{' '}
-                                          {plansCategory.includes('basic') && plansCategory.includes('package')
+                                          {plansCategory.includes('basic') &&
+                                          plansCategory.includes('package')
                                             ? `${labels.basic}/${labels.package}`
                                             : plansCategory.includes('basic')
-                                            ? labels.basic
-                                            : labels.package}
+                                              ? labels.basic
+                                              : labels.package}
                                         </b>
                                       </Form.Label>
                                       <InputGroup className="position-relative">
-                                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                                        <InputGroup.Text>
+                                          {currency({ value: 0, symbol: true })}
+                                        </InputGroup.Text>
                                         <Form.Control
                                           required
-                                          defaultValue={(product?.value ?? 0).toFixed(2)}
+                                          defaultValue={(
+                                            product?.value ?? 0
+                                          ).toFixed(2)}
                                           name="value"
                                           isInvalid={valueInvalid}
                                           onBlur={(e) => {
-                                            e.target.value.length ? setValueInvalid(false) : setValueInvalid(true)
+                                            e.target.value.length
+                                              ? setValueInvalid(false)
+                                              : setValueInvalid(true)
                                           }}
                                           onFocus={() => {
                                             setValueInvalid(false)
@@ -528,7 +652,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                             })
                                           }}
                                         />
-                                        <Form.Control.Feedback tooltip type="invalid">
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
                                           {t('enter_valid_value')}
                                         </Form.Control.Feedback>
                                       </InputGroup>
@@ -542,13 +669,19 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         </b>
                                       </Form.Label>
                                       <InputGroup className="position-relative">
-                                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                                        <InputGroup.Text>
+                                          {currency({ value: 0, symbol: true })}
+                                        </InputGroup.Text>
                                         <Form.Control
-                                          defaultValue={(product?.valueTable ?? 0).toFixed(2)}
+                                          defaultValue={(
+                                            product?.valueTable ?? 0
+                                          ).toFixed(2)}
                                           name="valueTable"
                                           isInvalid={valueTableInvalid}
                                           onBlur={(e) => {
-                                            e.target.value.length ? setValueTableInvalid(false) : setValueTableInvalid(true)
+                                            e.target.value.length
+                                              ? setValueTableInvalid(false)
+                                              : setValueTableInvalid(true)
                                           }}
                                           onFocus={() => {
                                             setValueTableInvalid(false)
@@ -557,11 +690,16 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                             mask(e, 'currency')
                                             setProduct({
                                               ...product,
-                                              valueTable: Number(e.target.value),
+                                              valueTable: Number(
+                                                e.target.value
+                                              ),
                                             })
                                           }}
                                         />
-                                        <Form.Control.Feedback tooltip type="invalid">
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
                                           {t('enter_valid_value')}
                                         </Form.Control.Feedback>
                                       </InputGroup>
@@ -573,17 +711,25 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   <Row>
                                     <Col sm="4" className="my-2">
                                       <Form.Label>
-                                        <b className="text-nowrap">{t('stock')}</b>
+                                        <b className="text-nowrap">
+                                          {t('stock')}
+                                        </b>
                                       </Form.Label>
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
                                           disabled={product.bypass_amount}
                                           onClick={() => {
-                                            if (typeof product.amount !== 'number') return
+                                            if (
+                                              typeof product.amount !== 'number'
+                                            )
+                                              return
                                             setProduct({
                                               ...product,
-                                              amount: product.amount === 0 ? 0 : product.amount - 1,
+                                              amount:
+                                                product.amount === 0
+                                                  ? 0
+                                                  : product.amount - 1,
                                             })
                                           }}
                                         >
@@ -608,30 +754,44 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           onClick={() => {
                                             setProduct({
                                               ...product,
-                                              amount: !product.amount ? 1 : product.amount + 1,
+                                              amount: !product.amount
+                                                ? 1
+                                                : product.amount + 1,
                                             })
                                           }}
                                         >
                                           +
                                         </Button>
-                                        <Form.Control.Feedback tooltip type="invalid">
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
                                           {t('enter_valid_value')}
                                         </Form.Control.Feedback>
                                       </InputGroup>
                                     </Col>
                                     <Col sm="4" className="my-2">
                                       <Form.Label>
-                                        <b className="text-nowrap">{t('minimum_stock')}</b>
+                                        <b className="text-nowrap">
+                                          {t('minimum_stock')}
+                                        </b>
                                       </Form.Label>
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
                                           disabled={product.bypass_amount}
                                           onClick={() => {
-                                            if (typeof product.amount_alert !== 'number') return
+                                            if (
+                                              typeof product.amount_alert !==
+                                              'number'
+                                            )
+                                              return
                                             setProduct({
                                               ...product,
-                                              amount_alert: product.amount_alert === 0 ? 0 : product.amount_alert - 1,
+                                              amount_alert:
+                                                product.amount_alert === 0
+                                                  ? 0
+                                                  : product.amount_alert - 1,
                                             })
                                           }}
                                         >
@@ -644,7 +804,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           onChange={(e) => {
                                             setProduct({
                                               ...product,
-                                              amount_alert: Number(e.target.value),
+                                              amount_alert: Number(
+                                                e.target.value
+                                              ),
                                             })
                                           }}
                                         />
@@ -656,18 +818,27 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           onClick={() => {
                                             setProduct({
                                               ...product,
-                                              amount_alert: !product.amount_alert ? 1 : product.amount_alert + 1,
+                                              amount_alert:
+                                                !product.amount_alert
+                                                  ? 1
+                                                  : product.amount_alert + 1,
                                             })
                                           }}
                                         >
                                           +
                                         </Button>
-                                        <Form.Control.Feedback tooltip type="invalid">
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
                                           {t('enter_valid_value')}
                                         </Form.Control.Feedback>
                                       </InputGroup>
                                     </Col>
-                                    <Col sm="4" className="d-flex align-items-end my-2">
+                                    <Col
+                                      sm="4"
+                                      className="d-flex align-items-end my-2"
+                                    >
                                       <FormGroup>
                                         <Form.Check
                                           type="switch"
@@ -675,7 +846,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           name="amount_bypass"
                                           label={t('always_available')}
                                           className="fs-6 text-nowrap"
-                                          defaultChecked={!!product.bypass_amount}
+                                          defaultChecked={
+                                            !!product.bypass_amount
+                                          }
                                           onClick={(e: any) => {
                                             setProduct({
                                               ...product,
@@ -705,10 +878,20 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           description: e.target.value,
                                         })
                                       }}
-                                      onKeyDown={(e) => modifyFontValues(e, { prop: product.description })}
+                                      onKeyDown={(e) =>
+                                        modifyFontValues(e, {
+                                          prop: product.description,
+                                        })
+                                      }
                                     />
                                     <div className="d-flex justify-content-end">
-                                      <p className={product.description?.length >= 500 ? 'text-red-500' : ''}>
+                                      <p
+                                        className={
+                                          product.description?.length >= 500
+                                            ? 'text-red-500'
+                                            : ''
+                                        }
+                                      >
                                         {product.description?.length || 0}
                                         /500 {t('characters')}
                                       </p>
@@ -734,35 +917,50 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                             complements: newComplements,
                           })
                         }}
-                        saveRecicledComplements={(recicled) => setRecicledComplements([...recicled])}
-                        saveRemovedComplements={(removeds) => setRemoveComplements([...removeds])}
+                        saveRecicledComplements={(recicled) =>
+                          setRecicledComplements([...recicled])
+                        }
+                        saveRemovedComplements={(removeds) =>
+                          setRemoveComplements([...removeds])
+                        }
                         invalidComplement={invalidComplementName}
                       />
                     </Tab.Pane>
                     <Tab.Pane eventKey="promotion">
-                      <Card className="mt-4 wm-default text-dark">
+                      <Card className="wm-default text-dark mt-4">
                         <Card.Header className="d-flex gap-3">
                           <h4>{t('promotion')}</h4>
                           <div className="vr"></div>
-                          <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/gElW2BNbPTM', title: t('promotion') }]} />
+                          <HelpVideos.Trigger
+                            urls={[
+                              {
+                                src: 'https://www.youtube.com/embed/gElW2BNbPTM',
+                                title: t('promotion'),
+                              },
+                            ]}
+                          />
                         </Card.Header>
                         <Card.Body>
-                          {(plansCategory.includes('basic') || plansCategory.includes('package')) && (
+                          {(plansCategory.includes('basic') ||
+                            plansCategory.includes('package')) && (
                             <Row>
                               <Col sm>
-                                <div className="d-flex gap-2 flex-row-reverse justify-content-end mt-4">
+                                <div className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
                                   <Form.Label htmlFor="promotion">
                                     <p>
                                       <b>
                                         {t('activate_promotion')}{' '}
-                                        {plansCategory.includes('basic') && plansCategory.includes('package')
+                                        {plansCategory.includes('basic') &&
+                                        plansCategory.includes('package')
                                           ? `${labels.basic}/${labels.package}`
                                           : plansCategory.includes('basic')
-                                          ? labels.basic
-                                          : labels.package}
+                                            ? labels.basic
+                                            : labels.package}
                                       </b>
                                     </p>
-                                    <p>{t('button_enable_disable_promotion')}</p>
+                                    <p>
+                                      {t('button_enable_disable_promotion')}
+                                    </p>
                                   </Form.Label>
                                   <Form.Switch
                                     id="promotion"
@@ -780,20 +978,27 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                 <Card>
                                   <Card.Body>
                                     <p>
-                                      {t('original_price')}: {currency({ value: product.value })}
+                                      {t('original_price')}:{' '}
+                                      {currency({ value: product.value })}
                                     </p>
-                                    <div className="d-flex gap-3 align-items-baseline">
+                                    <div className="d-flex align-items-baseline gap-3">
                                       <Form.Label>
-                                        <b className="text-nowrap">{t('promotional_price')}:</b>
+                                        <b className="text-nowrap">
+                                          {t('promotional_price')}:
+                                        </b>
                                       </Form.Label>
                                       <Form.Control
-                                        defaultValue={(product.promoteValue ?? 0).toFixed(2)}
+                                        defaultValue={(
+                                          product.promoteValue ?? 0
+                                        ).toFixed(2)}
                                         name="promoteValue"
                                         onChange={(e) => {
                                           mask(e, 'currency')
                                           setProduct({
                                             ...product,
-                                            promoteValue: Number(e.target.value),
+                                            promoteValue: Number(
+                                              e.target.value
+                                            ),
                                           })
                                         }}
                                         className="w-75"
@@ -807,14 +1012,21 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                           {plansCategory.includes('table') && (
                             <Row>
                               <Col sm>
-                                <div className="d-flex gap-2 flex-row-reverse justify-content-end mt-4">
+                                <div className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
                                   <Form.Label htmlFor="promotionTable">
                                     <p>
                                       <b>
-                                        {t('activate_promotion')} {plansCategory.every((p) => p === 'table') ? '' : t('table')}
+                                        {t('activate_promotion')}{' '}
+                                        {plansCategory.every(
+                                          (p) => p === 'table'
+                                        )
+                                          ? ''
+                                          : t('table')}
                                       </b>
                                     </p>
-                                    <p>{t('button_enable_disable_promotion')}</p>
+                                    <p>
+                                      {t('button_enable_disable_promotion')}
+                                    </p>
                                   </Form.Label>
                                   <Form.Switch
                                     id="promotionTable"
@@ -832,21 +1044,28 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                 <Card>
                                   <Card.Body>
                                     <p>
-                                      {t('original_price')}: {currency({ value: product.valueTable })}
+                                      {t('original_price')}:{' '}
+                                      {currency({ value: product.valueTable })}
                                     </p>
-                                    <div className="d-flex gap-3 align-items-baseline">
+                                    <div className="d-flex align-items-baseline gap-3">
                                       <Form.Label>
-                                        <b className="text-nowrap">{t('promotional_price')}:</b>
+                                        <b className="text-nowrap">
+                                          {t('promotional_price')}:
+                                        </b>
                                       </Form.Label>
                                       <Form.Control
                                         className="w-75"
                                         name="promoteValueTable"
-                                        defaultValue={(product.promoteValueTable ?? 0).toFixed(2)}
+                                        defaultValue={(
+                                          product.promoteValueTable ?? 0
+                                        ).toFixed(2)}
                                         onChange={(e) => {
                                           mask(e, 'currency')
                                           setProduct({
                                             ...product,
-                                            promoteValueTable: Number(e.target.value),
+                                            promoteValueTable: Number(
+                                              e.target.value
+                                            ),
                                           })
                                         }}
                                       />
@@ -867,7 +1086,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                           </h4>
                         </Card.Header>
                         <Card.Body>
-                          <Container fluid className="px-0 mx-0">
+                          <Container fluid className="mx-0 px-0">
                             <Row className="text-dark">
                               <Col sm>
                                 <h6 className="mb-4"></h6>
@@ -878,14 +1097,18 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         Delivery
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={product?.disponibility?.store.delivery}
+                                          defaultChecked={
+                                            product?.disponibility?.store
+                                              .delivery
+                                          }
                                           onChange={(e) => {
                                             setProduct({
                                               ...product,
                                               disponibility: {
                                                 ...product.disponibility,
                                                 store: {
-                                                  ...product.disponibility.store,
+                                                  ...product.disponibility
+                                                    .store,
                                                   delivery: e.target.checked,
                                                 },
                                               },
@@ -901,14 +1124,17 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('table')}
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={product?.disponibility?.store.table}
+                                          defaultChecked={
+                                            product?.disponibility?.store.table
+                                          }
                                           onChange={(e) => {
                                             setProduct({
                                               ...product,
                                               disponibility: {
                                                 ...product.disponibility,
                                                 store: {
-                                                  ...product.disponibility.store,
+                                                  ...product.disponibility
+                                                    .store,
                                                   table: e.target.checked,
                                                 },
                                               },
@@ -924,14 +1150,18 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('package')}
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={product?.disponibility?.store.package}
+                                          defaultChecked={
+                                            product?.disponibility?.store
+                                              .package
+                                          }
                                           onChange={(e) => {
                                             setProduct({
                                               ...product,
                                               disponibility: {
                                                 ...product.disponibility,
                                                 store: {
-                                                  ...product.disponibility.store,
+                                                  ...product.disponibility
+                                                    .store,
                                                   package: e.target.checked,
                                                 },
                                               },

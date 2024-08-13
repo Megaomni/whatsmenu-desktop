@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -20,36 +16,16 @@
     "jsx": "preserve",
     "incremental": true,
     "paths": {
-      "@audios/*": [
-        "./public/audio/*"
-      ],
-      "@images/*": [
-        "./public/images/*"
-      ],
-      "@js/*": [
-        "./public/js/*"
-      ],
-      "@components/*": [
-        "./src/components/*"
-      ],
-      "@context/*": [
-        "./src/context/*"
-      ],
-      "@hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@reducers/*": [
-        "./src/reducers/*"
-      ],
-      "@styles/*": [
-        "./styles/*"
-      ],
-      "@types/*": [
-        "./src/types/*"
-      ],
-      "@utils/*": [
-        "./src/utils/*"
-      ]
+      "@audios/*": ["./public/audio/*"],
+      "@images/*": ["./public/images/*"],
+      "@js/*": ["./public/js/*"],
+      "@components/*": ["./src/components/*"],
+      "@context/*": ["./src/context/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@reducers/*": ["./src/reducers/*"],
+      "@styles/*": ["./styles/*"],
+      "@types/*": ["./src/types/*"],
+      "@utils/*": ["./src/utils/*"]
     },
     "plugins": [
       {
@@ -57,12 +33,8 @@
       }
     ]
   },
-  "typeRoots": [
-    "node_modules/@types"
-  ],
-  "types": [
-    "youtube"
-  ],
+  "typeRoots": ["node_modules/@types"],
+  "types": ["youtube"],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -70,7 +42,5 @@
     "src/types/*.d.ts",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

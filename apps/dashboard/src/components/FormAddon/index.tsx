@@ -15,13 +15,23 @@ export interface FormAddonProps {
 
 export const FormAddon = ({ addon, onAddonChange }: FormAddonProps) => {
   const { t } = useTranslation()
-  const { profileState, showSpinner, showFinPassModal, dataToBeUpdated, toggleSpinner, onSubmit } = useContext(PaymentMethodContext)
+  const {
+    profileState,
+    showSpinner,
+    showFinPassModal,
+    dataToBeUpdated,
+    toggleSpinner,
+    onSubmit,
+  } = useContext(PaymentMethodContext)
 
   const [addonSettings, setAddonSettings] = useState(addon)
   const id = useId()
 
   const addonType = [{ discount: t('discount') }, { fee: t('surchage') }]
-  const addonTypeValue = [{ fixed: t('fixed') }, { percentage: t('percentage') }]
+  const addonTypeValue = [
+    { fixed: t('fixed') },
+    { percentage: t('percentage') },
+  ]
 
   const {
     register,
@@ -32,7 +42,10 @@ export const FormAddon = ({ addon, onAddonChange }: FormAddonProps) => {
     reset,
     control,
     formState: { errors },
-  } = useForm<ProfileFormPayment>({ mode: 'onChange', defaultValues: addonSettings })
+  } = useForm<ProfileFormPayment>({
+    mode: 'onChange',
+    defaultValues: addonSettings,
+  })
 
   useEffect(() => {
     reset(addonSettings)
@@ -57,14 +70,17 @@ export const FormAddon = ({ addon, onAddonChange }: FormAddonProps) => {
           {...register('addon.status')}
         />
         <Row className="mt-3">
-          <Col md="4" lg className="mb-2 mt-2 position-relative">
+          <Col md="4" lg className="position-relative mb-2 mt-2">
             <Form.Label>{t('type_of_fee')}</Form.Label>
             <Form.Select
               {...register('addon.type')}
               value={addonSettings?.type}
               onChange={(e) => {
                 setValue('addon.type', e.target.value)
-                setAddonSettings((state) => ({ ...state, type: e.target.value }))
+                setAddonSettings((state) => ({
+                  ...state,
+                  type: e.target.value,
+                }))
               }}
             >
               {addonType?.map((type, index) => (
@@ -75,14 +91,17 @@ export const FormAddon = ({ addon, onAddonChange }: FormAddonProps) => {
             </Form.Select>
           </Col>
 
-          <Col md="4" lg className="mb-2 mt-2 position-relative">
+          <Col md="4" lg className="position-relative mb-2 mt-2">
             <Form.Label>{t('type_of_value')}</Form.Label>
             <Form.Select
               {...register('addon.valueType')}
               value={addonSettings?.valueType}
               onChange={(e) => {
                 setValue('addon.valueType', e.target.value)
-                setAddonSettings((state) => ({ ...state, valueType: e.target.value }))
+                setAddonSettings((state) => ({
+                  ...state,
+                  valueType: e.target.value,
+                }))
               }}
             >
               {addonTypeValue?.map((type, index) => (
@@ -93,7 +112,7 @@ export const FormAddon = ({ addon, onAddonChange }: FormAddonProps) => {
             </Form.Select>
           </Col>
 
-          <Col md="4" lg className="mb-2 mt-2 position-relative">
+          <Col md="4" lg className="position-relative mb-2 mt-2">
             <Form.Label className="">{t('fee_amount')}</Form.Label>
             <FormControl
               min={0}

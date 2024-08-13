@@ -35,13 +35,24 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
               <td>
                 {bartender.cashiers
                   .flatMap((cashier) => cashier.transactions)
-                  .filter((transaction) => transaction.type === 'income' && transaction.obs && !transaction.obs.includes(i18n.t('table_closing')))
-                  .length + bartender.cashiers.filter((cashier) => cashier.initialValue > 0).length}
+                  .filter(
+                    (transaction) =>
+                      transaction.type === 'income' &&
+                      transaction.obs &&
+                      !transaction.obs.includes(i18n.t('table_closing'))
+                  ).length +
+                  bartender.cashiers.filter(
+                    (cashier) => cashier.initialValue > 0
+                  ).length}
               </td>
               <td>
                 {currency({
                   value: bartender.cashiers.reduce(
-                    (total, cashier) => (total += cashier.getTotalTransactions({ type: 'income', onlyTransactions: true })),
+                    (total, cashier) =>
+                      (total += cashier.getTotalTransactions({
+                        type: 'income',
+                        onlyTransactions: true,
+                      })),
                     0
                   ),
                 })}
@@ -55,10 +66,22 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
                 {
                   bartender.cashiers
                     .flatMap((cashier) => cashier.transactions)
-                    .filter((transaction) => transaction.obs && transaction.obs.includes(t('table_closing'))).length
+                    .filter(
+                      (transaction) =>
+                        transaction.obs &&
+                        transaction.obs.includes(t('table_closing'))
+                    ).length
                 }
               </td>
-              <td>{currency({ value: bartender.cashiers.reduce((total, transaction) => (total += transaction.getOnlyTableClousres()), 0) })}</td>
+              <td>
+                {currency({
+                  value: bartender.cashiers.reduce(
+                    (total, transaction) =>
+                      (total += transaction.getOnlyTableClousres()),
+                    0
+                  ),
+                })}
+              </td>
             </tr>
             <tr>
               <td>
@@ -68,15 +91,29 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
                 {
                   bartender.cashiers
                     .flatMap((cashier) => cashier.carts)
-                    .filter((cart) => cart.type === 'D' && !cart.addressId && cart.status != 'canceled').length
+                    .filter(
+                      (cart) =>
+                        cart.type === 'D' &&
+                        !cart.addressId &&
+                        cart.status != 'canceled'
+                    ).length
                 }
               </td>
 
               <td>
                 {currency({
                   value: bartender.cashiers
-                    .flatMap((cashier) => cashier.carts.filter((cart) => cart.type === 'D'))
-                    .reduce((total, cashier) => (total += !cashier.addressId && cashier.status != 'canceled' ? cashier.total : 0), 0),
+                    .flatMap((cashier) =>
+                      cashier.carts.filter((cart) => cart.type === 'D')
+                    )
+                    .reduce(
+                      (total, cashier) =>
+                        (total +=
+                          !cashier.addressId && cashier.status != 'canceled'
+                            ? cashier.total
+                            : 0),
+                      0
+                    ),
                 })}
               </td>
             </tr>
@@ -84,10 +121,23 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
               <td>
                 {t('orders')} ({t('request')})
               </td>
-              <td>{bartender.cashiers.flatMap((cashier) => cashier.carts).filter((cart) => cart.type === 'P').length}</td>
+              <td>
+                {
+                  bartender.cashiers
+                    .flatMap((cashier) => cashier.carts)
+                    .filter((cart) => cart.type === 'P').length
+                }
+              </td>
               <td>
                 {currency({
-                  value: bartender.cashiers.reduce((total, cashier) => (total += cashier.getTotalCartsValue({ type: 'P', withPayments: false })), 0),
+                  value: bartender.cashiers.reduce(
+                    (total, cashier) =>
+                      (total += cashier.getTotalCartsValue({
+                        type: 'P',
+                        withPayments: false,
+                      })),
+                    0
+                  ),
                 })}
               </td>
             </tr>
@@ -97,7 +147,12 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
                 {
                   bartender.cashiers
                     .flatMap((cashier) => cashier.carts)
-                    .filter((cart) => cart.type === 'D' && cart.addressId && cart.status != 'canceled').length
+                    .filter(
+                      (cart) =>
+                        cart.type === 'D' &&
+                        cart.addressId &&
+                        cart.status != 'canceled'
+                    ).length
                 }
               </td>
               <td>
@@ -106,7 +161,12 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
                     .flatMap((cashier) => cashier.carts)
                     .reduce(
                       (total, cashier) =>
-                        (total += cashier.addressId && cashier.type === 'D' && cashier.status != 'canceled' ? cashier.getTotalValue('total') : 0),
+                        (total +=
+                          cashier.addressId &&
+                          cashier.type === 'D' &&
+                          cashier.status != 'canceled'
+                            ? cashier.getTotalValue('total')
+                            : 0),
                       0
                     ),
                 })}
@@ -116,22 +176,44 @@ export const CashierReportTable = ({ bartender }: CashierReportTableProps) => {
               <td>
                 {t('orders')} ({t('cancelled')})
               </td>
-              <td>{bartender.cashiers.flatMap((cashier) => cashier.carts).filter((cart) => cart.status === 'canceled').length}</td>
+              <td>
+                {
+                  bartender.cashiers
+                    .flatMap((cashier) => cashier.carts)
+                    .filter((cart) => cart.status === 'canceled').length
+                }
+              </td>
               <td>
                 {currency({
                   value: bartender.cashiers
                     .flatMap((cashier) => cashier.carts)
                     .filter((cart) => cart.status === 'canceled')
-                    .reduce((total, cart) => (total += cart.getTotalValue('total')), 0),
+                    .reduce(
+                      (total, cart) => (total += cart.getTotalValue('total')),
+                      0
+                    ),
                 })}
               </td>
             </tr>
             <tr>
               <td>{t('outflows')}</td>
-              <td>{bartender.cashiers.flatMap((cashier) => cashier.transactions).filter((transaction) => transaction.type === 'outcome').length}</td>
+              <td>
+                {
+                  bartender.cashiers
+                    .flatMap((cashier) => cashier.transactions)
+                    .filter((transaction) => transaction.type === 'outcome')
+                    .length
+                }
+              </td>
               <td>
                 {currency({
-                  value: bartender.cashiers.reduce((total, cashier) => (total += cashier.getTotalTransactions({ type: 'outcome' })), 0),
+                  value: bartender.cashiers.reduce(
+                    (total, cashier) =>
+                      (total += cashier.getTotalTransactions({
+                        type: 'outcome',
+                      })),
+                    0
+                  ),
                 })}
               </td>
             </tr>

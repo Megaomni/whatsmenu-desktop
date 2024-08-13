@@ -1,22 +1,22 @@
-import React, { LegacyRef, useEffect, useState } from "react";
-import { Spinner } from "react-bootstrap";
+import React, { LegacyRef, useEffect, useState } from 'react'
+import { Spinner } from 'react-bootstrap'
 
 export interface OverlaySpinnerPropsType {
-  show: boolean;
-  queryElement?: string;
-  style?: React.CSSProperties;
-  className?: string;
-  backgroundColor?: string;
-  opacity?: string | number;
-  backdropBlur?: number;
-  weight?: number | string;
-  textSpinner?: string;
-  width?: number;
-  textColor?: string;
-  variant?: string;
-  displaySpinner?: boolean;
-  position?: "fixed" | "absolute";
-};
+  show: boolean
+  queryElement?: string
+  style?: React.CSSProperties
+  className?: string
+  backgroundColor?: string
+  opacity?: string | number
+  backdropBlur?: number
+  weight?: number | string
+  textSpinner?: string
+  width?: number
+  textColor?: string
+  variant?: string
+  displaySpinner?: boolean
+  position?: 'fixed' | 'absolute'
+}
 
 export function OverlaySpinner({
   backgroundColor,
@@ -32,9 +32,9 @@ export function OverlaySpinner({
   textColor,
   variant,
   displaySpinner = true,
-  position = "absolute"
+  position = 'absolute',
 }: OverlaySpinnerPropsType) {
-  const [foundElement, setFoundElement] = useState(false);
+  const [foundElement, setFoundElement] = useState(false)
 
   const defaultStyle: React.CSSProperties = {
     position,
@@ -42,43 +42,38 @@ export function OverlaySpinner({
     top: 0,
     right: 0,
     bottom: 0,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     backdropFilter: `blur(${backdropBlur || 0.7}px)`,
-    backgroundColor: backgroundColor || "rgba(0, 0, 0, .15)",
+    backgroundColor: backgroundColor || 'rgba(0, 0, 0, .15)',
     opacity: opacity || 1,
     ...style,
-  };
+  }
 
-  const dots = <div className="mx-auto dot-flashing"></div>
+  const dots = <div className="dot-flashing mx-auto"></div>
 
   useEffect(() => {
     const parentElement = document.querySelector(
-      queryElement || "#noElementEmpty"
-    ) as HTMLElement;
+      queryElement || '#noElementEmpty'
+    ) as HTMLElement
 
     if (show && parentElement) {
-      parentElement.classList.add("position-relative");
-      setFoundElement(true);
+      parentElement.classList.add('position-relative')
+      setFoundElement(true)
     }
-  }, [queryElement, show]);
+  }, [queryElement, show])
 
-  return (
-    show ?
+  return show ? (
     <div
       id="wm-spinner"
-      className={`${className} ${show ? "visible" : "invisible"} notPrint`}
+      className={`${className} ${show ? 'visible' : 'invisible'} notPrint`}
       style={{
-        ...defaultStyle
+        ...defaultStyle,
       }}
     >
       <div className="text-center">
-        {displaySpinner && (
-          <div className="d-flex">
-            {dots}
-          </div>
-        )}
+        {displaySpinner && <div className="d-flex">{dots}</div>}
 
         {textSpinner && (
           <p
@@ -92,7 +87,5 @@ export function OverlaySpinner({
         )}
       </div>
     </div>
-    :
-  null
-  );
+  ) : null
 }

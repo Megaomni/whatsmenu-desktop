@@ -1,7 +1,5 @@
-import { Test } from "../../../components/Test";
+import { Test } from '../../../components/Test'
 
 export default function TestAmbient() {
-  return (
-    <Test />
-  )
+  return <Test />
 }

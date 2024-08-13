@@ -2,13 +2,26 @@ import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { Button, Card, Col, Container, Form, FormGroup, Row } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  Row,
+} from 'react-bootstrap'
 import { BsGearFill, BsPrinter } from 'react-icons/bs'
 import { AppContext } from '../../../context/app.ctx'
 import { CartsContext } from '../../../context/cart.ctx'
 import { PackageCartsData } from '../../../reducers/carts/reducer'
 import Cart from '../../../types/cart'
-import { apiRoute, getNow, scrollToElement, textPackage } from '../../../utils/wm-functions'
+import {
+  apiRoute,
+  getNow,
+  scrollToElement,
+  textPackage,
+} from '../../../utils/wm-functions'
 import { ResumePackage } from '../../Modals/Requests/Package/Resume'
 import { SendStatusMessageForm } from '../../SendStatusMessageForm'
 import { useTranslation } from 'react-i18next'
@@ -18,7 +31,8 @@ export function Packages() {
   const { data: session } = useSession()
   const { profile, setRequestsToPrint } = useContext(AppContext)
 
-  const { packageCarts, setPackageCarts, motoboys, updateMotoboyId, setCart } = useContext(CartsContext)
+  const { packageCarts, setPackageCarts, motoboys, updateMotoboyId, setCart } =
+    useContext(CartsContext)
   const [cartsData, setCartsData] = useState<PackageCartsData>({
     data: [],
     lastPage: 0,
@@ -28,7 +42,8 @@ export function Packages() {
   })
   const motoboySelectRef = useRef(null)
 
-  const [showModalResumePackage, setShowModalResumePackage] = useState<boolean>(false)
+  const [showModalResumePackage, setShowModalResumePackage] =
+    useState<boolean>(false)
   const [requestsPersonalized, setRequestsPersonalized] = useState<Cart[]>([])
   const [filterSelected, setFilterSelected] = useState<string>('all')
 
@@ -55,7 +70,9 @@ export function Packages() {
   const sortedPackages = sortPackages()
 
   const $requests = sortedPackages.map((cart) => {
-    const created_at = DateTime.fromSQL(cart.created_at).toFormat(`${t('date_format')}`)
+    const created_at = DateTime.fromSQL(cart.created_at).toFormat(
+      `${t('date_format')}`
+    )
     const packageDate = cart.date().formatted
 
     if (filterSelected !== 'all') {
@@ -118,9 +135,13 @@ export function Packages() {
         className={`${requestColor()} border-end-0"`}
         onClick={(e) => {
           const target = e.target as HTMLElement
-          const parentElement = (e.target as HTMLElement).parentElement as HTMLElement
+          const parentElement = (e.target as HTMLElement)
+            .parentElement as HTMLElement
 
-          if (target.classList.contains('td-skip') || parentElement.classList.contains('td-skip')) {
+          if (
+            target.classList.contains('td-skip') ||
+            parentElement.classList.contains('td-skip')
+          ) {
             return
           }
 
@@ -132,7 +153,10 @@ export function Packages() {
           })
         }}
       >
-        <td className="td-skip py-2 aling-middle fs-7" data-title="Marcar p/ Resumo">
+        <td
+          className="td-skip aling-middle fs-7 py-2"
+          data-title="Marcar p/ Resumo"
+        >
           <Form.Check
             className="td-skip check_req"
             data-type="package"
@@ -141,9 +165,13 @@ export function Packages() {
             onChange={(e) => {
               const target = e.target as HTMLInputElement
 
-              const checkUncheck = (document.querySelector('.checkUncheck') as HTMLDivElement).children[0] as HTMLInputElement
+              const checkUncheck = (
+                document.querySelector('.checkUncheck') as HTMLDivElement
+              ).children[0] as HTMLInputElement
               const allChecks = document.querySelectorAll('.check_req')
-              const allInputCheckeds = (Array.from(allChecks) as HTMLDivElement[])?.every((div) => {
+              const allInputCheckeds = (
+                Array.from(allChecks) as HTMLDivElement[]
+              )?.every((div) => {
                 const input = div.children[0] as HTMLInputElement
                 return input.checked
               })
@@ -157,14 +185,16 @@ export function Packages() {
               if (target.checked) {
                 setRequestsPersonalized([...requestsPersonalized, cart])
               } else {
-                const filtered = requestsPersonalized.filter((c) => c.id !== cart.id)
+                const filtered = requestsPersonalized.filter(
+                  (c) => c.id !== cart.id
+                )
                 setRequestsPersonalized([...filtered])
               }
             }}
           />
         </td>
         <td
-          className="td-skip py-2 aling-middle print-td "
+          className="td-skip aling-middle print-td py-2 "
           onClick={() => {
             setRequestsToPrint({
               carts: [cart],
@@ -174,7 +204,11 @@ export function Packages() {
           data-title="Imprimir"
         >
           <div className="position-relative td-skip cursor-pointer">
-            <BsPrinter size={25} color={`${cart.print ? '' : 'red'}`} title={`${cart.print ? undefined : t('order_not_printed')}`} />
+            <BsPrinter
+              size={25}
+              color={`${cart.print ? '' : 'red'}`}
+              title={`${cart.print ? undefined : t('order_not_printed')}`}
+            />
           </div>
         </td>
         <td data-title={`${t('code_order')}:`}>
@@ -184,10 +218,14 @@ export function Packages() {
           <span className="aling-middle fs-7">{cart.client?.name}</span>
         </td>
         <td data-title={`${t('phone')}:`}>
-          <span className="aling-middle fs-7">{cart.returnMaskedContact()}</span>
+          <span className="aling-middle fs-7">
+            {cart.returnMaskedContact()}
+          </span>
         </td>
         <td data-title={`${t('payment')}:`}>
-          <span className="aling-middle fs-7">{cart.formsPayment.map((payment) => payment.label).join(', ')}</span>
+          <span className="aling-middle fs-7">
+            {cart.formsPayment.map((payment) => payment.label).join(', ')}
+          </span>
         </td>
         <td data-title={`${t('order_date')}:`}>
           <span className="aling-middle fs-7">{created_at}</span>
@@ -195,7 +233,11 @@ export function Packages() {
         <td data-title={`${t('delivery_date')}:`}>
           <span className="aling-middle fs-7">{packageDate}</span>
         </td>
-        <td className="setPrint align-text-left td-skip" width={100} data-title={`${t('delivery_person')}:`}>
+        <td
+          className="setPrint align-text-left td-skip"
+          width={100}
+          data-title={`${t('delivery_person')}:`}
+        >
           {cart.addressId && cart.type !== 'T' ? (
             <Form.Select
               ref={motoboySelectRef}
@@ -225,14 +267,19 @@ export function Packages() {
         </td>
         <td className="td-skip text-end" id="status-button">
           {cart.status !== 'canceled' ? (
-            <div className="d-flex gap-2 td-skip mx-auto " id="container-buttons" style={{ width: 275 }}>
+            <div
+              className="d-flex td-skip mx-auto gap-2 "
+              id="container-buttons"
+              style={{ width: 275 }}
+            >
               <SendStatusMessageForm
                 cart={cart}
                 newStatus="production"
                 button={{
                   name: cart.type !== 'T' ? t('received') : t('preparation'),
                   props: {
-                    variant: cart.status !== null ? 'outline-primary' : 'primary',
+                    variant:
+                      cart.status !== null ? 'outline-primary' : 'primary',
                     className: 'flex-grow-1 persist-outline',
                     size: 'sm',
                     as: 'a',
@@ -246,7 +293,8 @@ export function Packages() {
                 button={{
                   name: !cart.address ? t('ready_for_pickup') : t('delivering'),
                   props: {
-                    variant: cart.status === 'transport' ? 'outline-orange' : 'orange',
+                    variant:
+                      cart.status === 'transport' ? 'outline-orange' : 'orange',
                     className: 'fs-7 persist-outline',
                     size: 'sm',
                     as: 'a',
@@ -281,7 +329,10 @@ export function Packages() {
   useEffect(() => {
     const getCarts = async () => {
       try {
-        const { data } = await apiRoute(`/dashboard/carts/package?page=${cartsData.page + 1}`, session)
+        const { data } = await apiRoute(
+          `/dashboard/carts/package?page=${cartsData.page + 1}`,
+          session
+        )
         window.scrollTo({
           top: table?.getBoundingClientRect()?.bottom,
           behavior: 'auto',
@@ -360,14 +411,16 @@ export function Packages() {
               <Card>
                 <Card.Body>
                   <Row className="fs-7 sm-package-component-header mb-3">
-                    <Col className="d-flex align-items-center gap-2 wm-gap-row package-component-info">
+                    <Col className="d-flex align-items-center wm-gap-row package-component-info gap-2">
                       <span className="text-nowrap">
                         {t('deliver')}
-                        <span className="rounded-circle d-inline-block align-middle p-2 ms-2 wm-green-day"></span> {t('today')} /
-                        <span className="rounded-circle d-inline-block align-middle p-2 ms-2 wm-orange-day"></span> {t('tomorrow')}
+                        <span className="rounded-circle d-inline-block wm-green-day ms-2 p-2 align-middle"></span>{' '}
+                        {t('today')} /
+                        <span className="rounded-circle d-inline-block wm-orange-day ms-2 p-2 align-middle"></span>{' '}
+                        {t('tomorrow')}
                       </span>
                     </Col>
-                    <Col className="d-flex align-items-end justify-content-end gap-2 flex-nowrap filter-select-content">
+                    <Col className="d-flex align-items-end justify-content-end filter-select-content flex-nowrap gap-2">
                       <div className="d-flex align-items-baseline justify-content-center gap-2">
                         <Form.Label>Filtro:</Form.Label>
                         <FormGroup>
@@ -381,20 +434,32 @@ export function Packages() {
                           >
                             <option value="all">{t('all')}</option>
                             <option value="wait">{t('pending')}</option>
-                            <option value="production">{t('marked_received')}</option>
-                            <option value="delivery">{t('deliver_pickup')}</option>
+                            <option value="production">
+                              {t('marked_received')}
+                            </option>
+                            <option value="delivery">
+                              {t('deliver_pickup')}
+                            </option>
                             <option value="canceled">{t('cancelled')}</option>
-                            <option value="shipping_delivery">{t('delivery_e')}</option>
-                            <option value="shipping_local">{t('local_delivery')}</option>
+                            <option value="shipping_delivery">
+                              {t('delivery_e')}
+                            </option>
+                            <option value="shipping_local">
+                              {t('local_delivery')}
+                            </option>
                           </Form.Select>
                         </FormGroup>
                       </div>
-                      <div className="d-flex gap-2 package-filter-buttons">
+                      <div className="d-flex package-filter-buttons gap-2">
                         <Button onClick={() => setShowModalResumePackage(true)}>
                           <span>{t('summary')}</span>
                         </Button>
                         <Link href="/dashboard/settings/package" legacyBehavior>
-                          <Button variant="outline-secondary" className="fw-bold text-uppercase px-2" as="a">
+                          <Button
+                            variant="outline-secondary"
+                            className="fw-bold text-uppercase px-2"
+                            as="a"
+                          >
                             <BsGearFill size="20" />
                           </Button>
                         </Link>
@@ -402,19 +467,26 @@ export function Packages() {
                     </Col>
                   </Row>
                   {!cartsData.data.length && !profile.options.package.active ? (
-                    <div className="p-5 my-5 text-center">
+                    <div className="my-5 p-5 text-center">
                       <h3>
-                        {textPackage(profile.options.package.label2)} {t('closed_o')}
+                        {textPackage(profile.options.package.label2)}{' '}
+                        {t('closed_o')}
                       </h3>
                       <span>
-                        {t('receive_orders_from')} {textPackage(profile.options.package.label2)} {t('enable_options_the_settings_for')}{' '}
+                        {t('receive_orders_from')}{' '}
+                        {textPackage(profile.options.package.label2)}{' '}
+                        {t('enable_options_the_settings_for')}{' '}
                         {textPackage(profile.options.package.label2)}
                       </span>
                     </div>
                   ) : (
                     <div className="table-responsive no-more-tables">
                       <table
-                        className={window.innerWidth <= 768 ? 'col-sm-12 table-bordered table-striped table-condensed cf' : 'table responsive'}
+                        className={
+                          window.innerWidth <= 768
+                            ? 'col-sm-12 table-bordered table-striped table-condensed cf'
+                            : 'responsive table'
+                        }
                         id="packagesTable"
                         // className="striped hover"
                         // responsive
@@ -427,12 +499,20 @@ export function Packages() {
                                 data-type="package"
                                 onChange={(e) => {
                                   const target = e.target as HTMLInputElement
-                                  const allChecks = document.querySelectorAll('.check_req')
+                                  const allChecks =
+                                    document.querySelectorAll('.check_req')
                                   const newCarts: Cart[] = []
-                                  ;(Array.from(allChecks) as HTMLDivElement[])?.map((div) => {
-                                    const input = div.children[0] as HTMLInputElement
+                                  ;(
+                                    Array.from(allChecks) as HTMLDivElement[]
+                                  )?.map((div) => {
+                                    const input = div
+                                      .children[0] as HTMLInputElement
                                     if (target.checked) {
-                                      const cart = cartsData.data.find((cart) => cart.id === Number(input.dataset.reqId))
+                                      const cart = cartsData.data.find(
+                                        (cart) =>
+                                          cart.id ===
+                                          Number(input.dataset.reqId)
+                                      )
                                       input.checked = true
                                       if (cart) {
                                         newCarts.push(cart)
@@ -489,7 +569,9 @@ export function Packages() {
                           ) : (
                             <tr>
                               <td colSpan={9}>
-                                <span className="fw-bold fs-7">{t('are_no_orders_moment')}</span>
+                                <span className="fw-bold fs-7">
+                                  {t('are_no_orders_moment')}
+                                </span>
                               </td>
                             </tr>
                           )}
@@ -507,7 +589,9 @@ export function Packages() {
         show={showModalResumePackage}
         filterSelected={filterSelected}
         resumeChecked={requestsPersonalized.length ? true : false}
-        carts={requestsPersonalized.length ? requestsPersonalized : cartsData.data}
+        carts={
+          requestsPersonalized.length ? requestsPersonalized : cartsData.data
+        }
         setRequestsPersonalized={() => {
           setRequestsPersonalized([])
         }}

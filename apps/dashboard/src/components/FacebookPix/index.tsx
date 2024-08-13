@@ -1,4 +1,4 @@
-'use client';
+'use client'
 export const FacebookPixel = () => {
   return (
     <div>
@@ -27,5 +27,5 @@ export const FacebookPixel = () => {
         />
       </noscript>
     </div>
-  );
-};
+  )
+}

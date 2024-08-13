@@ -34,21 +34,30 @@ export const SearchForm = ({ onSelectClient, client }: SearchFormProps) => {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { handleShowToast } = useContext(AppContext)
-  const { register, handleSubmit, watch, resetField } = useForm<SearchFormSchemaInput>({
-    resolver: zodResolver(SearchFormSchema),
-  })
+  const { register, handleSubmit, watch, resetField } =
+    useForm<SearchFormSchemaInput>({
+      resolver: zodResolver(SearchFormSchema),
+    })
 
   const [clientsFetched, setClientsFetched] = useState<any[]>([])
   const [showClientsModal, setShowClientsModal] = useState(false)
 
   const handleSearchClients = async (body: SearchFormSchemaInput) => {
     try {
-      const { data } = await apiRoute('/dashboard/report/clients/search?notValidate=true', session, 'POST', body)
+      const { data } = await apiRoute(
+        '/dashboard/report/clients/search?notValidate=true',
+        session,
+        'POST',
+        body
+      )
       const { clients } = data
       switch (type) {
         case 'name':
           if (!clients.length) {
-            handleShowToast({ type: 'alert', content: i18n.t('no_customer_found') })
+            handleShowToast({
+              type: 'alert',
+              content: i18n.t('no_customer_found'),
+            })
             break
           }
           if (clients.length > 1) {
@@ -72,7 +81,10 @@ export const SearchForm = ({ onSelectClient, client }: SearchFormProps) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit(handleSearchClients)} className="d-flex flex-column flex-md-row gap-2 m-2">
+      <form
+        onSubmit={handleSubmit(handleSearchClients)}
+        className="d-flex flex-column flex-md-row m-2 gap-2"
+      >
         <div>
           <Form.Select {...register('type')}>
             <option value="whatsapp">Whatsapp</option>
@@ -80,7 +92,13 @@ export const SearchForm = ({ onSelectClient, client }: SearchFormProps) => {
           </Form.Select>
         </div>
         <div>
-          <Form.Control placeholder={type === 'whatsapp' ? i18n.t('phone_number') : i18n.t('name')} id="search" {...register('search')} />
+          <Form.Control
+            placeholder={
+              type === 'whatsapp' ? i18n.t('phone_number') : i18n.t('name')
+            }
+            id="search"
+            {...register('search')}
+          />
         </div>
         <Button className="my-auto " variant="success" type="submit">
           {t('search')}

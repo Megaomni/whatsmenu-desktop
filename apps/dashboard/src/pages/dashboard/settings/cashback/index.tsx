@@ -13,7 +13,9 @@ const CashbackFormSchema = z.object({
   percentage: z
     .string()
     .transform((value) => parseInt(value))
-    .refine((value) => value > 0 && value <= 100, { message: 'Porcentagem inválida' }),
+    .refine((value) => value > 0 && value <= 100, {
+      message: 'Porcentagem inválida',
+    }),
   expirationDays: z.string().transform((value) => parseInt(value)),
 })
 
@@ -39,11 +41,26 @@ export default function SettingsCashback() {
       const { data } = await api.patch('/dashboard/vouchers/toggle-cashback')
       setProfile((state) => {
         if (state) {
-          return { ...state, options: { ...state.options, voucher: [{ ...state.options.voucher[0], status: !state.options.voucher[0].status }] } }
+          return {
+            ...state,
+            options: {
+              ...state.options,
+              voucher: [
+                {
+                  ...state.options.voucher[0],
+                  status: !state.options.voucher[0].status,
+                },
+              ],
+            },
+          }
         }
         return state
       })
-      handleShowToast({ type: 'success', title: t('cashback_status'), content: data.message })
+      handleShowToast({
+        type: 'success',
+        title: t('cashback_status'),
+        content: data.message,
+      })
     } catch (error) {
       console.error(error)
       handleShowToast({ type: 'erro', title: t('cashback_status') })
@@ -55,11 +72,18 @@ export default function SettingsCashback() {
       const { data } = await api.patch('/dashboard/vouchers/config', body)
       setProfile((state) => {
         if (state) {
-          return { ...state, options: { ...state.options, voucher: [{ ...data.voucher[0] }] } }
+          return {
+            ...state,
+            options: { ...state.options, voucher: [{ ...data.voucher[0] }] },
+          }
         }
         return state
       })
-      handleShowToast({ type: 'success', title: t('cashback_configuration'), content: data.message })
+      handleShowToast({
+        type: 'success',
+        title: t('cashback_configuration'),
+        content: data.message,
+      })
     } catch (error) {
       console.error(error)
       handleShowToast({ type: 'erro', title: t('cashback_configuration') })
@@ -68,7 +92,12 @@ export default function SettingsCashback() {
 
   return (
     <>
-      <Title title={t('settings')} className="mb-4" componentTitle={`${t('loyalty')} / Cashback`} child={['Cashback']} />
+      <Title
+        title={t('settings')}
+        className="mb-4"
+        componentTitle={`${t('loyalty')} / Cashback`}
+        child={['Cashback']}
+      />
       <Card>
         <Card.Header className="d-flex justify-content-between align-items-center">
           <HelpVideos.Trigger
@@ -89,7 +118,11 @@ export default function SettingsCashback() {
           />
         </Card.Header>
         <Card.Body>
-          <form id="form-cashback" onSubmit={handleSubmit(handleSubmitCashback)} className="d-flex flex-column flex-md-row gap-3">
+          <form
+            id="form-cashback"
+            onSubmit={handleSubmit(handleSubmitCashback)}
+            className="d-flex flex-column flex-md-row gap-3"
+          >
             <div>
               <Form.Label>{t('percentage_of')}</Form.Label>
               <InputGroup className="position-relative">
@@ -108,7 +141,11 @@ export default function SettingsCashback() {
             <div>
               <Form.Label>{t('validity')}</Form.Label>
               <InputGroup>
-                <Form.Control type="number" placeholder={`${t('in_days')}. Ex: 30`} {...register('expirationDays')} />
+                <Form.Control
+                  type="number"
+                  placeholder={`${t('in_days')}. Ex: 30`}
+                  {...register('expirationDays')}
+                />
                 <InputGroup.Text>{t('days_n')}</InputGroup.Text>
               </InputGroup>
             </div>

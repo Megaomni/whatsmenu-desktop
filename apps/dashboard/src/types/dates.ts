@@ -28,13 +28,69 @@ export default class Week {
   constructor(week?: WeekType) {
     if (!week) {
       week = {
-        sunday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 7, active: true }],
-        monday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 1, active: true }],
-        tuesday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 2, active: true }],
-        wednesday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 3, active: true }],
-        thursday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 4, active: true }],
-        friday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 5, active: true }],
-        saturday: [{ code: hash(), open: '00:00', close: '23:59', weekDay: 6, active: true }],
+        sunday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 7,
+            active: true,
+          },
+        ],
+        monday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 1,
+            active: true,
+          },
+        ],
+        tuesday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 2,
+            active: true,
+          },
+        ],
+        wednesday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 3,
+            active: true,
+          },
+        ],
+        thursday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 4,
+            active: true,
+          },
+        ],
+        friday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 5,
+            active: true,
+          },
+        ],
+        saturday: [
+          {
+            code: hash(),
+            open: '00:00',
+            close: '23:59',
+            weekDay: 6,
+            active: true,
+          },
+        ],
       }
     }
     this.sunday = week.sunday

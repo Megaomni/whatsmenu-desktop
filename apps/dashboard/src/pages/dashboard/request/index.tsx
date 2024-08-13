@@ -16,9 +16,13 @@ export default function Requests() {
   const { profile, plansCategory, bartenders } = useContext(AppContext)
   const router = useRouter()
 
-  const [batenderMessage, setBartenderMessage] = useLocalStorage('batenderMessage', true)
+  const [batenderMessage, setBartenderMessage] = useLocalStorage(
+    'batenderMessage',
+    true
+  )
 
-  const [lengthRequestsNullPackage, setLengthRequestsNullPackage] = useState<number>(0)
+  const [lengthRequestsNullPackage, setLengthRequestsNullPackage] =
+    useState<number>(0)
   const [lengthRequestsNull, setLengthRequestsNull] = useState<number>(0)
 
   const { t } = useTranslation()
@@ -26,7 +30,11 @@ export default function Requests() {
     <>
       {profile?.id && (
         <>
-          <Title title={t('orders')} componentTitle={t('order_management')} className="mb-4" />
+          <Title
+            title={t('orders')}
+            componentTitle={t('order_management')}
+            className="mb-4"
+          />
           {plansCategory.includes('table') &&
           bartenders.length &&
           !bartenders.filter((bartender) => !bartender.deleted_at).length &&
@@ -37,7 +45,10 @@ export default function Requests() {
               <p>{t('register_you_waiters_quickly')}</p>
               <hr />
               <div className="d-flex justify-content-end gap-2">
-                <Button variant="danger" onClick={() => setBartenderMessage(false)}>
+                <Button
+                  variant="danger"
+                  onClick={() => setBartenderMessage(false)}
+                >
                   {t('dont_work_waiters')}
                 </Button>
                 <Button
@@ -55,7 +66,7 @@ export default function Requests() {
             <Tab.Container id="" defaultActiveKey="requests">
               <Row>
                 <Col sm={12}>
-                  <Nav variant="tabs" className="flex-row tab-nav-flex">
+                  <Nav variant="tabs" className="tab-nav-flex flex-row">
                     <Nav.Item>
                       <Nav.Link eventKey="requests" className="nav-link">
                         <div className="d-flex align-items-baseline gap-1">
@@ -64,7 +75,7 @@ export default function Requests() {
                             <BadgeQuantity
                               title={t('orders_were_not_received')}
                               number={lengthRequestsNull}
-                              className="pulseElement my-auto badge-item"
+                              className="pulseElement badge-item my-auto"
                             />
                           )}
                         </div>
@@ -78,12 +89,14 @@ export default function Requests() {
                     <Nav.Item id="packageTabHead">
                       <Nav.Link eventKey="packages" className="nav-link">
                         <div className="d-flex align-items-baseline gap-1">
-                          <span>{textPackage(profile.options.package.label2)}</span>
+                          <span>
+                            {textPackage(profile.options.package.label2)}
+                          </span>
                           {lengthRequestsNullPackage > 0 && (
                             <BadgeQuantity
                               title={t('orders_were_not_received')}
                               number={lengthRequestsNullPackage}
-                              className="pulseElement my-auto badge-item"
+                              className="pulseElement badge-item my-auto"
                             />
                           )}
                         </div>
@@ -105,7 +118,14 @@ export default function Requests() {
                       )}
                     </Tab.Pane> */}
                     <Tab.Pane eventKey="packages">
-                      {!plansCategory.includes('package') ? <AddPlan title={t('orders_appointments')} plan="package" /> : <Packages />}
+                      {!plansCategory.includes('package') ? (
+                        <AddPlan
+                          title={t('orders_appointments')}
+                          plan="package"
+                        />
+                      ) : (
+                        <Packages />
+                      )}
                     </Tab.Pane>
                   </Tab.Content>
                 </Col>

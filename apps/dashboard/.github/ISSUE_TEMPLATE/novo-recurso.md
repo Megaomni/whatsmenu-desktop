@@ -4,7 +4,6 @@ about: Descreva a ideia do novo recurso
 title: Nova Tarefa - Painel
 labels: enhancement
 assignees: ''
-
 ---
 
 ## Descrição da Tarefa

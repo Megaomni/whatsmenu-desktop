@@ -1,5 +1,11 @@
 import { DateTime } from 'luxon'
-import React, { Dispatch, LegacyRef, SetStateAction, useContext, useEffect } from 'react'
+import React, {
+  Dispatch,
+  LegacyRef,
+  SetStateAction,
+  useContext,
+  useEffect,
+} from 'react'
 import { AppContext } from '../../../../context/app.ctx'
 import Bartender from '../../../../types/bartender'
 import Cart from '../../../../types/cart'
@@ -32,10 +38,22 @@ type PropsType = {
   setDoor: Dispatch<SetStateAction<boolean>>
 }
 
-export function TablePrinter({ carts, componentRef, report, titleTable, command, table, opened, autoPrint, setDoor, ...props }: PropsType) {
+export function TablePrinter({
+  carts,
+  componentRef,
+  report,
+  titleTable,
+  command,
+  table,
+  opened,
+  autoPrint,
+  setDoor,
+  ...props
+}: PropsType) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile, getBartender, printStart, user, currency } = useContext(AppContext)
+  const { profile, getBartender, printStart, user, currency } =
+    useContext(AppContext)
   const cart = carts[0]
 
   let subTotal = 0,
@@ -44,7 +62,10 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
     lack = 0,
     paid = 0
 
-  subTotal = carts.reduce((subTotal, cart) => subTotal + cart.getTotalValue('subtotal'), 0)
+  subTotal = carts.reduce(
+    (subTotal, cart) => subTotal + cart.getTotalValue('subtotal'),
+    0
+  )
   paid = cart?.getTotalValue('total') || 0
 
   total = carts.reduce((total, cart) => total + cart.getTotalValue('total'), 0)
@@ -67,7 +88,9 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
   useEffect(() => {
     setTimeout(() => {
       if (carts.length && autoPrint) {
-        const sessionRequests = JSON.parse(sessionStorage.getItem('printedQueue') as string)
+        const sessionRequests = JSON.parse(
+          sessionStorage.getItem('printedQueue') as string
+        )
 
         if (!sessionRequests) {
           sessionStorage.setItem('printedQueue', `[${carts[0].id}]`)
@@ -96,21 +119,27 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
                   <p className="m-0 text-wrap">
                     {prod.quantity}X | {prod.name}{' '}
                     {prod.details.value > 0 ? (
-                      <span className="m-0 ">({`${currency({ value: prod.getTotal(true), withoutSymbol: true })}`})</span>
+                      <span className="m-0 ">
+                        (
+                        {`${currency({ value: prod.getTotal(true), withoutSymbol: true })}`}
+                        )
+                      </span>
                     ) : null}
                   </p>
-                  <div className="ps-2 mytest-1">
+                  <div className="mytest-1 ps-2">
                     {prod.details.complements?.map((complement) => {
                       return (
                         <div className="m-0 mt-2 p-0" key={hash()}>
-                          <p className="m-0 fw-bold">{` \u00A0${complement.name}`}</p>
+                          <p className="fw-bold m-0">{` \u00A0${complement.name}`}</p>
                           {complement.itens?.map((item) => {
                             return (
                               <div key={hash()} className="row-print clearfix">
                                 <div className="col-print-lt">
-                                  <div className="ps-1 mt-1">
+                                  <div className="mt-1 ps-1">
                                     <span className="text-wrap">
-                                      <span className="fw-bold">{` \u00A0\u00A0\u00A0${item.quantity}`}X </span>
+                                      <span className="fw-bold">
+                                        {` \u00A0\u00A0\u00A0${item.quantity}`}X{' '}
+                                      </span>
                                       {item.name}{' '}
                                       {item.value > 0
                                         ? `(${currency({
@@ -158,7 +187,9 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
       bartender = getBartender(cart.bartenderId)
     }
 
-    const created_at = DateTime.fromSQL(cart.created_at).setZone('America/Sao_Paulo', { keepLocalTime: true }).toSQL()
+    const created_at = DateTime.fromSQL(cart.created_at)
+      .setZone('America/Sao_Paulo', { keepLocalTime: true })
+      .toSQL()
 
     return (
       <tbody key={cart.code}>
@@ -167,12 +198,20 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
             <div>
               {indexReq === 0 && (
                 <>
-                  <p className="m-0">{DateTime.fromSQL(created_at, { zone: profile.timeZone }).toFormat(`${t('date_format')} HH:mm:ss`)}</p>
+                  <p className="m-0">
+                    {DateTime.fromSQL(created_at, {
+                      zone: profile.timeZone,
+                    }).toFormat(`${t('date_format')} HH:mm:ss`)}
+                  </p>
                   {props.type !== 'command' && props.type !== 'table' && (
                     <p className="m-0">
                       <span className={`fw-bold`}>{t('order')}: </span>
                       {`wm${cart.code}-${cart.getTextTypeReq()}`}
-                      <span className="fw-bold">{cart.status === 'canceled' ? ` ${t('cancelled_up')}` : null}</span>
+                      <span className="fw-bold">
+                        {cart.status === 'canceled'
+                          ? ` ${t('cancelled_up')}`
+                          : null}
+                      </span>
                     </p>
                   )}
                 </>
@@ -187,7 +226,12 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
                 <td>
                   <span className="fw-bold">{t('table')}: </span>
                   <span>
-                    {table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), ` ${t('disabled')}`) : table?.name}
+                    {table?.deleted_at
+                      ? table?.name.replace(
+                          table?.name.substring(table?.name.length - 25),
+                          ` ${t('disabled')}`
+                        )
+                      : table?.name}
                   </span>
                 </td>
               </tr>
@@ -195,19 +239,32 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
             {props.type !== 'table' && (
               <tr>
                 <td>
-                  <span className="fw-bold">{props.type === 'command' || props.type === 'T' ? t('order_slip') : t('client')}:&nbsp;</span>
-                  <span>{(cart.type === 'T' ? cart.command : cart.client)?.name}</span>
+                  <span className="fw-bold">
+                    {props.type === 'command' || props.type === 'T'
+                      ? t('order_slip')
+                      : t('client')}
+                    :&nbsp;
+                  </span>
+                  <span>
+                    {(cart.type === 'T' ? cart.command : cart.client)?.name}
+                  </span>
                 </td>
               </tr>
             )}
 
-            {cart.type === 'T' && props.type !== 'command' && props.type !== 'table' && bartender ? (
+            {cart.type === 'T' &&
+            props.type !== 'command' &&
+            props.type !== 'table' &&
+            bartender ? (
               <tr>
                 <td>
                   <span className="fw-bold">{t('waiter')}:&nbsp;</span>
                   <span>
                     {bartender.deleted_at
-                      ? bartender.name.replace(bartender.name.substring(bartender.name.length - 19), ` ${t('disabled')}`)
+                      ? bartender.name.replace(
+                          bartender.name.substring(bartender.name.length - 19),
+                          ` ${t('disabled')}`
+                        )
                       : bartender.name}
                   </span>
                 </td>
@@ -235,15 +292,25 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
                 <td className="">
                   <span className="fw-bold">{t('duration')}: </span>
                   <span className={`${props.paperSize === 58 && 'fs-8'}`}>
-                    {DateTime.fromSQL((table?.opened || opened)?.created_at as string).toFormat('HH:mm')}/
+                    {DateTime.fromSQL(
+                      (table?.opened || opened)?.created_at as string
+                    ).toFormat('HH:mm')}
+                    /
                     {report
-                      ? DateTime.fromSQL((table?.opened || opened)?.updated_at as string).toFormat('HH:mm')
+                      ? DateTime.fromSQL(
+                          (table?.opened || opened)?.updated_at as string
+                        ).toFormat('HH:mm')
                       : DateTime.local().toFormat('HH:mm')}{' '}
                     -{' '}
                     {report
                       ? (table?.opened || opened)?.perm
                       : DateTime.local()
-                          .diff(DateTime.fromSQL((table?.opened || opened)?.created_at as string), 'seconds')
+                          .diff(
+                            DateTime.fromSQL(
+                              (table?.opened || opened)?.created_at as string
+                            ),
+                            'seconds'
+                          )
                           .toFormat("hh'h'mm")}
                   </span>
                 </td>
@@ -260,7 +327,9 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
           <p className="m-0">
             <span className={`fw-bold`}>{t('order')}: </span>
             {`wm${cart.code}-${cart.getTextTypeReq()}`}
-            <span className="fw-bold">{cart.status === 'canceled' ? ` ${t('cancelled_up')}` : null}</span>
+            <span className="fw-bold">
+              {cart.status === 'canceled' ? ` ${t('cancelled_up')}` : null}
+            </span>
           </p>
         )}
         {$cartsRequests(cart)}
@@ -281,8 +350,11 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
     >
       <tbody>
         <tr>
-          <td className="text-center pbtest-3">
-            <span className="fs-5 fw-bold title-name" style={{ wordBreak: 'break-word', whiteSpace: 'break-spaces' }}>
+          <td className="pbtest-3 text-center">
+            <span
+              className="fs-5 fw-bold title-name"
+              style={{ wordBreak: 'break-word', whiteSpace: 'break-spaces' }}
+            >
               {titleTable ? titleTable : profile?.name.normalize()}
             </span>
           </td>
@@ -294,12 +366,17 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
         {
           <>
             {props.type === 'command' || props.type === 'table'
-              ? (props.type === 'command' ? command?.fees : (opened ?? table?.opened)?.getUpdatedFees(!report, true))
+              ? (props.type === 'command'
+                  ? command?.fees
+                  : (opened ?? table?.opened)?.getUpdatedFees(!report, true)
+                )
                   ?.filter((fee) => fee.deleted_at === null)
                   .map((fee, index, arr) =>
                     fee.status && fee.automatic ? (
                       <tr key={fee.code}>
-                        <td className={`${index === 0 && 'pt-1'} ${index === arr.length - 1 && 'pbtest-1'}`}>
+                        <td
+                          className={`${index === 0 && 'pt-1'} ${index === arr.length - 1 && 'pbtest-1'}`}
+                        >
                           <div className="row-print clearfix">
                             <div className="col-print-lt-payment">
                               <span>{fee.code}</span>
@@ -312,8 +389,11 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
                                       ? fee.value * fee.quantity
                                       : (fee.value / 100) *
                                         (props.type === 'command'
-                                          ? command?.getTotalValue('command') || 0
-                                          : (opened ?? table?.opened)?.getTotalValue('table') || 0),
+                                          ? command?.getTotalValue('command') ||
+                                            0
+                                          : (
+                                              opened ?? table?.opened
+                                            )?.getTotalValue('table') || 0),
                                   withoutSymbol: true,
                                 })}
                               </span>
@@ -328,9 +408,10 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
         }
 
         {(props.type === 'command' || props.type === 'table') &&
-        (props.type === 'command' ? command?.fees : (opened ?? table?.opened)?.getUpdatedFees(!report, true))?.filter(
-          (fee) => fee.deleted_at === null
-        ).length ? (
+        (props.type === 'command'
+          ? command?.fees
+          : (opened ?? table?.opened)?.getUpdatedFees(!report, true)
+        )?.filter((fee) => fee.deleted_at === null).length ? (
           <tr>
             <td>
               <div className="underlineSeparator"></div>
@@ -346,12 +427,16 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
               .filter((c) => c.haveCarts())
               .map((commandMap, index, arr) => (
                 <tr key={commandMap.code}>
-                  <td className={`${index === 0 && 'pt-1'} ${index === arr.length - 1 && 'pbtest-1'}`}>
+                  <td
+                    className={`${index === 0 && 'pt-1'} ${index === arr.length - 1 && 'pbtest-1'}`}
+                  >
                     <div className="row-print clearfix">
                       <div className="col-print-lt-payment">
                         <div className="between-paid">
                           <span>{commandMap.name}</span>
-                          {!commandMap.status && <span className="me-3">{t('paid_up')}</span>}
+                          {!commandMap.status && (
+                            <span className="me-3">{t('paid_up')}</span>
+                          )}
                         </div>
                       </div>
                       <div className="col-print-rt-payment">
@@ -437,7 +522,10 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
                     {carts[0].cupom?.type !== 'freight'
                       ? `-${currency({
                           value: Number(
-                            carts[0].cupom?.type === 'percent' ? (subTotal / 100) * Number(carts[0].cupom?.value ?? 0) : carts[0].cupom?.value ?? 0
+                            carts[0].cupom?.type === 'percent'
+                              ? (subTotal / 100) *
+                                  Number(carts[0].cupom?.value ?? 0)
+                              : (carts[0].cupom?.value ?? 0)
                           ),
                           withoutSymbol: true,
                         })}`
@@ -526,21 +614,40 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
             </tr>
             <tr>
               <td>
-                {(props.type === 'command' ? command : props.type === 'table' ? table?.opened : cart)?.formsPayment.map((formPayment, index) => {
+                {(props.type === 'command'
+                  ? command
+                  : props.type === 'table'
+                    ? table?.opened
+                    : cart
+                )?.formsPayment.map((formPayment, index) => {
                   return (
-                    <div key={'forms-payment-table-' + index} className="row-print clearfix">
+                    <div
+                      key={'forms-payment-table-' + index}
+                      className="row-print clearfix"
+                    >
                       <div className="col-print-lt-payment">
                         <p className="fw-boldtest m-0">{`\u2000\u2000Em ${formPayment.label}`}</p>
-                        {formPayment.change ? <span>{`\u2000\u2000${t('change')}`}</span> : null}
+                        {formPayment.change ? (
+                          <span>{`\u2000\u2000${t('change')}`}</span>
+                        ) : null}
                       </div>
                       <div className="col-print-rt-payment">
                         <p className="m-0">
                           {currency({
-                            value: formPayment.change ? formPayment.change : formPayment.value,
+                            value: formPayment.change
+                              ? formPayment.change
+                              : formPayment.value,
                             withoutSymbol: true,
                           })}
                         </p>
-                        {formPayment.change ? <span>{currency({ value: formPayment.change - formPayment.value, withoutSymbol: true })}</span> : null}
+                        {formPayment.change ? (
+                          <span>
+                            {currency({
+                              value: formPayment.change - formPayment.value,
+                              withoutSymbol: true,
+                            })}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                   )
@@ -549,20 +656,23 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
             </tr>
           </>
         }
-        {carts[0]?.type === 'T' && (props.type === 'command' || props.type === 'table') && (
-          <tr>
-            <td>
-              <div className="row-print clearfix">
-                <div className="col-print-lt-payment">
-                  <span className="fw-bold">{t('missing')}: </span>
+        {carts[0]?.type === 'T' &&
+          (props.type === 'command' || props.type === 'table') && (
+            <tr>
+              <td>
+                <div className="row-print clearfix">
+                  <div className="col-print-lt-payment">
+                    <span className="fw-bold">{t('missing')}: </span>
+                  </div>
+                  <div className="col-print-rt-payment">
+                    <span>
+                      {currency({ value: lack, withoutSymbol: true })}
+                    </span>
+                  </div>
                 </div>
-                <div className="col-print-rt-payment">
-                  <span>{currency({ value: lack, withoutSymbol: true })}</span>
-                </div>
-              </div>
-            </td>
-          </tr>
-        )}
+              </td>
+            </tr>
+          )}
         {/* {carts[0]?.type !== "T" && (
           <tr>
             <td className="">
@@ -585,22 +695,22 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
         <>
           {carts[0]?.address && (
             <tr>
-              <td className="text-start pt-1 toplineSeparator">
+              <td className="toplineSeparator pt-1 text-start">
                 <div>
-                  <p className="p-0 m-0">{cart.address.street},</p>
-                  <p className="p-0 m-0">
+                  <p className="m-0 p-0">{cart.address.street},</p>
+                  <p className="m-0 p-0">
                     {cart.address.number} {cart.address.complement}
                   </p>
-                  <p className="p-0 m-0">
+                  <p className="m-0 p-0">
                     {cart.address.neighborhood} - {cart.address.city}
                   </p>
-                  <p className="p-0 m-0">{cart.address.reference}</p>
+                  <p className="m-0 p-0">{cart.address.reference}</p>
                 </div>
               </td>
             </tr>
           )}
           <tr>
-            <td className={`text-center pt-2 printer-foot-last-line`}>
+            <td className={`printer-foot-last-line pt-2 text-center`}>
               <div
                 className="toplineSeparator pt-3"
                 // className={`${
@@ -608,14 +718,19 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
                 // }`}
               ></div>
               <div>
-                <span className="fw-bold text-center w-100" style={{ whiteSpace: 'pre' }}>
-                  {carts[0]?.typeDeliveryText(textPackage(profile.options.package.label2))}
+                <span
+                  className="fw-bold w-100 text-center"
+                  style={{ whiteSpace: 'pre' }}
+                >
+                  {carts[0]?.typeDeliveryText(
+                    textPackage(profile.options.package.label2)
+                  )}
                 </span>
               </div>
             </td>
           </tr>
           <tr className="">
-            <td className="text-center  pb-3">
+            <td className="pb-3  text-center">
               <span className="text-center">{t('technology')}</span>
               <br />
               <span className="text-center">www.whatsmenu.com.br</span>
@@ -632,9 +747,7 @@ export function TablePrinter({ carts, componentRef, report, titleTable, command,
         content
       ) : (
         <div ref={componentRef}>
-          {props.copiesTimes?.map((c) => (
-            <div key={hash()}>{content}</div>
-          ))}
+          {props.copiesTimes?.map((c) => <div key={hash()}>{content}</div>)}
         </div>
       )}
     </div>

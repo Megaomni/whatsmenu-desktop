@@ -10,8 +10,19 @@ import { useTranslation } from 'react-i18next'
 
 const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
   const { t } = useTranslation()
-  const { profileState, showSpinner, showFinPassModal, dataToBeUpdated, toggleSpinner, onSubmit } = useContext(PaymentMethodContext)
-  const [cashSettings, setCashSettings] = useState(profileState?.formsPayment?.find((method) => method.payment === paymentMethod))
+  const {
+    profileState,
+    showSpinner,
+    showFinPassModal,
+    dataToBeUpdated,
+    toggleSpinner,
+    onSubmit,
+  } = useContext(PaymentMethodContext)
+  const [cashSettings, setCashSettings] = useState(
+    profileState?.formsPayment?.find(
+      (method) => method.payment === paymentMethod
+    )
+  )
   const {
     register,
     reset,
@@ -19,10 +30,17 @@ const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
     setValue,
     getValues,
     formState: { errors },
-  } = useForm<ProfileFormPayment>({ mode: 'onChange', defaultValues: cashSettings })
+  } = useForm<ProfileFormPayment>({
+    mode: 'onChange',
+    defaultValues: cashSettings,
+  })
 
   useEffect(() => {
-    setCashSettings(profileState?.formsPayment?.find((method) => method.payment === paymentMethod))
+    setCashSettings(
+      profileState?.formsPayment?.find(
+        (method) => method.payment === paymentMethod
+      )
+    )
   }, [profileState])
 
   useEffect(() => {
@@ -30,7 +48,10 @@ const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
   }, [cashSettings])
 
   useEffect(() => {
-    if (showFinPassModal === false && dataToBeUpdated?.payment === paymentMethod) {
+    if (
+      showFinPassModal === false &&
+      dataToBeUpdated?.payment === paymentMethod
+    ) {
       reset(cashSettings)
     }
   }, [showFinPassModal])
@@ -38,7 +59,11 @@ const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
   return (
     <>
       <Card className="position-relative">
-        <form onSubmit={handleSubmit((data) => onSubmit(data, toggleSpinner, reset))}>
+        <form
+          onSubmit={handleSubmit((data) =>
+            onSubmit(data, toggleSpinner, reset)
+          )}
+        >
           <Card.Header className="text-dark d-flex justify-content-between">
             <h4 className="text-capitalize">
               <b>{cashSettings?.payment}</b>
@@ -67,7 +92,12 @@ const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
                 />
               </Col>
               <Col md="3" lg="3" className="d-flex">
-                <Button variant="success" className="flex-grow-1 mt-auto mb-2" type="submit" disabled={Object.keys(errors).length ? true : false}>
+                <Button
+                  variant="success"
+                  className="flex-grow-1 mb-2 mt-auto"
+                  type="submit"
+                  disabled={Object.keys(errors).length ? true : false}
+                >
                   {t('save')}
                 </Button>
               </Col>

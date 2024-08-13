@@ -2,11 +2,30 @@ import { apiRoute } from '@utils/wm-functions'
 import EventEmitter from 'events'
 import { Session } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useEffect, useReducer, useState } from 'react'
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react'
 import { useFetch } from '../hooks/useFetch'
 import { Subscription, useWebSocket } from '../hooks/useWebSocket'
-import { addItemCartAction, addItemPackageCart, setCartAction, setCartsAction, setPackageCartsAction } from '../reducers/carts/actions'
-import { CartsState, PackageCartsData, cartsReducer } from '../reducers/carts/reducer'
+import {
+  addItemCartAction,
+  addItemPackageCart,
+  setCartAction,
+  setCartsAction,
+  setPackageCartsAction,
+} from '../reducers/carts/actions'
+import {
+  CartsState,
+  PackageCartsData,
+  cartsReducer,
+} from '../reducers/carts/reducer'
 import Cart, { CartType } from '../types/cart'
 import { AppContext } from './app.ctx'
 import { useWhatsAppBot } from '@hooks/useWhatsAppBot'
@@ -29,7 +48,9 @@ interface CartProviderProps {
   children: ReactNode
 }
 
-export const CartsContext = createContext<CartContextData>({} as CartContextData)
+export const CartsContext = createContext<CartContextData>(
+  {} as CartContextData
+)
 
 export function CartsProvider({ children }: CartProviderProps) {
   const { wsConnect, wsSubscribe } = useWebSocket()
@@ -39,11 +60,20 @@ export function CartsProvider({ children }: CartProviderProps) {
   const cartEvents = new EventEmitter()
 
   const [showLostRequestsModal, setShowLostRequestsModal] = useState(false)
-  const [state, dispatch] = useReducer(cartsReducer, { carts: [], packageCarts: null } as CartsState)
+  const [state, dispatch] = useReducer(cartsReducer, {
+    carts: [],
+    packageCarts: null,
+  } as CartsState)
   const [motoboys, setMotoboys] = useState<any[]>([])
-  const { data: result_carts } = useFetch<{ carts: CartType[] }>('/dashboard/carts')
-  const { data: result_motoboys } = useFetch<{ motoboys: any[] }>('/dashboard/motoboys')
-  const { data: result_package_data } = useFetch<{ packageCarts: PackageCartsData }>(`/dashboard/carts/package?page=${1}`)
+  const { data: result_carts } = useFetch<{ carts: CartType[] }>(
+    '/dashboard/carts'
+  )
+  const { data: result_motoboys } = useFetch<{ motoboys: any[] }>(
+    '/dashboard/motoboys'
+  )
+  const { data: result_package_data } = useFetch<{
+    packageCarts: PackageCartsData
+  }>(`/dashboard/carts/package?page=${1}`)
   const [printSubscription, setPrintSubscription] = useState<Subscription>()
 
   const setCarts = (carts: Cart[]) => {
@@ -66,9 +96,18 @@ export function CartsProvider({ children }: CartProviderProps) {
     }
   }
 
-  const updateMotoboyId = async (cartId: number, motoboyId: number, session: Session) => {
+  const updateMotoboyId = async (
+    cartId: number,
+    motoboyId: number,
+    session: Session
+  ) => {
     try {
-      const { data: cartUpdated } = await apiRoute('/dashboard/cart/singMotoboy', session, 'PATCH', { cartId, motoboyId })
+      const { data: cartUpdated } = await apiRoute(
+        '/dashboard/cart/singMotoboy',
+        session,
+        'PATCH',
+        { cartId, motoboyId }
+      )
       setCart(new Cart(cartUpdated))
     } catch (error) {
       console.error(error)
@@ -78,7 +117,10 @@ export function CartsProvider({ children }: CartProviderProps) {
 
   const onWsReconnect = async () => {
     const { data: result_carts } = await apiRoute('/dashboard/carts', session)
-    const { data: result_package_data } = await apiRoute(`/dashboard/carts/package?page=${1}`, session)
+    const { data: result_package_data } = await apiRoute(
+      `/dashboard/carts/package?page=${1}`,
+      session
+    )
     if (result_carts) {
       const { carts } = result_carts
       setCarts(carts.map((cart: CartType) => new Cart(cart)))
@@ -141,7 +183,7 @@ export function CartsProvider({ children }: CartProviderProps) {
             })
           })
           wsSubscribe('command', profile.slug, (subscription) => {
-            subscription.on('command', (command) => { })
+            subscription.on('command', (command) => {})
           })
           if (profile.options?.print.app) {
             wsSubscribe('print', profile.slug, (subscription) => {
@@ -158,13 +200,16 @@ export function CartsProvider({ children }: CartProviderProps) {
 
   useEffect(() => {
     if (printSubscription) {
-      printSubscription.on('sucessesFullPrinting', ({ requestId }: { requestId: number }) => {
-        const cartIndex = state.carts.findIndex((r) => r.id === requestId)
-        if (cartIndex !== -1) {
-          state.carts[cartIndex].print = 1
+      printSubscription.on(
+        'sucessesFullPrinting',
+        ({ requestId }: { requestId: number }) => {
+          const cartIndex = state.carts.findIndex((r) => r.id === requestId)
+          if (cartIndex !== -1) {
+            state.carts[cartIndex].print = 1
+          }
+          setCarts([...state.carts])
         }
-        setCarts([...state.carts])
-      })
+      )
     }
   }, [state.carts, printSubscription])
 
@@ -180,15 +225,15 @@ export function CartsProvider({ children }: CartProviderProps) {
             perPage: 30,
             total: 0,
           },
-          setCarts: () => { },
-          setPackageCarts: () => { },
-          setShowLostRequestsModal: () => { },
+          setCarts: () => {},
+          setPackageCarts: () => {},
+          setShowLostRequestsModal: () => {},
           showLostRequestsModal: false,
           cartEvents,
-          setCart: () => { },
+          setCart: () => {},
           setMotoboys,
           motoboys: [],
-          updateMotoboyId: () => { },
+          updateMotoboyId: () => {},
         }}
       >
         {children}

@@ -1,18 +1,41 @@
 import { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
-import { Col, Row, Card, Button, Container, FormGroup, Form, InputGroup, Placeholder, Badge, Alert } from 'react-bootstrap'
+import {
+  Col,
+  Row,
+  Card,
+  Button,
+  Container,
+  FormGroup,
+  Form,
+  InputGroup,
+  Placeholder,
+  Badge,
+  Alert,
+} from 'react-bootstrap'
 import { MdAlarm, MdAttachMoney, MdPhotoLibrary } from 'react-icons/md'
 import { CropModal } from '../../Modals/CropModal'
 import { BsFillPhoneFill, BsTelephoneFill } from 'react-icons/bs'
 import { RiComputerFill } from 'react-icons/ri'
 import { AiOutlineClose } from 'react-icons/ai'
-import { apiRoute, colorLuminosity, compareItems, copy, encryptEmoji, mask, maskedPhone, superNormalize } from '../../../utils/wm-functions'
+import {
+  apiRoute,
+  colorLuminosity,
+  compareItems,
+  copy,
+  encryptEmoji,
+  mask,
+  maskedPhone,
+  superNormalize,
+} from '../../../utils/wm-functions'
 import { AppContext } from '../../../context/app.ctx'
 import { IoColorPaletteSharp } from 'react-icons/io5'
 import Profile, { ProfileType } from '../../../types/profile'
 import { useSession } from 'next-auth/react'
 import { BiWorld } from 'react-icons/bi'
 import { PaymentMethodContext } from '@context/paymentMethod.ctx'
-import FinPasswordModal, { RequestProperties } from '@components/Modals/FinPassword'
+import FinPasswordModal, {
+  RequestProperties,
+} from '@components/Modals/FinPassword'
 import { useForm } from 'react-hook-form'
 import { HelpVideos } from '@components/Modals/HelpVideos'
 import { useTranslation } from 'react-i18next'
@@ -26,8 +49,21 @@ interface ProfileBusinessProps {
 export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile: profileContext, setProfile: setProfileContext, changeConfig, setChangeConfig, handleShowToast, currency } = useContext(AppContext)
-  const { profileState, handleProfileUpdate, toggleModal, dataToBeUpdated, handleDataToBeUpdated } = useContext(PaymentMethodContext)
+  const {
+    profile: profileContext,
+    setProfile: setProfileContext,
+    changeConfig,
+    setChangeConfig,
+    handleShowToast,
+    currency,
+  } = useContext(AppContext)
+  const {
+    profileState,
+    handleProfileUpdate,
+    toggleModal,
+    dataToBeUpdated,
+    handleDataToBeUpdated,
+  } = useContext(PaymentMethodContext)
   const { register, setValue, getValues, watch } = useForm()
 
   const [profile, setProfile] = useState<Profile>(profileContext)
@@ -36,7 +72,9 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
   const [imgCoverUrl, setImageSrcCoverUrl] = useState<string>('')
   const [showComputer, setShowComputer] = useState(true)
   const [DDI, setDDI] = useState(i18n.t('ddi'))
-  const [whatsapp, setWhatsapp] = useState(profile?.whatsapp?.substring(t('ddi').length) ?? '')
+  const [whatsapp, setWhatsapp] = useState(
+    profile?.whatsapp?.substring(t('ddi').length) ?? ''
+  )
   //Crops States
   // const defaultCrop: Crop = { unit: '%', aspect: 768 / 307, width: 768, height: 307, x: 0, y: 0 };
   // const [imgUrlCrop, setImageSrcCrop] = useState<string>("");
@@ -44,8 +82,12 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
   const [idImage, setIdImage] = useState<string>('')
   const [typeImage, setTypeImage] = useState<string>()
   const [bgInfoColor, setBgInfoColor] = useState(profile.color ?? '#ff9900')
-  const [textInfoColor, setTextInfoColor] = useState(colorLuminosity(profile.color).color)
-  const [typeCrop, setTypeCrop] = useState<'profileCover' | 'profileLogo' | 'profileIcon'>('profileCover')
+  const [textInfoColor, setTextInfoColor] = useState(
+    colorLuminosity(profile.color).color
+  )
+  const [typeCrop, setTypeCrop] = useState<
+    'profileCover' | 'profileLogo' | 'profileIcon'
+  >('profileCover')
 
   const [logo, setLogo] = useState()
   const [background, setBackground] = useState()
@@ -59,7 +101,9 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
 
   const handleCreate = useCallback(async () => {
     const dataProfile = new FormData()
-    Object.entries(watch()).forEach((entry) => dataProfile.append(entry[0], entry[1]))
+    Object.entries(watch()).forEach((entry) =>
+      dataProfile.append(entry[0], entry[1])
+    )
     if (logo) {
       dataProfile.append('logo', logo)
     }
@@ -71,18 +115,30 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
     }
 
     dataProfile.set('name', encryptEmoji(getValues('name') ?? profile.name))
-    dataProfile.set('description', encryptEmoji(getValues('description') ?? profile.description))
-    dataProfile.set('whatsapp', DDI + superNormalize(getValues('whatsapp') ?? profile.whatsapp))
+    dataProfile.set(
+      'description',
+      encryptEmoji(getValues('description') ?? profile.description)
+    )
+    dataProfile.set(
+      'whatsapp',
+      DDI + superNormalize(getValues('whatsapp') ?? profile.whatsapp)
+    )
     dataProfile.set('color', bgInfoColor)
     if (!watch('slug')) {
       dataProfile.set('slug', profile.slug)
     }
 
     try {
-      const { data }: { data: ProfileType } = await apiRoute('/dashboard/profile/step1', session, 'POST', dataProfile, {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${session?.accessToken}`,
-      })
+      const { data }: { data: ProfileType } = await apiRoute(
+        '/dashboard/profile/step1',
+        session,
+        'POST',
+        dataProfile,
+        {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${session?.accessToken}`,
+        }
+      )
 
       setProfileContext(new Profile({ ...profile, ...data }))
       changeConfig.toRouter && changeConfig.toRouter()
@@ -93,17 +149,35 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
       })
     } catch (error: any) {
       if (error.response.status === 409) {
-        handleShowToast({ type: 'erro', title: t('profile'), content: error.response.data.message })
+        handleShowToast({
+          type: 'erro',
+          title: t('profile'),
+          content: error.response.data.message,
+        })
       } else {
         handleShowToast({ type: 'erro', title: t('profile'), content: '' })
       }
       console.error(error)
     }
-  }, [logo, background, favicon, profile, DDI, whatsapp, bgInfoColor, session, setProfileContext, changeConfig, handleShowToast])
+  }, [
+    logo,
+    background,
+    favicon,
+    profile,
+    DDI,
+    whatsapp,
+    bgInfoColor,
+    session,
+    setProfileContext,
+    changeConfig,
+    handleShowToast,
+  ])
 
   const prepareUpdateForm = () => {
     const dataProfile = new FormData()
-    Object.entries(watch()).forEach((entry) => dataProfile.append(entry[0], entry[1]))
+    Object.entries(watch()).forEach((entry) =>
+      dataProfile.append(entry[0], entry[1])
+    )
     if (logo) {
       dataProfile.append('logo', logo)
     }
@@ -114,7 +188,10 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
       dataProfile.append('favicon', favicon)
     }
     dataProfile.set('name', encryptEmoji(getValues('name') ?? profile.name))
-    dataProfile.set('description', encryptEmoji(getValues('description') ?? profile.description))
+    dataProfile.set(
+      'description',
+      encryptEmoji(getValues('description') ?? profile.description)
+    )
     dataProfile.set('whatsapp', DDI + superNormalize(getValues('whatsapp')))
     dataProfile.set('color', bgInfoColor)
     dataProfile.set('options', JSON.stringify(profile.options))
@@ -187,32 +264,43 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
   const displayPhone = (
     <Row>
       <Col sm="12" className="mx-auto mt-2">
-        <div className="d-flex justify-content-center gap-2 mt-2">
+        <div className="d-flex justify-content-center mt-2 gap-2">
           <Placeholder xs={2} />
           <Placeholder xs={2} />
           <Placeholder xs={2} />
           <Placeholder xs={2} />
           <Placeholder xs={2} />
         </div>
-        <Placeholder as="div" xs={12} className="py-3 mt-2" />
+        <Placeholder as="div" xs={12} className="mt-2 py-3" />
       </Col>
     </Row>
   )
 
   const iconProfile = showComputer ? (
-    <Badge bg="none" className="d-flex justify-content-between align-items-center overflow-hidden text-start border border-1 border-bottom-0">
+    <Badge
+      bg="none"
+      className="d-flex justify-content-between align-items-center border-1 border-bottom-0 overflow-hidden border text-start"
+    >
       <div>
         <span className="d-inline-block align-middle">
           {iconImgUrl || profile.options?.favicon ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={iconImgUrl ? iconImgUrl : profile.options?.favicon} id="favicon-display" width={16} height={16} alt="icone" />
+            <img
+              src={iconImgUrl ? iconImgUrl : profile.options?.favicon}
+              id="favicon-display"
+              width={16}
+              height={16}
+              alt="icone"
+            />
           ) : (
             <BiWorld />
           )}
         </span>
-        <span className="fw-normal ms-2 align-middle text-white">{profile.name}</span>
+        <span className="fw-normal ms-2 align-middle text-white">
+          {profile.name}
+        </span>
       </div>
-      <span className="text-white ms-3">
+      <span className="ms-3 text-white">
         <AiOutlineClose color="#fff" />
       </span>
     </Badge>
@@ -220,12 +308,19 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
     <Badge
       bg="none"
       className="d-flex justify-content-between align-items-center 
-    overflow-hidden text-start pb-0"
+    overflow-hidden pb-0 text-start"
     >
       <div>
         <span className="d-inline-block align-middle">
           {/*eslint-disable-next-line @next/next/no-img-element*/}
-          <img src={iconImgUrl || profile.options?.favicon || '/images/sem-foto.jpeg'} width={16} height={16} alt="icone" />
+          <img
+            src={
+              iconImgUrl || profile.options?.favicon || '/images/sem-foto.jpeg'
+            }
+            width={16}
+            height={16}
+            alt="icone"
+          />
         </span>
         <span className="fs-8 fw-normal ms-2">{profile.name}</span>
       </div>
@@ -234,7 +329,10 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
 
   return (
     <>
-      <FinPasswordModal dataToBeUpdated={prepareUpdateForm()} request={requestProperties} />
+      <FinPasswordModal
+        dataToBeUpdated={prepareUpdateForm()}
+        request={requestProperties}
+      />
       <form>
         {modalCrop}
         {/* Cria o modal se a crop propriedade for presente */}
@@ -248,24 +346,38 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                 <Row>
                   <Col sm>
                     <FormGroup>
-                      <Form.Label className="text-upperCase fw-bold fs-7">{t('store_name')} *</Form.Label>
+                      <Form.Label className="text-upperCase fw-bold fs-7">
+                        {t('store_name')} *
+                      </Form.Label>
                       <Form.Control
                         type="text"
                         placeholder={t('enter_store_name')}
-                        {...register('name', { required: true, onChange: (e) => setValue('slug', superNormalize(e.target.value)) })}
+                        {...register('name', {
+                          required: true,
+                          onChange: (e) =>
+                            setValue('slug', superNormalize(e.target.value)),
+                        })}
                         defaultValue={profile.name ?? ''}
                       />
                     </FormGroup>
                   </Col>
-                  <Col sm className="mt-2 mt-md-0">
+                  <Col sm className="mt-md-0 mt-2">
                     <FormGroup>
-                      <Form.Label className="fw-bold fs-7" style={{ wordBreak: 'break-all' }}>
-                        {process.env.WHATSMENU_BASE_URL}/{watch('slug') ?? profile.slug ?? ''}
+                      <Form.Label
+                        className="fw-bold fs-7"
+                        style={{ wordBreak: 'break-all' }}
+                      >
+                        {process.env.WHATSMENU_BASE_URL}/
+                        {watch('slug') ?? profile.slug ?? ''}
                       </Form.Label>
                       <Form.Control
                         type="text"
                         placeholder={t('enter_slug')}
-                        {...register('slug', { required: true, onChange: (e) => setValue('slug', superNormalize(e.target.value)) })}
+                        {...register('slug', {
+                          required: true,
+                          onChange: (e) =>
+                            setValue('slug', superNormalize(e.target.value)),
+                        })}
                         defaultValue={profile.slug ?? ''}
                       />
                     </FormGroup>
@@ -274,7 +386,9 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                 <Row>
                   <Col sm="6" className="mt-2">
                     <FormGroup>
-                      <Form.Label className="text-upperCase fw-bold fs-7">{t('contact_phone_number')} *</Form.Label>
+                      <Form.Label className="text-upperCase fw-bold fs-7">
+                        {t('contact_phone_number')} *
+                      </Form.Label>
                       <InputGroup>
                         <InputGroup.Text>+{DDI}</InputGroup.Text>
                         <Form.Control
@@ -298,18 +412,25 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                   </Col>
                 </Row>
                 <Row>
-                  <Col sm className="mt-2 mt-md-0">
+                  <Col sm className="mt-md-0 mt-2">
                     <FormGroup>
-                      <Form.Label className="text-upperCase fw-bold fs-7">{t('description')}</Form.Label>
+                      <Form.Label className="text-upperCase fw-bold fs-7">
+                        {t('description')}
+                      </Form.Label>
                       <Form.Control
                         as="textarea"
                         placeholder={t('enter_store_description')}
                         style={{ minHeight: '140px' }}
                         defaultValue={profile.description ?? ''}
-                        {...register('description', { required: true, maxLength: 500 })}
+                        {...register('description', {
+                          required: true,
+                          maxLength: 500,
+                        })}
                       />
-                      <Form.Text className="fs-7 text-end w-100 d-block">
-                        {profile.description?.length ? profile.description?.length : 0}
+                      <Form.Text className="fs-7 w-100 d-block text-end">
+                        {profile.description?.length
+                          ? profile.description?.length
+                          : 0}
                         /500 {t('characters')}
                       </Form.Text>
                     </FormGroup>
@@ -318,9 +439,13 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                 <Row>
                   <Col sm>
                     <FormGroup>
-                      <Form.Label className="text-upperCase fw-bold fs-7">{t('minimum_delivery_order')} *</Form.Label>
+                      <Form.Label className="text-upperCase fw-bold fs-7">
+                        {t('minimum_delivery_order')} *
+                      </Form.Label>
                       <InputGroup className="mb-1">
-                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                        <InputGroup.Text>
+                          {currency({ value: 0, symbol: true })}
+                        </InputGroup.Text>
                         <Form.Control
                           type="text"
                           placeholder="0.00"
@@ -334,14 +459,20 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                           })}
                         />
                       </InputGroup>
-                      <Form.Text>{t('minimum_order_excluding_delivery')}</Form.Text>
+                      <Form.Text>
+                        {t('minimum_order_excluding_delivery')}
+                      </Form.Text>
                     </FormGroup>
                   </Col>
                   <Col sm>
                     <FormGroup>
-                      <Form.Label className="text-upperCase fw-bold fs-7">{t('minimum_order_pickup')} *</Form.Label>
+                      <Form.Label className="text-upperCase fw-bold fs-7">
+                        {t('minimum_order_pickup')} *
+                      </Form.Label>
                       <InputGroup className="mb-1">
-                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                        <InputGroup.Text>
+                          {currency({ value: 0, symbol: true })}
+                        </InputGroup.Text>
                         <Form.Control
                           type="text"
                           defaultValue={profile.minvalLocal}
@@ -355,13 +486,21 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                           })}
                         />
                       </InputGroup>
-                      <Form.Text>{t('minimum_order_pickup_delivery')}</Form.Text>
+                      <Form.Text>
+                        {t('minimum_order_pickup_delivery')}
+                      </Form.Text>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="mt-5">
                   <Col sm="1" className="d-flex">
-                    <Button variant="success" className="text-nowrap" onClick={() => (profile.id ? toggleModal(true) : handleCreate())}>
+                    <Button
+                      variant="success"
+                      className="text-nowrap"
+                      onClick={() =>
+                        profile.id ? toggleModal(true) : handleCreate()
+                      }
+                    >
                       {t('save')}
                     </Button>
                   </Col>
@@ -372,10 +511,21 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
             <Card>
               <Card.Header>
                 <Row className="justify-content-between align-items-center">
-                  <Col sm="12" md="8" className="d-flex gap-3 text-center text-md-start">
+                  <Col
+                    sm="12"
+                    md="8"
+                    className="d-flex text-md-start gap-3 text-center"
+                  >
                     <h4>{t('preview_your_store')}</h4>
                     <div className="vr"></div>
-                    <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/EMS5c-fThTs', title: t('preview') }]} />
+                    <HelpVideos.Trigger
+                      urls={[
+                        {
+                          src: 'https://www.youtube.com/embed/EMS5c-fThTs',
+                          title: t('preview'),
+                        },
+                      ]}
+                    />
                   </Col>
                   {/* <Col sm>
                 {window.innerWidth > 475 && (
@@ -391,16 +541,32 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                   </span>
                 )}
               </Col> */}
-                  <Col sm="12" md="4" className="mt-3 mt-md-0">
+                  <Col sm="12" md="4" className="mt-md-0 mt-3">
                     <InputGroup className="d-flex justify-content-end">
-                      <InputGroup.Text className="border" style={{ background: 'transparent' }}>
+                      <InputGroup.Text
+                        className="border"
+                        style={{ background: 'transparent' }}
+                      >
                         {window.innerWidth > 475 && (
-                          <span style={{ cursor: 'pointer' }} onClick={() => setShowComputer(!showComputer)}>
-                            {showComputer ? <RiComputerFill size={30} /> : <BsFillPhoneFill size={30} />}
+                          <span
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => setShowComputer(!showComputer)}
+                          >
+                            {showComputer ? (
+                              <RiComputerFill size={30} />
+                            ) : (
+                              <BsFillPhoneFill size={30} />
+                            )}
                           </span>
                         )}
                       </InputGroup.Text>
-                      <Button variant="success" className="text-nowrap" onClick={() => (profile.id ? toggleModal(true) : handleCreate())}>
+                      <Button
+                        variant="success"
+                        className="text-nowrap"
+                        onClick={() =>
+                          profile.id ? toggleModal(true) : handleCreate()
+                        }
+                      >
                         {t('save')}
                       </Button>
                     </InputGroup>
@@ -408,8 +574,13 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                 </Row>
               </Card.Header>
               <Card.Body>
-                <Container className={`pb-3 profile-business-content position-relative ${versionPhoneClass}`}>
-                  <label className="ms-3 position-absolute" style={{ top: '-25px', left: 0, cursor: 'pointer' }}>
+                <Container
+                  className={`profile-business-content position-relative pb-3 ${versionPhoneClass}`}
+                >
+                  <label
+                    className="position-absolute ms-3"
+                    style={{ top: '-25px', left: 0, cursor: 'pointer' }}
+                  >
                     {iconProfile}
                     <input
                       type="file"
@@ -438,7 +609,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                 }}
                               ></div>
                             )}
-                            <label className="fs-3 text-white  profile-business-input-cover">
+                            <label className="fs-3 profile-business-input-cover  text-white">
                               <input
                                 type="file"
                                 id="background-display"
@@ -447,11 +618,13 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                   setIdImage('background-display')
                                   setTypeCrop('profileCover')
                                   // setImageDimensions({ width: 768, height: 307 });
-                                  setInputFileImage(e.target as HTMLInputElement)
+                                  setInputFileImage(
+                                    e.target as HTMLInputElement
+                                  )
                                 }}
                                 className="w-100"
                               />
-                              <span className="d-block p-1 border border-0 rounded profile-business-input-cover-span">
+                              <span className="d-block profile-business-input-cover-span rounded border border-0 p-1">
                                 <MdPhotoLibrary size={30} />
                                 <span>{t('cover')}</span>
                               </span>
@@ -460,13 +633,20 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                             {/*eslint-disable-next-line @next/next/no-img-element*/}
                             <img
                               id="cover-image-crop"
-                              src={imgCoverUrl || profile.background || '/images/sem-foto.jpeg'}
+                              src={
+                                imgCoverUrl ||
+                                profile.background ||
+                                '/images/sem-foto.jpeg'
+                              }
                               // layout="fill"
                               alt="Imagem De Capa"
                               style={{
                                 width: '100%',
                                 maxHeight: 190,
-                                visibility: !imgCoverUrl && !profile.background ? 'hidden' : 'visible',
+                                visibility:
+                                  !imgCoverUrl && !profile.background
+                                    ? 'hidden'
+                                    : 'visible',
                               }}
                             />
                           </div>
@@ -481,7 +661,11 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                   {/*eslint-disable-next-line @next/next/no-img-element*/}
                                   <img
                                     id="logo-image-crop"
-                                    src={imgUrl || profile.logo || '/images/sem-foto.jpeg'}
+                                    src={
+                                      imgUrl ||
+                                      profile.logo ||
+                                      '/images/sem-foto.jpeg'
+                                    }
                                     // layout="fill"
                                     alt="Logo do Perfil"
                                     style={{
@@ -489,7 +673,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                       height: 100,
                                     }}
                                   />
-                                  <label className=" border border-0 rounded w-100 text-center profile-business-input-logo position-relative">
+                                  <label className=" w-100 profile-business-input-logo position-relative rounded border border-0 text-center">
                                     <input
                                       type="file"
                                       id="logo-display"
@@ -501,20 +685,28 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                         //   height: 145,
                                         // });
                                         setIdImage('logo-display')
-                                        setInputFileImage(e.target as HTMLInputElement)
+                                        setInputFileImage(
+                                          e.target as HTMLInputElement
+                                        )
                                       }}
                                       className="w-100"
                                     />
-                                    <span className="d-block text-center w-100 profile-business-input-logo-span">
+                                    <span className="d-block w-100 profile-business-input-logo-span text-center">
                                       <MdPhotoLibrary size={30} color="#fff" />
-                                      <span className="fs-8 text-white ps-2">Logo</span>
+                                      <span className="fs-8 ps-2 text-white">
+                                        Logo
+                                      </span>
                                     </span>
                                   </label>
                                 </div>
                                 <div className="d-flex flex-column align-items-center mt-2">
-                                  <h5 className="text-uppercase fw-bold fs-6 mb-0">{profile.name}</h5>
-                                  <p className="fs-8 m-0 mb-2">{profile.description}</p>
-                                  <span className="p-2 fs-6 text-uppercase text-green text-center fw-bold border px-4 d-block profile-business-status-opening">
+                                  <h5 className="text-uppercase fw-bold fs-6 mb-0">
+                                    {profile.name}
+                                  </h5>
+                                  <p className="fs-8 m-0 mb-2">
+                                    {profile.description}
+                                  </p>
+                                  <span className="fs-6 text-uppercase text-green fw-bold d-block profile-business-status-opening border p-2 px-4 text-center">
                                     {t('open_n')}
                                   </span>
                                 </div>
@@ -523,15 +715,18 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                           </Row>
                           <Row className="mt-3">
                             <Col className="px-auto">
-                              <Container fluid className="px-0 m-0 profile-business-status-content">
+                              <Container
+                                fluid
+                                className="profile-business-status-content m-0 px-0"
+                              >
                                 <Row
-                                  className="text-center align-middle profile-business-status-content fs-8"
+                                  className="profile-business-status-content fs-8 text-center align-middle"
                                   style={{
                                     backgroundColor: profile.color,
                                     color: textInfoColor,
                                   }}
                                 >
-                                  <label className="border border-0 rounded w-100 px-0 text-start profile-business-input-logo position-absolute">
+                                  <label className="w-100 profile-business-input-logo position-absolute rounded border border-0 px-0 text-start">
                                     <input
                                       type="color"
                                       className="w-100"
@@ -539,26 +734,39 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                       name="color"
                                       onChange={(e) => {
                                         profile.color = e.target.value
-                                        setTextInfoColor(colorLuminosity(e.target.value).color)
+                                        setTextInfoColor(
+                                          colorLuminosity(e.target.value).color
+                                        )
                                         setBgInfoColor(e.target.value)
                                       }}
                                     />
                                     <span className="d-block w-100 profile-business-input-logo-span">
-                                      <IoColorPaletteSharp size={24} color="#fff" className="m-1" />
-                                      <span className="fs-7 text-white ps-2">{t('store_color')}</span>
+                                      <IoColorPaletteSharp
+                                        size={24}
+                                        color="#fff"
+                                        className="m-1"
+                                      />
+                                      <span className="fs-7 ps-2 text-white">
+                                        {t('store_color')}
+                                      </span>
                                     </span>
                                   </label>
                                   <Col className="p-0">
                                     <div className="pt-2">
-                                      <p className="m-0 fs-7 fw-bold profile-business-info-text">
+                                      <p className="fs-7 fw-bold profile-business-info-text m-0">
                                         <MdAttachMoney /> {t('delivery_fee')}
                                       </p>
                                       <p className="fs-8">{t('calculate')}</p>
                                     </div>
                                   </Col>
-                                  <Col className="p-0" style={{ backdropFilter: 'brightness(80%)' }}>
+                                  <Col
+                                    className="p-0"
+                                    style={{
+                                      backdropFilter: 'brightness(80%)',
+                                    }}
+                                  >
                                     <div className="pt-2">
-                                      <p className="m-0 fs-7 fw-bold profile-business-info-text">
+                                      <p className="fs-7 fw-bold profile-business-info-text m-0">
                                         <MdAlarm /> {t('wait_time')}
                                       </p>
                                       <p className="fs-8">{t('calculate')}</p>
@@ -566,11 +774,16 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                   </Col>
                                   <Col className="p-0">
                                     <div className="pt-2">
-                                      <p className="m-0 fs-7 fw-bold profile-business-info-text">
+                                      <p className="fs-7 fw-bold profile-business-info-text m-0">
                                         <BsTelephoneFill />
                                         {t('phone')}
                                       </p>
-                                      <p className="fs-8">{maskedPhone(profile?.whatsapp?.substring(2) || '00000000000')}</p>
+                                      <p className="fs-8">
+                                        {maskedPhone(
+                                          profile?.whatsapp?.substring(2) ||
+                                            '00000000000'
+                                        )}
+                                      </p>
                                     </div>
                                   </Col>
                                 </Row>

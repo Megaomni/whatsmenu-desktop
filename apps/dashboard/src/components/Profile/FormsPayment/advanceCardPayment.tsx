@@ -13,8 +13,19 @@ export function AdvanceCard() {
 
   const updateAdvanceCardPayment = async (value: boolean) => {
     try {
-      const { data } = await apiRoute('/dashboard/asaas/updateAdvanceCardPayment', session, 'PUT', { advanceCardPayment: value })
-      setProfile({ ...profile, options: { ...profile.options, asaas: { ...profile.options.asaas, advanceCardPayment: value } } })
+      const { data } = await apiRoute(
+        '/dashboard/asaas/updateAdvanceCardPayment',
+        session,
+        'PUT',
+        { advanceCardPayment: value }
+      )
+      setProfile({
+        ...profile,
+        options: {
+          ...profile.options,
+          asaas: { ...profile.options.asaas, advanceCardPayment: value },
+        },
+      })
     } catch (error) {
       console.error(error)
     }
@@ -25,9 +36,13 @@ export function AdvanceCard() {
       <div className="d-flex flex-column align-items-center mt-4">
         <h4 className="">{t('automate_your_payments')}</h4>
       </div>
-      <div className={`d-flex justify-content-center mt-4 gap-5 p-4 ${isMobile ? 'flex-column align-items-center' : ''}`}>
+      <div
+        className={`d-flex justify-content-center mt-4 gap-5 p-4 ${isMobile ? 'flex-column align-items-center' : ''}`}
+      >
         <div className="d-flex flex-column align-items-center gap-3">
-          <div className={`text-center rounded p-5 ${!profile.options.asaas.advanceCardPayment ? 'container-asaas-selected' : 'container-asaas'}`}>
+          <div
+            className={`rounded p-5 text-center ${!profile.options.asaas.advanceCardPayment ? 'container-asaas-selected' : 'container-asaas'}`}
+          >
             <h1 style={{ fontSize: '2rem' }} className="text-primary">
               2,99%
             </h1>
@@ -45,7 +60,9 @@ export function AdvanceCard() {
           </Form.Group>
         </div>
         <div className="d-flex flex-column align-items-center gap-3">
-          <div className={`text-center rounded p-5 ${profile.options.asaas.advanceCardPayment ? 'container-asaas-selected' : 'container-asaas'}`}>
+          <div
+            className={`rounded p-5 text-center ${profile.options.asaas.advanceCardPayment ? 'container-asaas-selected' : 'container-asaas'}`}
+          >
             <h1 style={{ fontSize: '2rem' }} className="text-primary">
               4,99%
             </h1>
@@ -69,8 +86,10 @@ export function AdvanceCard() {
       <div className="d-flex justify-content-end">
         <Button
           variant="success"
-          className="mt-auto flex-fill flex-lg-grow-0"
-          onClick={() => updateAdvanceCardPayment(profile.options.asaas.advanceCardPayment)}
+          className="flex-fill flex-lg-grow-0 mt-auto"
+          onClick={() =>
+            updateAdvanceCardPayment(profile.options.asaas.advanceCardPayment)
+          }
         >
           {t('save')}
         </Button>

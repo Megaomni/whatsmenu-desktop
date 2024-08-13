@@ -18,7 +18,11 @@ const BankSettings = ({ paymentMethod }: PaymentSettingsProps) => {
       {!profileState?.options?.asaas ? (
         <Card className="position-relative w-100">
           <div>
-            <BankForm paymentMethod={paymentMethod} profileState={profileState} showPresentation={showPresentation} />
+            <BankForm
+              paymentMethod={paymentMethod}
+              profileState={profileState}
+              showPresentation={showPresentation}
+            />
           </div>
         </Card>
       ) : (
@@ -26,8 +30,10 @@ const BankSettings = ({ paymentMethod }: PaymentSettingsProps) => {
           {showResponseAlert ? (
             <Card className="d-flex flex-column w-100 p-4">
               <Alert className="text-center">
-                Conta na plataforma Asaas criada com sucesso, acesse o email {profileState.options.asaas.loginEmail} para definir uma senha com o
-                token enviado para o número de celular {profileState.options.asaas.mobilePhone}
+                Conta na plataforma Asaas criada com sucesso, acesse o email{' '}
+                {profileState.options.asaas.loginEmail} para definir uma senha
+                com o token enviado para o número de celular{' '}
+                {profileState.options.asaas.mobilePhone}
               </Alert>
             </Card>
           ) : null}

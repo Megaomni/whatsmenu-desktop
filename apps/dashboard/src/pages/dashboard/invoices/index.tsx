@@ -53,7 +53,10 @@ export interface Item {
   quantityDiscount: number
 }
 
-export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened, invoicesAddons }, systemProducts }: InvoicesProps) {
+export default function Invoices({
+  data: { dayDue, due, invoices, invoiceOpened, invoicesAddons },
+  systemProducts,
+}: InvoicesProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { invoicePending, plans, user, currency } = useContext(AppContext)
@@ -92,21 +95,38 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
   }
 
   useEffect(() => {
-    const invoicesPending = invoices?.filter((inv) => inv.status === 'pending') ?? []
-    const invoicesOpenedPending = invoiceOpened?.filter((inv) => inv.status === 'pending') ?? []
-    const invoicesAddonsPending = invoicesAddons?.filter((inv) => inv.status === 'pending') ?? []
-    setAllInvoicesPending([...invoicesPending, ...invoicesOpenedPending, ...invoicesAddonsPending])
+    const invoicesPending =
+      invoices?.filter((inv) => inv.status === 'pending') ?? []
+    const invoicesOpenedPending =
+      invoiceOpened?.filter((inv) => inv.status === 'pending') ?? []
+    const invoicesAddonsPending =
+      invoicesAddons?.filter((inv) => inv.status === 'pending') ?? []
+    setAllInvoicesPending([
+      ...invoicesPending,
+      ...invoicesOpenedPending,
+      ...invoicesAddonsPending,
+    ])
   }, [invoices, invoiceOpened, invoicesAddons])
 
   return (
     <>
-      {user?.controls?.disableInvoice && user?.controls?.paymentInfo?.gateway ? (
-        <PaymentCard invoices={allInvoicesPending ?? []} systemProducts={systemProducts} plans={plans} />
+      {user?.controls?.disableInvoice &&
+      user?.controls?.paymentInfo?.gateway ? (
+        <PaymentCard
+          invoices={allInvoicesPending ?? []}
+          systemProducts={systemProducts}
+          plans={plans}
+        />
       ) : (
         <>
-          <Title title={t('invoices')} componentTitle={t('invoices')} className="mb-4" />
+          <Title
+            title={t('invoices')}
+            componentTitle={t('invoices')}
+            className="mb-4"
+          />
           <h3>
-            {t('your_monthly_every_day')} <span className="text-red-500">{dayDue}</span> {t('each_month')}
+            {t('your_monthly_every_day')}{' '}
+            <span className="text-red-500">{dayDue}</span> {t('each_month')}
           </h3>
           <Card>
             <Card.Header>
@@ -128,7 +148,11 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
                     {invoiceOpened?.map((invoice: Invoice, index) => {
                       return invoice.value ? (
                         <tr key={invoice.id}>
-                          <td>{DateTime.fromISO(invoice.expiration).toFormat(`${t('date_format')}`)}</td>
+                          <td>
+                            {DateTime.fromISO(invoice.expiration).toFormat(
+                              `${t('date_format')}`
+                            )}
+                          </td>
                           <td>{currency({ value: invoice.value })}</td>
                           <td>
                             {invoice.itens?.map((item) => {
@@ -143,22 +167,29 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
                                 const regex = /([a-zA-Z]+)(\W+)(\d+.\d+)/
                                 const possiblePrice = regex.exec(item)
                                 if (possiblePrice) {
-                                  const price = possiblePrice.find((item: any) => !isNaN(item))
-                                  return `${invoice.type !== 'addon' ? t('plan') : ''}${price} - ${currency({
-                                    value: Number(price),
-                                  })}`
+                                  const price = possiblePrice.find(
+                                    (item: any) => !isNaN(item)
+                                  )
+                                  return `${invoice.type !== 'addon' ? t('plan') : ''}${price} - ${currency(
+                                    {
+                                      value: Number(price),
+                                    }
+                                  )}`
                                 }
                               }
                             })}
                           </td>
                           <td>{handleTranslateStatus(invoice)}</td>
-                          {invoice.status === 'pending' || invoice.status === 'canceled' ? (
+                          {invoice.status === 'pending' ||
+                          invoice.status === 'canceled' ? (
                             <td>
                               <Button
                                 as="a"
                                 href={
-                                  invoicePending?.invoice?.invoiceId === invoice.id
-                                    ? invoicePending?.invoice?.paghiper[0]?.create_request?.bank_slip?.url_slip
+                                  invoicePending?.invoice?.invoiceId ===
+                                  invoice.id
+                                    ? invoicePending?.invoice?.paghiper[0]
+                                        ?.create_request?.bank_slip?.url_slip
                                     : ''
                                 }
                                 target="_blank"
@@ -173,11 +204,18 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
                     {invoicesAddons?.map((invoice: Invoice, index) =>
                       invoice.value ? (
                         <tr key={invoice.id}>
-                          <td>{DateTime.fromISO(invoice.expiration).toFormat(`${t('date_format')}`)}</td>
+                          <td>
+                            {DateTime.fromISO(invoice.expiration).toFormat(
+                              `${t('date_format')}`
+                            )}
+                          </td>
                           <td>{currency({ value: invoice.value })}</td>
                           <td>
                             {invoice.itens
-                              ?.map((item) => `${invoice.type !== 'addon' ? 'Plano ' : ''}${typeof item === 'string' ? item : item.name}`)
+                              ?.map(
+                                (item) =>
+                                  `${invoice.type !== 'addon' ? 'Plano ' : ''}${typeof item === 'string' ? item : item.name}`
+                              )
                               .join(', ')}
                           </td>
                           <td>{handleTranslateStatus(invoice)}</td>
@@ -185,7 +223,11 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
                             {invoice.status === 'pending' ? (
                               <Button
                                 as="a"
-                                href={invoice.requests[0]?.paghiper && invoice.requests[0]?.paghiper[0].create_request.bank_slip.url_slip}
+                                href={
+                                  invoice.requests[0]?.paghiper &&
+                                  invoice.requests[0]?.paghiper[0]
+                                    .create_request.bank_slip.url_slip
+                                }
                                 target="_blank"
                               >
                                 {t('generate_invoice')}
@@ -198,7 +240,9 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
                   </tbody>
                 </Table>
               ) : (
-                <h2 className="text-center">{t('no_outstandigin_invoices_moment')}</h2>
+                <h2 className="text-center">
+                  {t('no_outstandigin_invoices_moment')}
+                </h2>
               )}
             </Card.Body>
           </Card>
@@ -222,10 +266,25 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
             <tbody>
               {invoices?.map((invoice) => (
                 <tr key={invoice.id}>
-                  <td>{DateTime.fromISO(invoice.expiration).toFormat(`${t('date_format')}`)}</td>
-                  <td>{DateTime.fromSQL(invoice.updated_at).toFormat(`${t('date_format')}`)}</td>
+                  <td>
+                    {DateTime.fromISO(invoice.expiration).toFormat(
+                      `${t('date_format')}`
+                    )}
+                  </td>
+                  <td>
+                    {DateTime.fromSQL(invoice.updated_at).toFormat(
+                      `${t('date_format')}`
+                    )}
+                  </td>
                   <td>{currency({ value: invoice.value })}</td>
-                  <td className="text-wrap">{invoice.itens?.map((item: any) => `${typeof item === 'string' ? item : item.name}`).join(', ')}</td>
+                  <td className="text-wrap">
+                    {invoice.itens
+                      ?.map(
+                        (item: any) =>
+                          `${typeof item === 'string' ? item : item.name}`
+                      )
+                      .join(', ')}
+                  </td>
                   <td>
                     <Button
                       variant={`${invoice.status === 'paid' && !user?.controls?.disableInvoice ? 'outline-primary' : 'primary'}`}
@@ -235,7 +294,11 @@ export default function Invoices({ data: { dayDue, due, invoices, invoiceOpened,
                         }
                       }}
                     >
-                      {invoice.status === 'paid' && invoice.pdf && user?.controls?.disableInvoice && <BsFilePdf title="Visualizar PDF" />}
+                      {invoice.status === 'paid' &&
+                        invoice.pdf &&
+                        user?.controls?.disableInvoice && (
+                          <BsFilePdf title="Visualizar PDF" />
+                        )}
                       {handleTranslateStatus(invoice)}
                     </Button>
                   </td>
@@ -253,7 +316,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   try {
     const session = await getSession({ req })
     const { data } = await apiRoute('/dashboard/invoices/list', session)
-    const { data: systemProducts } = (await apiRoute('/api/v2/systemProducts', session)) as AxiosResponse<Array<SystemProduct>>
+    const { data: systemProducts } = (await apiRoute(
+      '/api/v2/systemProducts',
+      session
+    )) as AxiosResponse<Array<SystemProduct>>
 
     return {
       props: {

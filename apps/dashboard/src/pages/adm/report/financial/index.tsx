@@ -1,73 +1,84 @@
-import { DateTime } from "luxon";
-import { UserType } from "next-auth";
-import { useSession } from "next-auth/react";
-import Head from "next/head";
-import { useEffect, useState } from "react";
-import { Card, Form, Container, Row, Col, Table, ProgressBar } from "react-bootstrap";
-import { Title } from "../../../../components/Partials/title";
-import { ReportAdmGraphic } from "../../../../components/Report/AdmGraphic";
-import { apiRoute } from "../../../../utils/wm-functions";
+import { DateTime } from 'luxon'
+import { UserType } from 'next-auth'
+import { useSession } from 'next-auth/react'
+import Head from 'next/head'
+import { useEffect, useState } from 'react'
+import {
+  Card,
+  Form,
+  Container,
+  Row,
+  Col,
+  Table,
+  ProgressBar,
+} from 'react-bootstrap'
+import { Title } from '../../../../components/Partials/title'
+import { ReportAdmGraphic } from '../../../../components/Report/AdmGraphic'
+import { apiRoute } from '../../../../utils/wm-functions'
 
 export interface AdmReports {
-  [key: string]: any;
-  canceleds: any;
-  mensalities: any;
-  registers: any;
-  upgrades: any;
-  paids?: any;
-  paidLates?: any;
+  [key: string]: any
+  canceleds: any
+  mensalities: any
+  registers: any
+  upgrades: any
+  paids?: any
+  paidLates?: any
 }
 
 export default function AdmReportFinancial() {
-  const { data: session } = useSession();
-  const [reports, setReports] = useState<AdmReports>();
-  const [type, setType] = useState("registers");
+  const { data: session } = useSession()
+  const [reports, setReports] = useState<AdmReports>()
+  const [type, setType] = useState('registers')
   const [monthInput, setMonthInput] = useState(
-    DateTime.local().toFormat("yyyy-MM")
-  );
-  const [months, setMonths] = useState<string[]>([]);
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [progress, setProgress] = useState<number>(1);
-  const [filterRegister, setFilterRegister] = useState<"all" | "true" | "false">("all");
+    DateTime.local().toFormat('yyyy-MM')
+  )
+  const [months, setMonths] = useState<string[]>([])
+  const [users, setUsers] = useState<UserType[]>([])
+  const [progress, setProgress] = useState<number>(1)
+  const [filterRegister, setFilterRegister] = useState<
+    'all' | 'true' | 'false'
+  >('all')
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const intervalProgress = setInterval(() => {
-        setProgress((oldProgress) => (oldProgress + parseInt(String(Math.random() * (5 + 3) + 3))));
+        setProgress(
+          (oldProgress) =>
+            oldProgress + parseInt(String(Math.random() * (5 + 3) + 3))
+        )
       }, 3500)
       const { data } = await apiRoute(
-        "/administrator-api/financial/report",
+        '/administrator-api/financial/report',
         session,
-        "GET"
-      );
-      setProgress(100);
+        'GET'
+      )
+      setProgress(100)
       setTimeout(() => {
-        clearInterval(intervalProgress);
-        setProgress(0);
-        setReports(data);
+        clearInterval(intervalProgress)
+        setProgress(0)
+        setReports(data)
       }, 300)
-    })();
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   useEffect(() => {
     if (reports) {
-      setMonths(Object.keys(reports.registers));
+      setMonths(Object.keys(reports.registers))
       const registerFiltered = reports[type][monthInput].filter((user: any) => {
         switch (filterRegister) {
-          case "all":
+          case 'all':
             return user
-          case "true":
+          case 'true':
             return user?.controls?.serviceStart
-          case "false":
+          case 'false':
             return user?.controls?.serviceStart === false
         }
       })
-      setUsers([
-        ...registerFiltered,
-      ]);
+      setUsers([...registerFiltered])
     }
-  }, [reports, type, monthInput, filterRegister]);
+  }, [reports, type, monthInput, filterRegister])
 
   return (
     <>
@@ -75,7 +86,7 @@ export default function AdmReportFinancial() {
         title="ADM"
         componentTitle="Relatório Anual"
         className="mb-4"
-        child={["Relatórios", "Relatório Anual"]}
+        child={['Relatórios', 'Relatório Anual']}
       />
       <Card>
         <Card.Header>
@@ -88,15 +99,13 @@ export default function AdmReportFinancial() {
             months={months}
             period="yearly"
           />
-          {
-            (progress !== 0 && !reports) &&
+          {progress !== 0 && !reports && (
             <div className="mb-4">
               <h6>Carregando...</h6>
               <ProgressBar now={progress} id="progressBar-sellers" />
             </div>
-          }
+          )}
         </Card.Body>
-
       </Card>
       <hr />
       <Container className="mx-0">
@@ -107,10 +116,9 @@ export default function AdmReportFinancial() {
               <Form.Select
                 value={monthInput}
                 onChange={(e) => {
-                  setMonthInput(e.target.value);
-                  setFilterRegister("all");
+                  setMonthInput(e.target.value)
+                  setFilterRegister('all')
                 }}
-
               >
                 {months.map((item) => (
                   <option key={item} value={item}>
@@ -124,8 +132,8 @@ export default function AdmReportFinancial() {
               <Form.Select
                 value={type}
                 onChange={(e) => {
-                  setType(e.target.value);
-                  setFilterRegister("all");
+                  setType(e.target.value)
+                  setFilterRegister('all')
                 }}
               >
                 <option value="registers">Cadastros</option>
@@ -140,21 +148,23 @@ export default function AdmReportFinancial() {
       <Card className="mt-4">
         <Card.Header className="d-flex justify-content-between align-items-center">
           <h4>Lista de clientes</h4>
-          <div className="mt-2 mt-md-0 d-flex gap-2 align-items-center me-2">
+          <div className="mt-md-0 d-flex align-items-center me-2 mt-2 gap-2">
             <Form.Label className="text-nowrap">Com Cadastro: </Form.Label>
             <Form.Select
               value={filterRegister}
               onChange={(e) => {
-                setFilterRegister(e.target.value as "all" | "true" | "false")
+                setFilterRegister(e.target.value as 'all' | 'true' | 'false')
               }}
               disabled={reports && !reports[type][monthInput].length}
             >
               <option value="all">Todos</option>
-              {
-                ["Sim", "Não"].map(el => {
-                  return <option key={el} value={el === "Sim" ? "true" : "false"}>{el}</option>
-                })
-              }
+              {['Sim', 'Não'].map((el) => {
+                return (
+                  <option key={el} value={el === 'Sim' ? 'true' : 'false'}>
+                    {el}
+                  </option>
+                )
+              })}
             </Form.Select>
           </div>
         </Card.Header>
@@ -174,11 +184,11 @@ export default function AdmReportFinancial() {
               {users.reverse().map((user, index) => (
                 <tr key={user?.id} className="fs-7">
                   <td>{index + 1}</td>
-                  <td>{user?.id || "-"}</td>
-                  <td>{user?.name || "-"}</td>
-                  <td>{user?.email || "-"}</td>
-                  <td>{user?.controls?.serviceStart ? "SIM" : "NÃO"}</td>
-                  <td>{user?.whatsapp || "-"}</td>
+                  <td>{user?.id || '-'}</td>
+                  <td>{user?.name || '-'}</td>
+                  <td>{user?.email || '-'}</td>
+                  <td>{user?.controls?.serviceStart ? 'SIM' : 'NÃO'}</td>
+                  <td>{user?.whatsapp || '-'}</td>
                 </tr>
               ))}
             </tbody>
@@ -186,7 +196,7 @@ export default function AdmReportFinancial() {
         </Card.Body>
       </Card>
     </>
-  );
+  )
 }
 
 // export const getServerSideProps: GetServerSideProps = async ({ req }) => {

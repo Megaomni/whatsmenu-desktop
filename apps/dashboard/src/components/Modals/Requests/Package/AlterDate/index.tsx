@@ -66,9 +66,14 @@ export function PackageAlterDate({ cart, ...props }: PropsTypes) {
                 // activeStartDate={new Date()}
                 minDate={new Date()}
                 tileDisabled={({ activeStartDate, date, view }) => {
-                  const reqDate = DateTime.fromJSDate(new Date(cart.packageDate))
+                  const reqDate = DateTime.fromJSDate(
+                    new Date(cart.packageDate)
+                  )
                   const actualyDate = DateTime.fromJSDate(date)
-                  return reqDate.toFormat('yyyy-MM-dd') === actualyDate.toFormat('yyyy-MM-dd')
+                  return (
+                    reqDate.toFormat('yyyy-MM-dd') ===
+                    actualyDate.toFormat('yyyy-MM-dd')
+                  )
                 }}
                 onClickDay={(e) => {
                   setStateAlterDate({
@@ -82,12 +87,17 @@ export function PackageAlterDate({ cart, ...props }: PropsTypes) {
             <Col className="text-center">
               <p className={`mb-0 ${!daySelected && 'invisible'}`}>
                 <span className="fw-bold">{t('selected_date')} : </span>
-                {daySelected && DateTime.fromJSDate(new Date(daySelected)).toFormat(t('date_format'))}
+                {daySelected &&
+                  DateTime.fromJSDate(new Date(daySelected)).toFormat(
+                    t('date_format')
+                  )}
               </p>
 
               <p className="mt-0">
                 <span className="fw-bold">{t('current_order_date')} : </span>
-                {DateTime.fromJSDate(new Date(cart.packageDate)).toFormat(t('date_format'))}
+                {DateTime.fromJSDate(new Date(cart.packageDate)).toFormat(
+                  t('date_format')
+                )}
               </p>
             </Col>
           </Row>

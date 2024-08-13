@@ -1,7 +1,27 @@
 import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import { Button, Card, Col, Container, Dropdown, Form, InputGroup, OverlayTrigger, Popover, Row, Table as TableBs } from 'react-bootstrap'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Dropdown,
+  Form,
+  InputGroup,
+  OverlayTrigger,
+  Popover,
+  Row,
+  Table as TableBs,
+} from 'react-bootstrap'
 import DropdownButton from 'react-bootstrap/DropdownButton'
 import { BsInfoCircle } from 'react-icons/bs'
 import { useReactToPrint } from 'react-to-print'
@@ -63,21 +83,36 @@ interface ReportsLayoutProps {
   setResume: Dispatch<SetStateAction<IResumeData | undefined>>
 }
 
-export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLayoutProps) {
+export function ReportsLayout({
+  type,
+  setData,
+  setResume,
+  ...props
+}: ReportsLayoutProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { handleShowToast, plansCategory, bartenders, user, currency } = useContext(AppContext)
+  const { handleShowToast, plansCategory, bartenders, user, currency } =
+    useContext(AppContext)
   const ref = useRef(null)
 
-  const [filter, setFilter] = useState<'delivery' | 'table' | 'package'>('delivery')
-  const [columnDate, setColumnDate] = useState<{ name: string; value: 'created_at' | 'packageDate' } | null>(null)
+  const [filter, setFilter] = useState<'delivery' | 'table' | 'package'>(
+    'delivery'
+  )
+  const [columnDate, setColumnDate] = useState<{
+    name: string
+    value: 'created_at' | 'packageDate'
+  } | null>(null)
   const [date, setDate] = useState(DateTime.local().toFormat('yyyy-MM-dd'))
   const [payment, setPayment] = useState('any')
   const [searchRequest, setSearchRequest] = useState<boolean>(true)
   // const [bartenderId, setBartenderId] = useState<string | number>("any");
 
-  const [year, setYear] = useState(props.data?.years && props.data?.years[props.data?.years.length - 1])
-  const [month, setMonth] = useState<string>(DateTime.local().month.toString().padStart(2, '0'))
+  const [year, setYear] = useState(
+    props.data?.years && props.data?.years[props.data?.years.length - 1]
+  )
+  const [month, setMonth] = useState<string>(
+    DateTime.local().month.toString().padStart(2, '0')
+  )
   const [showSpinner, setShowSpinner] = useState(false)
   const [controlList, setControlList] = useState(false)
   const [fetchAll, setFetchAll] = useState(false)
@@ -151,7 +186,10 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                 data:
                   page === 1
                     ? data.tables?.data.map((t: Table) => new Table(t))
-                    : [...prevData?.tables?.data, ...data.tables?.data.map((t: Table) => new Table(t))],
+                    : [
+                        ...prevData?.tables?.data,
+                        ...data.tables?.data.map((t: Table) => new Table(t)),
+                      ],
               },
               carts: data.carts && {
                 ...data.carts,
@@ -162,7 +200,11 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                     : [
                         ...prevData.carts.data,
                         ...data.carts.data
-                          .filter((cart: CartType) => prevData.carts.data.some((prevCart) => prevCart.id !== cart.id))
+                          .filter((cart: CartType) =>
+                            prevData.carts.data.some(
+                              (prevCart) => prevCart.id !== cart.id
+                            )
+                          )
                           .map((c: Cart) => new Cart(c)),
                       ],
               },
@@ -176,13 +218,38 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
         setShowSpinner(false)
       }
     },
-    [date, filter, handleShowToast, month, payment, session, setData, type, year, columnDate]
+    [
+      date,
+      filter,
+      handleShowToast,
+      month,
+      payment,
+      session,
+      setData,
+      type,
+      year,
+      columnDate,
+    ]
   )
 
   const getResume = useCallback(async () => {
-    const body = { notValidate: true, type, filter: filter ?? 'delivery', columnDate: columnDate?.value ?? 'created_at', payment, date, month, year }
+    const body = {
+      notValidate: true,
+      type,
+      filter: filter ?? 'delivery',
+      columnDate: columnDate?.value ?? 'created_at',
+      payment,
+      date,
+      month,
+      year,
+    }
     try {
-      const { data: resume } = await apiRoute(`/dashboard/report/resume`, session, 'POST', body)
+      const { data: resume } = await apiRoute(
+        `/dashboard/report/resume`,
+        session,
+        'POST',
+        body
+      )
       if (resume) {
         setResume(() => resume)
       }
@@ -190,16 +257,32 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
       console.error(error)
       handleShowToast({ type: 'erro' })
     }
-  }, [date, filter, handleShowToast, month, payment, session, setResume, type, year, columnDate])
+  }, [
+    date,
+    filter,
+    handleShowToast,
+    month,
+    payment,
+    session,
+    setResume,
+    type,
+    year,
+    columnDate,
+  ])
 
-  const instanceActivedDate = (instance: Bartender | Partial<Cupom>): boolean => {
+  const instanceActivedDate = (
+    instance: Bartender | Partial<Cupom>
+  ): boolean => {
     if (instance.deleted_at) {
       if (type === 'daily') {
         return DateTime.fromISO(instance.deleted_at) >= DateTime.fromISO(date)
       }
       if (type === 'monthly') {
         if (year && month) {
-          return DateTime.fromISO(instance.deleted_at) >= DateTime.fromObject({ year: Number(year), month: Number(month) })
+          return (
+            DateTime.fromISO(instance.deleted_at) >=
+            DateTime.fromObject({ year: Number(year), month: Number(month) })
+          )
         }
       }
     }
@@ -208,7 +291,9 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
 
   useEffect(() => {
     if (controlList) {
-      Promise.all([handleGetReports(), getResume()]).finally(() => setControlList(false))
+      Promise.all([handleGetReports(), getResume()]).finally(() =>
+        setControlList(false)
+      )
     }
   }, [controlList, filter, getResume, handleGetReports])
 
@@ -251,16 +336,27 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
 
   switch (type) {
     case 'daily':
-      video = { src: 'https://www.youtube.com/embed/Ye8ZSTtXnXU', title: t('daily_report') }
+      video = {
+        src: 'https://www.youtube.com/embed/Ye8ZSTtXnXU',
+        title: t('daily_report'),
+      }
       break
     case 'monthly':
-      video = { src: 'https://www.youtube.com/embed/KEmlQ8wWhJU', title: t('monthly_report') }
+      video = {
+        src: 'https://www.youtube.com/embed/KEmlQ8wWhJU',
+        title: t('monthly_report'),
+      }
       break
   }
 
   return (
     <section ref={ref} id="printReport" className="position-relative">
-      <OverlaySpinner show={showSpinner} textSpinner={t('please_wait')} style={{ zIndex: 99999 }} className="notPrint" />
+      <OverlaySpinner
+        show={showSpinner}
+        textSpinner={t('please_wait')}
+        style={{ zIndex: 99999 }}
+        className="notPrint"
+      />
       <Card>
         <Card.Header className="notPrint d-flex gap-3">
           <h4>{t('search')}</h4>
@@ -271,7 +367,7 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
           <Form className="notPrint">
             <Container fluid className="mx-0 px-0">
               <Row>
-                <Col sm className="pb-2 d-flex gap-3">
+                <Col sm className="d-flex gap-3 pb-2">
                   {plansCategory?.includes('basic') && (
                     <Form.Check
                       name="filter"
@@ -280,7 +376,9 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       id="delivery"
                       defaultChecked
                       onClick={(e) => {
-                        setFilter((e.target as HTMLInputElement).id as typeof filter)
+                        setFilter(
+                          (e.target as HTMLInputElement).id as typeof filter
+                        )
                         setControlList(true)
                       }}
                     />
@@ -292,7 +390,9 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       label={t('table')}
                       id="table"
                       onClick={(e) => {
-                        setFilter((e.target as HTMLInputElement).id as typeof filter)
+                        setFilter(
+                          (e.target as HTMLInputElement).id as typeof filter
+                        )
                         setControlList(true)
                       }}
                     />
@@ -304,7 +404,9 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       label={t('package')}
                       id="package"
                       onClick={(e) => {
-                        setFilter((e.target as HTMLInputElement).id as typeof filter)
+                        setFilter(
+                          (e.target as HTMLInputElement).id as typeof filter
+                        )
                         setControlList(true)
                       }}
                     />
@@ -317,7 +419,11 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                     <Col sm>
                       <Form.Label className="fw-bold">{t('date')}</Form.Label>
                       {filter !== 'package' ? (
-                        <Form.Control type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+                        <Form.Control
+                          type="date"
+                          value={date}
+                          onChange={(e) => setDate(e.target.value)}
+                        />
                       ) : (
                         <InputGroup>
                           <Form.Control
@@ -326,13 +432,23 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                             value={date}
                             onChange={(e) => setDate(e.target.value)}
                           />
-                          <DropdownButton title={columnDate?.name ?? t('search_for')}>
+                          <DropdownButton
+                            title={columnDate?.name ?? t('search_for')}
+                          >
                             {[
                               { name: t('creation_date'), value: 'created_at' },
-                              { name: t('delivery_date'), value: 'packageDate' },
+                              {
+                                name: t('delivery_date'),
+                                value: 'packageDate',
+                              },
                             ].map((item) => {
                               return (
-                                <Dropdown.Item key={item.name} onClick={() => setColumnDate((old) => item as any)}>
+                                <Dropdown.Item
+                                  key={item.name}
+                                  onClick={() =>
+                                    setColumnDate((old) => item as any)
+                                  }
+                                >
                                   {item.name}
                                 </Dropdown.Item>
                               )
@@ -342,15 +458,24 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       )}
                     </Col>
                     <Col sm>
-                      <Form.Label className="fw-bold">{t('payment_method')}</Form.Label>
-                      <Form.Select value={payment} onChange={(e) => setPayment(e.target.value)}>
+                      <Form.Label className="fw-bold">
+                        {t('payment_method')}
+                      </Form.Label>
+                      <Form.Select
+                        value={payment}
+                        onChange={(e) => setPayment(e.target.value)}
+                      >
                         <option value="any">{t('all')}</option>
                         <option value="Dinheiro">{t('money')}</option>
                         <option value="Cartão">{t('card')}</option>
                         <option value="Crédito">{t('credit_card')}</option>
                         <option value="Débito">{t('debit')}</option>
-                        <option value="Vale Refeição">{t('meal_voucher')}</option>
-                        <option value="Vale Alimentação">{t('food_voucher')}</option>
+                        <option value="Vale Refeição">
+                          {t('meal_voucher')}
+                        </option>
+                        <option value="Vale Alimentação">
+                          {t('food_voucher')}
+                        </option>
                         <option value="Pix">Pix</option>
                         <option value="PicPay">PicPay</option>
                       </Form.Select>
@@ -361,7 +486,10 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                   <>
                     <Col sm>
                       <Form.Label className="fw-bold">{t('month')}</Form.Label>
-                      <Form.Select value={month} onChange={(e) => setMonth(e.target.value)}>
+                      <Form.Select
+                        value={month}
+                        onChange={(e) => setMonth(e.target.value)}
+                      >
                         <option value="01">{t('january')}</option>
                         <option value="02">{t('february')}</option>
                         <option value="03">{t('march')}</option>
@@ -378,7 +506,10 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                     </Col>
                     <Col sm>
                       <Form.Label className="fw-bold">{t('year')}</Form.Label>
-                      <Form.Select value={year ?? getNow().nowYear} onChange={(e) => setYear(e.target.value)}>
+                      <Form.Select
+                        value={year ?? getNow().nowYear}
+                        onChange={(e) => setYear(e.target.value)}
+                      >
                         {props.data?.years?.map((y, index) => (
                           <option key={y} value={y}>
                             {y}
@@ -388,13 +519,22 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                     </Col>
                     {filter === 'package' && (
                       <Col sm>
-                        <Form.Label className="fw-bold">{t('search_for')}</Form.Label>
-                        <Form.Select onChange={(e) => setColumnDate((old) => JSON.parse(e.target.value))}>
+                        <Form.Label className="fw-bold">
+                          {t('search_for')}
+                        </Form.Label>
+                        <Form.Select
+                          onChange={(e) =>
+                            setColumnDate((old) => JSON.parse(e.target.value))
+                          }
+                        >
                           {[
                             { name: t('creation_date'), value: 'created_at' },
                             { name: t('delivery_date'), value: 'packageDate' },
                           ].map((item) => (
-                            <option key={item.name} value={JSON.stringify(item)}>
+                            <option
+                              key={item.name}
+                              value={JSON.stringify(item)}
+                            >
                               {item.name}
                             </option>
                           ))}
@@ -402,15 +542,24 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       </Col>
                     )}
                     <Col sm>
-                      <Form.Label className="fw-bold">{t('payment_method')}</Form.Label>
-                      <Form.Select value={payment} onChange={(e) => setPayment(e.target.value)}>
+                      <Form.Label className="fw-bold">
+                        {t('payment_method')}
+                      </Form.Label>
+                      <Form.Select
+                        value={payment}
+                        onChange={(e) => setPayment(e.target.value)}
+                      >
                         <option value="any">{t('all')}</option>
                         <option value="Dinheiro">{t('money')}</option>
                         <option value="Cartão">{t('card')}</option>
                         <option value="Crédito">{t('credit_card')}</option>
                         <option value="Débito">{t('debit')}</option>
-                        <option value="Vale Refeição">{t('meal_voucher')}</option>
-                        <option value="Vale Alimentação">{t('food_voucher')}</option>
+                        <option value="Vale Refeição">
+                          {t('meal_voucher')}
+                        </option>
+                        <option value="Vale Alimentação">
+                          {t('food_voucher')}
+                        </option>
                         <option value="Pix">Pix</option>
                         <option value="PicPay">PicPay</option>
                       </Form.Select>
@@ -436,7 +585,7 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                 <Col md="2" sm="6" className="d-flex mt-2 p-0">
                   <Button
                     variant="success"
-                    className="mt-auto flex-grow-1"
+                    className="flex-grow-1 mt-auto"
                     onClick={() => {
                       getResume()
                       handleGetReports()
@@ -447,7 +596,7 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                 </Col>
                 <Col md="2" sm="6" className="d-flex mt-2 p-0 ps-2">
                   <Button
-                    className="mt-auto flex-grow-1"
+                    className="flex-grow-1 mt-auto"
                     disabled={fetchAll}
                     onClick={async () => {
                       if (searchRequest) {
@@ -482,8 +631,11 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
               <div className="border p-2">
                 <h6>{t('summary')}:</h6>
                 <p className="mb-1">
-                  {t('orders')}: {currency({ value: props.resume?.totalCarts ?? 0 })}{' '}
-                  {filter === 'table' && <span className="ms-1">{t('no_fees')}</span>}
+                  {t('orders')}:{' '}
+                  {currency({ value: props.resume?.totalCarts ?? 0 })}{' '}
+                  {filter === 'table' && (
+                    <span className="ms-1">{t('no_fees')}</span>
+                  )}
                 </p>
                 <p className="mb-1">
                   {t('number_orders')}: {props.resume?.count}
@@ -492,7 +644,8 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                   <>
                     <hr className="notPrint" />
                     <p className="mb-1">
-                      {t('deliverys')}: {currency({ value: props.resume?.totalTaxDelivery ?? 0 })}
+                      {t('deliverys')}:{' '}
+                      {currency({ value: props.resume?.totalTaxDelivery ?? 0 })}
                     </p>
                     <p className="mb-1">
                       {t('number_deliveries')}: {props.resume?.countDelivery}
@@ -506,18 +659,28 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                     {currency({
                       value: props.resume
                         ? props.resume.total -
-                          Object.values(props.resume.cuponsResume).reduce((total, cupom) => (total += cupom.value), 0) -
+                          Object.values(props.resume.cuponsResume).reduce(
+                            (total, cupom) => (total += cupom.value),
+                            0
+                          ) -
                           props.resume.cashbackTotal
                         : 0,
                     })}{' '}
-                    {filter === 'table' && <span className="ms-1">{t('no_fees')}</span>}
+                    {filter === 'table' && (
+                      <span className="ms-1">{t('no_fees')}</span>
+                    )}
                   </p>
                   {filter !== 'table' ? (
                     <OverlayTrigger
                       placement="bottom"
                       overlay={
-                        <Popover id="popover-basic" style={{ minWidth: '330px' }}>
-                          <Popover.Body>{t('total_sales_and_coupons')}</Popover.Body>
+                        <Popover
+                          id="popover-basic"
+                          style={{ minWidth: '330px' }}
+                        >
+                          <Popover.Body>
+                            {t('total_sales_and_coupons')}
+                          </Popover.Body>
                         </Popover>
                       }
                     >
@@ -529,7 +692,8 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                 </div>
                 <div className="text-red-500">
                   <p className="mb-1">
-                    {t('total_canceled')}: {currency({ value: props.resume?.canceledTotal ?? 0 })}
+                    {t('total_canceled')}:{' '}
+                    {currency({ value: props.resume?.canceledTotal ?? 0 })}
                   </p>
                   <p className="mb-1">
                     {t('number_canceled_orders')}: {props.resume?.canceledCount}
@@ -552,7 +716,8 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       <>
                         <hr className="notPrint" />
                         <p className="mb-1">
-                          {t('total_fees')}: {currency({ value: props.resume?.feeTotal || 0 })}
+                          {t('total_fees')}:{' '}
+                          {currency({ value: props.resume?.feeTotal || 0 })}
                         </p>
                       </>
                     ) : null}
@@ -563,17 +728,29 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
 
             {filter !== 'table' && props.resume ? (
               <>
-                <div className="flex-grow-1 overflow-auto" style={{ maxHeight: '410px' }}>
+                <div
+                  className="flex-grow-1 overflow-auto"
+                  style={{ maxHeight: '410px' }}
+                >
                   <TableBs bordered striped className="m-0">
                     <thead>
                       <tr>
-                        <td className="position-sticky bg-white p-0" style={{ top: 0 }} colSpan={3}>
+                        <td
+                          className="position-sticky bg-white p-0"
+                          style={{ top: 0 }}
+                          colSpan={3}
+                        >
                           <div className="d-flex justify-content-between  p-2">
                             <div>{t('coupons')}:</div>
                             <div>
                               Total:{' '}
                               {currency({
-                                value: Object.values(props.resume.cuponsResume).reduce((total, cupom) => (total += cupom.value), 0),
+                                value: Object.values(
+                                  props.resume.cuponsResume
+                                ).reduce(
+                                  (total, cupom) => (total += cupom.value),
+                                  0
+                                ),
                               })}
                             </div>
                           </div>
@@ -600,11 +777,18 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                             <tr key={cupom.code}>
                               <td className={`text-wrap`}>
                                 {cupom.deleted_at
-                                  ? cupom.code.replace(cupom.code.substring(cupom.code.length - 20), ` ${t('disabled_o')}`)
+                                  ? cupom.code.replace(
+                                      cupom.code.substring(
+                                        cupom.code.length - 20
+                                      ),
+                                      ` ${t('disabled_o')}`
+                                    )
                                   : cupom.code}
                               </td>
                               <td>{cupom.type}</td>
-                              <td className={`text-wrap`}>{currency({ value: cupom.value })}</td>
+                              <td className={`text-wrap`}>
+                                {currency({ value: cupom.value })}
+                              </td>
                             </tr>
                           )
                         }
@@ -625,19 +809,42 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(props.resume.formsPaymentResume).map((formPayment: [string, any]) => (
-                        <tr key={formPayment[0]} className={formPayment[0] === payment ? 'bg-primary' : ''}>
-                          <td className={formPayment[0] === payment ? 'text-white' : ''}>{formPayment[0]}</td>
-                          <td className={formPayment[0] === payment ? 'text-white text-end' : ' text-end'}>{currency({ value: formPayment[1] })}</td>
-                        </tr>
-                      ))}
+                      {Object.entries(props.resume.formsPaymentResume).map(
+                        (formPayment: [string, any]) => (
+                          <tr
+                            key={formPayment[0]}
+                            className={
+                              formPayment[0] === payment ? 'bg-primary' : ''
+                            }
+                          >
+                            <td
+                              className={
+                                formPayment[0] === payment ? 'text-white' : ''
+                              }
+                            >
+                              {formPayment[0]}
+                            </td>
+                            <td
+                              className={
+                                formPayment[0] === payment
+                                  ? 'text-end text-white'
+                                  : ' text-end'
+                              }
+                            >
+                              {currency({ value: formPayment[1] })}
+                            </td>
+                          </tr>
+                        )
+                      )}
                     </tbody>
                     <tfoot>
                       <tr>
                         <td>Total:</td>
                         <td className="text-end">
                           {currency({
-                            value: Object.entries(props.resume.formsPaymentResume).reduce((total, formPayment: [string, any]) => {
+                            value: Object.entries(
+                              props.resume.formsPaymentResume
+                            ).reduce((total, formPayment: [string, any]) => {
                               return (total += formPayment[1])
                             }, 0),
                           })}
@@ -646,17 +853,28 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                     </tfoot>
                   </TableBs>
                 </div>
-                <div className="flex-grow-1 overflow-auto" style={{ maxHeight: '410px' }}>
+                <div
+                  className="flex-grow-1 overflow-auto"
+                  style={{ maxHeight: '410px' }}
+                >
                   <TableBs bordered striped className="m-0">
                     <thead>
                       <tr>
-                        <td className="position-sticky bg-white p-0" style={{ top: 0 }} colSpan={2}>
+                        <td
+                          className="position-sticky bg-white p-0"
+                          style={{ top: 0 }}
+                          colSpan={2}
+                        >
                           <div className="d-flex justify-content-between  p-2">
                             <div>{t('waitstaff')}:</div>
                             <div>
                               Total:{' '}
                               {currency({
-                                value: (Object.values(props.resume?.bartendersResume) as number[]).reduce((total, value) => (total += value), 0),
+                                value: (
+                                  Object.values(
+                                    props.resume?.bartendersResume
+                                  ) as number[]
+                                ).reduce((total, value) => (total += value), 0),
                               })}
                             </div>
                           </div>
@@ -676,10 +894,22 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
                                   {' '}
                                   {/*  ${bartender.id === bartenderId ? 'text-white' : ''} */}
                                   {bartender.deleted_at
-                                    ? bartender.name.replace(bartender.name.substring(bartender.name.length - 19), ` ${t('disabled_o')}`)
+                                    ? bartender.name.replace(
+                                        bartender.name.substring(
+                                          bartender.name.length - 19
+                                        ),
+                                        ` ${t('disabled_o')}`
+                                      )
                                     : bartender.name}
                                 </td>
-                                <td>{currency({ value: props.resume?.bartendersResume[bartender.id] })}</td>{' '}
+                                <td>
+                                  {currency({
+                                    value:
+                                      props.resume?.bartendersResume[
+                                        bartender.id
+                                      ],
+                                  })}
+                                </td>{' '}
                                 {/* className={bartender.id === bartenderId ? 'text-white text-end' : ' text-end'} */}
                               </tr>
                             )
@@ -694,7 +924,10 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
       </Card>
       {props.data && (
         <ReportList
-          carts={{ ...props.data?.carts, data: props.data?.carts?.data.map((cart) => new Cart(cart)) }}
+          carts={{
+            ...props.data?.carts,
+            data: props.data?.carts?.data.map((cart) => new Cart(cart)),
+          }}
           tables={props.data?.tables}
           title={title}
           filter={filter}
@@ -702,7 +935,9 @@ export function ReportsLayout({ type, setData, setResume, ...props }: ReportsLay
           getReports={handleGetReports}
           setFetchAll={setFetchAll}
           fetchAll={fetchAll}
-          columnType={filter === 'package' ? columnDate?.value || 'created_at' : undefined}
+          columnType={
+            filter === 'package' ? columnDate?.value || 'created_at' : undefined
+          }
           date={type === 'daily' ? date : `${month}-${year}`}
           payment={payment}
         />

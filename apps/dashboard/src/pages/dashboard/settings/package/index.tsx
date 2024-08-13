@@ -2,7 +2,18 @@ import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { Accordion, Alert, Button, Card, Col, Container, Dropdown, Form, InputGroup, Row } from 'react-bootstrap'
+import {
+  Accordion,
+  Alert,
+  Button,
+  Card,
+  Col,
+  Container,
+  Dropdown,
+  Form,
+  InputGroup,
+  Row,
+} from 'react-bootstrap'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import { AiOutlineClear } from 'react-icons/ai'
@@ -14,7 +25,13 @@ import { Title } from '../../../../components/Partials/title'
 import { AppContext } from '../../../../context/app.ctx'
 import Week, { DateType } from '../../../../types/dates'
 import Profile, { OptionsPackage } from '../../../../types/profile'
-import { apiRoute, compareItems, copy, mask, textPackage } from '../../../../utils/wm-functions'
+import {
+  apiRoute,
+  compareItems,
+  copy,
+  mask,
+  textPackage,
+} from '../../../../utils/wm-functions'
 import { HelpVideos } from '@components/Modals/HelpVideos'
 import { useTranslation } from 'react-i18next'
 
@@ -33,7 +50,13 @@ export default function SettingsPackage() {
   } = useContext(AppContext)
 
   const [profilePackage, setProfilePackage] = useState(
-    copy({ ...profile.options.package, cashierDate: profile.options.package.cashierDate ?? 'nowDate' }, 'copy') as OptionsPackage
+    copy(
+      {
+        ...profile.options.package,
+        cashierDate: profile.options.package.cashierDate ?? 'nowDate',
+      },
+      'copy'
+    ) as OptionsPackage
   )
   const [datesChoices, setDatesChoices] = useState<string[]>([])
   const [saveClicked, setSaveClicked] = useState<boolean>(false)
@@ -62,7 +85,9 @@ export default function SettingsPackage() {
   )
 
   const savePackage = useCallback(async () => {
-    const haveInvalid = Object.values(week).some((date) => date.some((day: DateType) => day.open >= day.close))
+    const haveInvalid = Object.values(week).some((date) =>
+      date.some((day: DateType) => day.open >= day.close)
+    )
 
     if (haveInvalid) {
       handleShowToast({
@@ -83,7 +108,12 @@ export default function SettingsPackage() {
             package: profilePackage,
           },
         }
-        const { data: profData } = await apiRoute('/dashboard/settings/general', session, 'PATCH', data)
+        const { data: profData } = await apiRoute(
+          '/dashboard/settings/general',
+          session,
+          'PATCH',
+          data
+        )
         setProfileContext(new Profile({ ...profile, ...profData }))
         showToast('success', t('saved'), t('changes_saved'))
         changeConfig.toRouter && changeConfig.toRouter()
@@ -97,7 +127,14 @@ export default function SettingsPackage() {
       showToast('alert', t('no_changes'), t('no_changes_to_save'))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profilePackage, setProfileContext, session, showToast, changeConfig, profile])
+  }, [
+    profilePackage,
+    setProfileContext,
+    session,
+    showToast,
+    changeConfig,
+    profile,
+  ])
 
   useEffect(() => {
     setProfilePackage(copy(profile.options.package))
@@ -107,19 +144,31 @@ export default function SettingsPackage() {
   useEffect(() => {
     if (!invalidWeek) {
       profilePackage.week = week
-      setChangeConfig({ changeState: !compareItems(profilePackage.week, profile.options.package.week) })
+      setChangeConfig({
+        changeState: !compareItems(
+          profilePackage.week,
+          profile.options.package.week
+        ),
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [week])
   //Verifica se houve mudança nas propriedades
   useEffect(() => {
-    setChangeConfig({ changeState: !compareItems(profile.options.package, profilePackage) })
+    setChangeConfig({
+      changeState: !compareItems(profile.options.package, profilePackage),
+    })
   }, [profilePackage, profile, setChangeConfig])
 
   //Caso confirmModal for SALVAR useEffect aciona
   useEffect(() => {
     if (changeConfig.confirmSave) {
-      if (!(!profilePackage.shippingDelivery.active && !profilePackage.shippingLocal.active)) {
+      if (
+        !(
+          !profilePackage.shippingDelivery.active &&
+          !profilePackage.shippingLocal.active
+        )
+      ) {
         savePackage()
         setChangeConfig({})
       } else {
@@ -138,7 +187,10 @@ export default function SettingsPackage() {
 
   const basedLabelShippment = (capitalize?: boolean) => {
     let text: string
-    if (profilePackage.shippingDelivery.active && profilePackage.shippingLocal.active) {
+    if (
+      profilePackage.shippingDelivery.active &&
+      profilePackage.shippingLocal.active
+    ) {
       text = 'Entregas/Retiradas'
     } else if (profilePackage.shippingDelivery.active) {
       text = t('deliverys')
@@ -152,16 +204,26 @@ export default function SettingsPackage() {
   return (
     plansCategory.includes('package') && (
       <>
-        <Title title={t('settings')} className="mb-4" componentTitle={`${t('settings')}`} child={[textPackage(profilePackage.label2)]} />
-        <Container className="p-0 m-0" fluid>
-          {!profilePackage.shippingDelivery.active && !profilePackage.shippingLocal.active && (
-            <Row>
-              <Alert variant="orange" className="bd-callout bd-callout-orange text-center" style={{ borderLeft: '3px solid' }}>
-                <h3>{t('attention')}!</h3>
-                <span>{t('delivery_types_must_one_activated')}</span>
-              </Alert>
-            </Row>
-          )}
+        <Title
+          title={t('settings')}
+          className="mb-4"
+          componentTitle={`${t('settings')}`}
+          child={[textPackage(profilePackage.label2)]}
+        />
+        <Container className="m-0 p-0" fluid>
+          {!profilePackage.shippingDelivery.active &&
+            !profilePackage.shippingLocal.active && (
+              <Row>
+                <Alert
+                  variant="orange"
+                  className="bd-callout bd-callout-orange text-center"
+                  style={{ borderLeft: '3px solid' }}
+                >
+                  <h3>{t('attention')}!</h3>
+                  <span>{t('delivery_types_must_one_activated')}</span>
+                </Alert>
+              </Row>
+            )}
           <Row>
             <Card>
               <Card.Header className="d-flex gap-3">
@@ -169,7 +231,14 @@ export default function SettingsPackage() {
                   {t('activate_orders')} ({t('delivery_scheduling')})
                 </h4>
                 <div className="vr"></div>
-                <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/BGBA9120Y_A', title: t('order_settings') }]} />
+                <HelpVideos.Trigger
+                  urls={[
+                    {
+                      src: 'https://www.youtube.com/embed/BGBA9120Y_A',
+                      title: t('order_settings'),
+                    },
+                  ]}
+                />
               </Card.Header>
               <Card.Body>
                 <Row>
@@ -187,7 +256,7 @@ export default function SettingsPackage() {
                       }}
                     />
                   </Col>
-                  <Col sm="12" md className="mt-2 mt-md-0">
+                  <Col sm="12" md className="mt-md-0 mt-2">
                     <Form.Check
                       type="switch"
                       id={t('pickup_onsite')}
@@ -204,7 +273,7 @@ export default function SettingsPackage() {
                       }}
                     />
                   </Col>
-                  <Col sm="12" md className="mt-2 mt-md-0">
+                  <Col sm="12" md className="mt-md-0 mt-2">
                     <Form.Check
                       type="switch"
                       id={t('delivery_e')}
@@ -223,11 +292,12 @@ export default function SettingsPackage() {
                   </Col>
                 </Row>
                 <hr />
-                <Row className="pt-0 pt-md-2 mt-3">
-                  <Col sm="4" className="mt-2 mt-md-0">
+                <Row className="pt-md-2 mt-3 pt-0">
+                  <Col sm="4" className="mt-md-0 mt-2">
                     <Form.Group>
                       <Form.Label className="fs-7">
-                        {t('make_available')} {basedLabelShippment()} {t('starting_from')}:
+                        {t('make_available')} {basedLabelShippment()}{' '}
+                        {t('starting_from')}:
                       </Form.Label>
                       <InputGroup>
                         <Form.Control
@@ -248,14 +318,17 @@ export default function SettingsPackage() {
                             })
                           }}
                         />
-                        <InputGroup.Text className="fs-7">{t('days_n')}</InputGroup.Text>
+                        <InputGroup.Text className="fs-7">
+                          {t('days_n')}
+                        </InputGroup.Text>
                       </InputGroup>
                     </Form.Group>
                   </Col>
-                  <Col sm="4" className="mt-2 mt-md-0">
+                  <Col sm="4" className="mt-md-0 mt-2">
                     <Form.Group>
                       <Form.Label className="fs-7">
-                        {t('make_available')} {basedLabelShippment()} {t('within')}:
+                        {t('make_available')} {basedLabelShippment()}{' '}
+                        {t('within')}:
                       </Form.Label>
                       <InputGroup>
                         <Form.Control
@@ -272,7 +345,9 @@ export default function SettingsPackage() {
                             })
                           }}
                         ></Form.Control>
-                        <InputGroup.Text className="fs-7">{t('days_n')}</InputGroup.Text>
+                        <InputGroup.Text className="fs-7">
+                          {t('days_n')}
+                        </InputGroup.Text>
                       </InputGroup>
                     </Form.Group>
                   </Col>
@@ -293,13 +368,15 @@ export default function SettingsPackage() {
                             })
                           }}
                         />
-                        <InputGroup.Text className="fs-7">{t('minutes')}</InputGroup.Text>
+                        <InputGroup.Text className="fs-7">
+                          {t('minutes')}
+                        </InputGroup.Text>
                       </InputGroup>
                     </Form.Group>
                   </Col>
                 </Row>
                 <hr />
-                <Row className="pt-0 pt-md-2 align-items-end">
+                <Row className="pt-md-2 align-items-end pt-0">
                   {/* <Col sm="4" md className="mt-2 mt-md-0">
                     <Form.Group>
                       <Form.Label className="fs-7">
@@ -328,10 +405,11 @@ export default function SettingsPackage() {
                       </Form.Select>
                     </Form.Group>
                   </Col> */}
-                  <Col sm="4" className="mb-3 mb-md-0">
+                  <Col sm="4" className="mb-md-0 mb-3">
                     <Form.Group>
                       <Form.Label className="fs-7">
-                        {t('max_of')} {textPackage(profilePackage.label2, true)} {t('per_day_from')}
+                        {t('max_of')} {textPackage(profilePackage.label2, true)}{' '}
+                        {t('per_day_from')}
                       </Form.Label>
                       <Form.Control
                         type="number"
@@ -347,10 +425,11 @@ export default function SettingsPackage() {
                       />
                     </Form.Group>
                   </Col>
-                  <Col sm="4" className="mb-3 mb-md-0">
+                  <Col sm="4" className="mb-md-0 mb-3">
                     <Form.Group>
                       <Form.Label className="fs-7">
-                        {t('max_of')} {textPackage(profilePackage.label2, true)} {t('per_hour')}
+                        {t('max_of')} {textPackage(profilePackage.label2, true)}{' '}
+                        {t('per_hour')}
                       </Form.Label>
                       <Form.Control
                         type="number"
@@ -368,8 +447,10 @@ export default function SettingsPackage() {
                   </Col>
                   <Col sm="4">
                     <Form.Group className="">
-                      <Form.Label className="fw-bold">{t('display_menu_as')}:</Form.Label>
-                      <div className="d-flex gap-2 flex-wrap">
+                      <Form.Label className="fw-bold">
+                        {t('display_menu_as')}:
+                      </Form.Label>
+                      <div className="d-flex flex-wrap gap-2">
                         <Form.Check
                           type="radio"
                           id={'Agendamentos'}
@@ -402,12 +483,20 @@ export default function SettingsPackage() {
                   </Col>
                 </Row>
                 <hr />
-                <Row className="pt-0 pt-md-2">
-                  <Col sm="4" md className="d-flex align-items-end mt-3  mt-md-0">
+                <Row className="pt-md-2 pt-0">
+                  <Col
+                    sm="4"
+                    md
+                    className="d-flex align-items-end mt-md-0  mt-3"
+                  >
                     <Form.Group className="flex-grow-1">
-                      <Form.Label className="fs-7 fw-bold">{t('minimum_for_delivery')}.</Form.Label>
+                      <Form.Label className="fs-7 fw-bold">
+                        {t('minimum_for_delivery')}.
+                      </Form.Label>
                       <InputGroup>
-                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                        <InputGroup.Text>
+                          {currency({ value: 0, symbol: true })}
+                        </InputGroup.Text>
                         <Form.Control
                           value={profilePackage.minValue}
                           onChange={(e) => {
@@ -421,11 +510,19 @@ export default function SettingsPackage() {
                       </InputGroup>
                     </Form.Group>
                   </Col>
-                  <Col sm="4" md className="d-flex align-items-end mt-3 mt-md-0">
+                  <Col
+                    sm="4"
+                    md
+                    className="d-flex align-items-end mt-md-0 mt-3"
+                  >
                     <Form.Group className="flex-grow-1">
-                      <Form.Label className="fs-7 fw-bold">{t('minimum_for_pickup')}.</Form.Label>
+                      <Form.Label className="fs-7 fw-bold">
+                        {t('minimum_for_pickup')}.
+                      </Form.Label>
                       <InputGroup>
-                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                        <InputGroup.Text>
+                          {currency({ value: 0, symbol: true })}
+                        </InputGroup.Text>
                         <Form.Control
                           value={profilePackage.minValueLocal}
                           onChange={(e) => {
@@ -439,9 +536,15 @@ export default function SettingsPackage() {
                       </InputGroup>
                     </Form.Group>
                   </Col>
-                  <Col sm="4" md className="d-flex align-items-end mt-3 mt-md-0">
+                  <Col
+                    sm="4"
+                    md
+                    className="d-flex align-items-end mt-md-0 mt-3"
+                  >
                     <Form.Group className="flex-grow-1">
-                      <Form.Label className="fs-7 fw-bold">{t('register_order_cash_register')}</Form.Label>
+                      <Form.Label className="fs-7 fw-bold">
+                        {t('register_order_cash_register')}
+                      </Form.Label>
                       <Form.Select
                         value={profilePackage.cashierDate}
                         onChange={(e) => {
@@ -455,7 +558,9 @@ export default function SettingsPackage() {
                         }}
                       >
                         <option value="nowDate">{t('on_day_ordered')}</option>
-                        <option value="deliveryDate">{t('on_delivery_day')}</option>
+                        <option value="deliveryDate">
+                          {t('on_delivery_day')}
+                        </option>
                       </Form.Select>
                     </Form.Group>
                   </Col>
@@ -490,13 +595,21 @@ export default function SettingsPackage() {
                     </Form.Group>
                     <Row>
                       <Col md="3" className="d-flex">
-                        <Dropdown className="flex-grow-1 d-flex" autoClose="outside" key="down">
-                          <Dropdown.Toggle className="flex-grow-1" variant="primary" id="dropdown-basic">
+                        <Dropdown
+                          className="flex-grow-1 d-flex"
+                          autoClose="outside"
+                          key="down"
+                        >
+                          <Dropdown.Toggle
+                            className="flex-grow-1"
+                            variant="primary"
+                            id="dropdown-basic"
+                          >
                             {t('select_a_date')}
                           </Dropdown.Toggle>
                           <Dropdown.Menu className="package-calendar">
                             <Dropdown.Item>
-                              <div className="mb-2 d-flex justify-content-between">
+                              <div className="d-flex justify-content-between mb-2">
                                 <Button
                                   variant="primary"
                                   disabled={!datesChoices.length}
@@ -514,7 +627,10 @@ export default function SettingsPackage() {
                                     if (datesChoices.length) {
                                       setProfilePackage({
                                         ...profilePackage,
-                                        specialsDates: [...profilePackage.specialsDates, ...datesChoices],
+                                        specialsDates: [
+                                          ...profilePackage.specialsDates,
+                                          ...datesChoices,
+                                        ],
                                       })
                                       setDatesChoices([])
                                     }
@@ -528,35 +644,57 @@ export default function SettingsPackage() {
                                 <Calendar
                                   minDate={new Date()}
                                   tileDisabled={({ date }) => {
-                                    const dateFormated = DateTime.fromJSDate(date).toISO()
+                                    const dateFormated =
+                                      DateTime.fromJSDate(date).toISO()
 
-                                    if (profilePackage.specialsDates.includes(dateFormated) || datesChoices.includes(dateFormated)) {
+                                    if (
+                                      profilePackage.specialsDates.includes(
+                                        dateFormated
+                                      ) ||
+                                      datesChoices.includes(dateFormated)
+                                    ) {
                                       return true
                                     }
 
                                     return false
                                   }}
                                   onClickDay={(e) => {
-                                    const dateFormated = DateTime.fromJSDate(e).toISO()
+                                    const dateFormated =
+                                      DateTime.fromJSDate(e).toISO()
                                     setTimeout(() => {
-                                      if (!datesChoices.includes(dateFormated) && !profilePackage.specialsDates.includes(dateFormated)) {
-                                        setDatesChoices([...datesChoices, dateFormated])
+                                      if (
+                                        !datesChoices.includes(dateFormated) &&
+                                        !profilePackage.specialsDates.includes(
+                                          dateFormated
+                                        )
+                                      ) {
+                                        setDatesChoices([
+                                          ...datesChoices,
+                                          dateFormated,
+                                        ])
                                       }
                                     }, 5)
                                   }}
                                 />
                               </div>
 
-                              <div className="text-start pt-2 overflow-auto mx-auto" style={{ width: '300px' }}>
+                              <div
+                                className="mx-auto overflow-auto pt-2 text-start"
+                                style={{ width: '300px' }}
+                              >
                                 {datesChoices.map((date) => {
-                                  const dateFormated = DateTime.fromJSDate(new Date(date)).toFormat(`${t('date_format')}`)
+                                  const dateFormated = DateTime.fromJSDate(
+                                    new Date(date)
+                                  ).toFormat(`${t('date_format')}`)
                                   return (
                                     <span
                                       key={date}
                                       id={date}
-                                      className="d-inline-block ms-2 border p-1 rounded text-dark"
+                                      className="d-inline-block text-dark ms-2 rounded border p-1"
                                       onClick={() => {
-                                        const newDates = datesChoices.filter((dt) => dt !== date)
+                                        const newDates = datesChoices.filter(
+                                          (dt) => dt !== date
+                                        )
                                         setDatesChoices(newDates)
                                       }}
                                     >
@@ -572,37 +710,53 @@ export default function SettingsPackage() {
                     </Row>
                     <Row className="mt-4">
                       <Col sm="12" className="d-flex">
-                        <Accordion defaultActiveKey="0" className="flex-grow-1 w-100">
+                        <Accordion
+                          defaultActiveKey="0"
+                          className="flex-grow-1 w-100"
+                        >
                           <Accordion.Item eventKey="0">
-                            <Accordion.Header className="d-inline fs-6 text-wrap text-warning">
+                            <Accordion.Header className="d-inline fs-6 text-warning text-wrap">
                               <span>
-                                {t('defined_dates')} ({profilePackage.specialsDates.length})
+                                {t('defined_dates')} (
+                                {profilePackage.specialsDates.length})
                               </span>
                             </Accordion.Header>
                             <Accordion.Body>
-                              <div className="d-flex flex-wrap justify-content-center gap-2">
+                              <div className="d-flex justify-content-center flex-wrap gap-2">
                                 {profilePackage.specialsDates
                                   .sort((a, b) => {
                                     const dateA = new Date(a)
                                     const dateB = new Date(b)
 
-                                    return dateA < dateB ? -1 : dateA > dateB ? 1 : 0
+                                    return dateA < dateB
+                                      ? -1
+                                      : dateA > dateB
+                                        ? 1
+                                        : 0
                                   })
                                   .map((date) => {
                                     return (
-                                      <Card key={date} className="border rounded p-1">
+                                      <Card
+                                        key={date}
+                                        className="rounded border p-1"
+                                      >
                                         <Card.Header className="text-center">
                                           <BsFillCalendar2DateFill />
 
-                                          <span className="ms-2 d-inline-block align-middle">
-                                            {DateTime.fromJSDate(new Date(date)).toFormat(`${t('date_format')}`)}
+                                          <span className="d-inline-block ms-2 align-middle">
+                                            {DateTime.fromJSDate(
+                                              new Date(date)
+                                            ).toFormat(`${t('date_format')}`)}
                                           </span>
                                         </Card.Header>
                                         <Button
                                           className="text-decoration-none"
                                           variant="link"
                                           onClick={(e) => {
-                                            const newSpecialsDates = profilePackage.specialsDates.filter((dateItem) => dateItem !== date)
+                                            const newSpecialsDates =
+                                              profilePackage.specialsDates.filter(
+                                                (dateItem) => dateItem !== date
+                                              )
                                             setProfilePackage({
                                               ...profilePackage,
                                               specialsDates: newSpecialsDates,
@@ -703,9 +857,13 @@ export default function SettingsPackage() {
                     <Col sm className="mb-3">
                       <Form.Group>
                         <Form.Group>
-                          <Form.Label className="fs-7 fw-bold">{t('minimum_delivery_order')}</Form.Label>
+                          <Form.Label className="fs-7 fw-bold">
+                            {t('minimum_delivery_order')}
+                          </Form.Label>
                           <InputGroup>
-                            <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                            <InputGroup.Text>
+                              {currency({ value: 0, symbol: true })}
+                            </InputGroup.Text>
                             <Form.Control
                               value={profilePackage.minValue}
                               onChange={(e) => {
@@ -723,9 +881,13 @@ export default function SettingsPackage() {
                     <Col sm className="mb-3">
                       <Form.Group>
                         <Form.Group>
-                          <Form.Label className="fs-7 fw-bold">{t('minimum_order_for_pickup')}</Form.Label>
+                          <Form.Label className="fs-7 fw-bold">
+                            {t('minimum_order_for_pickup')}
+                          </Form.Label>
                           <InputGroup>
-                            <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                            <InputGroup.Text>
+                              {currency({ value: 0, symbol: true })}
+                            </InputGroup.Text>
                             <Form.Control
                               value={profilePackage.minValueLocal}
                               onChange={(e) => {
@@ -776,7 +938,10 @@ export default function SettingsPackage() {
             variant="success"
             className="mt-auto"
             onClick={savePackage}
-            disabled={!profilePackage.shippingDelivery.active && !profilePackage.shippingLocal.active}
+            disabled={
+              !profilePackage.shippingDelivery.active &&
+              !profilePackage.shippingLocal.active
+            }
           >
             {t('save')}
           </Button>

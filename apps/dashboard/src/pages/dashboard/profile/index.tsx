@@ -27,16 +27,30 @@ export default function Profile({}: ProfileProps) {
   const router = useRouter()
 
   useEffect(() => {
-    if (profile && profile.id && !profile.address?.street && !plansCategory.every((plan) => plan === 'table')) {
+    if (
+      profile &&
+      profile.id &&
+      !profile.address?.street &&
+      !plansCategory.every((plan) => plan === 'table')
+    ) {
       setKey('address')
     }
-    if (profile && profile.id && profile.address?.street && profile.taxDelivery?.length < 1 && !plansCategory.every((plan) => plan === 'table')) {
+    if (
+      profile &&
+      profile.id &&
+      profile.address?.street &&
+      profile.taxDelivery?.length < 1 &&
+      !plansCategory.every((plan) => plan === 'table')
+    ) {
       setKey('freight')
     }
   }, [profile, block, plansCategory])
 
   useEffect(() => {
-    if (plansCategory?.some((p) => p !== 'table') && (!profile.id || !profile.address.street || profile.taxDelivery.length < 1)) {
+    if (
+      plansCategory?.some((p) => p !== 'table') &&
+      (!profile.id || !profile.address.street || profile.taxDelivery.length < 1)
+    ) {
       setSteps(true)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,31 +87,65 @@ export default function Profile({}: ProfileProps) {
   return (
     profile && (
       <>
-        <Title title={t('my_profile')} componentTitle={t('profile')} className="mb-4" />
+        <Title
+          title={t('my_profile')}
+          componentTitle={t('profile')}
+          className="mb-4"
+        />
         {steps && (
           <div className="bd-callout bd-callout-success">
             <p className="m-0">
-              <span className="fw-bold">{t('congratulations')}</span>, {(session?.user?.name ?? session?.user?.$attributes.name).split(' ')[0]}!{' '}
-              <br />
+              <span className="fw-bold">{t('congratulations')}</span>,{' '}
+              {
+                (session?.user?.name ?? session?.user?.$attributes.name).split(
+                  ' '
+                )[0]
+              }
+              ! <br />
               {t('message_few_steps_organized')}
               <span className="fw-bold"> {t('digital_menu')}</span>
             </p>
             <div className="d-flex align-itens-center justify-content-between">
-              <p className="m-0 my-3 text-red-400">{t('basic_details_establishment')}</p>
-              <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/a7kfhg0lKFM', title: t('filling_profile') }]} />
+              <p className="m-0 my-3 text-red-400">
+                {t('basic_details_establishment')}
+              </p>
+              <HelpVideos.Trigger
+                urls={[
+                  {
+                    src: 'https://www.youtube.com/embed/a7kfhg0lKFM',
+                    title: t('filling_profile'),
+                  },
+                ]}
+              />
             </div>
           </div>
         )}
         <section>
           {profile && (
-            <Tab.Container id="" activeKey={key} onSelect={(k) => setKey(k as string)}>
+            <Tab.Container
+              id=""
+              activeKey={key}
+              onSelect={(k) => setKey(k as string)}
+            >
               <Row>
                 <Col sm={12}>
-                  <Nav activeKey={'address'} variant="tabs" className="tab-nav-flex flex-row">
+                  <Nav
+                    activeKey={'address'}
+                    variant="tabs"
+                    className="tab-nav-flex flex-row"
+                  >
                     <Nav.Item>
-                      <Nav.Link eventKey="business" className="position-relative">
+                      <Nav.Link
+                        eventKey="business"
+                        className="position-relative"
+                      >
                         {steps && (
-                          <Badge bg={profile.id ? 'success' : 'danger'} pill className={`position-absolute`} style={{ top: -10, right: -5 }}>
+                          <Badge
+                            bg={profile.id ? 'success' : 'danger'}
+                            pill
+                            className={`position-absolute`}
+                            style={{ top: -10, right: -5 }}
+                          >
                             {profile.id ? <BsCheckLg /> : <BsExclamationLg />}
                           </Badge>
                         )}
@@ -109,17 +157,31 @@ export default function Profile({}: ProfileProps) {
                     </Nav.Item>
                     <>
                       <Nav.Item>
-                        <Nav.Link disabled={!profile.id ? true : false} eventKey="address" className="position-relative">
-                          {steps && profile.id && plansCategory.some((plan) => plan !== 'table') && (
-                            <Badge
-                              bg={profile.id && profile.address.street ? 'success' : 'danger'}
-                              pill
-                              className={`position-absolute`}
-                              style={{ top: -10, right: -5 }}
-                            >
-                              {profile.id && profile.address.street ? <BsCheckLg /> : <BsExclamationLg />}
-                            </Badge>
-                          )}
+                        <Nav.Link
+                          disabled={!profile.id ? true : false}
+                          eventKey="address"
+                          className="position-relative"
+                        >
+                          {steps &&
+                            profile.id &&
+                            plansCategory.some((plan) => plan !== 'table') && (
+                              <Badge
+                                bg={
+                                  profile.id && profile.address.street
+                                    ? 'success'
+                                    : 'danger'
+                                }
+                                pill
+                                className={`position-absolute`}
+                                style={{ top: -10, right: -5 }}
+                              >
+                                {profile.id && profile.address.street ? (
+                                  <BsCheckLg />
+                                ) : (
+                                  <BsExclamationLg />
+                                )}
+                              </Badge>
+                            )}
                           {t('address')}
                         </Nav.Link>
                       </Nav.Item>
@@ -129,7 +191,11 @@ export default function Profile({}: ProfileProps) {
                             <Nav.Link
                               disabled={
                                 profile.id &&
-                                ((profile.address.street && profile.taxDelivery.length > 0) || plansCategory.every((plan) => plan === 'table'))
+                                ((profile.address.street &&
+                                  profile.taxDelivery.length > 0) ||
+                                  plansCategory.every(
+                                    (plan) => plan === 'table'
+                                  ))
                                   ? false
                                   : true
                               }
@@ -146,19 +212,41 @@ export default function Profile({}: ProfileProps) {
                               //     ? true
                               //     : false
                               // }
-                              disabled={profile.id && (profile.address.street || plansCategory.every((plan) => plan === 'table')) ? false : true}
+                              disabled={
+                                profile.id &&
+                                (profile.address.street ||
+                                  plansCategory.every(
+                                    (plan) => plan === 'table'
+                                  ))
+                                  ? false
+                                  : true
+                              }
                               eventKey="freight"
                               className="position-relative"
                             >
                               {t('shipping')}
-                              {!steps || !profile.id || (profile.id && !profile.address.street) ? null : (
+                              {!steps ||
+                              !profile.id ||
+                              (profile.id && !profile.address.street) ? null : (
                                 <Badge
-                                  bg={profile.id && profile.address.street && profile.taxDelivery.length ? 'success' : 'danger'}
+                                  bg={
+                                    profile.id &&
+                                    profile.address.street &&
+                                    profile.taxDelivery.length
+                                      ? 'success'
+                                      : 'danger'
+                                  }
                                   pill
                                   className={`position-absolute`}
                                   style={{ top: -10, right: -5 }}
                                 >
-                                  {profile.id && profile.address.street && profile.taxDelivery.length ? <BsCheckLg /> : <BsExclamationLg />}
+                                  {profile.id &&
+                                  profile.address.street &&
+                                  profile.taxDelivery.length ? (
+                                    <BsCheckLg />
+                                  ) : (
+                                    <BsExclamationLg />
+                                  )}
                                 </Badge>
                               )}
                             </Nav.Link>
@@ -167,7 +255,11 @@ export default function Profile({}: ProfileProps) {
                             <Nav.Link
                               disabled={
                                 profile.id &&
-                                ((profile.address.street && profile.taxDelivery.length > 0) || plansCategory.every((plan) => plan === 'table'))
+                                ((profile.address.street &&
+                                  profile.taxDelivery.length > 0) ||
+                                  plansCategory.every(
+                                    (plan) => plan === 'table'
+                                  ))
                                   ? false
                                   : true
                               }
@@ -192,14 +284,28 @@ export default function Profile({}: ProfileProps) {
                       </PaymentMethodProvider>
                     </Tab.Pane>
                     <Tab.Pane eventKey="address">
-                      <ProfileAddress automaticModal={!!(profile.id && !profile.address.street)} />
+                      <ProfileAddress
+                        automaticModal={
+                          !!(profile.id && !profile.address.street)
+                        }
+                      />
                     </Tab.Pane>
                     {
                       <>
-                        <Tab.Pane eventKey="hours">{profile.id && <ProfileOpeningHours />}</Tab.Pane>
-                        <Tab.Pane eventKey="freight">{profile.id && <ProfileFreight />}</Tab.Pane>
+                        <Tab.Pane eventKey="hours">
+                          {profile.id && <ProfileOpeningHours />}
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="freight">
+                          {profile.id && <ProfileFreight />}
+                        </Tab.Pane>
                         <Tab.Pane eventKey="forms-payment">
-                          <PaymentMethodProvider>{profile.id && <ProfileFormsPayment isActive={key === 'forms-payment'} />}</PaymentMethodProvider>
+                          <PaymentMethodProvider>
+                            {profile.id && (
+                              <ProfileFormsPayment
+                                isActive={key === 'forms-payment'}
+                              />
+                            )}
+                          </PaymentMethodProvider>
                         </Tab.Pane>
                       </>
                     }

@@ -5,7 +5,11 @@ import { AddPlan } from '../../AddPlan'
 import { AddressModal } from '../../Modals/Profile/Address'
 import { useTranslation } from 'react-i18next'
 
-export function ProfileAddress({ automaticModal }: { automaticModal?: boolean }) {
+export function ProfileAddress({
+  automaticModal,
+}: {
+  automaticModal?: boolean
+}) {
   const { t } = useTranslation()
   const { profile, plansCategory } = useContext(AppContext)
   const [showModal, setShowModal] = useState(false)
@@ -17,7 +21,11 @@ export function ProfileAddress({ automaticModal }: { automaticModal?: boolean })
   return (
     <section>
       {plansCategory.every((plan) => plan === 'table') ? (
-        <AddPlan notDefaultTitle plan="delivery" title={t('message_plan_not_include_delivery')} />
+        <AddPlan
+          notDefaultTitle
+          plan="delivery"
+          title={t('message_plan_not_include_delivery')}
+        />
       ) : (
         <Card>
           <Card.Body>
@@ -35,11 +43,12 @@ export function ProfileAddress({ automaticModal }: { automaticModal?: boolean })
                 <Col md>
                   {profile.address?.street && (
                     <>
-                      <h5 className="mt-3 mt-md-0">
+                      <h5 className="mt-md-0 mt-3">
                         <b>{t('restaurant_address')}</b>
                       </h5>
                       <p>
-                        {profile.address?.street}, {profile.address?.number} • {profile.address?.neigborhood}
+                        {profile.address?.street}, {profile.address?.number} •{' '}
+                        {profile.address?.neigborhood}
                       </p>
                       <p>
                         {t('zip_code')} {profile.address?.zipcode}
@@ -51,8 +60,13 @@ export function ProfileAddress({ automaticModal }: { automaticModal?: boolean })
                   )}
                   <Row>
                     <Col md="4" className="d-flex">
-                      <Button className="flex-grow-1" onClick={() => setShowModal(true)}>
-                        {profile.address?.street ? t('edit_address') : t('add_address')}
+                      <Button
+                        className="flex-grow-1"
+                        onClick={() => setShowModal(true)}
+                      >
+                        {profile.address?.street
+                          ? t('edit_address')
+                          : t('add_address')}
                       </Button>
                     </Col>
                   </Row>
@@ -63,7 +77,10 @@ export function ProfileAddress({ automaticModal }: { automaticModal?: boolean })
         </Card>
       )}
       <section className="modals">
-        <AddressModal show={showModal} handleClose={() => setShowModal(false)} />
+        <AddressModal
+          show={showModal}
+          handleClose={() => setShowModal(false)}
+        />
       </section>
     </section>
   )

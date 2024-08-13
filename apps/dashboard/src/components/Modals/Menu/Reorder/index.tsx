@@ -1,5 +1,18 @@
-import { Modal, Accordion, Button, Card, useAccordionButton } from 'react-bootstrap'
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState, useTransition } from 'react'
+import {
+  Modal,
+  Accordion,
+  Button,
+  Card,
+  useAccordionButton,
+} from 'react-bootstrap'
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+  useTransition,
+} from 'react'
 import Category from '../../../../types/category'
 import { ProductType } from '../../../../types/product'
 import { AppContext } from '../../../../context/app.ctx'
@@ -17,20 +30,21 @@ import { useTranslation } from 'react-i18next'
 export function MenuReorder(props: any) {
   const { t } = useTranslation()
   const { handleShowToast, invoicePending } = useContext(AppContext)
-  const { categories: menuCategories, setCategories: setMenuCategories } = useContext(MenuContext)
+  const { categories: menuCategories, setCategories: setMenuCategories } =
+    useContext(MenuContext)
   const [isTransition, startTransition] = useTransition()
   const { data: session } = useSession()
   const [categories, setCategories] = useState<any[]>([])
   const [runReorder, setRunReorder] = useState<boolean>(false)
   const [showSpinner, setShowSpinner] = useState<boolean>(false)
   const [finalOrder, setFinalOrder] = useState<any>({
-    'category': {},
-    'product': {},
-    'complement': {},
+    category: {},
+    product: {},
+    complement: {},
     'complement/itens': {},
-    'flavor': {},
-    'size': {},
-    'implementation': {},
+    flavor: {},
+    size: {},
+    implementation: {},
   })
 
   const sortEnd = (arr: any[], oldIndex: number, newIndex: number) => {
@@ -77,10 +91,18 @@ export function MenuReorder(props: any) {
             }
 
             await Category.orderItem(body, session, key, value.pizza)
-            const category = newCategories.find((cat) => cat.id === Number(body.categoryId))
-            const product = category?.products?.find((prod: any) => prod.id === Number(body.productId))
-            const productComplement = product?.complements.find((compl: any) => compl.id === Number(body.complementId))
-            const complementsPizza = category?.product?.complements.find((comp: any) => comp.id === Number(body.complementId))
+            const category = newCategories.find(
+              (cat) => cat.id === Number(body.categoryId)
+            )
+            const product = category?.products?.find(
+              (prod: any) => prod.id === Number(body.productId)
+            )
+            const productComplement = product?.complements.find(
+              (compl: any) => compl.id === Number(body.complementId)
+            )
+            const complementsPizza = category?.product?.complements.find(
+              (comp: any) => comp.id === Number(body.complementId)
+            )
 
             switch (key) {
               case 'category':
@@ -88,31 +110,55 @@ export function MenuReorder(props: any) {
                 break
               case 'product':
                 if (category && category.products) {
-                  category.products = newArr(body.order, category.products, 'id')
+                  category.products = newArr(
+                    body.order,
+                    category.products,
+                    'id'
+                  )
                 }
                 break
               case 'complement':
                 if (product) {
-                  product.complements = newArr(body.order, product.complements, 'id')
+                  product.complements = newArr(
+                    body.order,
+                    product.complements,
+                    'id'
+                  )
                 }
                 if (category?.product) {
-                  category.product.complements = newArr(body.order, category.product.complements, 'id')
+                  category.product.complements = newArr(
+                    body.order,
+                    category.product.complements,
+                    'id'
+                  )
                 }
                 break
               case 'complement/itens':
                 if (productComplement) {
-                  productComplement.itens = newArr(body.order, productComplement.itens, 'code')
+                  productComplement.itens = newArr(
+                    body.order,
+                    productComplement.itens,
+                    'code'
+                  )
                 }
 
                 if (complementsPizza) {
-                  complementsPizza.itens = newArr(body.order, complementsPizza.itens, 'code')
+                  complementsPizza.itens = newArr(
+                    body.order,
+                    complementsPizza.itens,
+                    'code'
+                  )
                 }
                 break
               case 'flavor':
               case 'size':
               case 'implementation':
                 if (category && category.type === 'pizza' && category.product) {
-                  category.product[`${key}s`] = newArr(body.order, category.product[`${key}s`], 'code')
+                  category.product[`${key}s`] = newArr(
+                    body.order,
+                    category.product[`${key}s`],
+                    'code'
+                  )
                 }
                 break
             }
@@ -239,7 +285,9 @@ export function MenuReorder(props: any) {
   }
 
   const createSortables = () => {
-    const nestedElements = Array.from(document.getElementsByClassName('elements-reorder') ?? []) as HTMLElement[]
+    const nestedElements = Array.from(
+      document.getElementsByClassName('elements-reorder') ?? []
+    ) as HTMLElement[]
     nestedElements.forEach((el) => {
       new Sortable(el, {
         group: {
@@ -254,12 +302,24 @@ export function MenuReorder(props: any) {
         selectedClass: 'sortable-selected',
         delay: 200,
         onEnd: ({ oldIndex, newIndex, item }) => {
-          if (oldIndex !== undefined && newIndex !== undefined && newIndex !== oldIndex) {
+          if (
+            oldIndex !== undefined &&
+            newIndex !== undefined &&
+            newIndex !== oldIndex
+          ) {
             setRunReorder(true)
-            const category = categories.find((cat) => cat.id === Number(item.dataset.categoryId))
-            const product = category?.products?.find((prod: any) => prod.id === Number(item.dataset.productId))
-            const complement = product?.complements.find((compl: any) => compl.id === Number(item.dataset.complementId))
-            const complementsPizza = category?.product?.complements.find((comp: any) => comp.id === Number(item.dataset.complementId))
+            const category = categories.find(
+              (cat) => cat.id === Number(item.dataset.categoryId)
+            )
+            const product = category?.products?.find(
+              (prod: any) => prod.id === Number(item.dataset.productId)
+            )
+            const complement = product?.complements.find(
+              (compl: any) => compl.id === Number(item.dataset.complementId)
+            )
+            const complementsPizza = category?.product?.complements.find(
+              (comp: any) => comp.id === Number(item.dataset.complementId)
+            )
 
             switch (item.dataset.type) {
               case 'category':
@@ -271,54 +331,92 @@ export function MenuReorder(props: any) {
                 if (category) {
                   sortEnd(category.products, oldIndex, newIndex)
                   finalOrder['product'][`${category.id}`] = {}
-                  finalOrder['product'][`${category.id}`].categoryId = category.id
-                  finalOrder['product'][`${category.id}`].order = orderArray(category.products, 'id')
+                  finalOrder['product'][`${category.id}`].categoryId =
+                    category.id
+                  finalOrder['product'][`${category.id}`].order = orderArray(
+                    category.products,
+                    'id'
+                  )
                 }
                 break
               case 'complement':
                 if (category && product) {
                   sortEnd(product.complements, oldIndex, newIndex)
                   finalOrder['complement'][`${product.id}`] = {}
-                  finalOrder['complement'][`${product.id}`].order = orderArray(product.complements, 'id')
-                  finalOrder['complement'][`${product.id}`].categoryId = category.id
-                  finalOrder['complement'][`${product.id}`].productId = product.id
+                  finalOrder['complement'][`${product.id}`].order = orderArray(
+                    product.complements,
+                    'id'
+                  )
+                  finalOrder['complement'][`${product.id}`].categoryId =
+                    category.id
+                  finalOrder['complement'][`${product.id}`].productId =
+                    product.id
                 }
                 break
               case 'complement-item':
                 if (category && product && complement) {
                   sortEnd(complement.itens, oldIndex, newIndex)
                   finalOrder['complement/itens'][`${complement.code}`] = {}
-                  finalOrder['complement/itens'][`${complement.code}`].order = orderArray(complement.itens, 'code')
-                  finalOrder['complement/itens'][`${complement.code}`].categoryId = category.id
-                  finalOrder['complement/itens'][`${complement.code}`].productId = product.id
-                  finalOrder['complement/itens'][`${complement.code}`].complementId = complement.id
+                  finalOrder['complement/itens'][`${complement.code}`].order =
+                    orderArray(complement.itens, 'code')
+                  finalOrder['complement/itens'][
+                    `${complement.code}`
+                  ].categoryId = category.id
+                  finalOrder['complement/itens'][
+                    `${complement.code}`
+                  ].productId = product.id
+                  finalOrder['complement/itens'][
+                    `${complement.code}`
+                  ].complementId = complement.id
                 }
 
                 if (category && category.product && complementsPizza) {
                   sortEnd(complementsPizza.itens, oldIndex, newIndex)
-                  finalOrder['complement/itens'][`${complementsPizza.code}`] = {}
-                  finalOrder['complement/itens'][`${complementsPizza.code}`].order = orderArray(complementsPizza.itens, 'code')
-                  finalOrder['complement/itens'][`${complementsPizza.code}`].categoryId = category.id
-                  finalOrder['complement/itens'][`${complementsPizza.code}`].pizzaId = category.product.id
-                  finalOrder['complement/itens'][`${complementsPizza.code}`].complementId = complementsPizza.id
+                  finalOrder['complement/itens'][`${complementsPizza.code}`] =
+                    {}
+                  finalOrder['complement/itens'][
+                    `${complementsPizza.code}`
+                  ].order = orderArray(complementsPizza.itens, 'code')
+                  finalOrder['complement/itens'][
+                    `${complementsPizza.code}`
+                  ].categoryId = category.id
+                  finalOrder['complement/itens'][
+                    `${complementsPizza.code}`
+                  ].pizzaId = category.product.id
+                  finalOrder['complement/itens'][
+                    `${complementsPizza.code}`
+                  ].complementId = complementsPizza.id
                 }
                 break
               case 'size':
               case 'flavor':
               case 'implementation':
                 if (category) {
-                  sortEnd(category.product[`${item.dataset.type}s`], oldIndex, newIndex)
+                  sortEnd(
+                    category.product[`${item.dataset.type}s`],
+                    oldIndex,
+                    newIndex
+                  )
                   finalOrder[item.dataset.type][`${item.dataset.code}`] = {}
-                  finalOrder[item.dataset.type][`${item.dataset.code}`].pizza = true
-                  finalOrder[item.dataset.type][`${item.dataset.code}`].categoryId = category.id
-                  finalOrder[item.dataset.type][`${item.dataset.code}`].order = orderArray(category.product[`${item.dataset.type}s`], 'code')
+                  finalOrder[item.dataset.type][`${item.dataset.code}`].pizza =
+                    true
+                  finalOrder[item.dataset.type][
+                    `${item.dataset.code}`
+                  ].categoryId = category.id
+                  finalOrder[item.dataset.type][`${item.dataset.code}`].order =
+                    orderArray(
+                      category.product[`${item.dataset.type}s`],
+                      'code'
+                    )
                 }
             }
           }
         },
         onChoose: ({ item }) => {
           const accordionOpen = Array.from(
-            document.querySelectorAll(`div[data-type=${item.dataset.type}] .accordion-button[aria-expanded=true]`)
+            document.querySelectorAll(
+              `div[data-type=${item.dataset.type}] .accordion-button[aria-expanded=true]`
+            )
           ) as HTMLButtonElement[]
           accordionOpen.forEach((el) => {
             el.click()
@@ -349,13 +447,13 @@ export function MenuReorder(props: any) {
         onEnter={sortedCategories}
         onExited={() => {
           setFinalOrder({
-            'category': {},
-            'product': {},
-            'complement': {},
+            category: {},
+            product: {},
+            complement: {},
             'complement/itens': {},
-            'flavor': {},
-            'size': {},
-            'implementation': {},
+            flavor: {},
+            size: {},
+            implementation: {},
           })
         }}
         style={{ zIndex: 9999 }}
@@ -372,22 +470,36 @@ export function MenuReorder(props: any) {
               <Accordion className="elements-reorder">
                 {categories.map((cat) => {
                   return (
-                    <AccordionItem key={cat.id} eventKey={`category-${cat.id}`} data-type="category">
+                    <AccordionItem
+                      key={cat.id}
+                      eventKey={`category-${cat.id}`}
+                      data-type="category"
+                    >
                       <AccordionHeader
                         id={`button-${cat.id}`}
-                        className="fs-4 p-0 title-element-reorder"
+                        className="fs-4 title-element-reorder p-0"
                         style={{ position: 'sticky', top: '-20px', zIndex: 10 }}
                       >
-                        <RiDragMove2Line size={25} className="icon" /> {cat.name}
+                        <RiDragMove2Line size={25} className="icon" />{' '}
+                        {cat.name}
                       </AccordionHeader>
                       <AccordionBody>
                         {cat.products && cat.products.length && (
                           <Accordion className="elements-reorder">
                             {cat.products.map((prod: any) => {
                               return (
-                                <AccordionItem key={prod.id} eventKey={`prod-${prod.id}`} data-type="product" data-category-id={`${cat.id}`}>
-                                  <AccordionHeader className="fs-4 p-0 title-element-reorder">
-                                    <RiDragMove2Line size={25} className="icon" /> {prod.name}
+                                <AccordionItem
+                                  key={prod.id}
+                                  eventKey={`prod-${prod.id}`}
+                                  data-type="product"
+                                  data-category-id={`${cat.id}`}
+                                >
+                                  <AccordionHeader className="fs-4 title-element-reorder p-0">
+                                    <RiDragMove2Line
+                                      size={25}
+                                      className="icon"
+                                    />{' '}
+                                    {prod.name}
                                   </AccordionHeader>
                                   <AccordionBody>
                                     <Accordion className="elements-reorder">
@@ -400,25 +512,41 @@ export function MenuReorder(props: any) {
                                             data-category-id={`${cat.id}`}
                                             data-product-id={`${prod.id}`}
                                           >
-                                            <AccordionHeader className="fs-4 p-0 title-element-reorder">
-                                              <RiDragMove2Line size={25} className="icon" /> {compl.name}
+                                            <AccordionHeader className="fs-4 title-element-reorder p-0">
+                                              <RiDragMove2Line
+                                                size={25}
+                                                className="icon"
+                                              />{' '}
+                                              {compl.name}
                                             </AccordionHeader>
                                             <Accordion.Body>
                                               <div className="elements-reorder">
-                                                {compl.itens.map((item: any) => {
-                                                  return (
-                                                    <div
-                                                      key={item.code}
-                                                      className="fs-4 fw-500 py-2"
-                                                      data-type="complement-item"
-                                                      data-category-id={cat.id}
-                                                      data-product-id={prod.id}
-                                                      data-complement-id={compl.id}
-                                                    >
-                                                      <RiDragMove2Line size={25} className="icon" /> {item.name}
-                                                    </div>
-                                                  )
-                                                })}
+                                                {compl.itens.map(
+                                                  (item: any) => {
+                                                    return (
+                                                      <div
+                                                        key={item.code}
+                                                        className="fs-4 fw-500 py-2"
+                                                        data-type="complement-item"
+                                                        data-category-id={
+                                                          cat.id
+                                                        }
+                                                        data-product-id={
+                                                          prod.id
+                                                        }
+                                                        data-complement-id={
+                                                          compl.id
+                                                        }
+                                                      >
+                                                        <RiDragMove2Line
+                                                          size={25}
+                                                          className="icon"
+                                                        />{' '}
+                                                        {item.name}
+                                                      </div>
+                                                    )
+                                                  }
+                                                )}
                                               </div>
                                             </Accordion.Body>
                                           </AccordionItem>
@@ -438,9 +566,18 @@ export function MenuReorder(props: any) {
                               <Accordion className="elements-reorder">
                                 {cat.product.sizes.map((sz: any) => {
                                   return (
-                                    <AccordionItem key={sz.code} eventKey={`size-${sz.code}`} data-type={`size`} data-category-id={cat.id}>
-                                      <AccordionHeader className="fs-4 p-0 title-element-reorder">
-                                        <RiDragMove2Line size={25} className="icon" /> {sz.name}
+                                    <AccordionItem
+                                      key={sz.code}
+                                      eventKey={`size-${sz.code}`}
+                                      data-type={`size`}
+                                      data-category-id={cat.id}
+                                    >
+                                      <AccordionHeader className="fs-4 title-element-reorder p-0">
+                                        <RiDragMove2Line
+                                          size={25}
+                                          className="icon"
+                                        />{' '}
+                                        {sz.name}
                                       </AccordionHeader>
                                     </AccordionItem>
                                   )
@@ -458,8 +595,12 @@ export function MenuReorder(props: any) {
                                       data-type={`implementation`}
                                       data-category-id={cat.id}
                                     >
-                                      <AccordionHeader className="fs-4 p-0 title-element-reorder">
-                                        <RiDragMove2Line size={25} className="icon" /> {imp.name}
+                                      <AccordionHeader className="fs-4 title-element-reorder p-0">
+                                        <RiDragMove2Line
+                                          size={25}
+                                          className="icon"
+                                        />{' '}
+                                        {imp.name}
                                       </AccordionHeader>
                                     </AccordionItem>
                                   )
@@ -478,8 +619,12 @@ export function MenuReorder(props: any) {
                                       data-category-id={`${cat.id}`}
                                       data-product-id={`${cat.product.id}`}
                                     >
-                                      <AccordionHeader className="fs-4 p-0 title-element-reorder">
-                                        <RiDragMove2Line size={25} className="icon" /> {compl.name}
+                                      <AccordionHeader className="fs-4 title-element-reorder p-0">
+                                        <RiDragMove2Line
+                                          size={25}
+                                          className="icon"
+                                        />{' '}
+                                        {compl.name}
                                       </AccordionHeader>
                                       <Accordion.Body>
                                         <div className="elements-reorder">
@@ -493,7 +638,11 @@ export function MenuReorder(props: any) {
                                                 data-product-id={cat.product.id}
                                                 data-complement-id={compl.id}
                                               >
-                                                <RiDragMove2Line size={25} className="icon" /> {item.name}
+                                                <RiDragMove2Line
+                                                  size={25}
+                                                  className="icon"
+                                                />{' '}
+                                                {item.name}
                                               </div>
                                             )
                                           })}
@@ -509,9 +658,18 @@ export function MenuReorder(props: any) {
                               <Accordion className="elements-reorder">
                                 {cat.product.flavors.map((fl: any) => {
                                   return (
-                                    <AccordionItem key={fl.code} eventKey={`flavor-${fl.code}`} data-type={`flavor`} data-category-id={cat.id}>
-                                      <AccordionHeader className="fs-4 p-0 title-element-reorder">
-                                        <RiDragMove2Line size={25} className="icon" /> {fl.name}
+                                    <AccordionItem
+                                      key={fl.code}
+                                      eventKey={`flavor-${fl.code}`}
+                                      data-type={`flavor`}
+                                      data-category-id={cat.id}
+                                    >
+                                      <AccordionHeader className="fs-4 title-element-reorder p-0">
+                                        <RiDragMove2Line
+                                          size={25}
+                                          className="icon"
+                                        />{' '}
+                                        {fl.name}
                                       </AccordionHeader>
                                     </AccordionItem>
                                   )
@@ -525,15 +683,29 @@ export function MenuReorder(props: any) {
                   )
                 })}
               </Accordion>
-              <OverlaySpinner show={showSpinner} textSpinner={t('reordegring_wait')} position="fixed" style={{ zIndex: 999 }} />
+              <OverlaySpinner
+                show={showSpinner}
+                textSpinner={t('reordegring_wait')}
+                position="fixed"
+                style={{ zIndex: 999 }}
+              />
             </>
           ) : (
-            <h2 className="text-center p-5">{menuCategories.length ? t('please_wait') : t('you_any_categories_yet')}</h2>
+            <h2 className="p-5 text-center">
+              {menuCategories.length
+                ? t('please_wait')
+                : t('you_any_categories_yet')}
+            </h2>
           )}
         </Modal.Body>
         <Modal.Footer
           className="justify-content-between"
-          style={{ paddingBottom: invoicePending?.invoice?.overdue && !invoicePending?.invoice?.overdue && '60px' }}
+          style={{
+            paddingBottom:
+              invoicePending?.invoice?.overdue &&
+              !invoicePending?.invoice?.overdue &&
+              '60px',
+          }}
         >
           <Button variant="danger" onClick={props.onHide}>
             {t('cancel')}

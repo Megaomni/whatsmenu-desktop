@@ -1,4 +1,10 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { Modal } from 'react-bootstrap'
 import Category, { CategoryType } from '../../../../types/category'
 import { useSession } from 'next-auth/react'
@@ -25,14 +31,19 @@ export function PizzaComplement(props: PizzaComplementProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
 
-  const { handleShowToast, handleConfirmModal, modalFooterOpened } = useContext(AppContext)
+  const { handleShowToast, handleConfirmModal, modalFooterOpened } =
+    useContext(AppContext)
   const { categories, setCategories, focusId } = useContext(MenuContext)
   const { show, handleClose, type, category, setCategory } = props
 
-  const [newComplements, setNewComplements] = useState<Complement[]>(category.product?.complements ?? [])
+  const [newComplements, setNewComplements] = useState<Complement[]>(
+    category.product?.complements ?? []
+  )
   const [showSpinner, setShowSpinner] = useState(false)
 
-  const [recicledComplements, setRecicledComplements] = useState<{ id: number; link: boolean }[]>([])
+  const [recicledComplements, setRecicledComplements] = useState<
+    { id: number; link: boolean }[]
+  >([])
   const [removeComplements, setRemoveComplements] = useState<number[]>([])
 
   return (
@@ -59,8 +70,12 @@ export function PizzaComplement(props: PizzaComplementProps) {
             saveComplements={(complements) => {
               setNewComplements(complements)
             }}
-            saveRecicledComplements={(recicled) => setRecicledComplements([...recicled])}
-            saveRemovedComplements={(removeds) => setRemoveComplements([...removeds])}
+            saveRecicledComplements={(recicled) =>
+              setRecicledComplements([...recicled])
+            }
+            saveRemovedComplements={(removeds) =>
+              setRemoveComplements([...removeds])
+            }
             autoFocusElement={focusId}
           />
         </Modal.Body>
@@ -96,8 +111,13 @@ export function PizzaComplement(props: PizzaComplementProps) {
                     (state) =>
                       ({
                         ...state,
-                        product: { ...state.product, complements: newComplements.map((c) => new Complement(c)) },
-                      } as Category)
+                        product: {
+                          ...state.product,
+                          complements: newComplements.map(
+                            (c) => new Complement(c)
+                          ),
+                        },
+                      }) as Category
                   )
                   handleShowToast({ type: 'success' })
                 } catch (error) {

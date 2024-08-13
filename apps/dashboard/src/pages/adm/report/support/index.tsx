@@ -1,35 +1,37 @@
-import { DateTime } from "luxon";
-import { GetServerSideProps } from "next";
-import { UserType } from "next-auth";
-import { getSession, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import { Card, Form, Row, Col, Table } from "react-bootstrap";
-import { Title } from "../../../../components/Partials/title";
-import { ReportAdmGraphic } from "../../../../components/Report/AdmGraphic";
-import { apiRoute } from "../../../../utils/wm-functions";
+import { DateTime } from 'luxon'
+import { GetServerSideProps } from 'next'
+import { UserType } from 'next-auth'
+import { getSession, useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { Card, Form, Row, Col, Table } from 'react-bootstrap'
+import { Title } from '../../../../components/Partials/title'
+import { ReportAdmGraphic } from '../../../../components/Report/AdmGraphic'
+import { apiRoute } from '../../../../utils/wm-functions'
 
 interface AdmReportBonusSupportProps {
-  supports: any;
+  supports: any
 }
 
 export default function AdmReportBonusSupport({
   supports,
 }: AdmReportBonusSupportProps) {
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [type, setType] = useState("paids");
+  const [users, setUsers] = useState<UserType[]>([])
+  const [type, setType] = useState('paids')
   const [monthInput, setMonthInput] = useState(
-    DateTime.local().toFormat("yyyy-MM")
-  );
-  const [months, setMonths] = useState<string[]>([]);
+    DateTime.local().toFormat('yyyy-MM')
+  )
+  const [months, setMonths] = useState<string[]>([])
   const { data: session } = useSession()
 
   useEffect(() => {
     setMonths(
       Array.from(
-        new Set(supports?.flatMap((support: any) => Object.keys(support.report)))
+        new Set(
+          supports?.flatMap((support: any) => Object.keys(support.report))
+        )
       )
-    );
-  }, [supports]);
+    )
+  }, [supports])
 
   useEffect(() => {
     setUsers(
@@ -38,8 +40,8 @@ export default function AdmReportBonusSupport({
           support.report[monthInput] &&
           Object.values(support.report[monthInput][type]).reverse()
       )
-    );
-  }, [supports, type, monthInput]);
+    )
+  }, [supports, type, monthInput])
 
   return (
     <>
@@ -47,7 +49,7 @@ export default function AdmReportBonusSupport({
         title="ADM"
         componentTitle="Clientes"
         className="mb-4"
-        child={["Clientes"]}
+        child={['Clientes']}
       />
       <Row>
         <section>
@@ -122,9 +124,15 @@ export default function AdmReportBonusSupport({
                         <td>{user.id}</td>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
-                        <td>{user?.controls?.serviceStart ? "SIM" : "NÃO" }</td>
+                        <td>{user?.controls?.serviceStart ? 'SIM' : 'NÃO'}</td>
                         <td>{user.whatsapp}</td>
-                        <td>{supports.find((support: any) => support.id === user.supportId).name}</td>
+                        <td>
+                          {
+                            supports.find(
+                              (support: any) => support.id === user.supportId
+                            ).name
+                          }
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -135,16 +143,16 @@ export default function AdmReportBonusSupport({
         </section>
       </Row>
     </>
-  );
+  )
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
+  const session = await getSession({ req })
   const { data: supports } = await apiRoute(
     `${process.env.WHATSMENU_API}/administrator-api/report/support`,
     session
-  );
+  )
   return {
     props: { supports },
-  };
-};
+  }
+}

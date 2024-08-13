@@ -1,19 +1,19 @@
-import { useSession } from "next-auth/react";
-import { ElementType, useEffect } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { useSession } from 'next-auth/react'
+import { ElementType, useEffect } from 'react'
+import { Modal, Button } from 'react-bootstrap'
 
 export interface ConfirmModalProps {
-  show?: boolean;
-  onHide?: () => void;
-  title?: string;
-  confirmButton?: string;
-  cancelButton?: string;
-  message?: string;
-  actionConfirm?: (...props: any) => any;
-  actionCancel?: (...props: any) => any;
-  actionExiting?: (...props: any) => any;
-  alignText?: "start" | "center" | "end";
-  size?: 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100;
+  show?: boolean
+  onHide?: () => void
+  title?: string
+  confirmButton?: string
+  cancelButton?: string
+  message?: string
+  actionConfirm?: (...props: any) => any
+  actionCancel?: (...props: any) => any
+  actionExiting?: (...props: any) => any
+  alignText?: 'start' | 'center' | 'end'
+  size?: 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 | 100
 }
 
 export function ConfirmModal(props: ConfirmModalProps) {
@@ -29,45 +29,52 @@ export function ConfirmModal(props: ConfirmModalProps) {
     actionCancel,
     actionExiting,
     size,
-  } = props;
+  } = props
 
   const { data: session } = useSession()
 
   useEffect(() => {
     if (show) {
-      const messageContainer = document.getElementById("confirmModal-message");
+      const messageContainer = document.getElementById('confirmModal-message')
       if (messageContainer && message) {
-        messageContainer.innerHTML = message;
+        messageContainer.innerHTML = message
       }
     }
-  }, [show, message]);
+  }, [show, message])
 
-  title = title ? title : "Deseja Continuar";
-  confirmButton = confirmButton ? confirmButton : "Confirmar";
-  cancelButton = cancelButton ? cancelButton : "Cancelar";
+  title = title ? title : 'Deseja Continuar'
+  confirmButton = confirmButton ? confirmButton : 'Confirmar'
+  cancelButton = cancelButton ? cancelButton : 'Cancelar'
 
   const handleShortcutActions = (e: KeyboardEvent) => {
-    const modalConfirmButton = document.getElementById('modalConfirmButton') as HTMLButtonElement
-    const modalCancelButton = document.getElementById('modalCancelButton') as HTMLButtonElement
+    const modalConfirmButton = document.getElementById(
+      'modalConfirmButton'
+    ) as HTMLButtonElement
+    const modalCancelButton = document.getElementById(
+      'modalCancelButton'
+    ) as HTMLButtonElement
 
     if (e.code === 'Escape' && modalCancelButton) {
       modalCancelButton.click()
       modalCancelButton.disabled = true
-      actionCancel = () => { }
-      window.removeEventListener("keydown", handleShortcutActions)
+      actionCancel = () => {}
+      window.removeEventListener('keydown', handleShortcutActions)
     }
-    if ((e.code === 'Enter' || e.code === 'NumpadEnter') && modalConfirmButton) {
+    if (
+      (e.code === 'Enter' || e.code === 'NumpadEnter') &&
+      modalConfirmButton
+    ) {
       modalConfirmButton.click()
       modalConfirmButton.disabled = true
-      actionConfirm = () => { }
-      window.removeEventListener("keydown", handleShortcutActions)
+      actionConfirm = () => {}
+      window.removeEventListener('keydown', handleShortcutActions)
     }
   }
 
   if (show) {
-    window.addEventListener("keydown", handleShortcutActions)
+    window.addEventListener('keydown', handleShortcutActions)
   } else {
-    window.removeEventListener("keydown", handleShortcutActions)
+    window.removeEventListener('keydown', handleShortcutActions)
   }
 
   return (
@@ -76,11 +83,11 @@ export function ConfirmModal(props: ConfirmModalProps) {
       onHide={onHide}
       keyboard={false}
       size="sm"
-      dialogClassName={size ? `modal-${size}` : ""}
+      dialogClassName={size ? `modal-${size}` : ''}
       centered
       backdrop="static"
-      onExiting={e => {
-        actionExiting && actionExiting();
+      onExiting={(e) => {
+        actionExiting && actionExiting()
       }}
     >
       <Modal.Header className="justify-content-center ">
@@ -88,23 +95,28 @@ export function ConfirmModal(props: ConfirmModalProps) {
           <h5>{title}</h5>
         </Modal.Title>
       </Modal.Header>
-      {message &&
-        <Modal.Body
-          className="d-flex flex-nowrap justify-content-center align-center gap-3 ">
-          <span className={`text-${alignText || "center"}`} id="confirmModal-message" style={{ whiteSpace: 'pre-line', width: `100%` }}>
+      {message && (
+        <Modal.Body className="d-flex justify-content-center align-center flex-nowrap gap-3 ">
+          <span
+            className={`text-${alignText || 'center'}`}
+            id="confirmModal-message"
+            style={{ whiteSpace: 'pre-line', width: `100%` }}
+          >
             {/* Valor inserido no useEffect */}
           </span>
-        </Modal.Body>}
-      <Modal.Footer className="d-flex flex-nowrap gap-3 justify-content-center align-center">
+        </Modal.Body>
+      )}
+      <Modal.Footer className="d-flex justify-content-center align-center flex-nowrap gap-3">
         <Button
           id="modalCancelButton"
           variant="danger"
           size="sm"
-          className={`${cancelButton === "none" && "invisible"
-            } m-0 flex-grow-1`}
+          className={`${
+            cancelButton === 'none' && 'invisible'
+          } flex-grow-1 m-0`}
           onClick={() => {
-            actionCancel && actionCancel();
-            onHide && onHide();
+            actionCancel && actionCancel()
+            onHide && onHide()
           }}
         >
           {cancelButton}
@@ -113,15 +125,15 @@ export function ConfirmModal(props: ConfirmModalProps) {
           id="modalConfirmButton"
           variant="success"
           size="sm"
-          className={`${confirmButton === "none" && "invisible" } m-0 flex-grow-1`}
+          className={`${confirmButton === 'none' && 'invisible'} flex-grow-1 m-0`}
           onClick={() => {
-            actionConfirm && actionConfirm();
-            onHide && onHide();
+            actionConfirm && actionConfirm()
+            onHide && onHide()
           }}
         >
           {confirmButton}
         </Button>
       </Modal.Footer>
     </Modal>
-  );
+  )
 }

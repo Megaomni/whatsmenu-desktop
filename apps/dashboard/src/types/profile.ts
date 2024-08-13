@@ -78,9 +78,17 @@ export default class Profile {
     this.formsPayment = profile.formsPayment
     this.id = profile.id
     this.logo = profile.logo
-    this.minval = profile.minval ? (typeof profile.minval === 'number' ? profile.minval : Number(profile.minval)).toFixed(2) : ''
+    this.minval = profile.minval
+      ? (typeof profile.minval === 'number'
+          ? profile.minval
+          : Number(profile.minval)
+        ).toFixed(2)
+      : ''
     this.minvalLocal = profile.minvalLocal
-      ? (typeof profile.minvalLocal === 'number' ? profile.minvalLocal : Number(profile.minvalLocal)).toFixed(2)
+      ? (typeof profile.minvalLocal === 'number'
+          ? profile.minvalLocal
+          : Number(profile.minvalLocal)
+        ).toFixed(2)
       : ''
     this.name = profile.name
     this.not_security_key = profile.not_security_key
@@ -99,7 +107,11 @@ export default class Profile {
     this.whatsapp = profile.whatsapp
     this.firstOnlyCupom = profile.firstOnlyCupom
 
-    if (this.options && this.options.placeholders && !this.options.placeholders?.clientText) {
+    if (
+      this.options &&
+      this.options.placeholders &&
+      !this.options.placeholders?.clientText
+    ) {
       this.options.placeholders.clientText = 'Olá [NOME], Tudo bem?'
     }
     if (this.options) {
@@ -113,7 +125,7 @@ export default class Profile {
 
   headers = (token: string) => {
     return new Headers({
-      'Authorization': `Basic ${token}`,
+      Authorization: `Basic ${token}`,
       'Content-Type': 'application/json',
     })
   }

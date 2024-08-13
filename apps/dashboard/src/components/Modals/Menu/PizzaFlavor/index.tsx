@@ -1,10 +1,32 @@
 import { FormEvent, useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Figure, Form, Modal, Nav, Row, Tab, InputGroup, Spinner, FormGroup } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Figure,
+  Form,
+  Modal,
+  Nav,
+  Row,
+  Tab,
+  InputGroup,
+  Spinner,
+  FormGroup,
+} from 'react-bootstrap'
 import { BsFillPauseCircleFill } from 'react-icons/bs'
 import { CropModal } from '../../CropModal'
-import PizzaProduct, { PizzaFlavorType, PizzaSizeType } from '../../../../types/pizza-product'
+import PizzaProduct, {
+  PizzaFlavorType,
+  PizzaSizeType,
+} from '../../../../types/pizza-product'
 import Category from '../../../../types/category'
-import { copy, encryptEmoji, mask, modifyFontValues } from '../../../../utils/wm-functions'
+import {
+  copy,
+  encryptEmoji,
+  mask,
+  modifyFontValues,
+} from '../../../../utils/wm-functions'
 import { AppContext } from '../../../../context/app.ctx'
 import { useSession } from 'next-auth/react'
 import { OverlaySpinner } from '../../../OverlaySpinner'
@@ -26,8 +48,23 @@ interface PizzaFlavorProps {
 export function PizzaFlavorModal(props: PizzaFlavorProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile, handleConfirmModal, handleShowToast, plansCategory, modalFooterOpened, user, currency } = useContext(AppContext)
-  const { show, handleClose, type, flavor: propsFlavor, sizes, category } = props
+  const {
+    profile,
+    handleConfirmModal,
+    handleShowToast,
+    plansCategory,
+    modalFooterOpened,
+    user,
+    currency,
+  } = useContext(AppContext)
+  const {
+    show,
+    handleClose,
+    type,
+    flavor: propsFlavor,
+    sizes,
+    category,
+  } = props
 
   const { categories, setCategories } = useContext(MenuContext)
 
@@ -43,10 +80,19 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
   // LABELS
 
   const labels = {
-    basic: plansCategory.includes('basic') && plansCategory.some((plan) => plan !== 'basic') ? 'Delivery' : '',
-    table: plansCategory.includes('table') && plansCategory.some((plan) => plan !== 'table') ? t('table') : '',
+    basic:
+      plansCategory.includes('basic') &&
+      plansCategory.some((plan) => plan !== 'basic')
+        ? 'Delivery'
+        : '',
+    table:
+      plansCategory.includes('table') &&
+      plansCategory.some((plan) => plan !== 'table')
+        ? t('table')
+        : '',
     package:
-      plansCategory.includes('package') && plansCategory.some((plan) => plan !== 'package')
+      plansCategory.includes('package') &&
+      plansCategory.some((plan) => plan !== 'package')
         ? profile.options.package.label2
           ? t('appointment')
           : t('package')
@@ -216,7 +262,9 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
       maxWidth={600}
       maxHeight={450}
       setImageBlob={(blob: any, url: string) => {
-        const imageFlavor = document.getElementById('flavorImage') as HTMLImageElement
+        const imageFlavor = document.getElementById(
+          'flavorImage'
+        ) as HTMLImageElement
         imageFlavor.src = url
         setImageCropped(blob)
       }}
@@ -269,7 +317,7 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                     <Tab.Pane eventKey="details">
                       <Card className="mt-4">
                         <Card.Body>
-                          <Container fluid className="px-0 mx-0">
+                          <Container fluid className="mx-0 px-0">
                             <Row className="text-dark">
                               <Col
                                 sm="4"
@@ -277,7 +325,8 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                 style={{
                                   position: 'relative',
                                   width: '100%',
-                                  maxWidth: window.innerWidth < 768 ? 'unset' : '250px',
+                                  maxWidth:
+                                    window.innerWidth < 768 ? 'unset' : '250px',
                                 }}
                               >
                                 <Figure>
@@ -290,15 +339,21 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                     style={{ objectFit: 'cover' }}
                                   />
                                   <Figure.Caption className="text-center">
-                                    {t('image_up_8')} ({t('recomended_resolution_600')})
+                                    {t('image_up_8')} (
+                                    {t('recomended_resolution_600')})
                                   </Figure.Caption>
                                 </Figure>
-                                <Button variant="outline-success w-100" style={{ position: 'relative' }}>
+                                <Button
+                                  variant="outline-success w-100"
+                                  style={{ position: 'relative' }}
+                                >
                                   {t('add_image')}
                                   <Form.Control
                                     type="file"
                                     onChange={(e) => {
-                                      setInputFileImage(e.target as HTMLInputElement)
+                                      setInputFileImage(
+                                        e.target as HTMLInputElement
+                                      )
                                     }}
                                     style={{
                                       opacity: 0,
@@ -313,7 +368,7 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                               </Col>
                               <Col sm className="mt-auto">
                                 <Row>
-                                  <Col sm className="mt-3 mt-md-0">
+                                  <Col sm className="mt-md-0 mt-3">
                                     <Form.Label>
                                       <b>{t('name')}</b>
                                     </Form.Label>
@@ -334,15 +389,29 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                             name: e.target.value,
                                           })
                                         }}
-                                        onKeyDown={(e) => modifyFontValues(e, { prop: flavor.name })}
+                                        onKeyDown={(e) =>
+                                          modifyFontValues(e, {
+                                            prop: flavor.name,
+                                          })
+                                        }
                                       />
-                                      <Form.Control.Feedback tooltip type="invalid">
+                                      <Form.Control.Feedback
+                                        tooltip
+                                        type="invalid"
+                                      >
                                         {t('please_valid_name')}!
                                       </Form.Control.Feedback>
                                     </div>
                                     <div className="d-flex justify-content-end">
-                                      <p className={(flavor.name?.length || 0) >= 55 ? 'text-red-500' : ''}>
-                                        {flavor.name?.length || 0}/55 {t('characters')}
+                                      <p
+                                        className={
+                                          (flavor.name?.length || 0) >= 55
+                                            ? 'text-red-500'
+                                            : ''
+                                        }
+                                      >
+                                        {flavor.name?.length || 0}/55{' '}
+                                        {t('characters')}
                                       </p>
                                     </div>
                                   </Col>
@@ -369,7 +438,10 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                   </Col> */}
                                 </Row>
                                 <Row>
-                                  <Col sm className="d-flex flex-column mt-2 mt-md-0">
+                                  <Col
+                                    sm
+                                    className="d-flex flex-column mt-md-0 mt-2"
+                                  >
                                     <Form.Label>
                                       <b>{t('description')}</b>
                                     </Form.Label>
@@ -384,11 +456,22 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                           description: e.target.value,
                                         })
                                       }}
-                                      onKeyDown={(e) => modifyFontValues(e, { prop: flavor.description })}
+                                      onKeyDown={(e) =>
+                                        modifyFontValues(e, {
+                                          prop: flavor.description,
+                                        })
+                                      }
                                     />
                                     <div className="d-flex justify-content-end">
-                                      <p className={flavor.description?.length >= 300 ? 'text-red-500' : ''}>
-                                        {flavor.description?.length || 0}/300 {t('characters')}
+                                      <p
+                                        className={
+                                          flavor.description?.length >= 300
+                                            ? 'text-red-500'
+                                            : ''
+                                        }
+                                      >
+                                        {flavor.description?.length || 0}/300{' '}
+                                        {t('characters')}
                                       </p>
                                     </div>
                                   </Col>
@@ -397,17 +480,25 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                   <Row>
                                     <Col sm="4" className="my-2">
                                       <Form.Label>
-                                        <b className="text-nowrap">{t('stock')}</b>
+                                        <b className="text-nowrap">
+                                          {t('stock')}
+                                        </b>
                                       </Form.Label>
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
                                           disabled={flavor.bypass_amount}
                                           onClick={() => {
-                                            if (typeof flavor.amount !== 'number') return
+                                            if (
+                                              typeof flavor.amount !== 'number'
+                                            )
+                                              return
                                             setFlavor({
                                               ...flavor,
-                                              amount: flavor.amount === 0 ? 0 : flavor.amount - 1,
+                                              amount:
+                                                flavor.amount === 0
+                                                  ? 0
+                                                  : flavor.amount - 1,
                                             })
                                           }}
                                         >
@@ -432,30 +523,44 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                           onClick={() => {
                                             setFlavor({
                                               ...flavor,
-                                              amount: !flavor.amount ? 1 : flavor.amount + 1,
+                                              amount: !flavor.amount
+                                                ? 1
+                                                : flavor.amount + 1,
                                             })
                                           }}
                                         >
                                           +
                                         </Button>
-                                        <Form.Control.Feedback tooltip type="invalid">
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
                                           {t('enter_valid_value')}
                                         </Form.Control.Feedback>
                                       </InputGroup>
                                     </Col>
                                     <Col sm="4" className="my-2">
                                       <Form.Label>
-                                        <b className="text-nowrap">{t('minimum_stock')}</b>
+                                        <b className="text-nowrap">
+                                          {t('minimum_stock')}
+                                        </b>
                                       </Form.Label>
                                       <InputGroup className="position-relative">
                                         <Button
                                           disabled={flavor.bypass_amount}
                                           variant="secondary"
                                           onClick={() => {
-                                            if (typeof flavor.amount_alert !== 'number') return
+                                            if (
+                                              typeof flavor.amount_alert !==
+                                              'number'
+                                            )
+                                              return
                                             setFlavor({
                                               ...flavor,
-                                              amount_alert: flavor.amount_alert === 0 ? 0 : flavor.amount_alert - 1,
+                                              amount_alert:
+                                                flavor.amount_alert === 0
+                                                  ? 0
+                                                  : flavor.amount_alert - 1,
                                             })
                                           }}
                                         >
@@ -468,7 +573,9 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                           onChange={(e) => {
                                             setFlavor({
                                               ...flavor,
-                                              amount_alert: Number(e.target.value),
+                                              amount_alert: Number(
+                                                e.target.value
+                                              ),
                                             })
                                           }}
                                         />
@@ -480,18 +587,26 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                           onClick={() => {
                                             setFlavor({
                                               ...flavor,
-                                              amount_alert: !flavor.amount_alert ? 1 : flavor.amount_alert + 1,
+                                              amount_alert: !flavor.amount_alert
+                                                ? 1
+                                                : flavor.amount_alert + 1,
                                             })
                                           }}
                                         >
                                           +
                                         </Button>
-                                        <Form.Control.Feedback tooltip type="invalid">
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
                                           {t('enter_valid_value')}
                                         </Form.Control.Feedback>
                                       </InputGroup>
                                     </Col>
-                                    <Col sm="4" className="my-2 d-flex align-items-end">
+                                    <Col
+                                      sm="4"
+                                      className="d-flex align-items-end my-2"
+                                    >
                                       <FormGroup>
                                         <Form.Check
                                           type="switch"
@@ -499,7 +614,9 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                           name="bypass_amount"
                                           label={t('always_available')}
                                           className="fs-6 text-nowrap"
-                                          defaultChecked={!!flavor.bypass_amount}
+                                          defaultChecked={
+                                            !!flavor.bypass_amount
+                                          }
                                           onClick={(e: any) => {
                                             setFlavor({
                                               ...flavor,
@@ -514,20 +631,27 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                               </Col>
                             </Row>
                             <Row className="mt-4">
-                              {(plansCategory.includes('basic') || plansCategory.includes('package')) && (
+                              {(plansCategory.includes('basic') ||
+                                plansCategory.includes('package')) && (
                                 <Col
                                   sm="12"
-                                  md={plansCategory.length > 1 && plansCategory.includes('table') ? '6' : '12'}
+                                  md={
+                                    plansCategory.length > 1 &&
+                                    plansCategory.includes('table')
+                                      ? '6'
+                                      : '12'
+                                  }
                                   className={`${plansCategory.includes('table') ? 'border-end' : ''}`}
                                 >
                                   <>
                                     <h5>
                                       <b>
-                                        {plansCategory.includes('basic') && plansCategory.includes('package')
+                                        {plansCategory.includes('basic') &&
+                                        plansCategory.includes('package')
                                           ? `${labels.basic}/${labels.package}`
                                           : plansCategory.includes('basic')
-                                          ? labels.basic
-                                          : labels.package}
+                                            ? labels.basic
+                                            : labels.package}
                                       </b>
                                     </h5>
 
@@ -537,11 +661,16 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                                           sm="12"
                                           md="4"
                                           key={size.code}
-                                          className={`d-flex flex-column justify-content-between mt-3 mt-md-0 ${index > 2 ? 'mt-md-2' : ''}`}
+                                          className={`d-flex flex-column justify-content-between mt-md-0 mt-3 ${index > 2 ? 'mt-md-2' : ''}`}
                                         >
                                           <Form.Label>{size.name}</Form.Label>
                                           <InputGroup className="flex-nowrap">
-                                            <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                                            <InputGroup.Text>
+                                              {currency({
+                                                value: 0,
+                                                symbol: true,
+                                              })}
+                                            </InputGroup.Text>
                                             <Form.Control
                                               required
                                               value={flavor.values[size.name]}
@@ -565,23 +694,32 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                               )}
                               {plansCategory.includes('table') && (
                                 <Col>
-                                  <Row className="mt-4 mt-md-0">
+                                  <Row className="mt-md-0 mt-4">
                                     <h5>
                                       <b>{labels.table}</b>
                                     </h5>
                                     {sizes.map((size, index) => (
                                       <Col
                                         sm="12"
-                                        md={plansCategory.length > 1 ? '4' : '12'}
+                                        md={
+                                          plansCategory.length > 1 ? '4' : '12'
+                                        }
                                         key={size.code}
-                                        className={`mt-3 mt-md-0 ${index > 2 ? 'mt-md-2' : ''}`}
+                                        className={`mt-md-0 mt-3 ${index > 2 ? 'mt-md-2' : ''}`}
                                       >
                                         <Form.Label>{size.name}</Form.Label>
                                         <InputGroup className="flex-nowrap ">
-                                          <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                                          <InputGroup.Text>
+                                            {currency({
+                                              value: 0,
+                                              symbol: true,
+                                            })}
+                                          </InputGroup.Text>
                                           <Form.Control
                                             required
-                                            value={flavor.valuesTable[size.name]}
+                                            value={
+                                              flavor.valuesTable[size.name]
+                                            }
                                             onChange={(e) => {
                                               mask(e, 'currency')
                                               setFlavor({
@@ -674,12 +812,20 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                             {type !== 'create' && (
                               <Row className="mt-4">
                                 <Col sm>
-                                  <div className="wm-default-border-none text-dark py-5 px-3 position-relative">
+                                  <div className="wm-default-border-none text-dark position-relative px-3 py-5">
                                     <Row className="align-items-center">
                                       <Col sm className="d-flex">
-                                        <Button variant="outline-orange" className="flex-grow-1 mb-3" onClick={flavorPause}>
+                                        <Button
+                                          variant="outline-orange"
+                                          className="flex-grow-1 mb-3"
+                                          onClick={flavorPause}
+                                        >
                                           <BsFillPauseCircleFill size={20} />
-                                          <span>{flavor.status ? t('pause_sales') : t('resume_sales')}</span>
+                                          <span>
+                                            {flavor.status
+                                              ? t('pause_sales')
+                                              : t('resume_sales')}
+                                          </span>
                                         </Button>
                                       </Col>
                                       <Col sm className="text-600 fs-8 mb-3">

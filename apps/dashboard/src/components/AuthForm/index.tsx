@@ -21,7 +21,11 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
 
   const handleRecoverSecurity = async () => {
     try {
-      await apiRoute('/dashboard/account/recoverySecurityPassword', session, 'POST')
+      await apiRoute(
+        '/dashboard/account/recoverySecurityPassword',
+        session,
+        'POST'
+      )
       handleShowToast({
         type: 'success',
         content: `${t('acess')} ${user?.email} e \\n ${t('check_inbox_spam')} \\n ${t('message_subject')}: \\n "${t(
@@ -59,13 +63,26 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
         <h4>{t('enter_financial_password')}</h4>
       </Card.Header>
       <Card.Body className="pb-0">
-        <Row as={Form} method="POST" onSubmit={onSubmit} className="align-items-baseline mt-3">
+        <Row
+          as={Form}
+          method="POST"
+          onSubmit={onSubmit}
+          className="align-items-baseline mt-3"
+        >
           <Col md="12" className="d-flex">
-            <Form.Control type="password" id="security_key" className=" mb-3" required />
+            <Form.Control
+              type="password"
+              id="security_key"
+              className=" mb-3"
+              required
+            />
             <input type="hidden" value={motoboys[0]?.id} id="motoboyId" />
           </Col>
           <Col className="d-flex">
-            <Button type="submit" className="text-nowrap text-uppercase mb-3 flex-grow-1">
+            <Button
+              type="submit"
+              className="text-uppercase flex-grow-1 mb-3 text-nowrap"
+            >
               {t('confirm')}
             </Button>
           </Col>
@@ -77,7 +94,12 @@ export const AuthForm = ({ onSubmit }: AuthFormProps) => {
         </Row>
         <Row className="justify-content-center">
           <Col sm>
-            <Button variant="link" className="text-decoration-none mx-auto" style={{ boxShadow: 'none' }} onClick={handleRecoverSecurity}>
+            <Button
+              variant="link"
+              className="text-decoration-none mx-auto"
+              style={{ boxShadow: 'none' }}
+              onClick={handleRecoverSecurity}
+            >
               {t('recover_password')}
             </Button>
           </Col>

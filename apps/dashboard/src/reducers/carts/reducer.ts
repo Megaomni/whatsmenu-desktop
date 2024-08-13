@@ -44,7 +44,9 @@ export const cartsReducer = (state: CartsState, action: any): CartsState => {
           ...state,
           packageCarts: {
             ...action.payload.packageCarts,
-            data: action.payload.packageCarts.data.map((cart: CartType) => new Cart(cart)),
+            data: action.payload.packageCarts.data.map(
+              (cart: CartType) => new Cart(cart)
+            ),
           },
         }
       } else {
@@ -52,7 +54,11 @@ export const cartsReducer = (state: CartsState, action: any): CartsState => {
           ...state,
           packageCarts: {
             ...action.payload.packageCarts,
-            data: state.packageCarts.data.concat(action.payload.packageCarts.data.map((cart: CartType) => new Cart(cart))),
+            data: state.packageCarts.data.concat(
+              action.payload.packageCarts.data.map(
+                (cart: CartType) => new Cart(cart)
+              )
+            ),
           },
         }
       }
@@ -61,10 +67,17 @@ export const cartsReducer = (state: CartsState, action: any): CartsState => {
       if (state.carts.some((cart) => cart.code === action.payload.cart.code)) {
         return state
       }
-      return { ...state, carts: [new Cart(action.payload.cart), ...state.carts] }
+      return {
+        ...state,
+        carts: [new Cart(action.payload.cart), ...state.carts],
+      }
     }
     case CartStateActions.ADD_ITEM_PACKAGE_CART: {
-      if (state.packageCarts?.data.some((cart) => cart.code === action.payload.packageCart)) {
+      if (
+        state.packageCarts?.data.some(
+          (cart) => cart.code === action.payload.packageCart
+        )
+      ) {
         return state
       }
       if (state.packageCarts) {
@@ -72,7 +85,10 @@ export const cartsReducer = (state: CartsState, action: any): CartsState => {
           ...state,
           packageCarts: {
             ...state.packageCarts,
-            data: [new Cart(action.payload.packageCart), ...state.packageCarts.data],
+            data: [
+              new Cart(action.payload.packageCart),
+              ...state.packageCarts.data,
+            ],
           },
         }
       }

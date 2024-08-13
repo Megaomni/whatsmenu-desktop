@@ -3,7 +3,17 @@ import { PaymentMethodContext } from '@context/paymentMethod.ctx'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { Button, Card, Col, Container, Form, Nav, Row, Tab, Table } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Nav,
+  Row,
+  Tab,
+  Table,
+} from 'react-bootstrap'
 import { HelpVideos } from '../../../../components/Modals/HelpVideos'
 import { OverlaySpinner } from '../../../../components/OverlaySpinner'
 import { Title } from '../../../../components/Partials/title'
@@ -14,8 +24,10 @@ import { useTranslation } from 'react-i18next'
 export default function SettingsCashiers() {
   const { t } = useTranslation()
   const router = useRouter()
-  const { profile, plansCategory, handleShowToast, bartenders, setBartenders } = useContext(AppContext)
-  const { toggleModal, dataResponse, setDataResponse } = useContext(PaymentMethodContext)
+  const { profile, plansCategory, handleShowToast, bartenders, setBartenders } =
+    useContext(AppContext)
+  const { toggleModal, dataResponse, setDataResponse } =
+    useContext(PaymentMethodContext)
 
   const [editBartender, setEditBartender] = useState<Bartender>()
 
@@ -54,7 +66,10 @@ export default function SettingsCashiers() {
     if (!editBartender?.controls.blockedCategories) {
       setEditBartender((state) => {
         if (state) {
-          return { ...state, controls: { ...state.controls, blockedCategories: [] } }
+          return {
+            ...state,
+            controls: { ...state.controls, blockedCategories: [] },
+          }
         }
         return state
       })
@@ -139,7 +154,12 @@ export default function SettingsCashiers() {
         case 'PATCH': {
           if (!error) {
             data.password = ''
-            const bartender = bartenders.filter((b) => b.controls.type === 'cashier' || b.controls.defaultCashier).find((b) => b.id === data.id)
+            const bartender = bartenders
+              .filter(
+                (b) =>
+                  b.controls.type === 'cashier' || b.controls.defaultCashier
+              )
+              .find((b) => b.id === data.id)
             if (bartender) {
               bartender.name = data.name
               bartender.password = data.password
@@ -163,8 +183,12 @@ export default function SettingsCashiers() {
         }
         case 'DELETE': {
           if (!error) {
-            const bartender = bartenders.find((b) => b.id === dataResponse.data.id)
-            setBartenders((state) => state.filter((b) => b.id !== dataResponse.data.id))
+            const bartender = bartenders.find(
+              (b) => b.id === dataResponse.data.id
+            )
+            setBartenders((state) =>
+              state.filter((b) => b.id !== dataResponse.data.id)
+            )
             setEditBartender(undefined)
             handleShowToast({
               type: 'success',
@@ -186,7 +210,12 @@ export default function SettingsCashiers() {
 
   return (
     <>
-      <Title title={t('settings')} className="mb-4" componentTitle={t('box_settings')} child={[t('cash_register')]} />
+      <Title
+        title={t('settings')}
+        className="mb-4"
+        componentTitle={t('box_settings')}
+        child={[t('cash_register')]}
+      />
       <Tab.Container activeKey={defaultTab}>
         <Row>
           <Col sm={12}>
@@ -211,17 +240,25 @@ export default function SettingsCashiers() {
                       <div className="vr"></div>
                       <HelpVideos.Trigger
                         urls={[
-                          { src: 'https://www.youtube.com/embed/viH0a8gsBHs', title: t('registering_operator') },
-                          { src: 'https://www.youtube.com/embed/h1VhzXvLwWo', title: t('placing_order_operator') },
+                          {
+                            src: 'https://www.youtube.com/embed/viH0a8gsBHs',
+                            title: t('registering_operator'),
+                          },
+                          {
+                            src: 'https://www.youtube.com/embed/h1VhzXvLwWo',
+                            title: t('placing_order_operator'),
+                          },
                         ]}
                       />
                     </div>
                   </Card.Header>
                   <Card.Body>
                     <Container className="mx-0 px-0">
-                      <Row className="mb-3 text-nowrap w-100">
+                      <Row className="w-100 mb-3 text-nowrap">
                         <Col md className="mb-1">
-                          <Form.Label className="fw-bold fs-7">{t('operator_name')}</Form.Label>
+                          <Form.Label className="fw-bold fs-7">
+                            {t('operator_name')}
+                          </Form.Label>
                           <div className="position-relative">
                             <Form.Control
                               value={newBartender.name}
@@ -235,7 +272,9 @@ export default function SettingsCashiers() {
                           </div>
                         </Col>
                         <Col md className="mb-1">
-                          <Form.Label className="fw-bold fs-7">{t('password')}</Form.Label>
+                          <Form.Label className="fw-bold fs-7">
+                            {t('password')}
+                          </Form.Label>
                           <Form.Control
                             type="password"
                             autoComplete="new-password"
@@ -248,10 +287,13 @@ export default function SettingsCashiers() {
                             }
                           />
                         </Col>
-                        <Col md className="mb-1 d-flex">
-                          <div ref={addFeeSuccess} className="mt-auto flex-grow-1">
+                        <Col md className="d-flex mb-1">
+                          <div
+                            ref={addFeeSuccess}
+                            className="flex-grow-1 mt-auto"
+                          >
                             <Button
-                              className="px-4 py-2 w-100"
+                              className="w-100 px-4 py-2"
                               onClick={() => {
                                 handleAddBartender()
                               }}
@@ -271,7 +313,12 @@ export default function SettingsCashiers() {
                       {editBartender
                         ? `${t('operator')}: ${
                             bartenders
-                              .filter((b) => b.controls.type === 'cashier' || b.controls.defaultCashier || b.controls.bartender)
+                              .filter(
+                                (b) =>
+                                  b.controls.type === 'cashier' ||
+                                  b.controls.defaultCashier ||
+                                  b.controls.bartender
+                              )
                               .find((b) => b.id === editBartender.id)?.name
                           }`
                         : t('operators')}
@@ -294,7 +341,13 @@ export default function SettingsCashiers() {
                                 <tr key={bartender.id}>
                                   <td>{bartender.name}</td>
                                   <td>
-                                    <Button onClick={() => setEditBartender(bartender)}>{t('edit')}</Button>
+                                    <Button
+                                      onClick={() =>
+                                        setEditBartender(bartender)
+                                      }
+                                    >
+                                      {t('edit')}
+                                    </Button>
                                   </td>
                                 </tr>
                               ) : null
@@ -305,7 +358,9 @@ export default function SettingsCashiers() {
                       <>
                         <Row>
                           <Col md>
-                            <Form.Label className="fw-bold fs-7">{t('name')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('name')}
+                            </Form.Label>
                             <Form.Control
                               value={editBartender.name}
                               onChange={(e) => {
@@ -317,7 +372,9 @@ export default function SettingsCashiers() {
                             />
                           </Col>
                           <Col md>
-                            <Form.Label className="fw-bold fs-7">{t('password')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('password')}
+                            </Form.Label>
                             <Form.Control
                               type="password"
                               value={editBartender.password}
@@ -338,7 +395,7 @@ export default function SettingsCashiers() {
                     <Card.Footer className="d-flex justify-content-between gap-2">
                       <Button
                         variant="outline-danger"
-                        className="ms-1 flex-grow-1 flex-md-grow-0"
+                        className="flex-grow-1 flex-md-grow-0 ms-1"
                         disabled={editBartender.controls.defaultCashier}
                         onClick={() => {
                           handleDeleteBartender()
@@ -347,10 +404,16 @@ export default function SettingsCashiers() {
                         <span className="align-middle">{t('delete')}</span>
                       </Button>
                       <div className="d-flex justify-content-end gap-2">
-                        <Button variant="danger" onClick={() => setEditBartender(undefined)}>
+                        <Button
+                          variant="danger"
+                          onClick={() => setEditBartender(undefined)}
+                        >
                           <span className="align-middle">{t('cancel')}</span>
                         </Button>
-                        <Button variant="success" onClick={() => handleUpdateBartender(editBartender)}>
+                        <Button
+                          variant="success"
+                          onClick={() => handleUpdateBartender(editBartender)}
+                        >
                           <span className="align-middle">{t('save')}</span>
                         </Button>
                       </div>

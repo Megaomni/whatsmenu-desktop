@@ -10,7 +10,12 @@ import useLocalStorage from '../../../hooks/useLocalStorage'
 import useWebPrint, { IWebPrinter } from '../../../hooks/useWebPrint'
 import Cart from '../../../types/cart'
 import Profile, { ProfileOptions } from '../../../types/profile'
-import { apiRoute, compareItems, copy, encryptEmoji } from '../../../utils/wm-functions'
+import {
+  apiRoute,
+  compareItems,
+  copy,
+  encryptEmoji,
+} from '../../../utils/wm-functions'
 import { useWhatsAppBot } from '@hooks/useWhatsAppBot'
 import { useTranslation } from 'react-i18next'
 // import { responseLimit } from 'next/dist/server/api-utils'
@@ -23,7 +28,11 @@ export default function Settings() {
   const { storeProfile } = useWhatsAppBot()
 
   async function getCashiers() {
-    const { data } = await apiRoute(`/api/v2/business/${profile.slug}/cashiers`, session, 'GET')
+    const { data } = await apiRoute(
+      `/api/v2/business/${profile.slug}/cashiers`,
+      session,
+      'GET'
+    )
     return setActiveCashiers(data)
   }
 
@@ -45,17 +54,24 @@ export default function Settings() {
     possibleMobile,
   } = useContext(AppContext)
 
-  const [profileOptions, setProfileOptions] = useState<ProfileOptions>(profile.options)
+  const [profileOptions, setProfileOptions] = useState<ProfileOptions>(
+    profile.options
+  )
   const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
     'defaultDomain',
     window.sessionStorage.getItem('defaultDomain'),
     'sessionStorage'
   )
-  const [deliveryLocal, setDeliveryLocal] = useState<boolean>(profile.deliveryLocal)
+  const [deliveryLocal, setDeliveryLocal] = useState<boolean>(
+    profile.deliveryLocal
+  )
 
-  const [webPrintPrinters, setWebPrintPrinters] = useLocalStorage<IWebPrinter[]>('@whatsmenu-web-printers-1.0', [])
+  const [webPrintPrinters, setWebPrintPrinters] = useLocalStorage<
+    IWebPrinter[]
+  >('@whatsmenu-web-printers-1.0', [])
 
-  const { getPrinters, requestBluetooth, requestUsb, browserIsCompatible } = useWebPrint()
+  const { getPrinters, requestBluetooth, requestUsb, browserIsCompatible } =
+    useWebPrint()
 
   const showToast = useCallback(
     (type: 'success' | 'erro' | 'alert', title?: string, content?: string) => {
@@ -90,16 +106,37 @@ export default function Settings() {
             deliveryLocal,
           }
 
-          data.options.placeholders.clientText = encryptEmoji(data.options.placeholders.clientText)
-          data.options.placeholders.pizzaObs = encryptEmoji(data.options.placeholders.pizzaObs)
-          data.options.placeholders.productObs = encryptEmoji(data.options.placeholders.productObs)
-          data.options.placeholders.statusProduction = encryptEmoji(data.options.placeholders.statusProduction)
-          data.options.placeholders.statusSend = encryptEmoji(data.options.placeholders.statusSend)
-          data.options.placeholders.statusToRemove = encryptEmoji(data.options.placeholders.statusToRemove)
-          data.options.placeholders.sendWhatsMessage = encryptEmoji(data.options.placeholders.sendWhatsMessage)
-          data.options.placeholders.welcomeMessage = encryptEmoji(data.options.placeholders.welcomeMessage)
+          data.options.placeholders.clientText = encryptEmoji(
+            data.options.placeholders.clientText
+          )
+          data.options.placeholders.pizzaObs = encryptEmoji(
+            data.options.placeholders.pizzaObs
+          )
+          data.options.placeholders.productObs = encryptEmoji(
+            data.options.placeholders.productObs
+          )
+          data.options.placeholders.statusProduction = encryptEmoji(
+            data.options.placeholders.statusProduction
+          )
+          data.options.placeholders.statusSend = encryptEmoji(
+            data.options.placeholders.statusSend
+          )
+          data.options.placeholders.statusToRemove = encryptEmoji(
+            data.options.placeholders.statusToRemove
+          )
+          data.options.placeholders.sendWhatsMessage = encryptEmoji(
+            data.options.placeholders.sendWhatsMessage
+          )
+          data.options.placeholders.welcomeMessage = encryptEmoji(
+            data.options.placeholders.welcomeMessage
+          )
 
-          const { data: prof } = await apiRoute('/dashboard/settings/general', session, 'PATCH', data)
+          const { data: prof } = await apiRoute(
+            '/dashboard/settings/general',
+            session,
+            'PATCH',
+            data
+          )
 
           const profileUpdate = new Profile({ ...profile, ...prof })
 
@@ -112,10 +149,19 @@ export default function Settings() {
           console.error(e)
         }
       } else {
-        !noToast && showToast('erro', t('no_changes'), t('are_no_pending_changes'))
+        !noToast &&
+          showToast('erro', t('no_changes'), t('are_no_pending_changes'))
       }
     },
-    [showToast, deliveryLocal, profileOptions, setProfile, session, changeConfig, profile]
+    [
+      showToast,
+      deliveryLocal,
+      profileOptions,
+      setProfile,
+      session,
+      changeConfig,
+      profile,
+    ]
   )
 
   useEffect(() => {
@@ -130,7 +176,10 @@ export default function Settings() {
   }, [profile])
 
   useEffect(() => {
-    const oldProfileOptions = { ...profile.options, deliveryLocal: profile.deliveryLocal }
+    const oldProfileOptions = {
+      ...profile.options,
+      deliveryLocal: profile.deliveryLocal,
+    }
     const newProfileOptions = { ...profileOptions, deliveryLocal }
 
     setChangeConfig({
@@ -143,13 +192,21 @@ export default function Settings() {
       getPrinters(profileOptions.print?.web).then((printers) => {
         setWebPrintPrinters((state) => {
           return printers.map((printer: any) => {
-            const havePrinter = state.find((localPrinter) => localPrinter.id === printer.id)
+            const havePrinter = state.find(
+              (localPrinter) => localPrinter.id === printer.id
+            )
             if (havePrinter) {
               return { ...havePrinter }
             }
             return {
-              id: profileOptions.print?.web === 'bluetooth' ? printer.id : printer.serialNumber,
-              name: profileOptions.print?.web === 'bluetooth' ? printer.name : printer.productName,
+              id:
+                profileOptions.print?.web === 'bluetooth'
+                  ? printer.id
+                  : printer.serialNumber,
+              name:
+                profileOptions.print?.web === 'bluetooth'
+                  ? printer.name
+                  : printer.productName,
               copies: 1,
               status: true,
             }
@@ -157,7 +214,13 @@ export default function Settings() {
         })
       })
     }
-  }, [firsInteract, getPrinters, profileOptions.print?.web, setWebPrintPrinters, webPrintPrinters.length])
+  }, [
+    firsInteract,
+    getPrinters,
+    profileOptions.print?.web,
+    setWebPrintPrinters,
+    webPrintPrinters.length,
+  ])
 
   useEffect(() => {
     if (!user?.controls?.print?.web && profileOptions.print?.web) {
@@ -169,10 +232,19 @@ export default function Settings() {
 
   return (
     <div>
-      <Title title={t('settings')} componentTitle={t('general_settings')} className="mb-4" child={[t('general')]} />
+      <Title
+        title={t('settings')}
+        componentTitle={t('general_settings')}
+        className="mb-4"
+        child={[t('general')]}
+      />
       <Row className="justify-content-end mb-4">
         <Col md="1" className="d-flex p-0">
-          <Button variant="success" className="flex-grow-1" onClick={() => saveGeralConfig()}>
+          <Button
+            variant="success"
+            className="flex-grow-1"
+            onClick={() => saveGeralConfig()}
+          >
             {t('save')}
           </Button>
         </Col>
@@ -182,7 +254,14 @@ export default function Settings() {
           <Card.Header className="d-flex gap-3">
             <h4>{t('deliverys')}</h4>
             <div className="vr"></div>
-            <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/ZLFVeemNkWo', title: t('deliverys') }]} />
+            <HelpVideos.Trigger
+              urls={[
+                {
+                  src: 'https://www.youtube.com/embed/ZLFVeemNkWo',
+                  title: t('deliverys'),
+                },
+              ]}
+            />
           </Card.Header>
           <Card.Body>
             <Row>
@@ -233,7 +312,14 @@ export default function Settings() {
                 <Card.Header className="d-flex gap-3">
                   <h4>{t('cash_register')}</h4>
                   <div className="vr"></div>
-                  <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/vIxOQZu3QKk', title: t('cash_register') }]} />
+                  <HelpVideos.Trigger
+                    urls={[
+                      {
+                        src: 'https://www.youtube.com/embed/vIxOQZu3QKk',
+                        title: t('cash_register'),
+                      },
+                    ]}
+                  />
                 </Card.Header>
                 <Card.Body>
                   <Row>
@@ -259,7 +345,11 @@ export default function Settings() {
                       {activeCashiers ? (
                         <p className="mt-3">
                           {t('message_currently_open_cash')}{' '}
-                          <a href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}/pdv`} target="_blank" rel="noopener noreferrer">
+                          <a
+                            href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             {t('pos')}
                           </a>{' '}
                           {t('before_register_management')}.
@@ -292,7 +382,8 @@ export default function Settings() {
                                 ...profileOptions.pdv,
                                 clientConfig: {
                                   birthDate: e.target.checked,
-                                  required: profileOptions.pdv?.clientConfig?.required,
+                                  required:
+                                    profileOptions.pdv?.clientConfig?.required,
                                 },
                               },
                             })
@@ -308,7 +399,9 @@ export default function Settings() {
                             id="Obrigar data de nascimento"
                             label={`${t('require_date_birth')}?`}
                             className="fs-7"
-                            disabled={!profileOptions.pdv?.clientConfig.birthDate}
+                            disabled={
+                              !profileOptions.pdv?.clientConfig.birthDate
+                            }
                             checked={profileOptions.pdv?.clientConfig.required}
                             onChange={(e) => {
                               if (profileOptions.pdv?.clientConfig) {
@@ -341,7 +434,14 @@ export default function Settings() {
             <div className="d-flex gap-3">
               <h4>{t('default_texts')}</h4>
               <div className="vr"></div>
-              <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/Qwrf_7uwUPw', title: t('changing_default_text_observations') }]} />
+              <HelpVideos.Trigger
+                urls={[
+                  {
+                    src: 'https://www.youtube.com/embed/Qwrf_7uwUPw',
+                    title: t('changing_default_text_observations'),
+                  },
+                ]}
+              />
             </div>
           </Card.Header>
           <Card.Body>
@@ -349,7 +449,9 @@ export default function Settings() {
               <Row>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('product_note')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('product_note')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
@@ -369,7 +471,9 @@ export default function Settings() {
                 </Col>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('pizza_note')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('pizza_note')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
@@ -389,7 +493,9 @@ export default function Settings() {
                 </Col>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('speak_customer')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('speak_customer')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
@@ -412,12 +518,16 @@ export default function Settings() {
               <Row>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('status_received')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('status_received')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
                       placeholder={t('you_order_production')}
-                      defaultValue={profileOptions.placeholders.statusProduction}
+                      defaultValue={
+                        profileOptions.placeholders.statusProduction
+                      }
                       onChange={(e) => {
                         setProfileOptions({
                           ...profileOptions,
@@ -432,7 +542,9 @@ export default function Settings() {
                 </Col>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('status_delivering')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('status_delivering')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
@@ -452,7 +564,9 @@ export default function Settings() {
                 </Col>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('status_pickup')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('status_pickup')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
@@ -472,12 +586,16 @@ export default function Settings() {
                 </Col>
                 <Col sm>
                   <Form.Group>
-                    <Form.Label className="fs-7 mt-3 mt-md-0">{t('order_status_pos')}</Form.Label>
+                    <Form.Label className="fs-7 mt-md-0 mt-3">
+                      {t('order_status_pos')}
+                    </Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={5}
                       placeholder={t('order_successfully_placed')}
-                      defaultValue={profileOptions.placeholders.sendWhatsMessage}
+                      defaultValue={
+                        profileOptions.placeholders.sendWhatsMessage
+                      }
                       onChange={(e) => {
                         setProfileOptions({
                           ...profileOptions,
@@ -496,14 +614,18 @@ export default function Settings() {
                 <Row>
                   <Col sm>
                     <Form.Group>
-                      <Form.Label className="fs-7 mt-3 mt-md-0">{t('greeting_message')}</Form.Label>
+                      <Form.Label className="fs-7 mt-md-0 mt-3">
+                        {t('greeting_message')}
+                      </Form.Label>
                       <Form.Control
                         as="textarea"
                         rows={5}
                         placeholder={`${t('message_hello')}\n${t('welcome_to')} ${profile.name}🥳\n${t(
                           'check_menu_order'
                         )}👇\n\nhttps://www.whatsmenu.com.br/${profile.slug}\n\n👆🏻 *${t('exclusive_offers')}* 👆🏻 🚀\n\n${t('team')} ${profile.name}`}
-                        defaultValue={profileOptions.placeholders.welcomeMessage}
+                        defaultValue={
+                          profileOptions.placeholders.welcomeMessage
+                        }
                         onChange={(e) => {
                           setProfileOptions({
                             ...profileOptions,
@@ -590,7 +712,7 @@ export default function Settings() {
                 {/* {} */}
                 <Col sm="12" md>
                   <Button
-                    className="w-100 my-4 my-md-0"
+                    className="w-100 my-md-0 my-4"
                     onClick={() => {
                       setRequestsToPrint({
                         titleTable: t('print_test'),
@@ -609,14 +731,16 @@ export default function Settings() {
               <Row className="mt-3">
                 <Col sm="12" md={profile.options.print.app ? '4' : undefined}>
                   <Form.Group>
-                    <Form.Label className="fs-7 text-nowrap">{t('printer_driver')}</Form.Label>
+                    <Form.Label className="fs-7 text-nowrap">
+                      {t('printer_driver')}
+                    </Form.Label>
                     <Form.Select
                       value={
                         profileOptions.print.app
                           ? 'app'
                           : !!profileOptions.print?.web
-                          ? profileOptions.print?.web
-                          : String(profileOptions.print.textOnly)
+                            ? profileOptions.print?.web
+                            : String(profileOptions.print.textOnly)
                       }
                       onChange={(e) => {
                         setProfileOptions({
@@ -624,11 +748,17 @@ export default function Settings() {
                           print: {
                             ...profileOptions.print,
                             textOnly:
-                              e.target.value === 'bluetooth' || e.target.value === 'usb' || e.target.value === 'app'
+                              e.target.value === 'bluetooth' ||
+                              e.target.value === 'usb' ||
+                              e.target.value === 'app'
                                 ? true
                                 : copy(e.target.value, 'parse'),
                             app: e.target.value === 'app' ? true : false,
-                            web: e.target.value === 'bluetooth' || e.target.value === 'usb' ? e.target.value : '',
+                            web:
+                              e.target.value === 'bluetooth' ||
+                              e.target.value === 'usb'
+                                ? e.target.value
+                                : '',
                           },
                         })
                       }}
@@ -651,7 +781,9 @@ export default function Settings() {
                     {!('isElectron' in window) && (
                       <Col sm="12" md>
                         <Form.Group>
-                          <Form.Label className="fs-7 mt-3 mt-md-0 text-nowrap">{t('print_width')}</Form.Label>
+                          <Form.Label className="fs-7 mt-md-0 mt-3 text-nowrap">
+                            {t('print_width')}
+                          </Form.Label>
                           <Form.Select
                             value={profileOptions.print.width}
                             onChange={(e) => {
@@ -674,7 +806,9 @@ export default function Settings() {
                       <Col sm="12" md>
                         {/* {(!JSON.parse(String(profileOptions.print.textOnly)) && !JSON.parse(String(profileOptions.print.app ?? null))) && <Col sm="12" md> */}
                         <Form.Group>
-                          <Form.Label className="fs-7 mt-3 mt-md-0 text-nowrap">{t('letters')}</Form.Label>
+                          <Form.Label className="fs-7 mt-md-0 mt-3 text-nowrap">
+                            {t('letters')}
+                          </Form.Label>
                           <Form.Select
                             value={profileOptions.print.fontSize || 7}
                             disabled={profileOptions.print.textOnly}
@@ -697,19 +831,29 @@ export default function Settings() {
                     {!('isElectron' in window) && (
                       <Col sm="12" md>
                         <Form.Group>
-                          <Form.Label className="fs-7 mt-3 mt-md-0 ">{t('copies')}</Form.Label>
+                          <Form.Label className="fs-7 mt-md-0 mt-3 ">
+                            {t('copies')}
+                          </Form.Label>
                           <Form.Control
                             type="number"
                             placeholder="1"
                             min="1"
                             defaultValue={profileOptions.print.copies}
                             onChange={(e) => {
-                              e.target.value = Number(e.target.value) <= 0 ? '1' : e.target.value
-                              const value = isNaN(parseInt(e.target.value)) ? 1 : parseInt(e.target.value)
+                              e.target.value =
+                                Number(e.target.value) <= 0
+                                  ? '1'
+                                  : e.target.value
+                              const value = isNaN(parseInt(e.target.value))
+                                ? 1
+                                : parseInt(e.target.value)
 
                               setProfileOptions({
                                 ...profileOptions,
-                                print: { ...profileOptions.print, copies: value },
+                                print: {
+                                  ...profileOptions.print,
+                                  copies: value,
+                                },
                               })
                             }}
                           />
@@ -718,8 +862,10 @@ export default function Settings() {
                     )}
                   </>
                 ) : (
-                  <Col className="d-flex flex-column align-items-center mt-3 m-md-3">
-                    <p className="m-0 text-center">{t('necessary_whatsmenu_android_installed')}</p>
+                  <Col className="d-flex flex-column align-items-center m-md-3 mt-3">
+                    <p className="m-0 text-center">
+                      {t('necessary_whatsmenu_android_installed')}
+                    </p>
                     {possibleMobile && (
                       <Button
                         as="a"
@@ -742,7 +888,7 @@ export default function Settings() {
               <br />
             </Form>
             {profileOptions.print?.web ? (
-              <Table responsive bordered striped className="m-0 my-4 w-100">
+              <Table responsive bordered striped className="w-100 m-0 my-4">
                 <thead>
                   <tr>
                     <th>{t('printer')}</th>
@@ -758,7 +904,9 @@ export default function Settings() {
                           onClick={async () => {
                             if (profileOptions.print?.web) {
                               try {
-                                profileOptions.print?.web === 'bluetooth' ? await requestBluetooth() : await requestUsb()
+                                profileOptions.print?.web === 'bluetooth'
+                                  ? await requestBluetooth()
+                                  : await requestUsb()
                               } catch (error) {
                                 console.error(error)
                                 throw error
@@ -799,9 +947,13 @@ export default function Settings() {
                           min={1}
                           defaultValue={webPrinter.copies}
                           onChange={(e) => {
-                            e.target.value = Number(e.target.value) <= 0 ? '1' : e.target.value
+                            e.target.value =
+                              Number(e.target.value) <= 0 ? '1' : e.target.value
                             setWebPrintPrinters((state) => {
-                              const havePrinter = state.find((localPrinter) => localPrinter.id === webPrinter.id)
+                              const havePrinter = state.find(
+                                (localPrinter) =>
+                                  localPrinter.id === webPrinter.id
+                              )
                               if (havePrinter) {
                                 havePrinter.copies = Number(e.target.value)
                               }
@@ -815,7 +967,10 @@ export default function Settings() {
                           checked={webPrinter.status}
                           onChange={(e) => {
                             setWebPrintPrinters((state) => {
-                              const havePrinter = state.find((localPrinter) => localPrinter.id === webPrinter.id)
+                              const havePrinter = state.find(
+                                (localPrinter) =>
+                                  localPrinter.id === webPrinter.id
+                              )
                               if (havePrinter) {
                                 havePrinter.status = e.target.checked
                               }
@@ -840,7 +995,14 @@ export default function Settings() {
                 <Card.Header className="d-flex gap-3">
                   <h4>{t('pizza_options')}</h4>
                   <div className="vr"></div>
-                  <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/HjFpS-kJerA', title: t('pizza_options') }]} />
+                  <HelpVideos.Trigger
+                    urls={[
+                      {
+                        src: 'https://www.youtube.com/embed/HjFpS-kJerA',
+                        title: t('pizza_options'),
+                      },
+                    ]}
+                  />
                 </Card.Header>
                 <Card.Body>
                   <div>
@@ -905,7 +1067,14 @@ export default function Settings() {
                 <Card.Header className="d-flex gap-3">
                   <h4>{t('stock_options')}</h4>
                   <div className="vr"></div>
-                  <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/H8eZMWDN8Yg', title: t('stock_options') }]} />
+                  <HelpVideos.Trigger
+                    urls={[
+                      {
+                        src: 'https://www.youtube.com/embed/H8eZMWDN8Yg',
+                        title: t('stock_options'),
+                      },
+                    ]}
+                  />
                 </Card.Header>
                 <Card.Body>
                   <Form.Switch
@@ -927,7 +1096,9 @@ export default function Settings() {
                     id='Exibir status de "esgotado" em produtos e complementos pausados?'
                     label={`${t('display_out_of_stock_product_addons')}?`}
                     className="fs-7"
-                    defaultChecked={profileOptions.disponibility.showProductsWhenPaused}
+                    defaultChecked={
+                      profileOptions.disponibility.showProductsWhenPaused
+                    }
                     onChange={(e) => {
                       setProfileOptions({
                         ...profileOptions,
@@ -946,7 +1117,14 @@ export default function Settings() {
                 <Card.Header className="d-flex gap-3">
                   <h4>{t('layout_options')}</h4>
                   <div className="vr"></div>
-                  <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/cH8PTl15uNM', title: t('layout_options') }]} />
+                  <HelpVideos.Trigger
+                    urls={[
+                      {
+                        src: 'https://www.youtube.com/embed/cH8PTl15uNM',
+                        title: t('layout_options'),
+                      },
+                    ]}
+                  />
                 </Card.Header>
                 <Card.Body>
                   <Form.Check
@@ -967,7 +1145,9 @@ export default function Settings() {
                     id="switch-info-position"
                     label={`${t('description_top_product_page')}`}
                     className="fs-7"
-                    checked={profileOptions.store.productModal.infoPosition === 'first'}
+                    checked={
+                      profileOptions.store.productModal.infoPosition === 'first'
+                    }
                     onChange={(e) => {
                       const isChecked = e.target.checked
                       setProfileOptions({
@@ -1026,7 +1206,8 @@ export default function Settings() {
               </Card>
             </Col>
             <Col sm="12" md="4" className="mb-4">
-              {!('isElectron' in window) && navigator.userAgent.includes('Windows NT 10') ? (
+              {!('isElectron' in window) &&
+              navigator.userAgent.includes('Windows NT 10') ? (
                 <Card className="h-100">
                   <Card.Header>
                     <h4>WhatsMenu Desktop</h4>
@@ -1045,7 +1226,8 @@ export default function Settings() {
                       onClick={() => setWhatsmenuDesktopDownloaded(true)}
                       download
                     >
-                      <FaDownload className="mt-1" /> {t('message_download_app')}
+                      <FaDownload className="mt-1" />{' '}
+                      {t('message_download_app')}
                     </Button>
                   </Card.Body>
                 </Card>
@@ -1092,7 +1274,9 @@ export default function Settings() {
                   <Col>
                     <Form>
                       <Form.Group>
-                        <Form.Label className="fs-7">Facebook Pixel - {t('only_indentification')}</Form.Label>
+                        <Form.Label className="fs-7">
+                          Facebook Pixel - {t('only_indentification')}
+                        </Form.Label>
                         <Form.Control
                           value={profileOptions?.tracking?.pixel ?? ''}
                           onChange={(e) => {
@@ -1123,7 +1307,9 @@ export default function Settings() {
                   <Col>
                     <Form>
                       <Form.Group>
-                        <Form.Label className="fs-7">Google Tag Manager - {t('only_indentification')}</Form.Label>
+                        <Form.Label className="fs-7">
+                          Google Tag Manager - {t('only_indentification')}
+                        </Form.Label>
                         <Form.Control
                           value={profileOptions?.tracking?.google ?? ''}
                           onChange={(e) => {
@@ -1157,7 +1343,12 @@ export default function Settings() {
                         <Form.Control
                           value={profileOptions?.tracking?.googleAds?.id ?? ''}
                           onChange={(e) => {
-                            const googleAds = { id: e.target.value, label: profileOptions?.tracking?.googleAds?.label ?? '' }
+                            const googleAds = {
+                              id: e.target.value,
+                              label:
+                                profileOptions?.tracking?.googleAds?.label ??
+                                '',
+                            }
                             setProfileOptions({
                               ...profileOptions,
                               tracking: {
@@ -1175,9 +1366,14 @@ export default function Settings() {
                       <Form.Group>
                         <Form.Label className="fs-7">{t('label')}</Form.Label>
                         <Form.Control
-                          value={profileOptions?.tracking?.googleAds?.label ?? ''}
+                          value={
+                            profileOptions?.tracking?.googleAds?.label ?? ''
+                          }
                           onChange={(e) => {
-                            const googleAds = { id: profileOptions?.tracking?.googleAds?.id ?? '', label: e.target.value }
+                            const googleAds = {
+                              id: profileOptions?.tracking?.googleAds?.id ?? '',
+                              label: e.target.value,
+                            }
                             setProfileOptions({
                               ...profileOptions,
                               tracking: {
@@ -1198,7 +1394,11 @@ export default function Settings() {
       )}
       <Row className="justify-content-end">
         <Col md="1" className="d-flex p-0">
-          <Button variant="success" className="flex-grow-1" onClick={() => saveGeralConfig()}>
+          <Button
+            variant="success"
+            className="flex-grow-1"
+            onClick={() => saveGeralConfig()}
+          >
             {t('save')}
           </Button>
         </Col>

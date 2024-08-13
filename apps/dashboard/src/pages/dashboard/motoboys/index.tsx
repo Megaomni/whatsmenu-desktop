@@ -1,5 +1,15 @@
 import { useState, useContext } from 'react'
-import { Card, Form, Button, ListGroup, FormLabel, Table, ButtonGroup, Row, Col } from 'react-bootstrap'
+import {
+  Card,
+  Form,
+  Button,
+  ListGroup,
+  FormLabel,
+  Table,
+  ButtonGroup,
+  Row,
+  Col,
+} from 'react-bootstrap'
 import { CartsContext } from '@context/cart.ctx'
 import { Title } from '@components/Partials/title'
 import { apiRoute, maskedPhone } from '@utils/wm-functions'
@@ -18,7 +28,11 @@ export default function Motoboys({}: MotoboysProps) {
   const [name, setName] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [editing, setEditing] = useState(false)
-  const [editMode, setEditMode] = useState({ id: null, name: false, whatsapp: false })
+  const [editMode, setEditMode] = useState({
+    id: null,
+    name: false,
+    whatsapp: false,
+  })
   const [editName, setEditName] = useState('')
   const [editWhatsapp, setEditWhatsapp] = useState('')
 
@@ -51,7 +65,11 @@ export default function Motoboys({}: MotoboysProps) {
         status: newStatus,
       })
       setMotoboys((prevMotoboys) =>
-        prevMotoboys.map((prevMotoboy) => (prevMotoboy.id === motoboy.id ? { ...prevMotoboy, status: newStatus } : prevMotoboy))
+        prevMotoboys.map((prevMotoboy) =>
+          prevMotoboy.id === motoboy.id
+            ? { ...prevMotoboy, status: newStatus }
+            : prevMotoboy
+        )
       )
     } catch (error) {
       console.error(t('error_pausing_activating'), error)
@@ -74,11 +92,20 @@ export default function Motoboys({}: MotoboysProps) {
 
   const saveEdit = async (motoboy: any) => {
     try {
-      const { data } = await apiRoute(`/dashboard/motoboys/${motoboy.id}`, session, 'PATCH', {
-        name: editName,
-        whatsapp: maskedPhone(editWhatsapp),
-      })
-      setMotoboys((prevMotoboys) => prevMotoboys.map((prevMotoboy) => (prevMotoboy.id === motoboy.id ? data : prevMotoboy)))
+      const { data } = await apiRoute(
+        `/dashboard/motoboys/${motoboy.id}`,
+        session,
+        'PATCH',
+        {
+          name: editName,
+          whatsapp: maskedPhone(editWhatsapp),
+        }
+      )
+      setMotoboys((prevMotoboys) =>
+        prevMotoboys.map((prevMotoboy) =>
+          prevMotoboy.id === motoboy.id ? data : prevMotoboy
+        )
+      )
       setEditMode({ id: null, name: false, whatsapp: false })
       setEditName('')
       setEditWhatsapp('')
@@ -90,7 +117,9 @@ export default function Motoboys({}: MotoboysProps) {
   const handleDelete = async (motoboyId: any) => {
     try {
       await apiRoute(`/dashboard/motoboys/${motoboyId}`, session, 'DELETE')
-      setMotoboys((prevMotoboys: any) => prevMotoboys.filter((motoboy: any) => motoboy.id !== motoboyId))
+      setMotoboys((prevMotoboys: any) =>
+        prevMotoboys.filter((motoboy: any) => motoboy.id !== motoboyId)
+      )
     } catch (error) {
       console.error(t('error_deleting_delivery_person'), error)
     }
@@ -98,19 +127,35 @@ export default function Motoboys({}: MotoboysProps) {
 
   return (
     <>
-      <Title title={t('delivery_drivers')} componentTitle={t('delivery_drivers')} className="mb-4 fw-600" />
+      <Title
+        title={t('delivery_drivers')}
+        componentTitle={t('delivery_drivers')}
+        className="fw-600 mb-4"
+      />
       <Card>
         <Card.Header className="d-flex gap-3">
           <h4 className="">{t('delivery_registration')}</h4>
           <div className="vr"></div>
-          <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/nofncdMpVM4', title: t('delivery_drivers') }]} />
+          <HelpVideos.Trigger
+            urls={[
+              {
+                src: 'https://www.youtube.com/embed/nofncdMpVM4',
+                title: t('delivery_drivers'),
+              },
+            ]}
+          />
         </Card.Header>
         <Card.Body className="d-flex flex-column align-items-start">
           <Form onSubmit={handleSubmit} className="w-100">
             <Row className="d-flex mb-2 gap-1">
-              <Col sm={12} lg={4} className="p-0 m-0">
-                <Form.Group className="mb-1 mb-sm-0 p-1" style={{ width: '100%' }}>
-                  <FormLabel className="fw-600 fs-7">{t('delivery_person_name')}:</FormLabel>
+              <Col sm={12} lg={4} className="m-0 p-0">
+                <Form.Group
+                  className="mb-sm-0 mb-1 p-1"
+                  style={{ width: '100%' }}
+                >
+                  <FormLabel className="fw-600 fs-7">
+                    {t('delivery_person_name')}:
+                  </FormLabel>
                   <Form.Control
                     type="text"
                     placeholder={t('enter_delivery_person')}
@@ -120,8 +165,11 @@ export default function Motoboys({}: MotoboysProps) {
                   />
                 </Form.Group>
               </Col>
-              <Col sm={12} lg={4} className="p-0 m-0 ">
-                <Form.Group className="mb-1 mb-sm-0 p-1" style={{ width: '100%' }}>
+              <Col sm={12} lg={4} className="m-0 p-0 ">
+                <Form.Group
+                  className="mb-sm-0 mb-1 p-1"
+                  style={{ width: '100%' }}
+                >
                   <FormLabel className="fw-600 fs-7">WhatsApp:</FormLabel>
                   <Form.Control
                     type="text"
@@ -133,8 +181,14 @@ export default function Motoboys({}: MotoboysProps) {
                   />
                 </Form.Group>
               </Col>
-              <Col className="d-grid col-lg-1 col-12 mt-auto p-0 m-0">
-                <Button variant="primary" className="m-1" size="sm" type="submit" onClick={handleSubmit}>
+              <Col className="d-grid col-lg-1 col-12 m-0 mt-auto p-0">
+                <Button
+                  variant="primary"
+                  className="m-1"
+                  size="sm"
+                  type="submit"
+                  onClick={handleSubmit}
+                >
                   {t('add')}
                 </Button>
               </Col>
@@ -144,14 +198,16 @@ export default function Motoboys({}: MotoboysProps) {
       </Card>
       <>
         <div>
-          <h1 className="fs-3 align-middle text-uppercase mb-3">{t('registered_delivery')} </h1>
+          <h1 className="fs-3 text-uppercase mb-3 align-middle">
+            {t('registered_delivery')}{' '}
+          </h1>
           <Card>
             <div className="table-border p-3">
               <Row xs={12} className="">
                 <Table
                   striped
                   // window.innerWidth <= 768 ? 'col-sm-12 table-striped table-condensed cf' : 'table responsive'
-                  className="col-sm-12 table table-striped table-condensed cf no-more-tables"
+                  className="col-sm-12 table-striped table-condensed cf no-more-tables table"
                 >
                   <thead className="justify-content-center ">
                     <tr>
@@ -169,8 +225,13 @@ export default function Motoboys({}: MotoboysProps) {
                   {
                     <tbody>
                       {motoboys?.map((motoboy) => (
-                        <tr key={motoboy.id} className={`${motoboy.status ? '' : 'table-danger border-danger '} fs-7`}>
-                          <td className={`${motoboy.status ? '' : 'text-danger'} fs-7 pt-2`}>
+                        <tr
+                          key={motoboy.id}
+                          className={`${motoboy.status ? '' : 'table-danger border-danger '} fs-7`}
+                        >
+                          <td
+                            className={`${motoboy.status ? '' : 'text-danger'} fs-7 pt-2`}
+                          >
                             {editMode.id === motoboy.id && editMode.name ? (
                               <Form.Control
                                 className="form-control-sm"
@@ -183,7 +244,9 @@ export default function Motoboys({}: MotoboysProps) {
                               motoboy.name
                             )}
                           </td>
-                          <td className={`${motoboy.status ? '' : 'text-danger'} fs-7`}>
+                          <td
+                            className={`${motoboy.status ? '' : 'text-danger'} fs-7`}
+                          >
                             {editMode.id === motoboy.id && editMode.whatsapp ? (
                               <Form.Control
                                 className="form-control-sm"
@@ -191,14 +254,16 @@ export default function Motoboys({}: MotoboysProps) {
                                 type="text"
                                 value={maskedPhone(editWhatsapp)}
                                 maxLength={15}
-                                onChange={(e) => setEditWhatsapp(e.target.value)}
+                                onChange={(e) =>
+                                  setEditWhatsapp(e.target.value)
+                                }
                               />
                             ) : (
                               motoboy.whatsapp
                             )}
                           </td>
                           <td className="col-12 col-lg-3 fs-7 pb-2">
-                            <ButtonGroup className="d-flex justify-content-end mt-auto ms-auto gap-2 ">
+                            <ButtonGroup className="d-flex justify-content-end ms-auto mt-auto gap-2 ">
                               {editMode.id === motoboy.id ? (
                                 <Button
                                   variant="link text-decoration-none"
@@ -221,7 +286,9 @@ export default function Motoboys({}: MotoboysProps) {
                                     className={`fs-7 ${motoboy.status ? '' : 'link-danger'}`}
                                     onClick={() => handlePause(motoboy)}
                                   >
-                                    {motoboy.status ? t('pause') : t('activate')}
+                                    {motoboy.status
+                                      ? t('pause')
+                                      : t('activate')}
                                   </Button>
                                 </>
                               )}

@@ -1,7 +1,31 @@
-import { Dispatch, FormEvent, SetStateAction, useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Figure, Form, Modal, Nav, Row, Tab, Spinner, InputGroup } from 'react-bootstrap'
+import {
+  Dispatch,
+  FormEvent,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Figure,
+  Form,
+  Modal,
+  Nav,
+  Row,
+  Tab,
+  Spinner,
+  InputGroup,
+} from 'react-bootstrap'
 import { FaSave } from 'react-icons/fa'
-import { BsExclamationCircle, BsFillPauseCircleFill, BsFillTrashFill } from 'react-icons/bs'
+import {
+  BsExclamationCircle,
+  BsFillPauseCircleFill,
+  BsFillTrashFill,
+} from 'react-icons/bs'
 import { RiImageAddLine } from 'react-icons/ri'
 import { ImCancelCircle } from 'react-icons/im'
 import { Crop } from 'react-image-crop'
@@ -9,7 +33,11 @@ import { CropModal } from '../../CropModal'
 import { UseResize } from '../../../../hooks/useResize'
 import { ConfirmModal } from '../../Confirm'
 import PizzaProduct, { PizzaSizeType } from '../../../../types/pizza-product'
-import { apiRoute, hash, normalizeCaracter } from '../../../../utils/wm-functions'
+import {
+  apiRoute,
+  hash,
+  normalizeCaracter,
+} from '../../../../utils/wm-functions'
 import { AppContext } from '../../../../context/app.ctx'
 import Category from '../../../../types/category'
 import { useSession } from 'next-auth/react'
@@ -33,11 +61,17 @@ export function PizzaSize(props: PizzaSizeProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
 
-  const { handleConfirmModal, handleShowToast, modalFooterOpened } = useContext(AppContext)
+  const { handleConfirmModal, handleShowToast, modalFooterOpened } =
+    useContext(AppContext)
   const { setSize, categories, setCategories } = useContext(MenuContext)
 
   const { show, handleClose, type, size, tab, category, setCategory } = props
-  const flavors = [`1 ${t('flavor')}`, `2 ${t('flavors')}`, `3 ${t('flavors')}`, `4 ${t('flavors')}`]
+  const flavors = [
+    `1 ${t('flavor')}`,
+    `2 ${t('flavors')}`,
+    `3 ${t('flavors')}`,
+    `4 ${t('flavors')}`,
+  ]
   const [sizes, setSizes] = useState<any>({
     1: false,
     2: false,
@@ -52,12 +86,16 @@ export function PizzaSize(props: PizzaSizeProps) {
   const [showPauseSpinner, setShowPauseSpinner] = useState<boolean>(false)
 
   const [nameInvalid, setNameInvalid] = useState(false)
-  const [eventKeyTab, setEventKeysTabs] = useState<'details' | 'covers'>(tab as any)
+  const [eventKeyTab, setEventKeysTabs] = useState<'details' | 'covers'>(
+    tab as any
+  )
 
   const [name, setName] = useState(size?.name || '')
   const [sizeCovers, setSizeCovers] = useState<any>({})
   const [sizeIndex, setSizeIndex] = useState<number>(1)
-  const [covers, setCovers] = useState<string[]>(size?.covers || Array(4).fill(''))
+  const [covers, setCovers] = useState<string[]>(
+    size?.covers || Array(4).fill('')
+  )
   const [inputFileImage, setInputFileImage] = useState<HTMLInputElement>()
 
   useEffect(() => {
@@ -68,7 +106,8 @@ export function PizzaSize(props: PizzaSizeProps) {
 
     if (size?.covers.length) {
       size.covers.forEach((sizeCover, index) => {
-        covers[index] = sizeCover === '' ? `/images/pizzas/${index + 1}.jpg` : sizeCover
+        covers[index] =
+          sizeCover === '' ? `/images/pizzas/${index + 1}.jpg` : sizeCover
       })
     } else {
       const imgs = Array(4)
@@ -131,7 +170,11 @@ export function PizzaSize(props: PizzaSizeProps) {
 
       if (product) {
         if (type === 'create') {
-          const sizeExists = category?.product?.sizes.find((sz) => sz.name.trim().toLocaleLowerCase() === name.trim().toLocaleLowerCase())
+          const sizeExists = category?.product?.sizes.find(
+            (sz) =>
+              sz.name.trim().toLocaleLowerCase() ===
+              name.trim().toLocaleLowerCase()
+          )
 
           if (sizeExists) {
             handleShowToast({
@@ -273,7 +316,11 @@ export function PizzaSize(props: PizzaSizeProps) {
   }
 
   const findSize = (name: string) => {
-    return !!category?.product?.sizes?.find((sz) => sz.code !== size.code && normalizeCaracter(sz.name) === normalizeCaracter(name))
+    return !!category?.product?.sizes?.find(
+      (sz) =>
+        sz.code !== size.code &&
+        normalizeCaracter(sz.name) === normalizeCaracter(name)
+    )
   }
 
   return (
@@ -301,13 +348,17 @@ export function PizzaSize(props: PizzaSizeProps) {
         centered
       >
         <Modal.Header closeButton>
-          <Modal.Title>{type === 'create' ? t('add_size') : `${t('edit_size')} (${size.name})`}</Modal.Title>
+          <Modal.Title>
+            {type === 'create'
+              ? t('add_size')
+              : `${t('edit_size')} (${size.name})`}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body className="position-relative">
           <form id="form-size" onSubmit={(e) => createOrUpdateSize(e)}>
             {showSpinner && (
               <div
-                className="position-absolute top-0 start-0 bottom-0 end-0 d-flex justify-content-center align-items-center"
+                className="position-absolute d-flex justify-content-center align-items-center bottom-0 end-0 start-0 top-0"
                 style={{ zIndex: 1000, background: 'rgba(255, 255, 255, .5)' }}
               >
                 <Spinner animation="border" />
@@ -318,18 +369,28 @@ export function PizzaSize(props: PizzaSizeProps) {
                 <Col sm={12}>
                   <Nav variant="tabs" className="flex-row">
                     <Nav.Item>
-                      <Nav.Link eventKey="details" onClick={(e) => setEventKeysTabs('details')}>
+                      <Nav.Link
+                        eventKey="details"
+                        onClick={(e) => setEventKeysTabs('details')}
+                      >
                         {t('details')}
                         {eventKeyTab !== 'details' && nameInvalid && (
                           <span className="ms-2">
-                            <BsExclamationCircle className="pulseElement" color="red" size={20} />
+                            <BsExclamationCircle
+                              className="pulseElement"
+                              color="red"
+                              size={20}
+                            />
                           </span>
                         )}
                       </Nav.Link>
                     </Nav.Item>
                     {Object.values(sizes).some((vs) => vs) && (
                       <Nav.Item>
-                        <Nav.Link eventKey="covers" onClick={(e) => setEventKeysTabs('covers')}>
+                        <Nav.Link
+                          eventKey="covers"
+                          onClick={(e) => setEventKeysTabs('covers')}
+                        >
                           {t('cover')}
                         </Nav.Link>
                       </Nav.Item>
@@ -339,7 +400,7 @@ export function PizzaSize(props: PizzaSizeProps) {
                     <Tab.Pane eventKey="details">
                       <Card className="mt-4">
                         <Card.Body>
-                          <Container fluid className="px-0 mx-0">
+                          <Container fluid className="mx-0 px-0">
                             <Row className="text-dark">
                               <Col sm className="my-auto">
                                 <Row>
@@ -354,7 +415,9 @@ export function PizzaSize(props: PizzaSizeProps) {
                                         name="name"
                                         autoComplete="off"
                                         autoFocus
-                                        isInvalid={findSize(name) || nameInvalid}
+                                        isInvalid={
+                                          findSize(name) || nameInvalid
+                                        }
                                         maxLength={55}
                                         onChange={(e) => {
                                           if (nameInvalid) {
@@ -363,13 +426,26 @@ export function PizzaSize(props: PizzaSizeProps) {
                                           setName(e.target.value)
                                         }}
                                       />
-                                      <Form.Control.Feedback tooltip type="invalid" className="mt-1">
-                                        {nameInvalid && !name && `${t('please_valid_name')}!`}
-                                        {findSize(name) && `${t('size_name_already_exists')}.`}
+                                      <Form.Control.Feedback
+                                        tooltip
+                                        type="invalid"
+                                        className="mt-1"
+                                      >
+                                        {nameInvalid &&
+                                          !name &&
+                                          `${t('please_valid_name')}!`}
+                                        {findSize(name) &&
+                                          `${t('size_name_already_exists')}.`}
                                       </Form.Control.Feedback>
                                     </div>
                                     <div className="d-flex justify-content-end">
-                                      <p className={name.length >= 55 ? 'text-red-500' : ''}>
+                                      <p
+                                        className={
+                                          name.length >= 55
+                                            ? 'text-red-500'
+                                            : ''
+                                        }
+                                      >
                                         {name.length}/55
                                         {t('characters')}
                                       </p>
@@ -381,21 +457,37 @@ export function PizzaSize(props: PizzaSizeProps) {
                                     <Form.Label>
                                       <b>{t('this_size_accepts')}</b>
                                     </Form.Label>
-                                    <div className="d-flex flex-wrap flex-md-nowrap justify-content-start gap-2">
+                                    <div className="d-flex flex-md-nowrap justify-content-start flex-wrap gap-2">
                                       {flavors.map((flavor, index) => {
                                         return (
                                           <div
                                             key={`${flavor}`}
-                                            className="d-flex flex-row-reverse gap-2 justify-content-end "
-                                            {...{ style: { flex: window.innerWidth < 768 ? '1 0 25%' : '' } }}
+                                            className="d-flex justify-content-end flex-row-reverse gap-2 "
+                                            {...{
+                                              style: {
+                                                flex:
+                                                  window.innerWidth < 768
+                                                    ? '1 0 25%'
+                                                    : '',
+                                              },
+                                            }}
                                           >
                                             <Form.Label htmlFor={`${flavor}`}>
-                                              <span className="fs-8 text-nowrap fw-bold">{flavor}</span>
+                                              <span className="fs-8 fw-bold text-nowrap">
+                                                {flavor}
+                                              </span>
                                             </Form.Label>
                                             <Form.Check
                                               id={`${flavor}`}
-                                              defaultChecked={!!sizes[index + 1]}
-                                              required={index === 0 && Object.values(sizes).every((vs) => !vs)}
+                                              defaultChecked={
+                                                !!sizes[index + 1]
+                                              }
+                                              required={
+                                                index === 0 &&
+                                                Object.values(sizes).every(
+                                                  (vs) => !vs
+                                                )
+                                              }
                                               onChange={(e) => {
                                                 if (e.target.checked) {
                                                   sizes[index + 1] = true
@@ -411,20 +503,36 @@ export function PizzaSize(props: PizzaSizeProps) {
                                     </div>
                                     <br />
                                     {type !== 'create' && (
-                                      <div className="wm-default-border-none text-dark py-5 px-3 position-relative">
+                                      <div className="wm-default-border-none text-dark position-relative px-3 py-5">
                                         <Row className="align-items-center">
                                           <Col sm className="d-flex">
-                                            <Button variant="outline-orange" className="flex-grow-1 mb-3" onClick={pauseSize}>
-                                              <BsFillPauseCircleFill size={20} />
+                                            <Button
+                                              variant="outline-orange"
+                                              className="flex-grow-1 mb-3"
+                                              onClick={pauseSize}
+                                            >
+                                              <BsFillPauseCircleFill
+                                                size={20}
+                                              />
 
-                                              <span>{!size?.status ? t('resume_sales') : t('pause_sales')}</span>
+                                              <span>
+                                                {!size?.status
+                                                  ? t('resume_sales')
+                                                  : t('pause_sales')}
+                                              </span>
                                             </Button>
                                           </Col>
-                                          <Col sm className="text-600 fs-8 mb-3">
+                                          <Col
+                                            sm
+                                            className="text-600 fs-8 mb-3"
+                                          >
                                             {t('message_pause_sales')}
                                           </Col>
                                         </Row>
-                                        <OverlaySpinner show={showPauseSpinner} backgroundColor="transparent" />
+                                        <OverlaySpinner
+                                          show={showPauseSpinner}
+                                          backgroundColor="transparent"
+                                        />
                                       </div>
                                     )}
                                   </Col>
@@ -446,7 +554,11 @@ export function PizzaSize(props: PizzaSizeProps) {
                             {covers.map((cover: string, index) => {
                               if (sizes[index + 1]) {
                                 return (
-                                  <Col sm key={`${hash()}-${cover}-${index}`} className="flex-grow-1">
+                                  <Col
+                                    sm
+                                    key={`${hash()}-${cover}-${index}`}
+                                    className="flex-grow-1"
+                                  >
                                     <Figure className="w-100 d-flex flex-column">
                                       <Figure.Image
                                         width={200}
@@ -462,15 +574,24 @@ export function PizzaSize(props: PizzaSizeProps) {
                                         }}
                                       />
                                       <Figure.Caption className="text-center">
-                                        {index === 0 ? `1 ${t('flavor')}` : `${index + 1} ${t('flavors')}`}
+                                        {index === 0
+                                          ? `1 ${t('flavor')}`
+                                          : `${index + 1} ${t('flavors')}`}
                                       </Figure.Caption>
-                                      <Button variant="outline-success mt-4 w-100" style={{ position: 'relative' }}>
-                                        <span className="fs-7">{t('add_image')}</span>
+                                      <Button
+                                        variant="outline-success mt-4 w-100"
+                                        style={{ position: 'relative' }}
+                                      >
+                                        <span className="fs-7">
+                                          {t('add_image')}
+                                        </span>
                                         <Form.Control
                                           type="file"
                                           onChange={(e) => {
                                             setSizeIndex(index)
-                                            setInputFileImage(e.target as HTMLInputElement)
+                                            setInputFileImage(
+                                              e.target as HTMLInputElement
+                                            )
                                           }}
                                           // name={`image${index + 1}`}
                                           style={{

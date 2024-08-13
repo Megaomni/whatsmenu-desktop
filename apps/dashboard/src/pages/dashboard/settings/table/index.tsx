@@ -1,7 +1,27 @@
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { ChangeEvent, FormEvent, useContext, useEffect, useRef, useState } from 'react'
-import { Accordion, Button, Card, Col, Container, Form, InputGroup, ListGroup, Nav, Row, Tab, Table } from 'react-bootstrap'
+import {
+  ChangeEvent,
+  FormEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import {
+  Accordion,
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  ListGroup,
+  Nav,
+  Row,
+  Tab,
+  Table,
+} from 'react-bootstrap'
 import { HelpVideos } from '../../../../components/Modals/HelpVideos'
 import { OverlaySpinner } from '../../../../components/OverlaySpinner'
 import { Title } from '../../../../components/Partials/title'
@@ -28,7 +48,16 @@ export default function SettingsTables(props: SettingsTablesProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const router = useRouter()
-  const { profile, plansCategory, setProfile, handleShowToast, bartenders, setBartenders, user, currency } = useContext(AppContext)
+  const {
+    profile,
+    plansCategory,
+    setProfile,
+    handleShowToast,
+    bartenders,
+    setBartenders,
+    user,
+    currency,
+  } = useContext(AppContext)
   const { toggleModal, dataResponse } = useContext(PaymentMethodContext)
 
   const [profileFees, setProfileFees] = useState<ProfileFee[]>(profile.fees)
@@ -61,7 +90,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
   const [showOverlay, setShowOverlay] = useState<boolean>(false)
 
   const [categories, setCategories] = useState<Category[]>([])
-  const [defaultTab, setDefaultTab] = useState<'fees' | 'bartenders' | 'tables'>('tables')
+  const [defaultTab, setDefaultTab] = useState<
+    'fees' | 'bartenders' | 'tables'
+  >('tables')
 
   const addFeeSuccess = useRef(null)
   const targetOverlay = useRef(null)
@@ -84,7 +115,10 @@ export default function SettingsTables(props: SettingsTablesProps) {
     if (!editBartender?.controls.blockedCategories) {
       setEditBartender((state) => {
         if (state) {
-          return { ...state, controls: { ...state.controls, blockedCategories: [] } }
+          return {
+            ...state,
+            controls: { ...state.controls, blockedCategories: [] },
+          }
         }
         return state
       })
@@ -93,7 +127,11 @@ export default function SettingsTables(props: SettingsTablesProps) {
 
   // FEES
   const verifyFeeExists = (value: string) => {
-    if (profileFees.find((findFee) => findFee.code?.toLowerCase() === value.toLowerCase())) {
+    if (
+      profileFees.find(
+        (findFee) => findFee.code?.toLowerCase() === value.toLowerCase()
+      )
+    ) {
       !showOverlay && setShowOverlay(true)
       return true
     } else {
@@ -103,8 +141,12 @@ export default function SettingsTables(props: SettingsTablesProps) {
   }
 
   const handleAddFee = async () => {
-    const codeInput = document.querySelector('input[name=valueTax]') as HTMLInputElement
-    const valueFeeInput = document.querySelector('#valueFeeInput') as HTMLInputElement
+    const codeInput = document.querySelector(
+      'input[name=valueTax]'
+    ) as HTMLInputElement
+    const valueFeeInput = document.querySelector(
+      '#valueFeeInput'
+    ) as HTMLInputElement
 
     if (showOverlay) {
       codeInput.focus()
@@ -171,7 +213,12 @@ export default function SettingsTables(props: SettingsTablesProps) {
     setShowOverLaySpinner(true)
     try {
       const body = { id, type }
-      const { data } = await apiRoute('/dashboard/fee/update', session, 'PATCH', body)
+      const { data } = await apiRoute(
+        '/dashboard/fee/update',
+        session,
+        'PATCH',
+        body
+      )
 
       const updatedFeeIndex = profileFees.findIndex((f) => f.id === data.id)
       handleShowToast({
@@ -199,7 +246,12 @@ export default function SettingsTables(props: SettingsTablesProps) {
     setShowOverLaySpinner(true)
     try {
       const body = { fee }
-      const { data } = await apiRoute('/dashboard/fee/delete', session, 'POST', body)
+      const { data } = await apiRoute(
+        '/dashboard/fee/delete',
+        session,
+        'POST',
+        body
+      )
       handleShowToast({
         type: 'success',
         title: t('delete_fee'),
@@ -227,8 +279,19 @@ export default function SettingsTables(props: SettingsTablesProps) {
       body.persistBartender = e.target.checked
     }
     try {
-      const { data } = await apiRoute('/dashboard/settings/tableConfigUpdate', session, 'PATCH', { table: body })
-      setProfile({ ...profile, options: { ...profile.options, table: { ...profile.options.table, ...data } } })
+      const { data } = await apiRoute(
+        '/dashboard/settings/tableConfigUpdate',
+        session,
+        'PATCH',
+        { table: body }
+      )
+      setProfile({
+        ...profile,
+        options: {
+          ...profile.options,
+          table: { ...profile.options.table, ...data },
+        },
+      })
     } catch (error) {
       console.error(error)
     }
@@ -242,8 +305,19 @@ export default function SettingsTables(props: SettingsTablesProps) {
       body.callBartender = e.target.checked
     }
     try {
-      const { data } = await apiRoute('/dashboard/settings/tableConfigUpdate', session, 'PATCH', { table: body })
-      setProfile({ ...profile, options: { ...profile.options, table: { ...profile.options.table, ...data } } })
+      const { data } = await apiRoute(
+        '/dashboard/settings/tableConfigUpdate',
+        session,
+        'PATCH',
+        { table: body }
+      )
+      setProfile({
+        ...profile,
+        options: {
+          ...profile.options,
+          table: { ...profile.options.table, ...data },
+        },
+      })
     } catch (error) {
       console.error(error)
     }
@@ -325,7 +399,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
         case 'PATCH': {
           if (!error) {
             data.password = ''
-            const bartender = bartenders.filter((b) => b.controls.type !== 'cashier').find((b) => b.id === data.id)
+            const bartender = bartenders
+              .filter((b) => b.controls.type !== 'cashier')
+              .find((b) => b.id === data.id)
             if (bartender) {
               bartender.name = data.name
               bartender.password = data.password
@@ -349,9 +425,15 @@ export default function SettingsTables(props: SettingsTablesProps) {
         }
         case 'DELETE': {
           if (!error) {
-            let bartender = bartenders.filter((b) => b.controls.type !== 'cashier').find((b) => b.id === data.id)
+            let bartender = bartenders
+              .filter((b) => b.controls.type !== 'cashier')
+              .find((b) => b.id === data.id)
             if (bartender) {
-              setBartenders(bartenders.filter((b) => b.controls.type !== 'cashier').filter((b) => b.id !== data.id))
+              setBartenders(
+                bartenders
+                  .filter((b) => b.controls.type !== 'cashier')
+                  .filter((b) => b.id !== data.id)
+              )
               setEditBartender(undefined)
               handleShowToast({
                 type: 'success',
@@ -393,14 +475,19 @@ export default function SettingsTables(props: SettingsTablesProps) {
   const BlockCategories = ({ type }: BlockCategoriesProps) => {
     const [globaCheck, setGlobaCheck] = useState(true)
 
-    const handleChangeCategoryBlocked = (e: ChangeEvent<HTMLInputElement>, category: Category) => {
+    const handleChangeCategoryBlocked = (
+      e: ChangeEvent<HTMLInputElement>,
+      category: Category
+    ) => {
       if (type === 'new' && newBartender) {
         if (e.target.checked) {
           setNewBartender({
             ...newBartender,
             controls: {
               ...newBartender.controls,
-              blockedCategories: newBartender.controls.blockedCategories.filter((c: number) => c !== category.id),
+              blockedCategories: newBartender.controls.blockedCategories.filter(
+                (c: number) => c !== category.id
+              ),
             },
           })
         } else {
@@ -408,7 +495,10 @@ export default function SettingsTables(props: SettingsTablesProps) {
             ...newBartender,
             controls: {
               ...newBartender.controls,
-              blockedCategories: [...newBartender.controls.blockedCategories, category.id],
+              blockedCategories: [
+                ...newBartender.controls.blockedCategories,
+                category.id,
+              ],
             },
           })
         }
@@ -419,7 +509,10 @@ export default function SettingsTables(props: SettingsTablesProps) {
             ...editBartender,
             controls: {
               ...editBartender.controls,
-              blockedCategories: editBartender.controls.blockedCategories.filter((c: number) => c !== category.id),
+              blockedCategories:
+                editBartender.controls.blockedCategories.filter(
+                  (c: number) => c !== category.id
+                ),
             },
           })
         } else {
@@ -427,7 +520,10 @@ export default function SettingsTables(props: SettingsTablesProps) {
             ...editBartender,
             controls: {
               ...editBartender.controls,
-              blockedCategories: [...editBartender.controls.blockedCategories, category.id],
+              blockedCategories: [
+                ...editBartender.controls.blockedCategories,
+                category.id,
+              ],
             },
           })
         }
@@ -456,7 +552,11 @@ export default function SettingsTables(props: SettingsTablesProps) {
 
     return (
       <ListGroup>
-        <ListGroup.Item key={hash()} className="d-flex justify-content-end" style={{ background: '#F6F9FF' }}>
+        <ListGroup.Item
+          key={hash()}
+          className="d-flex justify-content-end"
+          style={{ background: '#F6F9FF' }}
+        >
           <Form.Check
             onChange={(e) => {
               setGlobaCheck(() => e.target.checked)
@@ -467,10 +567,17 @@ export default function SettingsTables(props: SettingsTablesProps) {
           />
         </ListGroup.Item>
         {categories.map((category) => (
-          <ListGroup.Item key={category.id} className="d-flex justify-content-between">
+          <ListGroup.Item
+            key={category.id}
+            className="d-flex justify-content-between"
+          >
             <span>{category.name}</span>
             <Form.Check
-              checked={!(type === 'new' ? newBartender : editBartender)?.controls.blockedCategories?.includes(category.id)}
+              checked={
+                !(
+                  type === 'new' ? newBartender : editBartender
+                )?.controls.blockedCategories?.includes(category.id)
+              }
               className={`categoryCheckItem-${type}`}
               onChange={(e) => {
                 handleChangeCategoryBlocked(e, category)
@@ -485,18 +592,31 @@ export default function SettingsTables(props: SettingsTablesProps) {
   return (
     plansCategory.includes('table') && (
       <>
-        <Title title={t('settings')} className="mb-4" componentTitle={t('table_settings')} child={[t('table')]} />
+        <Title
+          title={t('settings')}
+          className="mb-4"
+          componentTitle={t('table_settings')}
+          child={[t('table')]}
+        />
         <Tab.Container activeKey={defaultTab}>
           <Row>
             <Col sm={12}>
               <Nav variant="tabs" className="tab-nav-flex flex-row">
                 <Nav.Item>
-                  <Nav.Link eventKey="tables" onClick={() => setDefaultTab('tables')} className="position-relative">
+                  <Nav.Link
+                    eventKey="tables"
+                    onClick={() => setDefaultTab('tables')}
+                    className="position-relative"
+                  >
                     {t('tables')}
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link eventKey="fees" onClick={() => setDefaultTab('fees')} className="position-relative">
+                  <Nav.Link
+                    eventKey="fees"
+                    onClick={() => setDefaultTab('fees')}
+                    className="position-relative"
+                  >
                     {t('fees')}
                   </Nav.Link>
                 </Nav.Item>
@@ -522,7 +642,12 @@ export default function SettingsTables(props: SettingsTablesProps) {
                         <h4>{t('add_fee')}</h4>
                         <div className="vr"></div>
                         <HelpVideos.Trigger
-                          urls={[{ src: 'https://www.youtube.com/embed/OLed3fDcCbE?si=iXdY6O-bBq5IWAQU', title: t('creating_fees') }]}
+                          urls={[
+                            {
+                              src: 'https://www.youtube.com/embed/OLed3fDcCbE?si=iXdY6O-bBq5IWAQU',
+                              title: t('creating_fees'),
+                            },
+                          ]}
                         />
                       </div>
                     </Card.Header>
@@ -530,7 +655,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
                       <Container className="mx-0 px-0">
                         <Row className="mb-3 text-nowrap">
                           <Col md className="mb-1">
-                            <Form.Label className="fw-bold fs-7">{t('fee_name')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('fee_name')}
+                            </Form.Label>
                             <div className="position-relative">
                               <Form.Control
                                 type="text"
@@ -547,36 +674,56 @@ export default function SettingsTables(props: SettingsTablesProps) {
                                   verifyFeeExists(value)
                                 }}
                               />
-                              <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }}>
+                              <Form.Control.Feedback
+                                tooltip
+                                type="invalid"
+                                style={{ zIndex: 0 }}
+                              >
                                 {t('fee_already_exists')}
                               </Form.Control.Feedback>
                             </div>
                           </Col>
                           <Col md className="mb-1">
-                            <Form.Label className="fw-bold fs-7">{t('type_charge')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('type_charge')}
+                            </Form.Label>
                             <Form.Select
                               value={typeFee}
                               onChange={(e: FormEvent) => {
                                 const target = e.target as HTMLInputElement
-                                const targetValue = target.value as 'fixed' | 'percent'
+                                const targetValue = target.value as
+                                  | 'fixed'
+                                  | 'percent'
                                 setTypeFee(targetValue)
                               }}
                             >
-                              <option value="fixed">{t('fixed_amount_n')}</option>
-                              <option value="percent">{t('percentage_of')}</option>
+                              <option value="fixed">
+                                {t('fixed_amount_n')}
+                              </option>
+                              <option value="percent">
+                                {t('percentage_of')}
+                              </option>
                             </Form.Select>
                           </Col>
                           <Col md className="mb-1">
                             <div className="position-relative">
-                              <Form.Label className="fw-bold mt-auto fs-7">{t('fee_amount')}</Form.Label>
+                              <Form.Label className="fw-bold fs-7 mt-auto">
+                                {t('fee_amount')}
+                              </Form.Label>
                               <InputGroup>
-                                <InputGroup.Text>{typeFee === 'percent' ? '%' : currency({ value: 0, symbol: true })}</InputGroup.Text>
+                                <InputGroup.Text>
+                                  {typeFee === 'percent'
+                                    ? '%'
+                                    : currency({ value: 0, symbol: true })}
+                                </InputGroup.Text>
                                 <Form.Control
                                   type="number"
                                   id="valueFeeInput"
                                   min={1}
                                   value={valueFee}
-                                  isInvalid={typeof Number(valueFee) !== 'number'}
+                                  isInvalid={
+                                    typeof Number(valueFee) !== 'number'
+                                  }
                                   onChange={(e) => {
                                     mask(e, 'currency')
                                     if (e.target.value) {
@@ -587,15 +734,23 @@ export default function SettingsTables(props: SettingsTablesProps) {
                                   }}
                                 />
                               </InputGroup>
-                              <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }}>
-                                {t('enter_number_greater_than')} {currency({ value: 1 })}
+                              <Form.Control.Feedback
+                                tooltip
+                                type="invalid"
+                                style={{ zIndex: 0 }}
+                              >
+                                {t('enter_number_greater_than')}{' '}
+                                {currency({ value: 1 })}
                               </Form.Control.Feedback>
                             </div>
                           </Col>
-                          <Col md className="mb-1 d-flex">
-                            <div ref={addFeeSuccess} className="mt-auto flex-grow-1">
+                          <Col md className="d-flex mb-1">
+                            <div
+                              ref={addFeeSuccess}
+                              className="flex-grow-1 mt-auto"
+                            >
                               <Button
-                                className="px-4 py-2 w-100"
+                                className="w-100 px-4 py-2"
                                 onClick={() => {
                                   handleAddFee()
                                 }}
@@ -632,10 +787,18 @@ export default function SettingsTables(props: SettingsTablesProps) {
                                   <span>{fee.code}</span>
                                 </td>
                                 <td>
-                                  <span>{fee.type === 'fixed' ? 'Valor Fixo' : t('percentage_of')}</span>
+                                  <span>
+                                    {fee.type === 'fixed'
+                                      ? 'Valor Fixo'
+                                      : t('percentage_of')}
+                                  </span>
                                 </td>
                                 <td className="text-center">
-                                  <span>{fee.type === 'fixed' ? currency({ value: fee.value }) : `${fee.value}%`}</span>
+                                  <span>
+                                    {fee.type === 'fixed'
+                                      ? currency({ value: fee.value })
+                                      : `${fee.value}%`}
+                                  </span>
                                 </td>
                                 <td>
                                   <span>
@@ -643,7 +806,10 @@ export default function SettingsTables(props: SettingsTablesProps) {
                                       className="text-center"
                                       defaultChecked={fee.automatic}
                                       onChange={() => {
-                                        handleUpdateFee(fee.id as number, 'automatic')
+                                        handleUpdateFee(
+                                          fee.id as number,
+                                          'automatic'
+                                        )
                                       }}
                                     />
                                   </span>
@@ -652,20 +818,31 @@ export default function SettingsTables(props: SettingsTablesProps) {
                                   <div className="d-flex">
                                     <Button
                                       variant="orange text-white"
-                                      className="ms-1 flex-grow-1"
+                                      className="flex-grow-1 ms-1"
                                       onClick={() => {
-                                        handleUpdateFee(fee.id as number, 'status')
+                                        handleUpdateFee(
+                                          fee.id as number,
+                                          'status'
+                                        )
                                       }}
                                     >
-                                      <span className="align-middle">{fee.status ? t('deactive') : t('activate')}</span>
+                                      <span className="align-middle">
+                                        {fee.status
+                                          ? t('deactive')
+                                          : t('activate')}
+                                      </span>
                                     </Button>
                                     <Button
                                       variant="danger"
-                                      className="ms-1 flex-grow-1"
-                                      disabled={editBartender?.controls.defaultCashier}
+                                      className="flex-grow-1 ms-1"
+                                      disabled={
+                                        editBartender?.controls.defaultCashier
+                                      }
                                       onClick={() => handleDeleteFee(fee)}
                                     >
-                                      <span className="align-middle">{t('delete')}</span>
+                                      <span className="align-middle">
+                                        {t('delete')}
+                                      </span>
                                     </Button>
                                   </div>
                                 </td>
@@ -685,18 +862,29 @@ export default function SettingsTables(props: SettingsTablesProps) {
                         <div className="vr"></div>
                         <HelpVideos.Trigger
                           urls={[
-                            { src: 'https://www.youtube.com/embed/rYpj9BSBpSU', title: t('registering_waitstaff') },
-                            { src: 'https://www.youtube.com/embed/ODSwO7PAasI', title: t('placing_order_waiter') },
-                            { src: 'https://www.youtube.com/embed/gRwhs4iC5Kg', title: t('placing_pizza_order_waiter') },
+                            {
+                              src: 'https://www.youtube.com/embed/rYpj9BSBpSU',
+                              title: t('registering_waitstaff'),
+                            },
+                            {
+                              src: 'https://www.youtube.com/embed/ODSwO7PAasI',
+                              title: t('placing_order_waiter'),
+                            },
+                            {
+                              src: 'https://www.youtube.com/embed/gRwhs4iC5Kg',
+                              title: t('placing_pizza_order_waiter'),
+                            },
                           ]}
                         />
                       </div>
                     </Card.Header>
                     <Card.Body>
                       <Container className="mx-0 px-0">
-                        <Row className="mb-3 text-nowrap w-100">
+                        <Row className="w-100 mb-3 text-nowrap">
                           <Col md className="mb-1">
-                            <Form.Label className="fw-bold fs-7">{t('waitstaff_name')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('waitstaff_name')}
+                            </Form.Label>
                             <div className="position-relative">
                               <Form.Control
                                 value={newBartender.name}
@@ -710,7 +898,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
                             </div>
                           </Col>
                           <Col md className="mb-1">
-                            <Form.Label className="fw-bold fs-7">{t('password')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('password')}
+                            </Form.Label>
                             <Form.Control
                               type="password"
                               autoComplete="new-password"
@@ -724,7 +914,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
                             />
                           </Col>
                           <Col md>
-                            <Form.Label className="fw-bold fs-7">{t('permission')}</Form.Label>
+                            <Form.Label className="fw-bold fs-7">
+                              {t('permission')}
+                            </Form.Label>
                             <Form.Select
                               value={newBartender.controls.type ?? 'default'}
                               onChange={(e) =>
@@ -741,7 +933,7 @@ export default function SettingsTables(props: SettingsTablesProps) {
                               <option value="manager">{t('manager')}</option>
                             </Form.Select>
                           </Col>
-                          <Col md className="mb-1 d-flex">
+                          <Col md className="d-flex mb-1">
                             <Form.Switch
                               id="newBartenderStatus"
                               label={t('allow_orders')}
@@ -755,10 +947,13 @@ export default function SettingsTables(props: SettingsTablesProps) {
                               }
                             />
                           </Col>
-                          <Col md className="mb-1 d-flex">
-                            <div ref={addFeeSuccess} className="mt-auto flex-grow-1">
+                          <Col md className="d-flex mb-1">
+                            <div
+                              ref={addFeeSuccess}
+                              className="flex-grow-1 mt-auto"
+                            >
                               <Button
-                                className="px-4 py-2 w-100"
+                                className="w-100 px-4 py-2"
                                 onClick={() => {
                                   handleAddBartender()
                                 }}
@@ -770,15 +965,26 @@ export default function SettingsTables(props: SettingsTablesProps) {
                         </Row>
                         <Accordion className="w-100">
                           <Accordion.Item eventKey="0">
-                            <Accordion.Header className="fs-5" onClick={getCategories}>
+                            <Accordion.Header
+                              className="fs-5"
+                              onClick={getCategories}
+                            >
                               {t('restrict_menu')}
                             </Accordion.Header>
-                            <Accordion.Body className="position-relative" style={{ minHeight: '10rem' }}>
-                              <OverlaySpinner show={!categories.length} textSpinner={t('loading')} />
+                            <Accordion.Body
+                              className="position-relative"
+                              style={{ minHeight: '10rem' }}
+                            >
+                              <OverlaySpinner
+                                show={!categories.length}
+                                textSpinner={t('loading')}
+                              />
                               {categories.length ? (
                                 <>
                                   <h5 className="fw-bold">{t('categories')}</h5>
-                                  <p>{t('select_categories_waiter_permitted')}</p>
+                                  <p>
+                                    {t('select_categories_waiter_permitted')}
+                                  </p>
                                   <BlockCategories type="new" />
                                 </>
                               ) : null}
@@ -791,18 +997,26 @@ export default function SettingsTables(props: SettingsTablesProps) {
 
                   <Card>
                     <Card.Header className="d-flex justify-content-between">
-                      <h4>{editBartender ? `${t('waiter')}: ${bartenders.find((b) => b.id === editBartender.id)?.name}` : t('waitstaff')}</h4>
+                      <h4>
+                        {editBartender
+                          ? `${t('waiter')}: ${bartenders.find((b) => b.id === editBartender.id)?.name}`
+                          : t('waitstaff')}
+                      </h4>
                       <div className="d-flex gap-4">
                         <Form.Switch
                           id="callBartender"
-                          checked={profile.options.table?.callBartender ?? false}
+                          checked={
+                            profile.options.table?.callBartender ?? false
+                          }
                           label={`${t('call_waitstaff')}`}
                           onChange={(e) => handleCallBartender(e)}
                         />
                         {!editBartender ? (
                           <Form.Switch
                             id="persistBartender"
-                            checked={profile.options.table?.persistBartender ?? false}
+                            checked={
+                              profile.options.table?.persistBartender ?? false
+                            }
                             label={t('keep_waitstaff_logged')}
                             onChange={(e) => handlePersistBartender(e)}
                           />
@@ -825,7 +1039,13 @@ export default function SettingsTables(props: SettingsTablesProps) {
                     </Card.Header>
                     <Card.Body>
                       {!editBartender ? (
-                        <Table className="mt-3" responsive striped bordered hover>
+                        <Table
+                          className="mt-3"
+                          responsive
+                          striped
+                          bordered
+                          hover
+                        >
                           <thead>
                             <tr className="fs-7">
                               <th>{t('name')}</th>
@@ -840,7 +1060,13 @@ export default function SettingsTables(props: SettingsTablesProps) {
                                   <tr key={bartender.id}>
                                     <td>{bartender.name}</td>
                                     <td>
-                                      <Button onClick={() => setEditBartender(bartender)}>{t('edit')}</Button>
+                                      <Button
+                                        onClick={() =>
+                                          setEditBartender(bartender)
+                                        }
+                                      >
+                                        {t('edit')}
+                                      </Button>
                                     </td>
                                   </tr>
                                 ) : null
@@ -851,7 +1077,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
                         <>
                           <Row>
                             <Col md>
-                              <Form.Label className="fw-bold fs-7">{t('name')}</Form.Label>
+                              <Form.Label className="fw-bold fs-7">
+                                {t('name')}
+                              </Form.Label>
                               <Form.Control
                                 value={editBartender.name}
                                 onChange={(e) => {
@@ -863,7 +1091,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
                               />
                             </Col>
                             <Col md>
-                              <Form.Label className="fw-bold fs-7">{t('password')}</Form.Label>
+                              <Form.Label className="fw-bold fs-7">
+                                {t('password')}
+                              </Form.Label>
                               <Form.Control
                                 type="password"
                                 value={editBartender.password}
@@ -877,7 +1107,9 @@ export default function SettingsTables(props: SettingsTablesProps) {
                               />
                             </Col>
                             <Col md>
-                              <Form.Label className="fw-bold fs-7">{t('permission')}</Form.Label>
+                              <Form.Label className="fw-bold fs-7">
+                                {t('permission')}
+                              </Form.Label>
                               <Form.Select
                                 value={editBartender.controls.type ?? 'default'}
                                 onChange={(e) =>
@@ -899,16 +1131,31 @@ export default function SettingsTables(props: SettingsTablesProps) {
                             <Col sm className="d-flex">
                               <Accordion className="w-100">
                                 <Accordion.Item eventKey="0">
-                                  <Accordion.Header className="fs-5" onClick={getCategories}>
+                                  <Accordion.Header
+                                    className="fs-5"
+                                    onClick={getCategories}
+                                  >
                                     {t('restrict_menu')}
                                   </Accordion.Header>
-                                  <Accordion.Body className="position-relative" style={{ minHeight: '10rem' }}>
-                                    <OverlaySpinner show={!categories.length} textSpinner="Carregando..." />
+                                  <Accordion.Body
+                                    className="position-relative"
+                                    style={{ minHeight: '10rem' }}
+                                  >
+                                    <OverlaySpinner
+                                      show={!categories.length}
+                                      textSpinner="Carregando..."
+                                    />
                                     {categories.length ? (
                                       <>
-                                        <h5 className="fw-bold">{t('categories')}</h5>
+                                        <h5 className="fw-bold">
+                                          {t('categories')}
+                                        </h5>
                                         <div className="d-flex">
-                                          <p>{t('select_categories_waiter_permitted')}</p>
+                                          <p>
+                                            {t(
+                                              'select_categories_waiter_permitted'
+                                            )}
+                                          </p>
                                         </div>
                                         <BlockCategories type="edit" />
                                       </>
@@ -925,7 +1172,7 @@ export default function SettingsTables(props: SettingsTablesProps) {
                       <Card.Footer className="d-flex justify-content-between gap-2">
                         <Button
                           variant="outline-danger"
-                          className="ms-1 flex-grow-1 flex-md-grow-0"
+                          className="flex-grow-1 flex-md-grow-0 ms-1"
                           disabled={editBartender.controls.defaultCashier}
                           onClick={() => {
                             handleDeleteBartender()
@@ -934,10 +1181,16 @@ export default function SettingsTables(props: SettingsTablesProps) {
                           <span className="align-middle">{t('delete')}</span>
                         </Button>
                         <div className="d-flex justify-content-end gap-2">
-                          <Button variant="danger" onClick={() => setEditBartender(undefined)}>
+                          <Button
+                            variant="danger"
+                            onClick={() => setEditBartender(undefined)}
+                          >
                             <span className="align-middle">{t('cancel')}</span>
                           </Button>
-                          <Button variant="success" onClick={() => handleUpdateBartender(editBartender)}>
+                          <Button
+                            variant="success"
+                            onClick={() => handleUpdateBartender(editBartender)}
+                          >
                             <span className="align-middle">{t('save')}</span>
                           </Button>
                         </div>

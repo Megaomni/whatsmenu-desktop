@@ -22,7 +22,14 @@ export interface PrintProviderProps {
 
 export const PrintContext = createContext({} as PrintContextData)
 
-export const PrintProvider = ({ children, paperWidthSize, printMode, appMode = false, fontSize, paperSize }: PrintProviderProps) => {
+export const PrintProvider = ({
+  children,
+  paperWidthSize,
+  printMode,
+  appMode = false,
+  fontSize,
+  paperSize,
+}: PrintProviderProps) => {
   return (
     <PrintContext.Provider
       value={{

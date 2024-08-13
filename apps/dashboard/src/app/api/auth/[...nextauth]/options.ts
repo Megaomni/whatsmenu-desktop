@@ -6,10 +6,10 @@ import { api } from 'src/lib/axios'
 
 export const options: AuthOptions = {
   pages: {
-    signIn: "/auth/login",
-    signOut: "/auth/login",
+    signIn: '/auth/login',
+    signOut: '/auth/login',
     newUser: '/register',
-    error: "/auth/login",
+    error: '/auth/login',
   },
   callbacks: {
     async session({ session, token }) {
@@ -21,11 +21,15 @@ export const options: AuthOptions = {
       return session
     },
     async jwt({ token, user: data }) {
-      if ((token.user as UserType) && !(token.user as UserType).v3Token && !(token.user as UserType).admMode) {
+      if (
+        (token.user as UserType) &&
+        !(token.user as UserType).v3Token &&
+        !(token.user as UserType).admMode
+      ) {
         token.user = null
         return token
       }
-      
+
       if (data) {
         token.accessToken = (data as unknown as UserType).token
         token.user = (data as unknown as UserType)?.user as UserType
@@ -64,7 +68,11 @@ export const options: AuthOptions = {
             return {
               token: data.v2.token,
               login: true,
-              user: { ...data.user, loginDate: new Date().getTime(), v3Token: data.token },
+              user: {
+                ...data.user,
+                loginDate: new Date().getTime(),
+                v3Token: data.token,
+              },
             }
           }
         } catch (error) {
@@ -72,9 +80,12 @@ export const options: AuthOptions = {
           // generate a switch for error instance
           if (error instanceof AxiosError) {
             let errorData = error.response?.data
-            
+
             // errorData = Array.isArray(errorData) ? errorData[0] : errorData
-            if ((errorData.field && errorData.field === 'password') || errorData?.errors?.at(0)?.message === 'Invalid user credentials') {
+            if (
+              (errorData.field && errorData.field === 'password') ||
+              errorData?.errors?.at(0)?.message === 'Invalid user credentials'
+            ) {
               throw new Error(encodeURIComponent('Senha ou email inválido(s)!'))
             }
             if (errorData.message) {

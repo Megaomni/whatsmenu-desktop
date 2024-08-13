@@ -45,7 +45,21 @@ export default class CartItem {
   created_at: string
   updated_at: string
   constructor(
-    { id, cartId, productId, pizzaId, type, quantity, obs, details, name, controls, deleted_at, created_at, updated_at }: CartItemType,
+    {
+      id,
+      cartId,
+      productId,
+      pizzaId,
+      type,
+      quantity,
+      obs,
+      details,
+      name,
+      controls,
+      deleted_at,
+      created_at,
+      updated_at,
+    }: CartItemType,
     cartCode?: string
   ) {
     ;(this.id = id),
@@ -69,16 +83,22 @@ export default class CartItem {
       // if (this.type === 'pizza' && !this.details.complements.length) {
       //   this.details.complements = this.details.flavors.flatMap((flavor) => flavor.complements ?? [])
       // }
-      const totalComplements = this.details.complements.reduce((total, complement) => {
-        complement.itens.forEach((item) => {
-          if (item.quantity) {
-            total += item.value * item.quantity
-          }
-        })
-        return total
-      }, 0)
+      const totalComplements = this.details.complements.reduce(
+        (total, complement) => {
+          complement.itens.forEach((item) => {
+            if (item.quantity) {
+              total += item.value * item.quantity
+            }
+          })
+          return total
+        },
+        0
+      )
 
-      return (this.details.value + totalComplements) * (this.type === 'default' ? this.quantity : 1)
+      return (
+        (this.details.value + totalComplements) *
+        (this.type === 'default' ? this.quantity : 1)
+      )
     } else {
       return this.details.value * (this.type === 'default' ? this.quantity : 1)
     }

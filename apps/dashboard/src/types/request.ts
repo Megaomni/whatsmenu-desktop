@@ -2,7 +2,11 @@ import { DateTime } from 'luxon'
 import { Session } from 'next-auth'
 import Cupom from './cupom'
 import { apiRoute, copy, encodeTextURL } from '../utils/wm-functions'
-import PizzaProduct, { PizzaFlavorType, PizzaImplementationType, PizzaSizeType } from './pizza-product'
+import PizzaProduct, {
+  PizzaFlavorType,
+  PizzaImplementationType,
+  PizzaSizeType,
+} from './pizza-product'
 import Product from './product'
 import { ProfileOptions } from './profile'
 import React, { Dispatch, SetStateAction } from 'react'
@@ -178,9 +182,13 @@ export class ProductCart {
 
   public getTotal(type: 'T' | 'D' | 'P' = 'D', onlyProd: boolean = false) {
     const table = type === 'T' ? 'Table' : ''
-    const productTotal = this[`promoteStatus${table}`] ? this[`promoteValue${table}`] : this[`value${table}`]
+    const productTotal = this[`promoteStatus${table}`]
+      ? this[`promoteValue${table}`]
+      : this[`value${table}`]
 
-    return onlyProd ? productTotal : (productTotal + this.getTotalComplements()) * this.quantity
+    return onlyProd
+      ? productTotal
+      : (productTotal + this.getTotalComplements()) * this.quantity
   }
 
   public getTotalComplements() {
@@ -223,11 +231,15 @@ export default class Request {
   activeTab: 'counter' | 'table' | 'tables' | 'resume'
 
   public defaultStatusProductionPackage = 'Olá [NOME], seu pedido foi recebido.'
-  public defaultStatusProductionMessage = 'Olá [NOME], seu pedido está em produção.'
-  public defaultStatusToRemoveMessage = 'Obaaa [NOME], seu pedido está pronto para retirada.'
-  public defaultStatusTransportMessage = 'Obaaa [NOME], seu pedido está a caminho.'
+  public defaultStatusProductionMessage =
+    'Olá [NOME], seu pedido está em produção.'
+  public defaultStatusToRemoveMessage =
+    'Obaaa [NOME], seu pedido está pronto para retirada.'
+  public defaultStatusTransportMessage =
+    'Obaaa [NOME], seu pedido está a caminho.'
   public defaultCanceledMessage = 'Olá [NOME], seu pedido foi cancelado.'
-  public defaultSendWhatsMessage = '[NOME] pedido efetuado com sucesso, acompanhe o status do seu pedido abaixo!'
+  public defaultSendWhatsMessage =
+    '[NOME] pedido efetuado com sucesso, acompanhe o status do seu pedido abaixo!'
 
   constructor({
     id,
@@ -312,11 +324,23 @@ export default class Request {
     //Configuração da função para diferenciar os itens
     config = { ...defaultConfig, ...config }
 
-    const verifyEqualsComplements = (complements: Complement[], complementsVerify: Complement[]) => {
+    const verifyEqualsComplements = (
+      complements: Complement[],
+      complementsVerify: Complement[]
+    ) => {
       return complements.every((compl) => {
         return complementsVerify.some((complV) => {
-          if (complV.id === compl.id && compl.itens.length === complV.itens.length) {
-            return complV.itens.every((cvItem) => compl.itens.some((cItem) => cItem.code === cvItem.code && cItem.quantity === cvItem.quantity))
+          if (
+            complV.id === compl.id &&
+            compl.itens.length === complV.itens.length
+          ) {
+            return complV.itens.every((cvItem) =>
+              compl.itens.some(
+                (cItem) =>
+                  cItem.code === cvItem.code &&
+                  cItem.quantity === cvItem.quantity
+              )
+            )
           }
         })
       })
@@ -330,14 +354,19 @@ export default class Request {
         if (Object.keys(prod).length) {
           const complements = copy(prod.complements) as Complement[]
           const table = this.type === 'T' ? 'Table' : ''
-          const valueZero = (prod[`promoteStatus${table}`] ? prod[`promoteValue${table}`] : prod[`value${table}`]) === 0
+          const valueZero =
+            (prod[`promoteStatus${table}`]
+              ? prod[`promoteValue${table}`]
+              : prod[`value${table}`]) === 0
 
           const products = selfArr.filter(
             (p, indexP) =>
               p.id === prod.id &&
               p.obs === prod.obs &&
               complements.length === p.complements.length &&
-              (config.filterTypeDelivery?.active ? prod.typeDelivery === p.typeDelivery : true) &&
+              (config.filterTypeDelivery?.active
+                ? prod.typeDelivery === p.typeDelivery
+                : true) &&
               indexP !== index
           )
           for (const product of products) {
@@ -389,14 +418,22 @@ export default class Request {
 
           pizzas.forEach((elPizza, pIndex) => {
             const verificationOne = pizza.flavors?.every((pizzaFlavor) =>
-              elPizza.flavors.some((elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code)
+              elPizza.flavors.some(
+                (elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code
+              )
             )
             const verificationTwo = elPizza.flavors?.every((pizzaFlavor) =>
-              pizza.flavors.some((elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code)
+              pizza.flavors.some(
+                (elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code
+              )
             )
 
-            const implementations = pizza.implementations?.every((pizzaImplementation) =>
-              elPizza.implementations.some((elPizzaImplementation) => elPizzaImplementation.code === pizzaImplementation.code)
+            const implementations = pizza.implementations?.every(
+              (pizzaImplementation) =>
+                elPizza.implementations.some(
+                  (elPizzaImplementation) =>
+                    elPizzaImplementation.code === pizzaImplementation.code
+                )
             )
             if (verificationOne && verificationTwo && implementations) {
               pizza.quantity += elPizza.quantity
@@ -431,13 +468,18 @@ export default class Request {
   }
 
   public getTotalComplements() {
-    return this.cart.reduce((total, product) => (total += product.getTotalComplements()), 0)
+    return this.cart.reduce(
+      (total, product) => (total += product.getTotalComplements()),
+      0
+    )
   }
 
   public date(timeZone?: string) {
     const packageDate = DateTime.fromSQL(this.packageDate, { setZone: true })
     const formatted = `${packageDate.toFormat(`${i18n.t('date_format')}`)} ${
-      packageDate.toFormat('ss').includes('01') ? '(SH)' : packageDate.toFormat('HH:mm')
+      packageDate.toFormat('ss').includes('01')
+        ? '(SH)'
+        : packageDate.toFormat('HH:mm')
     }`
 
     return {
@@ -462,17 +504,25 @@ export default class Request {
         this.cupom?.type === 'percent'
           ? (this.total / 100) * Number(this.cupom?.value)
           : this.cupom?.type === 'freight'
-          ? this.taxDelivery
-          : Number(this.cupom?.value)
+            ? this.taxDelivery
+            : Number(this.cupom?.value)
       return this.total + this.taxDelivery - cupomValue
     }
     return this.total + this.taxDelivery
   }
   //Request Api
 
-  private async statusType(status: null | 'production' | 'transport' | 'delivered' | 'canceled', session: Session | null) {
+  private async statusType(
+    status: null | 'production' | 'transport' | 'delivered' | 'canceled',
+    session: Session | null
+  ) {
     try {
-      const { data } = await apiRoute('/dashboard/request/status/update', session, 'PATCH', { status, id: this.id })
+      const { data } = await apiRoute(
+        '/dashboard/request/status/update',
+        session,
+        'PATCH',
+        { status, id: this.id }
+      )
       return data.request.status
     } catch (error) {
       console.error(error)
@@ -482,13 +532,22 @@ export default class Request {
   public async alterDate(session: Session | null, packageDate: string) {
     if (this.type === 'P') {
       try {
-        const { data } = await apiRoute('/dashboard/request/status/update', session, 'PATCH', {
-          package: DateTime.fromJSDate(
-            new Date(`${packageDate} ${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat('HH:mm:ss')}`)
-          ).toISO(),
-          id: this.id,
-        })
-        this.packageDate = DateTime.fromISO(data.request.packageDate, { setZone: true }).toSQL()
+        const { data } = await apiRoute(
+          '/dashboard/request/status/update',
+          session,
+          'PATCH',
+          {
+            package: DateTime.fromJSDate(
+              new Date(
+                `${packageDate} ${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat('HH:mm:ss')}`
+              )
+            ).toISO(),
+            id: this.id,
+          }
+        )
+        this.packageDate = DateTime.fromISO(data.request.packageDate, {
+          setZone: true,
+        }).toSQL()
       } catch (error) {
         console.error(error)
         throw error
@@ -498,7 +557,10 @@ export default class Request {
     }
   }
 
-  public async cancelOrUncancel(session: Session | null, options?: ProfileOptions) {
+  public async cancelOrUncancel(
+    session: Session | null,
+    options?: ProfileOptions
+  ) {
     try {
       if (this.status !== 'canceled') {
         const status = await this.statusType('canceled', session)
@@ -515,10 +577,18 @@ export default class Request {
     }
   }
 
-  public async production(session: Session | null, placeholders?: ProfilePlaceholders, options?: ProfileOptions) {
+  public async production(
+    session: Session | null,
+    placeholders?: ProfilePlaceholders,
+    options?: ProfileOptions
+  ) {
     let textEnconded
     if (this.status === null) {
-      textEnconded = placeholders?.statusProduction || (this.type === 'P' ? this.defaultStatusProductionPackage : this.defaultStatusProductionMessage)
+      textEnconded =
+        placeholders?.statusProduction ||
+        (this.type === 'P'
+          ? this.defaultStatusProductionPackage
+          : this.defaultStatusProductionMessage)
 
       try {
         const status = await this.statusType('production', session)
@@ -530,10 +600,15 @@ export default class Request {
     }
   }
 
-  public async sendWhatsMessage(session: Session | null, placeholders?: ProfilePlaceholders, options?: ProfileOptions) {
+  public async sendWhatsMessage(
+    session: Session | null,
+    placeholders?: ProfilePlaceholders,
+    options?: ProfileOptions
+  ) {
     let textEnconded
     if (this.activeTab === 'counter') {
-      textEnconded = placeholders?.sendWhatsMessage || this.defaultSendWhatsMessage
+      textEnconded =
+        placeholders?.sendWhatsMessage || this.defaultSendWhatsMessage
       try {
         const status = await this.statusType(null, session)
         this.status = status
@@ -544,13 +619,19 @@ export default class Request {
     }
   }
 
-  public async transport(session: Session | null, placeholders?: ProfilePlaceholders, options?: ProfileOptions) {
+  public async transport(
+    session: Session | null,
+    placeholders?: ProfilePlaceholders,
+    options?: ProfileOptions
+  ) {
     let textEnconded: string = ''
     if (this.status !== 'transport') {
       if (this.typeDelivery === 1) {
-        textEnconded = placeholders?.statusToRemove || this.defaultStatusToRemoveMessage
+        textEnconded =
+          placeholders?.statusToRemove || this.defaultStatusToRemoveMessage
       } else if (this.typeDelivery === 0) {
-        textEnconded = placeholders?.statusSend || this.defaultStatusTransportMessage
+        textEnconded =
+          placeholders?.statusSend || this.defaultStatusTransportMessage
       }
       try {
         const status = await this.statusType('transport', session)
@@ -564,7 +645,11 @@ export default class Request {
 
   public async setPrinted(session: Session) {
     try {
-      const { data } = await apiRoute(`/dashboard/request/${this.id}/print/confirm`, session, 'PATCH')
+      const { data } = await apiRoute(
+        `/dashboard/request/${this.id}/print/confirm`,
+        session,
+        'PATCH'
+      )
       this.print = JSON.parse(data.print) ? 1 : 0
     } catch (error) {
       console.error(error)
@@ -586,21 +671,30 @@ export default class Request {
 
     const seconds = Number(localStorage.getItem('seconds')) || 1500
     const textLink = `&text=${encodeTextURL(this.name, text)}`
-    const targetLink = options?.linkWhatsapp && !possibleMobile ? 'iframeWhatsapp' : '_blank'
+    const targetLink =
+      options?.linkWhatsapp && !possibleMobile ? 'iframeWhatsapp' : '_blank'
     const messageLink = document.createElement('a')
 
     const hrefLink = (envText: string) =>
       `${options?.linkWhatsapp ? 'whatsapp://' : possibleMobile ? 'https://api.whatsapp.com/' : 'https://web.whatsapp.com/'}send/?phone=55${
         this.contact
       }${envText}`
-    messageLink.href = hrefLink(possibleMobile || !options?.linkWhatsapp ? textLink : options?.twoSend ? '&text=' : textLink)
+    messageLink.href = hrefLink(
+      possibleMobile || !options?.linkWhatsapp
+        ? textLink
+        : options?.twoSend
+          ? '&text='
+          : textLink
+    )
     messageLink.target = targetLink
     messageLink.setAttribute('data-action', 'share/whatsapp/share')
     messageLink.click()
 
     if (!possibleMobile && options?.twoSend) {
       setTimeout(() => {
-        const iframeReq = document.getElementById('iframeWhatsapp') as HTMLIFrameElement
+        const iframeReq = document.getElementById(
+          'iframeWhatsapp'
+        ) as HTMLIFrameElement
 
         if (iframeReq) {
           iframeReq.src = hrefLink(textLink)
@@ -612,11 +706,17 @@ export default class Request {
     }
   }
 
-  public typeDeliveryText(textPackage: 'Encomendas' | 'Agendamentos' = 'Encomendas', textOnly = false) {
+  public typeDeliveryText(
+    textPackage: 'Encomendas' | 'Agendamentos' = 'Encomendas',
+    textOnly = false
+  ) {
     let textDelivery = ''
     switch (this.typeDelivery) {
       case 0:
-        textDelivery = this.type === 'P' && !textOnly ? `**${textPackage}**\r\n**Delivery**` : '**Delivery**'
+        textDelivery =
+          this.type === 'P' && !textOnly
+            ? `**${textPackage}**\r\n**Delivery**`
+            : '**Delivery**'
         break
       case 1:
         textDelivery = `${this.type === 'P' && !textOnly ? `**${textPackage}**\r\n` : ''}**Vou Retirar no Local**`
@@ -635,7 +735,10 @@ export default class Request {
 
   static calcValuePizza(pizza: CartPizza, onlyPizza = false) {
     if (onlyPizza) {
-      const totalImplementations = pizza.implementations.reduce((total, implementation) => (total += implementation.value), 0)
+      const totalImplementations = pizza.implementations.reduce(
+        (total, implementation) => (total += implementation.value),
+        0
+      )
       return pizza.value - totalImplementations
     }
 
@@ -730,7 +833,8 @@ export default class Request {
           id: 528774,
           obs: '',
           name: 'Esfiha de atum',
-          image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca/products/528774/aguanabocaIla98Bc6gfMl5Irjpeg',
+          image:
+            'https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca/products/528774/aguanabocaIla98Bc6gfMl5Irjpeg',
           value: 2.5,
           status: 1,
           quantity: 1,
@@ -818,7 +922,8 @@ export default class Request {
           id: 528774,
           obs: '',
           name: 'Esfiha de atum',
-          image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca/products/528774/aguanabocaIla98Bc6gfMl5Irjpeg',
+          image:
+            'https://s3.us-west-2.amazonaws.com/whatsmenu/development/aguanaboca/products/528774/aguanabocaIla98Bc6gfMl5Irjpeg',
           value: 2.5,
           status: 1,
           quantity: 1,
@@ -1240,10 +1345,10 @@ export default class Request {
               },
               description: null,
               valuesTable: {
-                'Teste': 13,
-                'Grande': 30,
-                'Médio': 25,
-                'Pequeno': 33,
+                Teste: 13,
+                Grande: 30,
+                Médio: 25,
+                Pequeno: 33,
                 'teste 2': 13,
                 'teste 3': 13,
                 'teste 4': 13,
@@ -1288,10 +1393,10 @@ export default class Request {
               },
               description: null,
               valuesTable: {
-                'Teste': 13,
-                'Grande': 30,
-                'Médio': 25,
-                'Pequeno': 33,
+                Teste: 13,
+                Grande: 30,
+                Médio: 25,
+                Pequeno: 33,
                 'teste 2': 13,
                 'teste 3': 13,
                 'teste 4': 13,
@@ -1343,10 +1448,10 @@ export default class Request {
               },
               description: null,
               valuesTable: {
-                'Teste': 13,
-                'Grande': 30,
-                'Médio': 25,
-                'Pequeno': 33,
+                Teste: 13,
+                Grande: 30,
+                Médio: 25,
+                Pequeno: 33,
                 'teste 2': 13,
                 'teste 3': 13,
                 'teste 4': 13,

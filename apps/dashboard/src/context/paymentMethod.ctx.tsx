@@ -1,4 +1,12 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState, useEffect } from 'react'
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useState,
+  useEffect,
+} from 'react'
 import { AppContext } from './app.ctx'
 import Profile, { ProfileFormPayment } from '../types/profile'
 import { AxiosResponse } from 'axios'
@@ -29,16 +37,23 @@ interface PaymentMethodProviderProps {
   children: ReactNode
 }
 
-export const PaymentMethodContext = createContext<PaymentMethodData>({} as PaymentMethodData)
+export const PaymentMethodContext = createContext<PaymentMethodData>(
+  {} as PaymentMethodData
+)
 
-export const PaymentMethodProvider = ({ children }: PaymentMethodProviderProps) => {
+export const PaymentMethodProvider = ({
+  children,
+}: PaymentMethodProviderProps) => {
   const { profile, setProfile, handleShowToast } = useContext(AppContext)
   const [showFinPassModal, setShowFinPassModal] = useState(false)
   const [showSpinner, setShowSpinner] = useState(false)
   const [dataToBeUpdated, setDataToBeUpdated] = useState<any>(null)
   const [profileState, setProfileState] = useState(profile)
-  const [dataResponse, setDataResponse] = useState<DataResponseType | null>(null)
-  const [updateDataCallback, setUpdateDataCallback] = useState<(data: any) => any>()
+  const [dataResponse, setDataResponse] = useState<DataResponseType | null>(
+    null
+  )
+  const [updateDataCallback, setUpdateDataCallback] =
+    useState<(data: any) => any>()
   const [showResponseAlert, setShowResponseAlert] = useState(false)
 
   const handleProfileUpdate = (profile: Profile) => {
@@ -57,10 +72,16 @@ export const PaymentMethodProvider = ({ children }: PaymentMethodProviderProps) 
     setShowSpinner(boolean)
   }
 
-  const onSubmit = async (data: any, setShowSpinner: Dispatch<SetStateAction<boolean>>, reset: any) => {
+  const onSubmit = async (
+    data: any,
+    setShowSpinner: Dispatch<SetStateAction<boolean>>,
+    reset: any
+  ) => {
     setShowSpinner(true)
 
-    const settings = profile.formsPayment?.find((method) => method.payment === data.payment)
+    const settings = profile.formsPayment?.find(
+      (method) => method.payment === data.payment
+    )
     if (!settings)
       return handleShowToast({
         type: 'erro',
@@ -78,7 +99,8 @@ export const PaymentMethodProvider = ({ children }: PaymentMethodProviderProps) 
 
     if ('key' in data) body.key = data.key
     if ('flags' in data) body.flags = data.flags
-    if ('newFlag' in data && settings?.flags && data.newFlag && body.flags) body.flags = [...body.flags, { code: '', image: '', name: data.newFlag }]
+    if ('newFlag' in data && settings?.flags && data.newFlag && body.flags)
+      body.flags = [...body.flags, { code: '', image: '', name: data.newFlag }]
 
     if (data.key?.type === 'contact') {
       data.key.value = data.key.value.replace(/\W/g, '')
@@ -114,7 +136,7 @@ export const PaymentMethodProvider = ({ children }: PaymentMethodProviderProps) 
         setUpdateDataCallback,
         updateDataCallback,
         setShowResponseAlert,
-        showResponseAlert
+        showResponseAlert,
       }}
     >
       {children}

@@ -1,5 +1,14 @@
 import { Button, Card, Col, Row } from 'react-bootstrap'
-import { FaChartLine, FaCoins, FaHourglass, FaMagic, FaQrcode, FaTachometerAlt, FaThumbsUp, FaUser } from 'react-icons/fa'
+import {
+  FaChartLine,
+  FaCoins,
+  FaHourglass,
+  FaMagic,
+  FaQrcode,
+  FaTachometerAlt,
+  FaThumbsUp,
+  FaUser,
+} from 'react-icons/fa'
 import { GoPackage } from 'react-icons/go'
 import { useTranslation } from 'react-i18next'
 
@@ -59,7 +68,9 @@ export function AddPlan({ title, plan, notDefaultTitle }: AddPlanProps) {
                       <p className="mt-4">
                         <b>{t('efficiency')}</b>
                       </p>
-                      <span className="my-auto">{t('incredible_agility')}.</span>
+                      <span className="my-auto">
+                        {t('incredible_agility')}.
+                      </span>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -81,12 +92,14 @@ export function AddPlan({ title, plan, notDefaultTitle }: AddPlanProps) {
                       <p className="mt-4">
                         <b>QRCode</b>
                       </p>
-                      <span className="my-auto">{t('qrcode_self_service')}</span>
+                      <span className="my-auto">
+                        {t('qrcode_self_service')}
+                      </span>
                     </Card.Body>
                   </Card>
                 </Col>
               </Row>
-              <Row className="text-center mt-4">
+              <Row className="mt-4 text-center">
                 <Col sm>
                   <Card className="plan-display h-100">
                     <Card.Body className="d-flex flex-column align-items-center ">
@@ -94,7 +107,9 @@ export function AddPlan({ title, plan, notDefaultTitle }: AddPlanProps) {
                       <p className="mt-4">
                         <b>{t('self_service')}</b>
                       </p>
-                      <span className="my-auto">{t('customers_place_orders_themselves')}</span>
+                      <span className="my-auto">
+                        {t('customers_place_orders_themselves')}
+                      </span>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -105,7 +120,9 @@ export function AddPlan({ title, plan, notDefaultTitle }: AddPlanProps) {
                       <p className="mt-4">
                         <b>{t('zero_waste')}</b>
                       </p>
-                      <span className="my-auto">{t('indecipherable_handwriting')}</span>
+                      <span className="my-auto">
+                        {t('indecipherable_handwriting')}
+                      </span>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -116,7 +133,9 @@ export function AddPlan({ title, plan, notDefaultTitle }: AddPlanProps) {
                       <p className="mt-4">
                         <b>{t('closure')}</b>
                       </p>
-                      <span className="my-auto">{t('automatically_separates_calculates')}</span>
+                      <span className="my-auto">
+                        {t('automatically_separates_calculates')}
+                      </span>
                     </Card.Body>
                   </Card>
                 </Col>
@@ -175,7 +194,7 @@ export function AddPlan({ title, plan, notDefaultTitle }: AddPlanProps) {
           <Button
             variant="success"
             size="lg"
-            className="text-uppercase fs-1 flex-grow-1 mx-auto text-wrap mt-5"
+            className="text-uppercase fs-1 flex-grow-1 mx-auto mt-5 text-wrap"
             onClick={() => {
               if (plan === 'package') {
                 window.open(

@@ -25,7 +25,11 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
   const [domain, setDomain] = useState<Domain>()
   const [dnsConfig, setDnsConfig] = useState(false)
   const [newDomain, setNewDomain] = useState('')
-  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>('defaultDomain', null, 'sessionStorage')
+  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
+    'defaultDomain',
+    null,
+    'sessionStorage'
+  )
   const [fetched, setFetched] = useState(false)
 
   useEffect(() => {
@@ -43,15 +47,28 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
           const body = {
             name: newDomain, //.replace(/(http?\D:\/\/)/, "").replace(/(\w+\.)/, "")
           }
-          const { data } = await apiRoute('/dashboard/domains', session, 'POST', body)
+          const { data } = await apiRoute(
+            '/dashboard/domains',
+            session,
+            'POST',
+            body
+          )
           const regex = /.+(\..+)$/gm
           let domainArr
-          while ((domainArr = regex.exec(data[data.length - 1].name)) !== null) {
+          while (
+            (domainArr = regex.exec(data[data.length - 1].name)) !== null
+          ) {
             if (domainArr.index === regex.lastIndex) {
               regex.lastIndex++
             }
             //.cf, .ga, .gq, .ml, or .tk
-            if (domainArr[1] == '.cf' || domainArr[1] == '.ga' || domainArr[1] == '.gq' || domainArr[1] == '.ml' || domainArr[1] == '.tk') {
+            if (
+              domainArr[1] == '.cf' ||
+              domainArr[1] == '.ga' ||
+              domainArr[1] == '.gq' ||
+              domainArr[1] == '.ml' ||
+              domainArr[1] == '.tk'
+            ) {
               handleShowToast({
                 type: 'alert',
                 content: t('domain_registered_dns_registration'),
@@ -120,7 +137,12 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
     if (domain) {
       setFetched(true)
       try {
-        const { data } = await apiRoute('/dashboard/domains/dnsRecords', session, 'POST', { domainId: domain.id })
+        const { data } = await apiRoute(
+          '/dashboard/domains/dnsRecords',
+          session,
+          'POST',
+          { domainId: domain.id }
+        )
         const updatedDomain = domains.find((d) => d.id === domain.id)
         if (updatedDomain) {
           updatedDomain.dns = data
@@ -137,9 +159,14 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
 
   const handleUpdateDefaultDomain = async (domainId: number) => {
     try {
-      const { data: updatedDomains } = await apiRoute('/dashboard/domains/updateDomain', session, 'PATCH', {
-        id: domainId,
-      })
+      const { data: updatedDomains } = await apiRoute(
+        '/dashboard/domains/updateDomain',
+        session,
+        'PATCH',
+        {
+          id: domainId,
+        }
+      )
       setDomains(updatedDomains)
       handleShowToast({
         type: 'success',
@@ -183,7 +210,12 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
 
   return (
     <>
-      <Title title={t('settings')} className="mb-4" componentTitle={t('domain_settings')} child={[t('domains')]} />
+      <Title
+        title={t('settings')}
+        className="mb-4"
+        componentTitle={t('domain_settings')}
+        child={[t('domains')]}
+      />
       <div>
         <div className="bd-callout bd-callout-warning">
           <h5>{t('attention_up')}!</h5>
@@ -191,13 +223,19 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
           <input type="hidden" id="textCopy" />
           <ul className="mt-2">
             <li>
-              <span className="with-icon cursor-pointer" onClick={(e) => handleCopy(e, handleShowToast)}>
+              <span
+                className="with-icon cursor-pointer"
+                onClick={(e) => handleCopy(e, handleShowToast)}
+              >
                 melissa.ns.cloudflare.com
                 <FaCopy />
               </span>
             </li>
             <li>
-              <span className="with-icon cursor-pointer" onClick={(e) => handleCopy(e, handleShowToast)}>
+              <span
+                className="with-icon cursor-pointer"
+                onClick={(e) => handleCopy(e, handleShowToast)}
+              >
                 viddy.ns.cloudflare.com
                 <FaCopy />
               </span>
@@ -212,7 +250,14 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
               <Card.Header className="d-flex gap-3">
                 <h4>{t('domain')}</h4>
                 <div className="vr"></div>
-                <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/IZxOQS5rCTk', title: t('domain') }]} />
+                <HelpVideos.Trigger
+                  urls={[
+                    {
+                      src: 'https://www.youtube.com/embed/IZxOQS5rCTk',
+                      title: t('domain'),
+                    },
+                  ]}
+                />
               </Card.Header>
               <Card.Body>
                 <Form className="d-flex">
@@ -228,8 +273,12 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
                           onChange={(e) => setNewDomain(e.target.value)}
                         />
                       </Col>
-                      <Col sm className="mt-2 mt-md-0">
-                        <Button variant="success" className="px-4 w-100" onClick={handleAddDomain}>
+                      <Col sm className="mt-md-0 mt-2">
+                        <Button
+                          variant="success"
+                          className="w-100 px-4"
+                          onClick={handleAddDomain}
+                        >
                           {t('save')}
                         </Button>
                       </Col>
@@ -240,11 +289,19 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
             </Card>
           )}
         </section>
-        <section id="domainInfo" className="position-relative" style={{ minHeight: '13.75rem' }}>
+        <section
+          id="domainInfo"
+          className="position-relative"
+          style={{ minHeight: '13.75rem' }}
+        >
           {!fetched ? (
             <Card className="mt-5">
               <Card.Header>
-                <h4>{dnsConfig ? t('domain_information') : t('registered_domains')}</h4>
+                <h4>
+                  {dnsConfig
+                    ? t('domain_information')
+                    : t('registered_domains')}
+                </h4>
               </Card.Header>
               <Card.Body>
                 {dnsConfig ? (

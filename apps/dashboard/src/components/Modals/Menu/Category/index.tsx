@@ -1,9 +1,26 @@
 import { useSession } from 'next-auth/react'
 import { useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Form, FormGroup, InputGroup, Modal, Nav, Row, Tab } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  InputGroup,
+  Modal,
+  Nav,
+  Row,
+  Tab,
+} from 'react-bootstrap'
 import { AppContext } from '../../../../context/app.ctx'
 import { MenuContext } from '../../../../context/menu.ctx'
-import { compareItems, encryptEmoji, modifyFontValues, scrollToElement } from '../../../../utils/wm-functions'
+import {
+  compareItems,
+  encryptEmoji,
+  modifyFontValues,
+  scrollToElement,
+} from '../../../../utils/wm-functions'
 import { Dates } from '../../../Dates'
 import Week, { WeekType } from '../../../../types/dates'
 import { OverlaySpinner } from '../../../OverlaySpinner'
@@ -27,8 +44,19 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
 
-  const { profile, plansCategory, handleShowToast, handleConfirmModal, modalFooterOpened } = useContext(AppContext)
-  const { categories, setCategories: setMenuCategories, category: categoryMenu, setCategory: setCategoryMenu } = useContext(MenuContext)
+  const {
+    profile,
+    plansCategory,
+    handleShowToast,
+    handleConfirmModal,
+    modalFooterOpened,
+  } = useContext(AppContext)
+  const {
+    categories,
+    setCategories: setMenuCategories,
+    category: categoryMenu,
+    setCategory: setCategoryMenu,
+  } = useContext(MenuContext)
 
   const [category, setCategory] = useState<Category>(new Category(categoryMenu))
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
@@ -62,7 +90,9 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
   const createOrUpdateCategory = async () => {
     setShowSaveSpinner(true)
     try {
-      const categoryNameInput = document.querySelector(`#category${category.id}`) as HTMLInputElement
+      const categoryNameInput = document.querySelector(
+        `#category${category.id}`
+      ) as HTMLInputElement
 
       if (!category.name?.length || category.name?.length < 3) {
         categoryNameInput.focus()
@@ -222,7 +252,9 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                     <Nav.Link eventKey="details">{t('details')}</Nav.Link>
                   </Nav.Item>
                   <Nav.Item>
-                    <Nav.Link eventKey="disponibility">{t('availability')}</Nav.Link>
+                    <Nav.Link eventKey="disponibility">
+                      {t('availability')}
+                    </Nav.Link>
                   </Nav.Item>
                 </Nav>
 
@@ -235,30 +267,63 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                           <div className="vr"></div>
                           <HelpVideos.Trigger
                             urls={[
-                              { src: 'https://www.youtube.com/embed/-q9IyNjfdQ0', title: t('acai_ice_creams') },
-                              { src: 'https://www.youtube.com/embed/n2TWneze46w', title: t('burgers') },
-                              { src: 'https://www.youtube.com/embed/GgQy6o3k3MU', title: t('meal_boxes') },
-                              { src: 'https://www.youtube.com/embed/MSR366YYiXQ', title: t('meal_boxes_size_options') },
-                              { src: 'https://www.youtube.com/embed/ZFCIXM7V13M', title: t('build_meal_box') },
-                              { src: 'https://www.youtube.com/embed/zVAarMwsCHI', title: 'Pizzas' },
-                              { src: 'https://www.youtube.com/embed/PfOQuhCfR5A', title: 'Combo pizzas' },
-                              { src: 'https://www.youtube.com/embed/9drpc_IgYrM', title: t('produce_section') },
-                              { src: 'https://www.youtube.com/embed/LQg6D_OnvN4', title: t('butcher_shop') },
-                              { src: 'https://www.youtube.com/embed/aFJxzkenaYU', title: t('drinks') },
+                              {
+                                src: 'https://www.youtube.com/embed/-q9IyNjfdQ0',
+                                title: t('acai_ice_creams'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/n2TWneze46w',
+                                title: t('burgers'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/GgQy6o3k3MU',
+                                title: t('meal_boxes'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/MSR366YYiXQ',
+                                title: t('meal_boxes_size_options'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/ZFCIXM7V13M',
+                                title: t('build_meal_box'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/zVAarMwsCHI',
+                                title: 'Pizzas',
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/PfOQuhCfR5A',
+                                title: 'Combo pizzas',
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/9drpc_IgYrM',
+                                title: t('produce_section'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/LQg6D_OnvN4',
+                                title: t('butcher_shop'),
+                              },
+                              {
+                                src: 'https://www.youtube.com/embed/aFJxzkenaYU',
+                                title: t('drinks'),
+                              },
                             ]}
                           />
                         </Card.Header>
                       )}
                       <Card.Body>
-                        <Container fluid className="px-0 mx-0">
+                        <Container fluid className="mx-0 px-0">
                           {type === 'create' && (
-                            <Row className="p-2 wm-default text-dark">
-                              <Col sm="8" className="d-flex flex-column justify-content-between">
+                            <Row className="wm-default text-dark p-2">
+                              <Col
+                                sm="8"
+                                className="d-flex flex-column justify-content-between"
+                              >
                                 <h6 className="fs-7">
                                   <b></b>
                                 </h6>
                                 <div className="d-flex gap-4">
-                                  <div className="d-flex gap-2 flex-row-reverse justify-content-end">
+                                  <div className="d-flex justify-content-end flex-row-reverse gap-2">
                                     <Form.Label className="d-flex gap-2">
                                       <Form.Check
                                         type="radio"
@@ -276,7 +341,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                       {t('standard')}
                                     </Form.Label>
                                   </div>
-                                  <div className="d-flex gap-2 flex-row-reverse justify-content-end">
+                                  <div className="d-flex justify-content-end flex-row-reverse gap-2">
                                     <Form.Label className="d-flex gap-2">
                                       <Form.Check
                                         type="radio"
@@ -299,13 +364,17 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                           )}
                           <br />
                           <Form.Label>
-                            <b className="text-uppercase">{t('category_name')}</b>
+                            <b className="text-uppercase">
+                              {t('category_name')}
+                            </b>
                           </Form.Label>
                           <div className="position-relative">
                             <Form.Control
                               id={`category${category.id}`}
                               defaultValue={category.name}
-                              isInvalid={!category.name.length ? invalidName : false}
+                              isInvalid={
+                                !category.name.length ? invalidName : false
+                              }
                               onChange={(e) => {
                                 setCategoryInstance({
                                   ...category,
@@ -315,150 +384,220 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                   setInvalidName(false)
                                 }
                               }}
-                              onKeyDown={(e) => modifyFontValues(e, { prop: category.name })}
+                              onKeyDown={(e) =>
+                                modifyFontValues(e, { prop: category.name })
+                              }
                               maxLength={70}
                               autoFocus
                             />
-                            <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }}>
+                            <Form.Control.Feedback
+                              tooltip
+                              type="invalid"
+                              style={{ zIndex: 0 }}
+                            >
                               {t('invalid_category_name')}
                             </Form.Control.Feedback>
                           </div>
                           <div className="d-flex justify-content-end">
-                            <p className={category.name.length >= 70 ? 'text-red-500' : ''}>
+                            <p
+                              className={
+                                category.name.length >= 70 ? 'text-red-500' : ''
+                              }
+                            >
                               {category.name.length}/70 {t('characters')}
                             </p>
                           </div>
                           {profile.options.inventoryControl ? (
                             <Row>
-                              {category.product && category.type === 'pizza' && (
-                                <>
-                                  <Col sm="4" className="my-2">
-                                    <Form.Label>
-                                      <b className="text-nowrap">{t('stock')}</b>
-                                    </Form.Label>
-                                    <InputGroup className="position-relative">
-                                      <Button
-                                        variant="secondary"
-                                        disabled={!!category.product.bypass_amount}
-                                        onClick={() => {
-                                          if (typeof category.product?.amount !== 'number') return
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({
-                                              ...category.product!,
-                                              amount: !category.product?.amount ? 0 : category.product?.amount - 1,
-                                            }),
-                                          })
-                                        }}
-                                      >
-                                        -
-                                      </Button>
-                                      <Form.Control
-                                        disabled={!!category.product.bypass_amount}
-                                        value={category.product?.amount || 0}
-                                        name="amount"
-                                        onChange={(e) => {
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({ ...category.product!, amount: Number(e.target.value) }),
-                                          })
-                                        }}
-                                      />
-                                      <Button
-                                        variant="secondary"
-                                        className="rounded-end"
-                                        disabled={!!category.product.bypass_amount}
-                                        style={{ minWidth: '34.75px' }}
-                                        onClick={() => {
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({
-                                              ...category.product!,
-                                              amount: !category.product?.amount ? 1 : category.product.amount + 1,
-                                            }),
-                                          })
-                                        }}
-                                      >
-                                        +
-                                      </Button>
-                                      <Form.Control.Feedback tooltip type="invalid">
-                                        {t('enter_valid_value')}
-                                      </Form.Control.Feedback>
-                                    </InputGroup>
-                                  </Col>
-                                  <Col sm="4" className="my-2">
-                                    <Form.Label>
-                                      <b className="text-nowrap">{t('minimum_stock')}</b>
-                                    </Form.Label>
-                                    <InputGroup className="position-relative">
-                                      <Button
-                                        variant="secondary"
-                                        disabled={!!category.product.bypass_amount}
-                                        onClick={() => {
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({
-                                              ...category.product!,
-                                              amount_alert: !category.product?.amount_alert ? 0 : category.product?.amount_alert - 1,
-                                            }),
-                                          })
-                                        }}
-                                      >
-                                        -
-                                      </Button>
-                                      <Form.Control
-                                        value={category.product?.amount_alert || 0}
-                                        disabled={!!category.product.bypass_amount}
-                                        name="amount_alert"
-                                        onChange={(e) => {
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({ ...category.product!, amount_alert: Number(e.target.value) }),
-                                          })
-                                        }}
-                                      />
-                                      <Button
-                                        variant="secondary"
-                                        disabled={!!category.product.bypass_amount}
-                                        className="rounded-end"
-                                        style={{ minWidth: '34.75px' }}
-                                        onClick={() => {
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({
-                                              ...category.product!,
-                                              amount_alert: !category.product?.amount_alert ? 1 : category.product.amount_alert + 1,
-                                            }),
-                                          })
-                                        }}
-                                      >
-                                        +
-                                      </Button>
-                                      <Form.Control.Feedback tooltip type="invalid">
-                                        {t('enter_valid_value')}
-                                      </Form.Control.Feedback>
-                                    </InputGroup>
-                                  </Col>
-                                  <Col sm="4" className="my-2 d-flex align-items-end">
-                                    <FormGroup>
-                                      <Form.Check
-                                        type="switch"
-                                        id="bypass_amount"
-                                        name="bypass_amount"
-                                        label={t('always_available')}
-                                        className="fs-6 text-nowrap"
-                                        defaultChecked={!!category.product.bypass_amount}
-                                        onClick={(e: any) => {
-                                          setCategoryInstance({
-                                            ...category,
-                                            product: new PizzaProduct({ ...category.product!, bypass_amount: e.target.checked }),
-                                          })
-                                        }}
-                                      />
-                                    </FormGroup>
-                                  </Col>
-                                </>
-                              )}
+                              {category.product &&
+                                category.type === 'pizza' && (
+                                  <>
+                                    <Col sm="4" className="my-2">
+                                      <Form.Label>
+                                        <b className="text-nowrap">
+                                          {t('stock')}
+                                        </b>
+                                      </Form.Label>
+                                      <InputGroup className="position-relative">
+                                        <Button
+                                          variant="secondary"
+                                          disabled={
+                                            !!category.product.bypass_amount
+                                          }
+                                          onClick={() => {
+                                            if (
+                                              typeof category.product
+                                                ?.amount !== 'number'
+                                            )
+                                              return
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                amount: !category.product
+                                                  ?.amount
+                                                  ? 0
+                                                  : category.product?.amount -
+                                                    1,
+                                              }),
+                                            })
+                                          }}
+                                        >
+                                          -
+                                        </Button>
+                                        <Form.Control
+                                          disabled={
+                                            !!category.product.bypass_amount
+                                          }
+                                          value={category.product?.amount || 0}
+                                          name="amount"
+                                          onChange={(e) => {
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                amount: Number(e.target.value),
+                                              }),
+                                            })
+                                          }}
+                                        />
+                                        <Button
+                                          variant="secondary"
+                                          className="rounded-end"
+                                          disabled={
+                                            !!category.product.bypass_amount
+                                          }
+                                          style={{ minWidth: '34.75px' }}
+                                          onClick={() => {
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                amount: !category.product
+                                                  ?.amount
+                                                  ? 1
+                                                  : category.product.amount + 1,
+                                              }),
+                                            })
+                                          }}
+                                        >
+                                          +
+                                        </Button>
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
+                                          {t('enter_valid_value')}
+                                        </Form.Control.Feedback>
+                                      </InputGroup>
+                                    </Col>
+                                    <Col sm="4" className="my-2">
+                                      <Form.Label>
+                                        <b className="text-nowrap">
+                                          {t('minimum_stock')}
+                                        </b>
+                                      </Form.Label>
+                                      <InputGroup className="position-relative">
+                                        <Button
+                                          variant="secondary"
+                                          disabled={
+                                            !!category.product.bypass_amount
+                                          }
+                                          onClick={() => {
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                amount_alert: !category.product
+                                                  ?.amount_alert
+                                                  ? 0
+                                                  : category.product
+                                                      ?.amount_alert - 1,
+                                              }),
+                                            })
+                                          }}
+                                        >
+                                          -
+                                        </Button>
+                                        <Form.Control
+                                          value={
+                                            category.product?.amount_alert || 0
+                                          }
+                                          disabled={
+                                            !!category.product.bypass_amount
+                                          }
+                                          name="amount_alert"
+                                          onChange={(e) => {
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                amount_alert: Number(
+                                                  e.target.value
+                                                ),
+                                              }),
+                                            })
+                                          }}
+                                        />
+                                        <Button
+                                          variant="secondary"
+                                          disabled={
+                                            !!category.product.bypass_amount
+                                          }
+                                          className="rounded-end"
+                                          style={{ minWidth: '34.75px' }}
+                                          onClick={() => {
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                amount_alert: !category.product
+                                                  ?.amount_alert
+                                                  ? 1
+                                                  : category.product
+                                                      .amount_alert + 1,
+                                              }),
+                                            })
+                                          }}
+                                        >
+                                          +
+                                        </Button>
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
+                                          {t('enter_valid_value')}
+                                        </Form.Control.Feedback>
+                                      </InputGroup>
+                                    </Col>
+                                    <Col
+                                      sm="4"
+                                      className="d-flex align-items-end my-2"
+                                    >
+                                      <FormGroup>
+                                        <Form.Check
+                                          type="switch"
+                                          id="bypass_amount"
+                                          name="bypass_amount"
+                                          label={t('always_available')}
+                                          className="fs-6 text-nowrap"
+                                          defaultChecked={
+                                            !!category.product.bypass_amount
+                                          }
+                                          onClick={(e: any) => {
+                                            setCategoryInstance({
+                                              ...category,
+                                              product: new PizzaProduct({
+                                                ...category.product!,
+                                                bypass_amount: e.target.checked,
+                                              }),
+                                            })
+                                          }}
+                                        />
+                                      </FormGroup>
+                                    </Col>
+                                  </>
+                                )}
                             </Row>
                           ) : null}
                         </Container>
@@ -468,7 +607,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                   <Tab.Pane eventKey="disponibility">
                     <Card className="mt-4">
                       <Card.Body>
-                        <Container fluid className="px-0 mx-0">
+                        <Container fluid className="mx-0 px-0">
                           <Row className="text-dark">
                             <Col sm className="fs-7">
                               <h6 className="mb-4"></h6>
@@ -479,7 +618,9 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                       Delivery
                                       <Form.Switch
                                         className="mt-2"
-                                        defaultChecked={category.disponibility.store.delivery}
+                                        defaultChecked={
+                                          category.disponibility.store.delivery
+                                        }
                                         onChange={(e) => {
                                           setCategoryInstance({
                                             ...category,
@@ -502,7 +643,9 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                       {t('table')}
                                       <Form.Switch
                                         className="mt-2"
-                                        defaultChecked={category.disponibility.store.table}
+                                        defaultChecked={
+                                          category.disponibility.store.table
+                                        }
                                         onChange={(e) => {
                                           setCategoryInstance({
                                             ...category,
@@ -525,7 +668,9 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                       {t('package')}
                                       <Form.Switch
                                         className="mt-2"
-                                        defaultChecked={category.disponibility.store.package}
+                                        defaultChecked={
+                                          category.disponibility.store.package
+                                        }
                                         onChange={(e) => {
                                           setCategoryInstance({
                                             ...category,
@@ -548,7 +693,13 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                         </Container>
                       </Card.Body>
                     </Card>
-                    <Dates type="menu" title={t('add_availability_hours')} week={week as Week} setWeek={setWeek} setInvalidWeek={setInvalidWeek} />
+                    <Dates
+                      type="menu"
+                      title={t('add_availability_hours')}
+                      week={week as Week}
+                      setWeek={setWeek}
+                      setInvalidWeek={setInvalidWeek}
+                    />
                   </Tab.Pane>
                 </Tab.Content>
               </Col>

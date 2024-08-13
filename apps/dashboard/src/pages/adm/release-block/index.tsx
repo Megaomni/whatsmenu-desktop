@@ -1,6 +1,6 @@
-import Head from "next/head";
-import { Button, Col, Form, Row } from "react-bootstrap";
-import { Title } from "../../../components/Partials/title";
+import Head from 'next/head'
+import { Button, Col, Form, Row } from 'react-bootstrap'
+import { Title } from '../../../components/Partials/title'
 
 export default function AdmReleaseBlock() {
   return (
@@ -9,7 +9,7 @@ export default function AdmReleaseBlock() {
         title="ADM"
         componentTitle="Bloqueio e Desbloqueio"
         className="mb-4"
-        child={["Bloqueio e Desbloqueio"]}
+        child={['Bloqueio e Desbloqueio']}
       />
       <section>
         <Row>
@@ -45,12 +45,10 @@ export default function AdmReleaseBlock() {
         </Row>
         <Row className="mt-3">
           <Col className="d-flex ">
-            <Button className="text-uppercase">
-              Executar
-            </Button>
+            <Button className="text-uppercase">Executar</Button>
           </Col>
         </Row>
       </section>
     </>
-  );
+  )
 }

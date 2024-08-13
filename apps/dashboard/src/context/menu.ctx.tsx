@@ -7,91 +7,98 @@ import {
   useContext,
   useEffect,
   useState,
-} from "react";
-import { useSession } from "next-auth/react";
-import Complement from "../types/complements";
+} from 'react'
+import { useSession } from 'next-auth/react'
+import Complement from '../types/complements'
 import PizzaProduct, {
   PizzaFlavorType,
   PizzaImplementationType,
   PizzaSizeType,
-} from "../types/pizza-product"
-import Product, { ProductType } from "../types/product";
-import { ProductModal } from "../components/Modals/Menu/Product";
-import { PizzaSize } from "../components/Modals/Menu/PizzaSize";
-import { PizzaImplementation } from "../components/Modals/Menu/PizzaImplementation";
-import { PizzaFlavorModal } from "../components/Modals/Menu/PizzaFlavor";
-import { MenuReorder } from "../components/Modals/Menu/Reorder";
-import { AppContext } from "./app.ctx";
-import Category, { CategoryType } from "../types/category";
-import { CategoryModal } from "../components/Modals/Menu/Category";
-import { PizzaComplement } from "../components/Modals/Menu/PizzaComplement";
-import { CartsContext } from "./cart.ctx";
-import { useRouter } from "next/router";
-import { apiRoute } from "@utils/wm-functions";
+} from '../types/pizza-product'
+import Product, { ProductType } from '../types/product'
+import { ProductModal } from '../components/Modals/Menu/Product'
+import { PizzaSize } from '../components/Modals/Menu/PizzaSize'
+import { PizzaImplementation } from '../components/Modals/Menu/PizzaImplementation'
+import { PizzaFlavorModal } from '../components/Modals/Menu/PizzaFlavor'
+import { MenuReorder } from '../components/Modals/Menu/Reorder'
+import { AppContext } from './app.ctx'
+import Category, { CategoryType } from '../types/category'
+import { CategoryModal } from '../components/Modals/Menu/Category'
+import { PizzaComplement } from '../components/Modals/Menu/PizzaComplement'
+import { CartsContext } from './cart.ctx'
+import { useRouter } from 'next/router'
+import { apiRoute } from '@utils/wm-functions'
 
 interface IMenu {
-  categories: Category[];
-  allComplements: Complement[];
+  categories: Category[]
+  allComplements: Complement[]
 }
 
 interface MenuProviderProps {
-  children: ReactNode;
+  children: ReactNode
   props: IMenu
 }
 
 interface MenuContextData {
-  typeModal: "create" | "update";
-  categories: Category[];
-  setCategories: Dispatch<SetStateAction<Category[]>>;
-  category: Category;
-  setCategory: Dispatch<SetStateAction<Category>>;
-  products: Product[];
-  product: Product;
-  setProduct: Dispatch<SetStateAction<Product>>;
-  productComplements: Complement[];
-  pizzaComplements: Complement[];
+  typeModal: 'create' | 'update'
+  categories: Category[]
+  setCategories: Dispatch<SetStateAction<Category[]>>
+  category: Category
+  setCategory: Dispatch<SetStateAction<Category>>
+  products: Product[]
+  product: Product
+  setProduct: Dispatch<SetStateAction<Product>>
+  productComplements: Complement[]
+  pizzaComplements: Complement[]
   focusId?: number
-  setSize: Dispatch<SetStateAction<PizzaSizeType>>;
-  setImplementation: Dispatch<SetStateAction<PizzaImplementationType>>;
-  setFlavor: Dispatch<SetStateAction<PizzaFlavorType>>;
-  setFocusId: Dispatch<SetStateAction<number | undefined>>;
+  setSize: Dispatch<SetStateAction<PizzaSizeType>>
+  setImplementation: Dispatch<SetStateAction<PizzaImplementationType>>
+  setFlavor: Dispatch<SetStateAction<PizzaFlavorType>>
+  setFocusId: Dispatch<SetStateAction<number | undefined>>
   handleMenuModal(
     show: boolean,
     modal:
-      | "category"
-      | "product"
-      | "pizzaSize"
-      | "pizzaImplementation"
-      | "pizzaComplement"
-      | "pizzaFlavor"
-      | "reorder",
-    type?: "create" | "update",
+      | 'category'
+      | 'product'
+      | 'pizzaSize'
+      | 'pizzaImplementation'
+      | 'pizzaComplement'
+      | 'pizzaFlavor'
+      | 'reorder',
+    type?: 'create' | 'update',
     tab?: string
-  ): void;
+  ): void
 }
 
-export const MenuContext = createContext<MenuContextData>(
-  {} as MenuContextData
-);
+export const MenuContext = createContext<MenuContextData>({} as MenuContextData)
 
-export function MenuProvider({ children, props: { allComplements, categories: propsCategories } }: MenuProviderProps) {
-  const { profile } = useContext(AppContext);
+export function MenuProvider({
+  children,
+  props: { allComplements, categories: propsCategories },
+}: MenuProviderProps) {
+  const { profile } = useContext(AppContext)
   const { cartEvents } = useContext(CartsContext)
   const { data: session } = useSession()
 
-  const [categories, setCategories] = useState<Category[]>(propsCategories);
-  const [category, setCategory] = useState<Category>(Category.newCategory(profile));
-  const [products, setProducts] = useState<Product[]>([]);
-  const [product, setProduct] = useState<Product>(Product.newProduct(category));
-  const [productComplements, setProductComplements] = useState<Complement[]>([]);
-  const [pizzaComplements, setPizzaComplements] = useState<Complement[]>([]);
+  const [categories, setCategories] = useState<Category[]>(propsCategories)
+  const [category, setCategory] = useState<Category>(
+    Category.newCategory(profile)
+  )
+  const [products, setProducts] = useState<Product[]>([])
+  const [product, setProduct] = useState<Product>(Product.newProduct(category))
+  const [productComplements, setProductComplements] = useState<Complement[]>([])
+  const [pizzaComplements, setPizzaComplements] = useState<Complement[]>([])
 
-  const [size, setSize] = useState<PizzaSizeType>(PizzaProduct.newSize());
+  const [size, setSize] = useState<PizzaSizeType>(PizzaProduct.newSize())
 
-  const [implementation, setImplementation] = useState<PizzaImplementationType>(PizzaProduct.newImplementation());
-  const [flavor, setFlavor] = useState<PizzaFlavorType>(PizzaProduct.newFlavor((category.product?.sizes || [])));
-  const [typeModal, setTypeModal] = useState<"create" | "update">("create");
-  const [tabModal, setTabModal] = useState("details");
+  const [implementation, setImplementation] = useState<PizzaImplementationType>(
+    PizzaProduct.newImplementation()
+  )
+  const [flavor, setFlavor] = useState<PizzaFlavorType>(
+    PizzaProduct.newFlavor(category.product?.sizes || [])
+  )
+  const [typeModal, setTypeModal] = useState<'create' | 'update'>('create')
+  const [tabModal, setTabModal] = useState('details')
   const [showMenuModal, setShowMenuModal] = useState({
     category: false,
     product: false,
@@ -100,35 +107,43 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
     pizzaComplement: false,
     pizzaFlavor: false,
     reorder: false,
-  });
+  })
   const [focusId, setFocusId] = useState<number>()
 
   const getMenu = useCallback(async () => {
     try {
-      const { data } = await apiRoute("/dashboard/api/menu", session);
-      setCategories(data.categories.map((category: CategoryType) => new Category(category)))
+      const { data } = await apiRoute('/dashboard/api/menu', session)
+      setCategories(
+        data.categories.map((category: CategoryType) => new Category(category))
+      )
     } catch (error) {
       console.error(error)
     }
   }, [session])
 
   useEffect(() => {
-    setProducts(categories.flatMap(cat => cat.getAllProducts()));
-    setProduct(state => {
-      const productUpdated = categories.flatMap(cat => cat.getAllProducts()).find(p => p.id === state.id)
+    setProducts(categories.flatMap((cat) => cat.getAllProducts()))
+    setProduct((state) => {
+      const productUpdated = categories
+        .flatMap((cat) => cat.getAllProducts())
+        .find((p) => p.id === state.id)
       if (productUpdated) {
         return productUpdated
       }
       return state
     })
-    setProductComplements(categories.flatMap(cat => cat.getAllProductsComplements()));
-    setPizzaComplements(categories.flatMap(cat => {
-      if (cat.product) {
-        return cat.product.complements
-      }
-      return []
-    }));
-  }, [categories]);
+    setProductComplements(
+      categories.flatMap((cat) => cat.getAllProductsComplements())
+    )
+    setPizzaComplements(
+      categories.flatMap((cat) => {
+        if (cat.product) {
+          return cat.product.complements
+        }
+        return []
+      })
+    )
+  }, [categories])
 
   useEffect(() => {
     if (!cartEvents.eventNames().includes('newCart')) {
@@ -144,29 +159,28 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
   const handleMenuModal = (
     show: boolean,
     modal:
-      "category"
-      | "product"
-      | "pizzaSize"
-      | "pizzaImplementation"
-      | "pizzaComplement"
-      | "pizzaFlavor"
-      | "reorder",
-    type?: "create" | "update",
+      | 'category'
+      | 'product'
+      | 'pizzaSize'
+      | 'pizzaImplementation'
+      | 'pizzaComplement'
+      | 'pizzaFlavor'
+      | 'reorder',
+    type?: 'create' | 'update',
     tab?: string
   ) => {
-
     if (type) {
-      setTypeModal(type);
+      setTypeModal(type)
     }
     if (tab) {
-      setTabModal(tab);
+      setTabModal(tab)
     }
     setTimeout(() => {
-      setShowMenuModal({ ...showMenuModal, [modal]: show });
-    }, 10);
-  };
+      setShowMenuModal({ ...showMenuModal, [modal]: show })
+    }, 10)
+  }
 
-  return ( 
+  return (
     <MenuContext.Provider
       value={{
         categories,
@@ -184,7 +198,7 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
         setSize,
         typeModal,
         focusId,
-        setFocusId
+        setFocusId,
       }}
     >
       {children}
@@ -194,8 +208,8 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
             <CategoryModal
               show={showMenuModal.category}
               handleClose={() => {
-                handleMenuModal(false, "category");
-                setCategory(Category.newCategory(profile, "default"));
+                handleMenuModal(false, 'category')
+                setCategory(Category.newCategory(profile, 'default'))
               }}
               type={typeModal}
             />
@@ -203,8 +217,8 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
             <ProductModal
               show={showMenuModal.product}
               handleClose={() => {
-                handleMenuModal(false, "product");
-                setCategory(Category.newCategory(profile, "default"));
+                handleMenuModal(false, 'product')
+                setCategory(Category.newCategory(profile, 'default'))
               }}
               type={typeModal}
             />
@@ -212,51 +226,52 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
             <PizzaSize
               show={showMenuModal.pizzaSize}
               handleClose={() => {
-                handleMenuModal(false, "pizzaSize");
+                handleMenuModal(false, 'pizzaSize')
                 setTimeout(() => {
-                  setSize(PizzaProduct.newSize());
+                  setSize(PizzaProduct.newSize())
                 }, 150)
-                setTabModal("details");
+                setTabModal('details')
               }}
               type={typeModal}
               size={size}
-              tab={tabModal as "details" | "covers"}
+              tab={tabModal as 'details' | 'covers'}
               category={category}
               setCategory={setCategory}
             />
-            {implementation &&
+            {implementation && (
               <PizzaImplementation
                 show={showMenuModal.pizzaImplementation}
                 handleClose={() => {
-                  handleMenuModal(false, "pizzaImplementation");
-                  setImplementation(PizzaProduct.newImplementation());
-                  setCategory(Category.newCategory(profile, "default"));
+                  handleMenuModal(false, 'pizzaImplementation')
+                  setImplementation(PizzaProduct.newImplementation())
+                  setCategory(Category.newCategory(profile, 'default'))
                 }}
                 type={typeModal}
                 implementation={implementation}
                 category={category}
                 setCategory={setCategory}
                 setImplementation={setImplementation}
-              />}
-            {category.product ?
+              />
+            )}
+            {category.product ? (
               <PizzaComplement
                 show={showMenuModal.pizzaComplement}
                 handleClose={() => {
-                  handleMenuModal(false, "pizzaComplement");
-                  setImplementation(PizzaProduct.newImplementation());
-                  setCategory(Category.newCategory(profile, "default"));
+                  handleMenuModal(false, 'pizzaComplement')
+                  setImplementation(PizzaProduct.newImplementation())
+                  setCategory(Category.newCategory(profile, 'default'))
                 }}
-                type={"update"}
+                type={'update'}
                 category={category}
                 setCategory={setCategory}
-              /> : null
-            }
+              />
+            ) : null}
             <PizzaFlavorModal
               show={showMenuModal.pizzaFlavor}
               handleClose={() => {
-                setFlavor(PizzaProduct.newFlavor((category.product?.sizes || [])));
-                handleMenuModal(false, "pizzaFlavor");
-                setCategory(Category.newCategory(profile, "default"));
+                setFlavor(PizzaProduct.newFlavor(category.product?.sizes || []))
+                handleMenuModal(false, 'pizzaFlavor')
+                setCategory(Category.newCategory(profile, 'default'))
               }}
               type={typeModal}
               flavor={flavor}
@@ -266,14 +281,13 @@ export function MenuProvider({ children, props: { allComplements, categories: pr
             />
           </>
         )}
-        {
-          showMenuModal.reorder &&
+        {showMenuModal.reorder && (
           <MenuReorder
             show={showMenuModal.reorder}
-            onHide={() => handleMenuModal(false, "reorder")}
+            onHide={() => handleMenuModal(false, 'reorder')}
           />
-        }
+        )}
       </section>
     </MenuContext.Provider>
-  );
+  )
 }

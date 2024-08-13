@@ -73,7 +73,20 @@ export default class Category {
   created_at?: string
   updated_at?: string
 
-  constructor({ id, profileId, name, order, status, type, disponibility, options, products, product, created_at, updated_at }: CategoryType) {
+  constructor({
+    id,
+    profileId,
+    name,
+    order,
+    status,
+    type,
+    disponibility,
+    options,
+    products,
+    product,
+    created_at,
+    updated_at,
+  }: CategoryType) {
     this.id = Number(id)
     ;(this.profileId = profileId), (this.name = name.trim())
     this.order = Number(order) || 0
@@ -138,9 +151,20 @@ export default class Category {
   }
 
   /** API da categoria, usada para CREATE, UPDATE, DELETE, DUPLICATE e STATUS da categoria */
-  static async API({ type, session, data, category, categories, setCategories }: CategoryAPI) {
+  static async API({
+    type,
+    session,
+    data,
+    category,
+    categories,
+    setCategories,
+  }: CategoryAPI) {
     try {
-      const { route, method } = this.getRouteAPI(type, category.type, category.id)
+      const { route, method } = this.getRouteAPI(
+        type,
+        category.type,
+        category.id
+      )
 
       if (type === 'CREATE') {
         data = {
@@ -151,7 +175,12 @@ export default class Category {
         }
       }
 
-      const { data: dataCategory } = await apiRoute(route, session, method, data)
+      const { data: dataCategory } = await apiRoute(
+        route,
+        session,
+        method,
+        data
+      )
 
       if (typeof dataCategory.disponibility === 'string') {
         dataCategory.disponibility = JSON.parse(dataCategory.disponibility)
@@ -209,12 +238,22 @@ export default class Category {
   }
 
   /** Função usada para criar os produtos e os sabores em massa */
-  static async createMassiveAPI(body: any, session: Session | null, category: Category) {
+  static async createMassiveAPI(
+    body: any,
+    session: Session | null,
+    category: Category
+  ) {
     try {
-      const { data: products } = await apiRoute('/dashboard/menu/product/register/massive', session, 'POST', body, {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${session?.accessToken}`,
-      })
+      const { data: products } = await apiRoute(
+        '/dashboard/menu/product/register/massive',
+        session,
+        'POST',
+        body,
+        {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${session?.accessToken}`,
+        }
+      )
 
       if (category.products) {
         products.map((prod: any) => {
@@ -262,14 +301,22 @@ export default class Category {
       if (type === 'products') {
         formData.append('products', copy(arrUpdate, 'json'))
 
-        const { data: products } = await apiRoute('/dashboard/menu/product/updateMassive', session, 'PATCH', formData, {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${session?.accessToken}`,
-        })
+        const { data: products } = await apiRoute(
+          '/dashboard/menu/product/updateMassive',
+          session,
+          'PATCH',
+          formData,
+          {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${session?.accessToken}`,
+          }
+        )
 
         if (categoryMap.products) {
           products.forEach((dataProduct: ProductType) => {
-            const product = categoryMap.products?.find((prod) => dataProduct.id === prod.id)
+            const product = categoryMap.products?.find(
+              (prod) => dataProduct.id === prod.id
+            )
             if (product) {
               product.name = dataProduct.name
               product.value = Number(dataProduct.value)
@@ -287,10 +334,16 @@ export default class Category {
         formData.append('pizzaId', copy(categoryMap.product?.id, 'json'))
         formData.append('flavors', copy(arrUpdate, 'json'))
 
-        const { data: pizza } = await apiRoute('/dashboard/menu/product/pizza/updFlavorMassive', session, 'PATCH', formData, {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${session?.accessToken}`,
-        })
+        const { data: pizza } = await apiRoute(
+          '/dashboard/menu/product/pizza/updFlavorMassive',
+          session,
+          'PATCH',
+          formData,
+          {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${session?.accessToken}`,
+          }
+        )
 
         if (categoryMap.product) {
           categoryMap.product.flavors = pizza.flavors
@@ -306,7 +359,11 @@ export default class Category {
   }
 
   /** Função usada para gerar a rota de API para CREATE, UPDATE, DELETE, DUPLICATE e STATUS da cateoria*/
-  static getRouteAPI(type: 'CREATE' | 'UPDATE' | 'DELETE' | 'DUPLICATE' | 'STATUS', typeCategory: 'default' | 'pizza', id?: number) {
+  static getRouteAPI(
+    type: 'CREATE' | 'UPDATE' | 'DELETE' | 'DUPLICATE' | 'STATUS',
+    typeCategory: 'default' | 'pizza',
+    id?: number
+  ) {
     let route = `${'/dashboard/menu/category'}`
     let method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' = 'POST'
 
@@ -341,7 +398,10 @@ export default class Category {
   }
 
   //** Função usada para remover a instancia de uma categoria, retorna uma nova categoria */
-  static removeCategoryInstance(cat: Category, callBack?: (...args: any) => any) {
+  static removeCategoryInstance(
+    cat: Category,
+    callBack?: (...args: any) => any
+  ) {
     const newCategory: CategoryType = {
       id: cat.id,
       name: cat.name,
@@ -367,7 +427,11 @@ export default class Category {
   }
 
   //* Gera uma nova categoria, para usar no state de app context */
-  static newCategory(profile: Profile, type: 'default' | 'pizza' = 'default', categories: Category[] = []) {
+  static newCategory(
+    profile: Profile,
+    type: 'default' | 'pizza' = 'default',
+    categories: Category[] = []
+  ) {
     return new Category({
       id: undefined,
       profileId: profile?.id,
@@ -416,11 +480,24 @@ export default class Category {
   static async orderItem(
     body: OrderItems,
     session: Session | null,
-    type: string | 'category' | 'product' | 'complement' | 'complement/itens' | 'size' | 'implementation' | 'flavor',
+    type:
+      | string
+      | 'category'
+      | 'product'
+      | 'complement'
+      | 'complement/itens'
+      | 'size'
+      | 'implementation'
+      | 'flavor',
     product: boolean = false
   ) {
     try {
-      const { data } = await apiRoute(`/dashboard/menu/${product ? 'product/pizza/' : ''}${type}/reorder`, session, 'PATCH', body)
+      const { data } = await apiRoute(
+        `/dashboard/menu/${product ? 'product/pizza/' : ''}${type}/reorder`,
+        session,
+        'PATCH',
+        body
+      )
 
       return type
     } catch (error) {

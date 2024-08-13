@@ -1,17 +1,22 @@
 'use client'
-import { WMToast, WMToastProps } from "@components/WMToast";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { UserType } from "next-auth";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
-import { api } from "src/lib/axios";
-import { z } from "zod";
+import { WMToast, WMToastProps } from '@components/WMToast'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { UserType } from 'next-auth'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { Form } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
+import { api } from 'src/lib/axios'
+import { z } from 'zod'
 
 const RecoveryFormSchema = z.object({
-  user_email: z.string().email({ message: "Email inválido" }),
-  password: z.string().refine((value) => value !== '123456', { message: 'Essa senha não é segura o suficiente. Por favor, escolha outra.' }),
+  user_email: z.string().email({ message: 'Email inválido' }),
+  password: z
+    .string()
+    .refine((value) => value !== '123456', {
+      message:
+        'Essa senha não é segura o suficiente. Por favor, escolha outra.',
+    }),
   password_confirm: z.string(),
 })
 interface RecoveryFormProps {
@@ -20,36 +25,41 @@ interface RecoveryFormProps {
 
 type FormData = z.infer<typeof RecoveryFormSchema>
 
-export const RecoveryForm = ({ user }: RecoveryFormProps ) => {
-  const [showToast, setShowToast] = useState(false);
-  const [toast, setToast] = useState<WMToastProps>({});
+export const RecoveryForm = ({ user }: RecoveryFormProps) => {
+  const [showToast, setShowToast] = useState(false)
+  const [toast, setToast] = useState<WMToastProps>({})
   const router = useRouter()
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(RecoveryFormSchema),
     defaultValues: {
       user_email: user.email,
-    }
+    },
   })
 
   const handleUpdatePassword = async (data: FormData) => {
     try {
-      await api.post("/recovery/user/password", data)
+      await api.post('/recovery/user/password', data)
       setToast({
-        type: "success",
-        content: "Senha alterada com sucesso acesse seu painel com a nova senha",
-        title: "Recuperação de Senha",
-      });
-      setShowToast(true);
-      router.push("/auth/login")
+        type: 'success',
+        content:
+          'Senha alterada com sucesso acesse seu painel com a nova senha',
+        title: 'Recuperação de Senha',
+      })
+      setShowToast(true)
+      router.push('/auth/login')
     } catch (error) {
       setToast({
-        type: "erro",
-        content: "",
-        title: "",
-      });
-      setShowToast(true);
-      console.error(error);
+        type: 'erro',
+        content: '',
+        title: '',
+      })
+      setShowToast(true)
+      console.error(error)
     }
   }
 
@@ -62,9 +72,14 @@ export const RecoveryForm = ({ user }: RecoveryFormProps ) => {
             type="password"
             placeholder="Sua nova senha"
             isInvalid={!!errors.password}
-            {...register("password")}
+            {...register('password')}
           />
-          <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0, left: 0 }} className="mt-2">
+          <Form.Control.Feedback
+            tooltip
+            type="invalid"
+            style={{ zIndex: 0, left: 0 }}
+            className="mt-2"
+          >
             {errors.password?.message}
           </Form.Control.Feedback>
         </div>
@@ -75,11 +90,15 @@ export const RecoveryForm = ({ user }: RecoveryFormProps ) => {
             className="form-control"
             placeholder="Confirme sua senha"
             id="confirmPassword"
-            {...register("password_confirm")}
+            {...register('password_confirm')}
           />
         </div>
         <div className="d-grid gap-2">
-          <button className="btn btn-success" type="submit" disabled={!!errors.password} >
+          <button
+            className="btn btn-success"
+            type="submit"
+            disabled={!!errors.password}
+          >
             Salvar
           </button>
         </div>

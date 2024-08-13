@@ -1,6 +1,13 @@
 import { UserType } from 'next-auth'
 import { useSession } from 'next-auth/react'
-import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import { Button, Card, Col, Form, Row } from 'react-bootstrap'
 import { AppContext } from '../../context/app.ctx'
 import { Plan, SystemProduct } from '../../types/plan'
@@ -8,7 +15,9 @@ import { apiRoute, currency } from '../../utils/wm-functions'
 
 interface PlansProps {
   type: 'create' | 'update'
-  setUser?: Dispatch<SetStateAction<Partial<UserType>>> | Dispatch<SetStateAction<UserType>>
+  setUser?:
+    | Dispatch<SetStateAction<Partial<UserType>>>
+    | Dispatch<SetStateAction<UserType>>
   user: Partial<UserType>
   plans?: Plan[]
   period?: 'monthly' | 'semester' | 'yearly' | string
@@ -33,7 +42,14 @@ interface PlansProps {
   getPlans?: (plans: Plan[]) => void
 }
 
-export function Plans({ type, plans, user, setOtherPlansValue, setCart, products }: PlansProps) {
+export function Plans({
+  type,
+  plans,
+  user,
+  setOtherPlansValue,
+  setCart,
+  products,
+}: PlansProps) {
   const { data: session } = useSession()
 
   const { handleShowToast } = useContext(AppContext)
@@ -43,7 +59,10 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
   const [userDeletePlans, setUserDeletePlans] = useState<Plan[]>([])
 
   const handleChangeSelect = (e: React.FormEvent<HTMLSelectElement>) => {
-    const plan = plans?.find((plan) => plan.type === 'register' && plan.id === Number(e.currentTarget.value))
+    const plan = plans?.find(
+      (plan) =>
+        plan.type === 'register' && plan.id === Number(e.currentTarget.value)
+    )
 
     if (plan) {
       setPrincipalPlan((old) => {
@@ -51,8 +70,16 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
           if (user.plans.some((plan) => plan.id === old.id)) {
             setUserDeletePlans([...userDeletePlans, old])
           }
-          if (user.plans.some((userPlan) => userPlan.id === plan.id && userDeletePlans.some((dPlan) => dPlan.id === plan.id))) {
-            setUserDeletePlans((oldPlans) => oldPlans.filter((oPlan) => oPlan.id === plan.id))
+          if (
+            user.plans.some(
+              (userPlan) =>
+                userPlan.id === plan.id &&
+                userDeletePlans.some((dPlan) => dPlan.id === plan.id)
+            )
+          ) {
+            setUserDeletePlans((oldPlans) =>
+              oldPlans.filter((oPlan) => oPlan.id === plan.id)
+            )
           }
         }
         return plan
@@ -67,14 +94,20 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
   const handleChangePlan = (plan: Plan, checked: boolean) => {
     switch (checked) {
       case true:
-        const newPlans = userOtherPlans.filter((oPlan) => oPlan.category !== plan.category)
+        const newPlans = userOtherPlans.filter(
+          (oPlan) => oPlan.category !== plan.category
+        )
         newPlans.push(plan)
         setUserOtherPlans(newPlans)
         if (user.plans) {
           if (user.plans.find((uPlan) => uPlan.id === plan.id)) {
-            setUserDeletePlans(userDeletePlans.filter((uPlan) => uPlan.id !== plan.id))
+            setUserDeletePlans(
+              userDeletePlans.filter((uPlan) => uPlan.id !== plan.id)
+            )
           } else {
-            const planSameCategory = user.plans.find((oPlan) => oPlan.category === plan.category)
+            const planSameCategory = user.plans.find(
+              (oPlan) => oPlan.category === plan.category
+            )
             if (planSameCategory) {
               setUserDeletePlans((oldDeletePlans) => {
                 oldDeletePlans.push(planSameCategory)
@@ -89,7 +122,9 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
           setUserDeletePlans([...userDeletePlans, plan])
         }
 
-        setUserOtherPlans((oldPlans) => oldPlans.filter((oPlan) => oPlan.id !== plan.id))
+        setUserOtherPlans((oldPlans) =>
+          oldPlans.filter((oPlan) => oPlan.id !== plan.id)
+        )
         break
     }
   }
@@ -106,7 +141,10 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
     const newPlans = [principalPlan, ...userOtherPlans]
 
     if (user.plans) {
-      if (user.plans.every((plan) => newPlans.includes(plan.id)) && newPlans.length === user.plans.length) {
+      if (
+        user.plans.every((plan) => newPlans.includes(plan.id)) &&
+        newPlans.length === user.plans.length
+      ) {
         handleShowToast({
           title: 'Planos',
           content: 'Não houve alterações nos planos',
@@ -117,7 +155,11 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
     }
 
     const dataPerPlan = newPlans.map((plan) => {
-      const { price_id, product_id, planValue } = getPlanProperty(plan, user.controls?.currency, user.controls?.period)
+      const { price_id, product_id, planValue } = getPlanProperty(
+        plan,
+        user.controls?.currency,
+        user.controls?.period
+      )
       return {
         price_id,
         product_id,
@@ -127,7 +169,11 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
     })
 
     const dataDeletePlan = userDeletePlans.map((plan) => {
-      const { price_id, product_id, planValue } = getPlanProperty(plan, user.controls?.currency, user.controls?.period)
+      const { price_id, product_id, planValue } = getPlanProperty(
+        plan,
+        user.controls?.currency,
+        user.controls?.period
+      )
       return {
         price_id,
         product_id,
@@ -143,7 +189,12 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
     }
 
     try {
-      const { data: newPlans } = await apiRoute('/dashboard/userPlans', session, 'PATCH', body)
+      const { data: newPlans } = await apiRoute(
+        '/dashboard/userPlans',
+        session,
+        'PATCH',
+        body
+      )
       if (newPlans) {
         user.plans = newPlans
       }
@@ -177,13 +228,22 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
   }
 
   const getPlanProperty = useCallback(
-    (plan: Plan, currency: string = 'brl', period: 'monthly' | 'semester' | 'yearly' = 'monthly') => {
-      const product = products.find((prod) => prod.plan_id === plan.id && prod.operations.type === period)
-      const price = product?.operations.prices.find((price) => price.id === product.default_price)
+    (
+      plan: Plan,
+      currency: string = 'brl',
+      period: 'monthly' | 'semester' | 'yearly' = 'monthly'
+    ) => {
+      const product = products.find(
+        (prod) => prod.plan_id === plan.id && prod.operations.type === period
+      )
+      const price = product?.operations.prices.find(
+        (price) => price.id === product.default_price
+      )
       const price_id = price?.id
 
       if (product && price && price.currencies) {
-        const currency = price.currencies[user?.controls?.currency ?? price.default_currency]
+        const currency =
+          price.currencies[user?.controls?.currency ?? price.default_currency]
 
         const valuePrice = currency.unit_amount
         const planValue = valuePrice ? valuePrice / 100 : plan[period]
@@ -209,14 +269,20 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
         .map((plan) => {
           if (plan.type === type) {
             if (!plan.status) {
-              const userHavePlan = user.plans?.find((p: any) => p.id === plan.id)
+              const userHavePlan = user.plans?.find(
+                (p: any) => p.id === plan.id
+              )
 
               if (!userHavePlan) {
                 return null
               }
             }
 
-            const { price_id, planValue } = getPlanProperty(plan, user.controls?.currency, user.controls?.period as any)
+            const { price_id, planValue } = getPlanProperty(
+              plan,
+              user.controls?.currency,
+              user.controls?.period as any
+            )
 
             return (
               <Form.Check
@@ -243,9 +309,17 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
         .filter((htmlPlan) => htmlPlan)
     } else {
       if (type === 'register') {
-        return <span className="fs-7">Este plano não pode ser adicionado com outros planos.</span>
+        return (
+          <span className="fs-7">
+            Este plano não pode ser adicionado com outros planos.
+          </span>
+        )
       } else {
-        return <span className="fs-7">Nenhum plano com desconto para o plano escolhido</span>
+        return (
+          <span className="fs-7">
+            Nenhum plano com desconto para o plano escolhido
+          </span>
+        )
       }
     }
   }
@@ -255,7 +329,11 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
     if (userOtherPlans && principalPlan) {
       const plansToCalcValue = [principalPlan, ...userOtherPlans]
       const total = plansToCalcValue.reduce((acc, plan) => {
-        const { price_id, planValue } = getPlanProperty(plan, user.controls?.currency, user.controls?.period)
+        const { price_id, planValue } = getPlanProperty(
+          plan,
+          user.controls?.currency,
+          user.controls?.period
+        )
 
         if (price_id) {
           return acc + planValue
@@ -275,11 +353,18 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
         setPrincipalPlan(plan)
       }
 
-      if ((type === 'update' && user.plans && !userOtherPlans.length) || (reavaliable && user.plans)) {
-        const newPrincipalPlan = user.plans.find((plan) => plan.type === 'register')
+      if (
+        (type === 'update' && user.plans && !userOtherPlans.length) ||
+        (reavaliable && user.plans)
+      ) {
+        const newPrincipalPlan = user.plans.find(
+          (plan) => plan.type === 'register'
+        )
 
         if (newPrincipalPlan) {
-          const otherPlans = user.plans.filter((plan) => plan.id !== newPrincipalPlan.id)
+          const otherPlans = user.plans.filter(
+            (plan) => plan.id !== newPrincipalPlan.id
+          )
 
           setPrincipalPlan(newPrincipalPlan)
           setUserOtherPlans(otherPlans)
@@ -298,7 +383,11 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
           const plansToCalcValue = [principalPlan, ...userOtherPlans]
           const plansItems = plansToCalcValue
             .map((plan) => {
-              const { price_id, planValue, product_id } = getPlanProperty(plan, user.controls?.currency, user.controls?.period)
+              const { price_id, planValue, product_id } = getPlanProperty(
+                plan,
+                user.controls?.currency,
+                user.controls?.period
+              )
               return {
                 id: product_id || plan.id,
                 plan_id: plan.id,
@@ -323,7 +412,14 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
 
         return newCart
       })
-  }, [user.controls, principalPlan, userOtherPlans, setCart, getPlanProperty, plans])
+  }, [
+    user.controls,
+    principalPlan,
+    userOtherPlans,
+    setCart,
+    getPlanProperty,
+    plans,
+  ])
 
   useEffect(() => {
     avaliablePlans()
@@ -344,11 +440,20 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
                   {type === 'update' && (
                     <>
                       {userDeletePlans.length ? (
-                        <Button size="sm" className="px-4" onClick={cancelUserModifiedPlan}>
+                        <Button
+                          size="sm"
+                          className="px-4"
+                          onClick={cancelUserModifiedPlan}
+                        >
                           Cancelar Mudanças
                         </Button>
                       ) : null}
-                      <Button variant="success" size="sm" className="px-4" onClick={handleUpdatePlans}>
+                      <Button
+                        variant="success"
+                        size="sm"
+                        className="px-4"
+                        onClick={handleUpdatePlans}
+                      >
                         Salvar
                       </Button>
                     </>
@@ -377,11 +482,24 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
                   return plan.type === 'register' && plan.status
                 })
                 .map((plan: Plan) => {
-                  const { price_id, planValue } = getPlanProperty(plan, user.controls?.currency, user.controls?.period as any)
+                  const { price_id, planValue } = getPlanProperty(
+                    plan,
+                    user.controls?.currency,
+                    user.controls?.period as any
+                  )
                   if (price_id) {
                     return (
-                      <option key={plan.id} data-period-value={planValue} value={plan.id}>
-                        {plan.name} - {currency({ currency: user.controls?.currency, language: user.controls?.language, value: Number(planValue) })}
+                      <option
+                        key={plan.id}
+                        data-period-value={planValue}
+                        value={plan.id}
+                      >
+                        {plan.name} -{' '}
+                        {currency({
+                          currency: user.controls?.currency,
+                          language: user.controls?.language,
+                          value: Number(planValue),
+                        })}
                       </option>
                     )
                   }
@@ -403,8 +521,15 @@ export function Plans({ type, plans, user, setOtherPlansValue, setCart, products
           </Form>
           <>
             <br />
-            <div className="d-flex gap-0 gap-md-4 fw-bold flex-column flex-md-row">
-              <span>Total: {currency({ currency: user.controls?.currency, language: user.controls?.language, value: total })}</span>
+            <div className="d-flex gap-md-4 fw-bold flex-column flex-md-row gap-0">
+              <span>
+                Total:{' '}
+                {currency({
+                  currency: user.controls?.currency,
+                  language: user.controls?.language,
+                  value: total,
+                })}
+              </span>
               <span>Tipo de Período: {getPeriod()}</span>
             </div>
           </>

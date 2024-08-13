@@ -1,7 +1,7 @@
-import Head from "next/head";
-import { Button, Card, Col, Form, Row, Table } from "react-bootstrap";
-import { BsSearch } from "react-icons/bs";
-import { Title } from "../../../../../components/Partials/title";
+import Head from 'next/head'
+import { Button, Card, Col, Form, Row, Table } from 'react-bootstrap'
+import { BsSearch } from 'react-icons/bs'
+import { Title } from '../../../../../components/Partials/title'
 
 export default function AdmReportUsersCard() {
   return (
@@ -10,11 +10,11 @@ export default function AdmReportUsersCard() {
         title="ADM"
         componentTitle="Ativos Cartão"
         className="mb-4"
-        child={["Ativos Cartão"]}
+        child={['Ativos Cartão']}
       />
       <section>
         <Row>
-          <Card >
+          <Card>
             <Card.Body>
               <Row>
                 <Col sm="6">
@@ -39,7 +39,6 @@ export default function AdmReportUsersCard() {
                 </Col>
                 <Col sm="2" className="d-flex align-items-end">
                   <Button variant="success" className="w-100">
-                    
                     <span className="ms-2">Buscar</span>
                   </Button>
                 </Col>
@@ -48,7 +47,7 @@ export default function AdmReportUsersCard() {
           </Card>
         </Row>
         <Row className="mt-3">
-          <Card >
+          <Card>
             <Card.Header>
               <h4 className="fs-5">Ativos Cartão</h4>
             </Card.Header>
@@ -96,5 +95,5 @@ export default function AdmReportUsersCard() {
         </Row>
       </section>
     </>
-  );
+  )
 }

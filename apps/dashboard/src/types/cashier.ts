@@ -46,8 +46,12 @@ export default class Cashier {
     this.bartenderId = cashier.bartenderId
     this.initialValue = cashier.initialValue
     this.transactions = cashier.transactions
-    this.carts = cashier.carts ? cashier.carts.map((cart) => new Cart(cart)) : []
-    this.openeds = cashier.openeds ? cashier.openeds.map((opened) => new TableOpened(opened)) : []
+    this.carts = cashier.carts
+      ? cashier.carts.map((cart) => new Cart(cart))
+      : []
+    this.openeds = cashier.openeds
+      ? cashier.openeds.map((opened) => new TableOpened(opened))
+      : []
     this.closedValues_user = cashier.closedValues_user
     this.closedValues_system = cashier.closedValues_system
     this.closed_at = cashier.closed_at
@@ -67,7 +71,6 @@ export default class Cashier {
     let result = 0
 
     if (type === 'income') {
-
       result = this.transactions
         .filter((transaction) => {
           if (transaction.type === 'income') {
@@ -84,24 +87,42 @@ export default class Cashier {
     if (type === 'outcome') {
       result = this.transactions
         .filter((transaction) => transaction.type === 'outcome')
-        .reduce((total, transaction) => (total += Math.abs(transaction.value)), 0)
+        .reduce(
+          (total, transaction) => (total += Math.abs(transaction.value)),
+          0
+        )
     }
     return result
   }
 
   public getOnlyTableClousres() {
     return this.transactions
-      .filter((transaction) => transaction.obs && transaction.obs.includes('Encerramento mesa'))
+      .filter(
+        (transaction) =>
+          transaction.obs && transaction.obs.includes('Encerramento mesa')
+      )
       .reduce((total, transaction) => (total += transaction.value), 0)
   }
 
-  public getTotalCartsValue({ type, withPayments = true, addressId }: { type: 'P' | 'D'; withPayments?: boolean; addressId?: number }) {
+  public getTotalCartsValue({
+    type,
+    withPayments = true,
+    addressId,
+  }: {
+    type: 'P' | 'D'
+    withPayments?: boolean
+    addressId?: number
+  }) {
     if (addressId) {
-      return this.carts.filter((cart) => cart.addressId && cart.type === type).reduce((total, cart) => (total += cart.getTotalValue('total')), 0)
+      return this.carts
+        .filter((cart) => cart.addressId && cart.type === type)
+        .reduce((total, cart) => (total += cart.getTotalValue('total')), 0)
     }
 
     if (!addressId) {
-      return this.carts.filter((cart) => !cart.addressId && cart.type === type).reduce((total, cart) => (total += cart.getTotalValue('total')), 0)
+      return this.carts
+        .filter((cart) => !cart.addressId && cart.type === type)
+        .reduce((total, cart) => (total += cart.getTotalValue('total')), 0)
     }
 
     if (withPayments) {

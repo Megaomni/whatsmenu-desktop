@@ -1,13 +1,11 @@
-import { GetServerSideProps } from "next"
+import { GetServerSideProps } from 'next'
 
 export default function Paghiper() {
-    return <></>
+  return <></>
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-    return {
-        props: {
-
-        }
-    }
+  return {
+    props: {},
+  }
 }

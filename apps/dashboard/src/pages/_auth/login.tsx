@@ -1,12 +1,12 @@
-import type { GetServerSideProps } from "next";
-import Head from "next/head";
-import Link from "next/link";
-import { getCsrfToken, getSession, signIn } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
-import { Recover } from "../../components/Modals/Recover";
-import useLocalStorage from "../../hooks/useLocalStorage";
-import { useRouter } from "next/router";
-import { OverlaySpinner } from "@components/OverlaySpinner";
+import type { GetServerSideProps } from 'next'
+import Head from 'next/head'
+import Link from 'next/link'
+import { getCsrfToken, getSession, signIn } from 'next-auth/react'
+import { useEffect, useRef, useState } from 'react'
+import { Recover } from '../../components/Modals/Recover'
+import useLocalStorage from '../../hooks/useLocalStorage'
+import { useRouter } from 'next/router'
+import { OverlaySpinner } from '@components/OverlaySpinner'
 
 interface SignInProps {
   csrfToken: string
@@ -14,27 +14,25 @@ interface SignInProps {
 }
 
 function SignIn({ csrfToken, ip }: SignInProps) {
-  const [showRecover, setShowRecover] = useState(false);
+  const [showRecover, setShowRecover] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
-    "defaultDomain",
+    'defaultDomain',
     null,
-    "sessionStorage"
-  );
+    'sessionStorage'
+  )
 
   const emailRef = useRef<HTMLInputElement>(null)
 
-  const router = useRouter();
-  
+  const router = useRouter()
+
   /* useEffect(() => {
         if (router.asPath.includes("error=CredentialsSignin")) {
       alert("Email ou senha inválidos")
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); */
-
-  
 
   // const handlerLogin = async () => {
   //   const form = document.querySelector("form");
@@ -52,21 +50,25 @@ function SignIn({ csrfToken, ip }: SignInProps) {
   // };
 
   const handleSubmit = async (e: any) => {
-    e.preventDefault();
+    e.preventDefault()
     const credentials = {
       username: e.target.username.value,
       password: e.target.password.value,
       ip: e.target.ip.value,
       userAgent: e.target.userAgent.value,
       csrfToken: e.target.csrfToken.value,
-    };
+    }
 
-    await signIn('credentials', { ...credentials, redirect: true, callbackUrl: '/dashboard/request'});
-  };
+    await signIn('credentials', {
+      ...credentials,
+      redirect: true,
+      callbackUrl: '/dashboard/request',
+    })
+  }
 
   useEffect(() => {
-    setDefaultDomain(null);
-  }, [setDefaultDomain]);
+    setDefaultDomain(null)
+  }, [setDefaultDomain])
 
   useEffect(() => {
     setError(router.query.error ? String(router.query.error) : '')
@@ -80,10 +82,10 @@ function SignIn({ csrfToken, ip }: SignInProps) {
       <main className="bg-white">
         <div className="d-lg-flex half">
           <div
-            className="bg order-1 order-md-2 d-none d-sm-block"
+            className="bg order-md-2 d-none d-sm-block order-1"
             style={{ backgroundImage: "url('/images/bkg_1.webp')" }}
           ></div>
-          <div className="contents order-2 order-md-1">
+          <div className="order-md-1 order-2 contents">
             <div className="container">
               <div className="row align-items-center justify-content-center">
                 <div className="col-md-7">
@@ -93,13 +95,19 @@ function SignIn({ csrfToken, ip }: SignInProps) {
                       <span className="text-green">WhatsMenu</span>
                     </strong>
                   </p>
-                  {error ? <div className="alert alert-danger" role="alert">
-                    {error}
-                  </div> : null}
+                  {error ? (
+                    <div className="alert alert-danger" role="alert">
+                      {error}
+                    </div>
+                  ) : null}
                   <form onSubmit={handleSubmit}>
                     <input type="hidden" name="csrfToken" value={csrfToken} />
                     <input type="hidden" name="ip" value={ip} />
-                    <input type="hidden" name="userAgent" value={navigator.userAgent} />
+                    <input
+                      type="hidden"
+                      name="userAgent"
+                      value={navigator.userAgent}
+                    />
                     <div className="form-group first">
                       <label htmlFor="username">Email</label>
                       <input
@@ -110,8 +118,10 @@ function SignIn({ csrfToken, ip }: SignInProps) {
                         placeholder="Email de cadastro"
                         id="username"
                         required={true}
-                        defaultValue={localStorage.getItem("last-email") || ""}
-                        onChange={(e) => localStorage.setItem("last-email", e.target.value)}
+                        defaultValue={localStorage.getItem('last-email') || ''}
+                        onChange={(e) =>
+                          localStorage.setItem('last-email', e.target.value)
+                        }
                       />
                     </div>
                     <div className="form-group last mb-3">
@@ -127,9 +137,9 @@ function SignIn({ csrfToken, ip }: SignInProps) {
                       />
                     </div>
 
-                    <div className=" mb-5 align-items-center">
+                    <div className=" align-items-center mb-5">
                       <p
-                        className="float-start text-dark cursor-pointer"
+                        className="text-dark float-start cursor-pointer"
                         onClick={() => setShowRecover(true)}
                       >
                         Esqueci a senha
@@ -152,30 +162,34 @@ function SignIn({ csrfToken, ip }: SignInProps) {
             </div>
           </div>
         </div>
-        <Recover show={showRecover} handleClose={() => setShowRecover(false)} email={emailRef.current?.value} />
+        <Recover
+          show={showRecover}
+          handleClose={() => setShowRecover(false)}
+          email={emailRef.current?.value}
+        />
       </main>
     </>
-  );
+  )
 }
 
-export default SignIn;
+export default SignIn
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
-  const session = await getSession({ req });
+  const session = await getSession({ req })
 
   if (session?.user?.id) {
     return {
       redirect: {
-        destination: "/dashboard/request",
+        destination: '/dashboard/request',
         permanent: false,
       },
-    };
+    }
   }
 
-  const csrfToken = await getCsrfToken({ req });
+  const csrfToken = await getCsrfToken({ req })
   const ip = req.connection.remoteAddress
 
   return {
     props: { csrfToken, ip },
-  };
-};
+  }
+}

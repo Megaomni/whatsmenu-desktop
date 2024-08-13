@@ -22,7 +22,11 @@ export const NewFeat = ({ feature, videos, mainVideo }: NewFeatProps) => {
   const [players, setPlayers] = useState<YT.Player[]>([])
   const [currentPlayerId, setCurrentPlayerId] = useState('')
 
-  const generateYTVideo = (video: { id: string; title: string; isMain?: boolean }) => {
+  const generateYTVideo = (video: {
+    id: string
+    title: string
+    isMain?: boolean
+  }) => {
     new YT.Player(video.id, {
       height: '315px',
       width: '100%',
@@ -50,12 +54,20 @@ export const NewFeat = ({ feature, videos, mainVideo }: NewFeatProps) => {
   }, [])
 
   useEffect(() => {
-    players.filter((player) => player.getIframe().id !== currentPlayerId).forEach((player) => player.pauseVideo())
+    players
+      .filter((player) => player.getIframe().id !== currentPlayerId)
+      .forEach((player) => player.pauseVideo())
   }, [currentPlayerId])
 
   return (
     <Card>
-      <Card.Header>{isNextDomain ? <h3>Videos {feature.name}</h3> : <h3>🚀 Prepare-se para o que há de melhor!</h3>}</Card.Header>
+      <Card.Header>
+        {isNextDomain ? (
+          <h3>Videos {feature.name}</h3>
+        ) : (
+          <h3>🚀 Prepare-se para o que há de melhor!</h3>
+        )}
+      </Card.Header>
       <Card.Body className="overflow-auto" style={{ maxHeight: '78vh' }}>
         <Alert variant="primary" className="text-primary">
           <Row className="align-items-center mb-2">
@@ -72,8 +84,9 @@ export const NewFeat = ({ feature, videos, mainVideo }: NewFeatProps) => {
               ) : (
                 <p className="m-0">
                   <b>
-                    {t('starting_from')} {feature.day}, o {feature.name} estará disponível no seu painel, sem custo extra! 😃 Com esta incrível
-                    adição:
+                    {t('starting_from')} {feature.day}, o {feature.name} estará
+                    disponível no seu painel, sem custo extra! 😃 Com esta
+                    incrível adição:
                   </b>
                 </p>
               )}
@@ -89,7 +102,8 @@ export const NewFeat = ({ feature, videos, mainVideo }: NewFeatProps) => {
           ))}
         </Alert>
         <p className="mt-4 px-3">
-          Confira os vídeos abaixo para saber todos os detalhes! Estamos trazendo isso em primeira mão para você, porque merece o melhor 🌟
+          Confira os vídeos abaixo para saber todos os detalhes! Estamos
+          trazendo isso em primeira mão para você, porque merece o melhor 🌟
         </p>
         <Container fluid className="mt-4">
           <Row className="mb-4">

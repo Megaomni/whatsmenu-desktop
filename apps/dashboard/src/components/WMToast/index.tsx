@@ -28,7 +28,19 @@ export interface WMToastProps {
   classAdd?: string
 }
 
-export function WMToast({ position, title, content, type, show, setShow, delay = 3000, size, flexPositionX, flexPositionY, classAdd }: WMToastProps) {
+export function WMToast({
+  position,
+  title,
+  content,
+  type,
+  show,
+  setShow,
+  delay = 3000,
+  size,
+  flexPositionX,
+  flexPositionY,
+  classAdd,
+}: WMToastProps) {
   type = type ? type : 'alert'
   flexPositionX = flexPositionX ? flexPositionX : 'center'
   flexPositionY = flexPositionY ? flexPositionY : 'center'
@@ -78,7 +90,7 @@ export function WMToast({ position, title, content, type, show, setShow, delay =
         autohide
         style={{ width: `${size}rem` }}
       >
-        <Toast.Header className="gap-2 fs-5">
+        <Toast.Header className="fs-5 gap-2">
           {type === 'success' && <BsCheckCircle />}
           {type === 'erro' && <AiOutlineCloseCircle />}
           {type === 'alert' && <FiAlertCircle />}

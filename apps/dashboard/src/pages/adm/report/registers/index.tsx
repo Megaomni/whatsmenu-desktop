@@ -3,7 +3,20 @@ import { GetServerSideProps } from 'next'
 import { Seller, User, UserType } from 'next-auth'
 import { getSession, useSession } from 'next-auth/react'
 import { useContext, useDebugValue, useEffect, useState } from 'react'
-import { Button, Card, Col, Dropdown, DropdownButton, Form, FormControl, FormGroup, InputGroup, ProgressBar, Row, Table } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Dropdown,
+  DropdownButton,
+  Form,
+  FormControl,
+  FormGroup,
+  InputGroup,
+  ProgressBar,
+  Row,
+  Table,
+} from 'react-bootstrap'
 import { BsSearch } from 'react-icons/bs'
 import { Title } from '../../../../components/Partials/title'
 import { ReportAdmGraphic } from '../../../../components/Report/AdmGraphic'
@@ -23,10 +36,14 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
   const [months, setMonths] = useState<string[]>([])
   const [allUsers, setAllUsers] = useState<any[]>([])
   const [infoAllUsers, setInfoAllUsers] = useState<any>()
-  const [monthInput, setMonthInput] = useState(DateTime.local().toFormat('yyyy-MM'))
+  const [monthInput, setMonthInput] = useState(
+    DateTime.local().toFormat('yyyy-MM')
+  )
   const [filterClients, setFilterClients] = useState<string>('all')
   const [filterRegister, setFilterRegister] = useState<string>('all')
-  const [usedFilter, setUsedFilter] = useState<{ name: string; value: string }>({ name: 'Todos', value: 'all' })
+  const [usedFilter, setUsedFilter] = useState<{ name: string; value: string }>(
+    { name: 'Todos', value: 'all' }
+  )
   const [searchValue, setSearchValue] = useState<string>('')
   const [progress, setProgress] = useState<number>(1)
 
@@ -37,7 +54,9 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
         if (!seller.months) {
           seller.months = []
           try {
-            const { data } = await apiRoute(`/administrator-api/financial/seller/${seller.id}`)
+            const { data } = await apiRoute(
+              `/administrator-api/financial/seller/${seller.id}`
+            )
             seller.months = await data.months
           } catch (error) {
             console.error(error)
@@ -46,7 +65,9 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
         }
         setProgress((oldProgress) => oldProgress + progressAdd)
 
-        const newMonths: any[] = Array.from(new Set([...sellers.flatMap((s) => s.months).map((m) => m?.month)]))
+        const newMonths: any[] = Array.from(
+          new Set([...sellers.flatMap((s) => s.months).map((m) => m?.month)])
+        )
         setMonths(newMonths)
 
         setAllUsers(
@@ -78,11 +99,15 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
   }, [monthInput])
 
   const filter = (value: string, valueToSearch: string) => {
-    return normalizeCaracter(value, 'toLowerCase').includes(normalizeCaracter(valueToSearch, 'toLocaleLowerCase'))
+    return normalizeCaracter(value, 'toLowerCase').includes(
+      normalizeCaracter(valueToSearch, 'toLocaleLowerCase')
+    )
   }
 
   useEffect(() => {
-    const newUsers = sellers.flatMap((s) => s.months?.filter((m) => m.month === monthInput)).flatMap((m) => m?.users)
+    const newUsers = sellers
+      .flatMap((s) => s.months?.filter((m) => m.month === monthInput))
+      .flatMap((m) => m?.users)
     const seller = sellers.find((sl) => sl.name === filterClients)
     const newAllUsers = newUsers
       .reverse()
@@ -100,13 +125,23 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
             case 'id':
               return filter(client.id.toString(), searchValue)
             case 'date':
-              return filter(DateTime.fromSQL(client.invoices[0].updated_at).toFormat('dd-MM-yyyy HH:MM'), searchValue)
+              return filter(
+                DateTime.fromSQL(client.invoices[0].updated_at).toFormat(
+                  'dd-MM-yyyy HH:MM'
+                ),
+                searchValue
+              )
             case 'all':
               return (
                 filter(client.name, searchValue) ||
                 filter(client.email, searchValue) ||
                 filter(client.id.toString(), searchValue) ||
-                filter(DateTime.fromSQL(client.invoices[0].updated_at).toFormat('dd-MM-yyyy HH:MM'), searchValue)
+                filter(
+                  DateTime.fromSQL(client.invoices[0].updated_at).toFormat(
+                    'dd-MM-yyyy HH:MM'
+                  ),
+                  searchValue
+                )
               )
           }
         }
@@ -122,7 +157,10 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
         }
 
         if (filterRegister !== 'all') {
-          return client.sellerId === seller?.id && client.controls.serviceStart === JSON.parse(filterRegister)
+          return (
+            client.sellerId === seller?.id &&
+            client.controls.serviceStart === JSON.parse(filterRegister)
+          )
         }
 
         return client.sellerId === seller?.id
@@ -137,8 +175,15 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
     const countMount = users.filter((u) => u.controls.serviceStart).length
     const countNormal = users.filter((u) => !u.controls.serviceStart).length
     const countImpressoras = users.filter((u) => u.controls.salePrint).length
-    const countMesas = users.filter((u) => u.plans.some((p: Plan) => p.category === 'table' && p.id !== 20)).length
-    const countEncomendas = users.filter((u) => u.plans.some((p: Plan) => p.category === 'package' && p.type === 'upgrade' && p.id !== 21)).length
+    const countMesas = users.filter((u) =>
+      u.plans.some((p: Plan) => p.category === 'table' && p.id !== 20)
+    ).length
+    const countEncomendas = users.filter((u) =>
+      u.plans.some(
+        (p: Plan) =>
+          p.category === 'package' && p.type === 'upgrade' && p.id !== 21
+      )
+    ).length
 
     if (count > 300) {
       return {
@@ -220,14 +265,23 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
 
   return (
     <>
-      <Title title="ADM" componentTitle="Relatório de Cadastros" className="mb-4" child={['Relatórios', 'Relatório Vendedor']} />
+      <Title
+        title="ADM"
+        componentTitle="Relatório de Cadastros"
+        className="mb-4"
+        child={['Relatórios', 'Relatório Vendedor']}
+      />
       <section>
         <Card>
           <Card.Header>
             <h4>Resumo mês atual</h4>
             <Card.Header />
             <Card.Body>
-              <ReportAdmGraphic sellers={sellers} type="seller" period="monthly" />
+              <ReportAdmGraphic
+                sellers={sellers}
+                type="seller"
+                period="monthly"
+              />
             </Card.Body>
           </Card.Header>
         </Card>
@@ -244,7 +298,12 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
             <h4>Resumo Anual</h4>
           </Card.Header>
           <Card.Body>
-            <ReportAdmGraphic sellers={sellers} months={months} type="seller" period="yearly" />
+            <ReportAdmGraphic
+              sellers={sellers}
+              months={months}
+              type="seller"
+              period="yearly"
+            />
           </Card.Body>
         </Card>
         <hr />
@@ -268,7 +327,9 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
         <br />
         <Row>
           {sellers?.map((seller) => {
-            const info = getFlag(allUsers.filter((u) => u?.sellerId === seller.id))
+            const info = getFlag(
+              allUsers.filter((u) => u?.sellerId === seller.id)
+            )
             return (
               <Col md="3" key={seller.id} className="mt-3">
                 <Card className="h-100">
@@ -289,9 +350,11 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                     <br />
                     Encomendas: {info.countEncomendas}
                     <hr />
-                    Delivery com cadastro: {currency({ value: info.totalMount })}
+                    Delivery com cadastro:{' '}
+                    {currency({ value: info.totalMount })}
                     <br />
-                    Delivery sem cadastro: {currency({ value: info.totalNormal })}
+                    Delivery sem cadastro:{' '}
+                    {currency({ value: info.totalNormal })}
                     <br />
                     Impressoras: {currency({ value: info.totalImpressoras })}
                     <br />
@@ -301,7 +364,12 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                     <br />
                     Total:{' '}
                     {currency({
-                      value: info.totalMount + info.totalNormal + info.totalMesas + info.totalEncomendas + info.totalImpressoras,
+                      value:
+                        info.totalMount +
+                        info.totalNormal +
+                        info.totalMesas +
+                        info.totalEncomendas +
+                        info.totalImpressoras,
                     })}
                   </Card.Body>
                 </Card>
@@ -336,18 +404,31 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                     <Row>
                       <Col sm="12" md="8">
                         <h4>
-                          Lista de clientes ({allUsers.length}) {progress !== 0 ? '(CARREGANDO)' : ''}
+                          Lista de clientes ({allUsers.length}){' '}
+                          {progress !== 0 ? '(CARREGANDO)' : ''}
                         </h4>
                       </Col>
                     </Row>
                     <Row className="mt-3">
-                      <Col sm="12" className="mt-2 mt-md-0 d-flex justify-content-end">
+                      <Col
+                        sm="12"
+                        className="mt-md-0 d-flex justify-content-end mt-2"
+                      >
                         <FormGroup className="flex-grow-1">
                           <Row>
-                            <Col sm="12" md="6" className="d-flex align-items-end gap-2">
-                              <InputGroup className="flex-grow-1 mt-1 flex-column flex-md-row gap-2 gap-md-0 flex-md-nowrap justify-content-md-end">
+                            <Col
+                              sm="12"
+                              md="6"
+                              className="d-flex align-items-end gap-2"
+                            >
+                              <InputGroup className="flex-grow-1 flex-column flex-md-row gap-md-0 flex-md-nowrap justify-content-md-end mt-1 gap-2">
                                 <div className="d-flex flex-grow-1">
-                                  <InputGroup.Text style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
+                                  <InputGroup.Text
+                                    style={{
+                                      borderTopRightRadius: 0,
+                                      borderBottomRightRadius: 0,
+                                    }}
+                                  >
                                     <BsSearch />
                                   </InputGroup.Text>
                                   <FormControl
@@ -390,7 +471,7 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                                 </DropdownButton>
                               </InputGroup>
                             </Col>
-                            <Col sm="12" md="3" className="mt-2 mt-md-0">
+                            <Col sm="12" md="3" className="mt-md-0 mt-2">
                               <Form.Label>Vendedor: </Form.Label>
                               <Form.Select
                                 value={filterClients}
@@ -402,7 +483,10 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                                 {sellers.map((seller) => {
                                   if (seller.status) {
                                     return (
-                                      <option key={seller.name} value={seller.name}>
+                                      <option
+                                        key={seller.name}
+                                        value={seller.name}
+                                      >
                                         {seller.name}
                                       </option>
                                     )
@@ -410,7 +494,7 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                                 })}
                               </Form.Select>
                             </Col>
-                            <Col sm="12" md="3" className="mt-2 mt-md-0">
+                            <Col sm="12" md="3" className="mt-md-0 mt-2">
                               <div>
                                 <Form.Label>Com Cadastro: </Form.Label>
                                 <Form.Select
@@ -422,7 +506,10 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                                   <option value="all">Todos</option>
                                   {['Sim', 'Não'].map((el) => {
                                     return (
-                                      <option key={el} value={el === 'Sim' ? 'true' : 'false'}>
+                                      <option
+                                        key={el}
+                                        value={el === 'Sim' ? 'true' : 'false'}
+                                      >
                                         {el}
                                       </option>
                                     )
@@ -437,7 +524,10 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                   </Col>
                 </Row>
               </Card.Header>
-              <Card.Body className="overflow-auto" style={{ maxHeight: '28rem' }}>
+              <Card.Body
+                className="overflow-auto"
+                style={{ maxHeight: '28rem' }}
+              >
                 <Table responsive striped hover>
                   <thead>
                     <tr className="fs-7">
@@ -452,29 +542,41 @@ export default function AdmReportRegisters({ sellers }: { sellers: Seller[] }) {
                   </thead>
                   <tbody>
                     {allUsers.length > 0 ? (
-                      allUsers.reverse().map((u: UserType | undefined, index) => {
-                        if (u) {
-                          return (
-                            <tr key={u.id} className="fs-7">
-                              <td>{index + 1}</td>
-                              <td>{u.id}</td>
-                              <td>{u.name}</td>
-                              <td>{u.email || '-'}</td>
-                              <td>{u.controls?.serviceStart ? 'SIM' : 'NÃO'}</td>
-                              <td>{sellers.find((s) => s.id === u.sellerId)?.name ?? '-'}</td>
-                              <td>
-                                {u.invoices?.length && u.invoices[0].status === 'paid'
-                                  ? DateTime.fromSQL(u.invoices[0].updated_at).toFormat('dd-MM-yyyy HH:MM')
-                                  : 'Pendente'}
-                              </td>
-                            </tr>
-                          )
-                        }
-                      })
+                      allUsers
+                        .reverse()
+                        .map((u: UserType | undefined, index) => {
+                          if (u) {
+                            return (
+                              <tr key={u.id} className="fs-7">
+                                <td>{index + 1}</td>
+                                <td>{u.id}</td>
+                                <td>{u.name}</td>
+                                <td>{u.email || '-'}</td>
+                                <td>
+                                  {u.controls?.serviceStart ? 'SIM' : 'NÃO'}
+                                </td>
+                                <td>
+                                  {sellers.find((s) => s.id === u.sellerId)
+                                    ?.name ?? '-'}
+                                </td>
+                                <td>
+                                  {u.invoices?.length &&
+                                  u.invoices[0].status === 'paid'
+                                    ? DateTime.fromSQL(
+                                        u.invoices[0].updated_at
+                                      ).toFormat('dd-MM-yyyy HH:MM')
+                                    : 'Pendente'}
+                                </td>
+                              </tr>
+                            )
+                          }
+                        })
                     ) : (
                       <tr>
                         <td colSpan={7}>
-                          {filterClients !== 'all' ? 'Nenhum cliente encontrado para este vendedor' : 'Nenhum cliente para mostrar'}
+                          {filterClients !== 'all'
+                            ? 'Nenhum cliente encontrado para este vendedor'
+                            : 'Nenhum cliente para mostrar'}
                         </td>
                       </tr>
                     )}

@@ -1,5 +1,13 @@
 import { DateTime } from 'luxon'
-import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { Button, Card, OverlayTrigger, Popover, Table } from 'react-bootstrap'
 import { IoTicket } from 'react-icons/io5'
 import { AppContext } from '../../../context/app.ctx'
@@ -40,11 +48,24 @@ interface ReportListProps {
   getReports: (page?: number, spinner?: boolean) => Promise<void>
 }
 
-export function ReportList({ filter, type, title, tables, carts, columnType, date, payment, getReports, setFetchAll, fetchAll }: ReportListProps) {
+export function ReportList({
+  filter,
+  type,
+  title,
+  tables,
+  carts,
+  columnType,
+  date,
+  payment,
+  getReports,
+  setFetchAll,
+  fetchAll,
+}: ReportListProps) {
   const { t } = useTranslation()
   const tableElement = document.querySelector('table')
   const { data: session } = useSession()
-  const { setRequestsToPrint, profile, handleShowToast, user, currency } = useContext(AppContext)
+  const { setRequestsToPrint, profile, handleShowToast, user, currency } =
+    useContext(AppContext)
 
   const [printType, setPrintType] = useState<'command' | 'table'>()
   const [controlFetch, setControlFetch] = useState(false)
@@ -83,8 +104,13 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
     if (!fetchAll) {
       if (
         !controlFetch &&
-        (filter === 'table' ? tables?.data?.length % tables.perPage === 0 : carts?.data?.length % carts?.perPage === 0) &&
-        (tableElement?.getBoundingClientRect()?.height as number) - 190 - window.scrollY < 0
+        (filter === 'table'
+          ? tables?.data?.length % tables.perPage === 0
+          : carts?.data?.length % carts?.perPage === 0) &&
+        (tableElement?.getBoundingClientRect()?.height as number) -
+          190 -
+          window.scrollY <
+          0
       ) {
         setControlFetch(true)
       }
@@ -93,13 +119,28 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
 
   const fetchReports = useCallback(() => {
     setTimeout(() => {
-      if (controlFetch && (filter === 'table' ? tables?.page < tables?.lastPage : carts?.page < carts?.lastPage)) {
-        getReports((filter === 'table' ? tables?.page : carts?.page) + 1).finally(() => {
+      if (
+        controlFetch &&
+        (filter === 'table'
+          ? tables?.page < tables?.lastPage
+          : carts?.page < carts?.lastPage)
+      ) {
+        getReports(
+          (filter === 'table' ? tables?.page : carts?.page) + 1
+        ).finally(() => {
           setControlFetch(false)
         })
       }
     }, 100)
-  }, [controlFetch, filter, getReports, carts?.lastPage, carts?.page, tables?.lastPage, tables?.page])
+  }, [
+    controlFetch,
+    filter,
+    getReports,
+    carts?.lastPage,
+    carts?.page,
+    tables?.lastPage,
+    tables?.page,
+  ])
 
   useEffect(() => {
     fetchReports()
@@ -111,13 +152,14 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
   return (
     <>
       <Card>
-        <Card.Header className="notPrint d-flex gap-2 align-items-center justify-content-between">
+        <Card.Header className="notPrint d-flex align-items-center justify-content-between gap-2">
           <h4 className="m-0">
             {t('order_results')} {title}{' '}
           </h4>
           {columnType && (
             <p className="m-0">
-              {t('displaying_orders_date_from')} {columnType === 'created_at' ? t('creation') : t('delivery_m')}
+              {t('displaying_orders_date_from')}{' '}
+              {columnType === 'created_at' ? t('creation') : t('delivery_m')}
             </p>
           )}
           <Button
@@ -157,9 +199,17 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                             command: null,
                           })
                         }}
-                        className={cart.status === 'canceled' ? 'table-danger text-red-500' : ''}
+                        className={
+                          cart.status === 'canceled'
+                            ? 'table-danger text-red-500'
+                            : ''
+                        }
                       >
-                        <td className={cart.status === 'canceled' ? 'text-red-500' : ''}>
+                        <td
+                          className={
+                            cart.status === 'canceled' ? 'text-red-500' : ''
+                          }
+                        >
                           <span className="d-flex gap-2">
                             <span>
                               wm-{cart.code}-{cart.type}
@@ -170,7 +220,9 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                                 overlay={
                                   <Popover id="popover-basic">
                                     <Popover.Body className="text-center">
-                                      <p className="fw-bold mb-1">{t('coupon')}</p>
+                                      <p className="fw-bold mb-1">
+                                        {t('coupon')}
+                                      </p>
                                       <span>{cart.cupom?.code}</span>
                                     </Popover.Body>
                                   </Popover>
@@ -185,8 +237,18 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                         </td>
                         <td>{cart.client?.name}</td>
                         <td>{maskedPhone(cart.client?.whatsapp ?? '')}</td>
-                        <td>{currency({ value: cart.getTotalValue('total') })}</td>
-                        <td>{Array.from(new Set(cart.formsPayment.map((formPayment) => i18n.t(formPayment.payment)))).join(', ')}</td>
+                        <td>
+                          {currency({ value: cart.getTotalValue('total') })}
+                        </td>
+                        <td>
+                          {Array.from(
+                            new Set(
+                              cart.formsPayment.map((formPayment) =>
+                                i18n.t(formPayment.payment)
+                              )
+                            )
+                          ).join(', ')}
+                        </td>
                       </tr>
                     )
                 )}
@@ -242,23 +304,51 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                           })
                         }}
                       >
-                        <td>{table.deleted_at ? table.name.replace(table.name.substring(table.name.length - 25), t('disabled')) : table.name}</td>
+                        <td>
+                          {table.deleted_at
+                            ? table.name.replace(
+                                table.name.substring(table.name.length - 25),
+                                t('disabled')
+                              )
+                            : table.name}
+                        </td>
                         <td>{opened.commands.length}</td>
                         <td>
                           {type === 'daily'
-                            ? DateTime.fromSQL(opened.created_at).toFormat('HH:mm')
-                            : DateTime.fromSQL(opened.created_at).toFormat(`${t('day')} dd - HH:mm`)}
+                            ? DateTime.fromSQL(opened.created_at).toFormat(
+                                'HH:mm'
+                              )
+                            : DateTime.fromSQL(opened.created_at).toFormat(
+                                `${t('day')} dd - HH:mm`
+                              )}
                         </td>
                         <td>{opened.perm}</td>
-                        <td>{currency({ value: opened.getTotalValue('tableFee') })}</td>
-                        <td>{Array.from(new Set(opened.formsPayment.map((formPayment) => formPayment.label))).join(', ')}</td>
+                        <td>
+                          {currency({
+                            value: opened.getTotalValue('tableFee'),
+                          })}
+                        </td>
+                        <td>
+                          {Array.from(
+                            new Set(
+                              opened.formsPayment.map(
+                                (formPayment) => formPayment.label
+                              )
+                            )
+                          ).join(', ')}
+                        </td>
                       </tr>
                     ) : null
                   })
                 })}
                 <tr>
                   <td colSpan={4}>
-                    {t('tables')}: {tables?.data.flatMap((t) => t.tablesOpened).filter((t) => t?.commands.length).length}
+                    {t('tables')}:{' '}
+                    {
+                      tables?.data
+                        .flatMap((t) => t.tablesOpened)
+                        .filter((t) => t?.commands.length).length
+                    }
                   </td>
                   <td colSpan={2}>
                     Total:{' '}
@@ -266,7 +356,13 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                       value: tables?.data
                         .flatMap((t) => t.tablesOpened)
                         .filter((t) => t?.commands.length)
-                        .reduce((total, opened) => (opened ? (total += opened.getTotalValue('tableFee')) : total), 0),
+                        .reduce(
+                          (total, opened) =>
+                            opened
+                              ? (total += opened.getTotalValue('tableFee'))
+                              : total,
+                          0
+                        ),
                     })}
                   </td>
                 </tr>
@@ -280,8 +376,20 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                   <th>{t('code_order')}</th>
                   <th>{t('name')}</th>
                   <th>{t('ph')}</th>
-                  <th style={{ color: columnType === 'created_at' ? 'green' : '' }}>{t('order_date')}</th>
-                  <th style={{ color: columnType === 'packageDate' ? 'green' : '' }}>{t('delivery_date')}</th>
+                  <th
+                    style={{
+                      color: columnType === 'created_at' ? 'green' : '',
+                    }}
+                  >
+                    {t('order_date')}
+                  </th>
+                  <th
+                    style={{
+                      color: columnType === 'packageDate' ? 'green' : '',
+                    }}
+                  >
+                    {t('delivery_date')}
+                  </th>
                   <th>Total</th>
                   <th>{t('payment')}</th>
                 </tr>
@@ -300,9 +408,17 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                             command: null,
                           })
                         }}
-                        className={cart.status === 'canceled' ? 'table-danger text-red-500' : ''}
+                        className={
+                          cart.status === 'canceled'
+                            ? 'table-danger text-red-500'
+                            : ''
+                        }
                       >
-                        <td className={cart.status === 'canceled' ? 'text-red-500' : ''}>
+                        <td
+                          className={
+                            cart.status === 'canceled' ? 'text-red-500' : ''
+                          }
+                        >
                           <span className="d-flex gap-2">
                             <span>
                               wm-{cart.code}-{cart.type}
@@ -312,10 +428,24 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                         </td>
                         <td>{cart.client?.name}</td>
                         <td>{maskedPhone(cart.client?.whatsapp)}</td>
-                        <td>{DateTime.fromSQL(cart.created_at).toFormat(`${t('date_format')} HH:mm`)}</td>
+                        <td>
+                          {DateTime.fromSQL(cart.created_at).toFormat(
+                            `${t('date_format')} HH:mm`
+                          )}
+                        </td>
                         <td>{cart.date().formatted}</td>
-                        <td>{currency({ value: cart.getTotalValue('total') })}</td>
-                        <td>{Array.from(new Set(cart.formsPayment.map((formPayment) => formPayment.label))).join(', ')}</td>
+                        <td>
+                          {currency({ value: cart.getTotalValue('total') })}
+                        </td>
+                        <td>
+                          {Array.from(
+                            new Set(
+                              cart.formsPayment.map(
+                                (formPayment) => formPayment.label
+                              )
+                            )
+                          ).join(', ')}
+                        </td>
                       </tr>
                     )
                 )}
@@ -354,7 +484,11 @@ export function ReportList({ filter, type, title, tables, carts, columnType, dat
                 content: `${t('spreadsheet')} ${sheetTitle}.xls ${t('successfully_generated')}!`,
               })
             } else {
-              handleShowToast({ type: 'alert', title: t('empty'), content: t('no_orders_found') })
+              handleShowToast({
+                type: 'alert',
+                title: t('empty'),
+                content: t('no_orders_found'),
+              })
             }
             setOnDownloadSheet(false)
           }

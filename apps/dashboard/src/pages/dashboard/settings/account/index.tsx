@@ -23,7 +23,9 @@ export default function Account({ token, ...props }: AccountProps) {
   const [old_security_key, setOld_security_key] = useState('')
   const [password, setPassword] = useState('')
   const [old_password, setOld_Password] = useState('')
-  const [expired, setExpired] = useState(props.expired === undefined ? true : props.expired)
+  const [expired, setExpired] = useState(
+    props.expired === undefined ? true : props.expired
+  )
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -63,7 +65,9 @@ export default function Account({ token, ...props }: AccountProps) {
   const handleUpdate = async (type: 'security' | 'access') => {
     if (
       type === 'access' &&
-      ((password.length && !old_password.length) || (!password.length && old_password.length) || (!password.length && !old_password.length))
+      ((password.length && !old_password.length) ||
+        (!password.length && old_password.length) ||
+        (!password.length && !old_password.length))
     ) {
       return handleShowToast({ type: 'alert' })
     }
@@ -77,13 +81,24 @@ export default function Account({ token, ...props }: AccountProps) {
     }
 
     try {
-      const body = type === 'access' ? { password, old_password } : { security_key, old_security_key }
+      const body =
+        type === 'access'
+          ? { password, old_password }
+          : { security_key, old_security_key }
 
       if (type === 'access') {
-        await api.patch(`/dashboard/user/${type === 'access' ? 'alterPassword' : 'alterSecurityKey'}`, body)
+        await api.patch(
+          `/dashboard/user/${type === 'access' ? 'alterPassword' : 'alterSecurityKey'}`,
+          body
+        )
       }
       if (type === 'security') {
-        await apiRoute(`/dashboard/account/updateSecurityKey`, session, 'PATCH', body)
+        await apiRoute(
+          `/dashboard/account/updateSecurityKey`,
+          session,
+          'PATCH',
+          body
+        )
       }
       setSecurity_key('')
       setOld_security_key('')
@@ -104,7 +119,11 @@ export default function Account({ token, ...props }: AccountProps) {
 
   const handleRecoverSecurity = async () => {
     try {
-      await apiRoute('/dashboard/account/recoverySecurityPassword', session, 'POST')
+      await apiRoute(
+        '/dashboard/account/recoverySecurityPassword',
+        session,
+        'POST'
+      )
       handleShowToast({
         type: 'success',
         content: `${t('acess')} ${user?.email} e \\n ${t('check_inbox_spam')} \\n ${t('message_subject')}: \\n "${t(
@@ -123,24 +142,39 @@ export default function Account({ token, ...props }: AccountProps) {
 
   return (
     <>
-      <Title title="Meu Perfil" componentTitle={t('password_settings')} className="mb-4" child={['Senhas']} />
+      <Title
+        title="Meu Perfil"
+        componentTitle={t('password_settings')}
+        className="mb-4"
+        child={['Senhas']}
+      />
       {expired ? (
         <>
           {profile.not_security_key ? (
             <Alert variant="warning" show={true}>
-              <Alert.Heading className="d-flex align-items-start gap-2">{t('attention')}</Alert.Heading>
+              <Alert.Heading className="d-flex align-items-start gap-2">
+                {t('attention')}
+              </Alert.Heading>
               <p className="ms-4">{t('register_financial_password')}</p>
             </Alert>
           ) : null}
           <Card>
             <Card.Header className="text-dark">
-              <h4>{!profile.not_security_key ? t('change_financial_password') : t('register_password_financial')}</h4>
+              <h4>
+                {!profile.not_security_key
+                  ? t('change_financial_password')
+                  : t('register_password_financial')}
+              </h4>
             </Card.Header>
             <Card.Body>
               <Container fluid className="mx-0 px-0">
                 <Row className="align-items-baseline">
                   <Col md="2">
-                    <Form.Label className="fw-bold text-nowrap">{!profile.not_security_key ? t('current_password') : t('password')}</Form.Label>
+                    <Form.Label className="fw-bold text-nowrap">
+                      {!profile.not_security_key
+                        ? t('current_password')
+                        : t('password')}
+                    </Form.Label>
                   </Col>
                   <Col md="4">
                     <div>
@@ -155,14 +189,23 @@ export default function Account({ token, ...props }: AccountProps) {
                 </Row>
                 <Row className="align-items-baseline mt-3">
                   <Col md="2">
-                    <Form.Label className="fw-bold text-nowrap">{!profile.not_security_key ? t('new_password') : t('confirm_password')}</Form.Label>
+                    <Form.Label className="fw-bold text-nowrap">
+                      {!profile.not_security_key
+                        ? t('new_password')
+                        : t('confirm_password')}
+                    </Form.Label>
                   </Col>
                   <Col md="4">
                     <div>
-                      <Form.Control id="security_key" type="password" value={security_key} onChange={(e) => setSecurity_key(e.target.value)} />
+                      <Form.Control
+                        id="security_key"
+                        type="password"
+                        value={security_key}
+                        onChange={(e) => setSecurity_key(e.target.value)}
+                      />
                     </div>
                     {!profile.not_security_key ? (
-                      <span className="mt-3 fs-7 text-nowrap d-flex gap-1 justify-content-between">
+                      <span className="fs-7 d-flex justify-content-between mt-3 gap-1 text-nowrap">
                         {t('forgot_financial_password')}?
                         <a
                           href=""
@@ -186,7 +229,9 @@ export default function Account({ token, ...props }: AccountProps) {
                     variant="success"
                     className="flex-grow-1"
                     onClick={() => {
-                      !profile.not_security_key ? handleUpdate('security') : handleStore()
+                      !profile.not_security_key
+                        ? handleUpdate('security')
+                        : handleStore()
                     }}
                   >
                     {t('save')}
@@ -205,7 +250,9 @@ export default function Account({ token, ...props }: AccountProps) {
                   <Container fluid className="mx-0 px-0">
                     <Row className="align-items-baseline">
                       <Col md="2">
-                        <Form.Label className="fw-bold text-nowrap">{t('current_password')}</Form.Label>
+                        <Form.Label className="fw-bold text-nowrap">
+                          {t('current_password')}
+                        </Form.Label>
                       </Col>
                       <Col md="4">
                         <div className="position-relative">
@@ -222,7 +269,9 @@ export default function Account({ token, ...props }: AccountProps) {
                     </Row>
                     <Row className="align-items-baseline mt-3">
                       <Col md="2">
-                        <Form.Label className="fw-bold text-nowrap">{t('new_password')}</Form.Label>
+                        <Form.Label className="fw-bold text-nowrap">
+                          {t('new_password')}
+                        </Form.Label>
                       </Col>
                       <Col md="4">
                         <div className="position-relative">
@@ -267,21 +316,33 @@ export default function Account({ token, ...props }: AccountProps) {
             <Container fluid className="mx-0 px-0">
               <Row className="align-items-baseline">
                 <Col md="3">
-                  <Form.Label className="fw-bold text-nowrap">{t('new_password')}</Form.Label>
+                  <Form.Label className="fw-bold text-nowrap">
+                    {t('new_password')}
+                  </Form.Label>
                 </Col>
                 <Col md="4">
                   <div>
-                    <Form.Control type="password" value={security_key} onChange={(e) => setSecurity_key(e.target.value)} />
+                    <Form.Control
+                      type="password"
+                      value={security_key}
+                      onChange={(e) => setSecurity_key(e.target.value)}
+                    />
                   </div>
                 </Col>
               </Row>
               <Row className="align-items-baseline mt-3">
                 <Col md="3">
-                  <Form.Label className="fw-bold text-nowrap">{t('confirm_new_password')}</Form.Label>
+                  <Form.Label className="fw-bold text-nowrap">
+                    {t('confirm_new_password')}
+                  </Form.Label>
                 </Col>
                 <Col md="4">
                   <div>
-                    <Form.Control type="password" value={old_security_key} onChange={(e) => setOld_security_key(e.target.value)} />
+                    <Form.Control
+                      type="password"
+                      value={old_security_key}
+                      onChange={(e) => setOld_security_key(e.target.value)}
+                    />
                   </div>
                 </Col>
               </Row>
@@ -290,7 +351,11 @@ export default function Account({ token, ...props }: AccountProps) {
           <Card.Footer>
             <Row>
               <Col md="1" className="d-flex">
-                <Button variant="success" className="flex-grow-1" onClick={handleStore}>
+                <Button
+                  variant="success"
+                  className="flex-grow-1"
+                  onClick={handleStore}
+                >
                   {t('save')}
                 </Button>
               </Col>
@@ -302,12 +367,18 @@ export default function Account({ token, ...props }: AccountProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ req, query }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  req,
+  query,
+}) => {
   if (query.token) {
     const session = await getSession({ req })
 
     try {
-      const { data } = await apiRoute(`/dashboard/account/recovery?token=${query.token}`, session)
+      const { data } = await apiRoute(
+        `/dashboard/account/recovery?token=${query.token}`,
+        session
+      )
       return {
         props: { ...data },
       }

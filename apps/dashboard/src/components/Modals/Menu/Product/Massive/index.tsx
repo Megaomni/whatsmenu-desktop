@@ -1,6 +1,18 @@
 import { useSession } from 'next-auth/react'
 import { useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Figure, Form, FormGroup, FormLabel, InputGroup, Modal, Row } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Figure,
+  Form,
+  FormGroup,
+  FormLabel,
+  InputGroup,
+  Modal,
+  Row,
+} from 'react-bootstrap'
 import { AppContext } from '../../../../../context/app.ctx'
 import { MenuContext } from '../../../../../context/menu.ctx'
 import {
@@ -19,8 +31,14 @@ import {
 import { Dates } from '../../../../Dates'
 import Week from '../../../../../types/dates'
 import { MenuComponent } from '../../../../Menu'
-import Complement, { ComplementType, ItemComplementType } from '../../../../../types/complements'
-import Product, { DisponibilityType, ProductType } from '../../../../../types/product'
+import Complement, {
+  ComplementType,
+  ItemComplementType,
+} from '../../../../../types/complements'
+import Product, {
+  DisponibilityType,
+  ProductType,
+} from '../../../../../types/product'
 import { ComponentComplement } from '../../Complements'
 import Category from '../../../../../types/category'
 import Image from 'next/legacy/image'
@@ -40,10 +58,13 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
 
-  const { handleShowToast, handleConfirmModal, plansCategory } = useContext(AppContext)
+  const { handleShowToast, handleConfirmModal, plansCategory } =
+    useContext(AppContext)
   const { categories, setCategories } = useContext(MenuContext)
 
-  const [massiveProducts, setMassiveProducts] = useState<Partial<ProductType>[]>([])
+  const [massiveProducts, setMassiveProducts] = useState<
+    Partial<ProductType>[]
+  >([])
   const [week, setWeek] = useState<Week>(new Week())
   const [store, setStore] = useState({
     delivery: true,
@@ -51,7 +72,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
     package: true,
   })
   const [complements, setComplements] = useState<Complement[]>([])
-  const [recicledComplements, setRecicledComplements] = useState<{ id?: number; link?: boolean }[]>([])
+  const [recicledComplements, setRecicledComplements] = useState<
+    { id?: number; link?: boolean }[]
+  >([])
   const [step, setStep] = useState<number>(1)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
   const [updateHTML, setUpdateHTML] = useState<number>(0)
@@ -95,7 +118,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
         return prod
       })
 
-      const form = document.getElementById('massive-products') as HTMLFormElement
+      const form = document.getElementById(
+        'massive-products'
+      ) as HTMLFormElement
 
       const formData = new FormData(form)
 
@@ -128,7 +153,11 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
       }
 
       // await category.massiveAPI(formData, session)
-      const result = await Category.createMassiveAPI(formData, session, category)
+      const result = await Category.createMassiveAPI(
+        formData,
+        session,
+        category
+      )
 
       setCategories([...categories])
 
@@ -186,7 +215,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
 
     const interval = setInterval(() => {
       const prod = document.querySelector(`#prod-${newProd.id}`)
-      const prodInput = document.querySelector(`#prod-name-${newProd.id}`) as HTMLInputElement
+      const prodInput = document.querySelector(
+        `#prod-name-${newProd.id}`
+      ) as HTMLInputElement
       if (prod) {
         prod.scrollIntoView()
       }
@@ -215,7 +246,8 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
 
     const newProduct = copy(product)
     newProduct.id = parseInt(String(Math.random() * (100000 - 1) + 1))
-    newProduct.order = (category?.products?.length ?? 0) + massiveProducts.length
+    newProduct.order =
+      (category?.products?.length ?? 0) + massiveProducts.length
 
     let url = ''
     if (image) {
@@ -227,7 +259,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
     setMassiveProducts([...massiveProducts, newProduct])
 
     setTimeout(() => {
-      const imageInput = document.getElementById(`image-${newProduct.id}`) as HTMLImageElement
+      const imageInput = document.getElementById(
+        `image-${newProduct.id}`
+      ) as HTMLImageElement
       if (imageInput && image) {
         imageInput.src = url as string
         setProdSrcId('')
@@ -236,7 +270,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
 
     const interval = setInterval(() => {
       const prod = document.querySelector(`#prod-${newProduct.id}`)
-      const prodInput = document.querySelector(`#prod-name-${newProduct.id}`) as HTMLInputElement
+      const prodInput = document.querySelector(
+        `#prod-name-${newProduct.id}`
+      ) as HTMLInputElement
       if (prod) {
         prod.scrollIntoView()
       }
@@ -285,7 +321,11 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
           //     return
           // }
 
-          if (verifyEmptyNameLength(complement.itens, 'code', { partialQuery: '#complement-item-' })) {
+          if (
+            verifyEmptyNameLength(complement.itens, 'code', {
+              partialQuery: '#complement-item-',
+            })
+          ) {
             return
           }
         }
@@ -299,7 +339,14 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
     <>
       <div
         onKeyDown={(e) => {
-          const keys = ['KeyA', 'KeyR', 'KeyI', 'Enter', 'ArrowLeft', 'ArrowRight']
+          const keys = [
+            'KeyA',
+            'KeyR',
+            'KeyI',
+            'Enter',
+            'ArrowLeft',
+            'ArrowRight',
+          ]
           const keyPressed = e.code
 
           if (e.altKey) {
@@ -316,7 +363,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
 
               if (keyPressed === 'KeyI' && !e.metaKey) {
                 const form = document.getElementById('massive-products')
-                const inputFile = form?.querySelector(`#input-${lastProd.id}-${massiveProducts.length - 1}`) as HTMLInputElement
+                const inputFile = form?.querySelector(
+                  `#input-${lastProd.id}-${massiveProducts.length - 1}`
+                ) as HTMLInputElement
                 if (inputFile) {
                   inputFile.click()
                 }
@@ -331,7 +380,11 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
               }
 
               if (keyPressed === 'ArrowRight') {
-                if (verifyEmptyNameLength(massiveProducts, 'id', { partialQuery: '#prod-name-' })) {
+                if (
+                  verifyEmptyNameLength(massiveProducts, 'id', {
+                    partialQuery: '#prod-name-',
+                  })
+                ) {
                   return
                 }
                 step < 3 && setStep(step + 1)
@@ -344,7 +397,15 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
           }
         }}
       >
-        <Modal {...props} size="xl" backdrop="static" dialogClassName="modal-90 mx-auto" onEnter={addMassiveProducts} onExit={resetState} centered>
+        <Modal
+          {...props}
+          size="xl"
+          backdrop="static"
+          dialogClassName="modal-90 mx-auto"
+          onEnter={addMassiveProducts}
+          onExit={resetState}
+          centered
+        >
           <div className="position-relative">
             <Modal.Header className="justify-content-between">
               <h3>
@@ -373,7 +434,11 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                 <IoInformationCircle size={40} />
               </span>
             </Modal.Header>
-            <Modal.Body id="create-massive-modal" className={`overflow-auto position-relative`} style={{ height: '60vh' }}>
+            <Modal.Body
+              id="create-massive-modal"
+              className={`position-relative overflow-auto`}
+              style={{ height: '60vh' }}
+            >
               <form id="massive-products">
                 {step === 1 &&
                   (massiveProducts.length ? (
@@ -381,11 +446,26 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                       return (
                         <div key={`key-${prod.id}-${index}`}>
                           {index > 0 && <hr />}
-                          <Row key={`prodKey${prod.id}-${index}}`} className={`${index > 0 && 'pt-3'}`}>
-                            <Col sm={4} className={`d-flex align-items-end ${massiveProducts.length - index !== 1 && 'pb-3'}`}>
-                              <InputGroup key={`prod-key-group-${prod.id}-${index}`} className="flex-grow-1 text-end">
-                                <label className="w-100 cursor-pointer" id={`label-${prod.id}-${index}`} htmlFor={`input-${prod.id}-${index}`}>
-                                  <Figure.Caption className="text-center">({t('recomended_resolution_600')})</Figure.Caption>
+                          <Row
+                            key={`prodKey${prod.id}-${index}}`}
+                            className={`${index > 0 && 'pt-3'}`}
+                          >
+                            <Col
+                              sm={4}
+                              className={`d-flex align-items-end ${massiveProducts.length - index !== 1 && 'pb-3'}`}
+                            >
+                              <InputGroup
+                                key={`prod-key-group-${prod.id}-${index}`}
+                                className="flex-grow-1 text-end"
+                              >
+                                <label
+                                  className="w-100 cursor-pointer"
+                                  id={`label-${prod.id}-${index}`}
+                                  htmlFor={`input-${prod.id}-${index}`}
+                                >
+                                  <Figure.Caption className="text-center">
+                                    ({t('recomended_resolution_600')})
+                                  </Figure.Caption>
                                   <Form.Control
                                     type="file"
                                     id={`input-${prod.id}-${index}`}
@@ -393,7 +473,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                     tabIndex={-1}
                                     onChange={(e) => {
                                       setProductTarget(prod)
-                                      setInputFileImage(e.target as HTMLInputElement)
+                                      setInputFileImage(
+                                        e.target as HTMLInputElement
+                                      )
                                     }}
                                     style={{ visibility: 'hidden' }}
                                   ></Form.Control>
@@ -406,19 +488,28 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                     alt="Imagem do Produto"
                                     style={{ maxWidth: '100%', maxHeight: 250 }}
                                   />
-                                  <span className="d-block w-100 fw-bold mt-2 bg-success text-white p-2 text-center rounded">{t('add_image')}</span>
+                                  <span className="d-block w-100 fw-bold bg-success mt-2 rounded p-2 text-center text-white">
+                                    {t('add_image')}
+                                  </span>
                                 </label>
                               </InputGroup>
                             </Col>
                             <Col sm="8">
-                              <div id={`prod-${prod.id}`} key={`prod-key-${prod.id}-${index}`} className="mb-3 border rounded p-2 fs-7 mt-2 mt-md-0">
+                              <div
+                                id={`prod-${prod.id}`}
+                                key={`prod-key-${prod.id}-${index}`}
+                                className="fs-7 mt-md-0 mb-3 mt-2 rounded border p-2"
+                              >
                                 <Row>
                                   <Col>
                                     <h5 className="fw-bold">
                                       {t('product')} {index + 1}
                                     </h5>
                                   </Col>
-                                  <Col sm className="d-flex justify-content-end">
+                                  <Col
+                                    sm
+                                    className="d-flex justify-content-end"
+                                  >
                                     {massiveProducts.length > 1 && (
                                       <Button
                                         variant="link"
@@ -428,7 +519,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                           const newProducts = massiveProducts
                                             .filter((el) => el.id !== prod.id)
                                             .map((prod, indexProd) => {
-                                              prod.order = (category?.products?.length ?? 0) + indexProd
+                                              prod.order =
+                                                (category?.products?.length ??
+                                                  0) + indexProd
                                               return prod
                                             })
                                           setMassiveProducts(newProducts)
@@ -442,7 +535,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                 <Row>
                                   <Col>
                                     <FormGroup>
-                                      <Form.Label>{t('product_name')}</Form.Label>
+                                      <Form.Label>
+                                        {t('product_name')}
+                                      </Form.Label>
                                       <Form.Control
                                         id={`prod-name-${prod.id}`}
                                         maxLength={55}
@@ -451,7 +546,12 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                           prod.name = e.target.value
                                           setUpdateHTML(updateHTML + 1)
                                         }}
-                                        onKeyDown={(e) => modifyFontValues(e, { prop: prod.name, setUpdateHTML })}
+                                        onKeyDown={(e) =>
+                                          modifyFontValues(e, {
+                                            prop: prod.name,
+                                            setUpdateHTML,
+                                          })
+                                        }
                                       />
 
                                       {/* <Form.Control.Feedback
@@ -465,16 +565,28 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
 
                                     <div className="text-end">
                                       <span className="me">
-                                        <span id={`prodName-${prod.id}`}>{prod.name?.length}</span> / 55 {t('characters')}{' '}
+                                        <span id={`prodName-${prod.id}`}>
+                                          {prod.name?.length}
+                                        </span>{' '}
+                                        / 55 {t('characters')}{' '}
                                       </span>
                                     </div>
                                   </Col>
                                 </Row>
                                 <Row className="mt-2">
-                                  {(plansCategory.includes('basic') || plansCategory.includes('package')) && (
-                                    <Col sm={plansCategory.includes('table') ? '6' : '12'}>
+                                  {(plansCategory.includes('basic') ||
+                                    plansCategory.includes('package')) && (
+                                    <Col
+                                      sm={
+                                        plansCategory.includes('table')
+                                          ? '6'
+                                          : '12'
+                                      }
+                                    >
                                       <FormGroup>
-                                        <Form.Label>{t('price')} Delivery</Form.Label>
+                                        <Form.Label>
+                                          {t('price')} Delivery
+                                        </Form.Label>
                                         <Form.Control
                                           defaultValue={prod.value}
                                           onChange={(e) => {
@@ -486,14 +598,22 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                     </Col>
                                   )}
                                   {plansCategory.includes('table') && (
-                                    <Col sm={plansCategory.length === 1 ? '12' : '6'}>
+                                    <Col
+                                      sm={
+                                        plansCategory.length === 1 ? '12' : '6'
+                                      }
+                                    >
                                       <FormGroup>
-                                        <Form.Label>{t('table_price')}</Form.Label>
+                                        <Form.Label>
+                                          {t('table_price')}
+                                        </Form.Label>
                                         <Form.Control
                                           defaultValue={prod.valueTable}
                                           onChange={(e) => {
                                             mask(e, 'currency')
-                                            prod.valueTable = Number(e.target.value)
+                                            prod.valueTable = Number(
+                                              e.target.value
+                                            )
                                           }}
                                         />
                                       </FormGroup>
@@ -540,7 +660,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                 <Row className="mt-2">
                                   <Col sm>
                                     <FormGroup>
-                                      <Form.Label>{t('product_description')}</Form.Label>
+                                      <Form.Label>
+                                        {t('product_description')}
+                                      </Form.Label>
                                       <Form.Control
                                         as="textarea"
                                         maxLength={500}
@@ -549,11 +671,19 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                           prod.description = e.target.value
                                           setUpdateHTML(updateHTML + 1)
                                         }}
-                                        onKeyDown={(e) => modifyFontValues(e, { prop: prod.description, setUpdateHTML })}
+                                        onKeyDown={(e) =>
+                                          modifyFontValues(e, {
+                                            prop: prod.description,
+                                            setUpdateHTML,
+                                          })
+                                        }
                                       />
                                       <div className="text-end">
                                         <span className="me">
-                                          <span id={`prodDesc-${prod.id}`}>{prod.description?.length}</span> / 500 {t('characters')}
+                                          <span id={`prodDesc-${prod.id}`}>
+                                            {prod.description?.length}
+                                          </span>{' '}
+                                          / 500 {t('characters')}
                                         </span>
                                       </div>
                                     </FormGroup>
@@ -562,10 +692,19 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                               </div>
                               {massiveProducts.length - index === 1 && (
                                 <div className="d-flex gap-2">
-                                  <Button style={{ flex: '0 1 150px' }} disabled={step > 1} onClick={(e) => addMassiveProducts()}>
+                                  <Button
+                                    style={{ flex: '0 1 150px' }}
+                                    disabled={step > 1}
+                                    onClick={(e) => addMassiveProducts()}
+                                  >
                                     {t('add')} +
                                   </Button>
-                                  <Button style={{ flex: '0 1 150px' }} disabled={step > 1} variant="success" onClick={(e) => replicateItem(prod)}>
+                                  <Button
+                                    style={{ flex: '0 1 150px' }}
+                                    disabled={step > 1}
+                                    variant="success"
+                                    onClick={(e) => replicateItem(prod)}
+                                  >
                                     {t('duplicate_r')}
                                   </Button>
                                 </div>
@@ -586,8 +725,12 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                   typeModal="massive"
                   complementType="default"
                   showVinculateComplement={massiveProducts.length > 1}
-                  saveComplements={(newComplements) => setComplements(newComplements)}
-                  saveRecicledComplements={(recicled) => setRecicledComplements(recicled)}
+                  saveComplements={(newComplements) =>
+                    setComplements(newComplements)
+                  }
+                  saveRecicledComplements={(recicled) =>
+                    setRecicledComplements(recicled)
+                  }
                 />
               )}
               {step === 3 && (
@@ -599,7 +742,7 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                       </h4>
                     </Card.Header>
                     <Card.Body>
-                      <Container fluid className="px-0 mx-0">
+                      <Container fluid className="mx-0 px-0">
                         <Row className="text-dark">
                           <Col sm>
                             <h6 className="mb-4"></h6>
@@ -611,7 +754,10 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                     className="pt-2"
                                     defaultChecked={store.delivery}
                                     onChange={(e) => {
-                                      setStore({ ...store, delivery: e.target.checked })
+                                      setStore({
+                                        ...store,
+                                        delivery: e.target.checked,
+                                      })
                                     }}
                                   />
                                 </Form.Label>
@@ -623,7 +769,10 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                     className="pt-2"
                                     defaultChecked={store.table}
                                     onChange={(e) => {
-                                      setStore({ ...store, table: e.target.checked })
+                                      setStore({
+                                        ...store,
+                                        table: e.target.checked,
+                                      })
                                     }}
                                   />
                                 </Form.Label>
@@ -635,7 +784,10 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                     className="pt-2"
                                     defaultChecked={store.package}
                                     onChange={(e) => {
-                                      setStore({ ...store, package: e.target.checked })
+                                      setStore({
+                                        ...store,
+                                        package: e.target.checked,
+                                      })
                                     }}
                                   />
                                 </Form.Label>
@@ -660,12 +812,12 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
 
             <Modal.Footer className="">
               <Row className="d-flex flex-grow-1">
-                <Col className="flex-grow-1 d-flex gap-2 flex-wrap justify-content-between">
-                  <div className="flex-grow-1 flex-md-grow-0 d-flex gap-2 order-3 order-md-0   ">
+                <Col className="flex-grow-1 d-flex justify-content-between flex-wrap gap-2">
+                  <div className="flex-grow-1 flex-md-grow-0 d-flex order-md-0 order-3 gap-2   ">
                     <Button
                       disabled={!massiveProducts.length}
                       variant="danger"
-                      className="w-100 order-1 order-md-0"
+                      className="w-100 order-md-0 order-1"
                       onClick={(e) => {
                         props.onHide()
                         resetState()
@@ -679,10 +831,12 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                       </Button>
                     )}
                   </div>
-                  <div className="d-flex gap-2 justify-content-end flex-grow-1 flex-md-grow-0">
+                  <div className="d-flex justify-content-end flex-grow-1 flex-md-grow-0 gap-2">
                     <Button
                       style={{ flex: '1 0 150px' }}
-                      disabled={!massiveProducts.length || (invalidWeek && step === 3)}
+                      disabled={
+                        !massiveProducts.length || (invalidWeek && step === 3)
+                      }
                       variant={step === 3 ? 'success' : 'orange'}
                       onClick={step === 3 ? createProductsMassive : nextStep}
                     >
@@ -692,7 +846,10 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                 </Col>
               </Row>
             </Modal.Footer>
-            <OverlaySpinner show={showSpinner} textSpinner={t('creating_products')} />
+            <OverlaySpinner
+              show={showSpinner}
+              textSpinner={t('creating_products')}
+            />
           </div>
         </Modal>
         <CropModal
@@ -701,7 +858,9 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
           typeCrop="productImage"
           setImageBlob={async (blob, url) => {
             if (productTarget) {
-              const image = document.getElementById(`image-${productTarget.id}`) as HTMLImageElement
+              const image = document.getElementById(
+                `image-${productTarget.id}`
+              ) as HTMLImageElement
               if (image) {
                 image.src = url as string
                 productTarget.image = url

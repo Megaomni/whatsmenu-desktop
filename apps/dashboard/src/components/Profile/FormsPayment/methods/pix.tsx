@@ -15,7 +15,7 @@ type PixForm = ProfileFormPayment & {
   onlinePix: boolean
 }
 
-export interface OnlinePaymentSettingsProps extends PaymentSettingsProps { }
+export interface OnlinePaymentSettingsProps extends PaymentSettingsProps {}
 
 const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
   const { t } = useTranslation()
@@ -32,7 +32,10 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
     onlinePix: profileState?.options.onlinePix,
     ...formPayment,
   })
-  const keyArray = formPayment?.payment === 'pix' ? ['Telefone', 'E-mail', 'CPF', 'CNPJ', 'Aleatória'] : [t('user'), 'Email']
+  const keyArray =
+    formPayment?.payment === 'pix'
+      ? ['Telefone', 'E-mail', 'CPF', 'CNPJ', 'Aleatória']
+      : [t('user'), 'Email']
 
   const {
     register,
@@ -88,7 +91,11 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
       ...state,
       ...formPayment,
     }))
-    reset(profileState?.formsPayment?.find((method) => method.payment === formPayment?.payment))
+    reset(
+      profileState?.formsPayment?.find(
+        (method) => method.payment === formPayment?.payment
+      )
+    )
   }, [profileState])
 
   useEffect(() => {
@@ -99,7 +106,10 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
   }, [pixSettings])
 
   useEffect(() => {
-    if (showFinPassModal === false && dataToBeUpdated?.payment === formPayment?.payment) {
+    if (
+      showFinPassModal === false &&
+      dataToBeUpdated?.payment === formPayment?.payment
+    ) {
       // reset()
     }
   }, [showFinPassModal])
@@ -113,7 +123,7 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
           })}
         >
           <Card.Header className="text-dark d-flex justify-content-between">
-            <h4 className="text-sm mb-0">
+            <h4 className="mb-0 text-sm">
               <b>{pixSettings?.label}</b>
             </h4>
             <div className="d-flex gap-5">
@@ -137,11 +147,13 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
             ) : null} */}
             <Row className="mt-3">
               <>
-                <Col md="5" lg className="mb-2 mt-2 position-relative">
+                <Col md="5" lg className="position-relative mb-2 mt-2">
                   <Form.Label>{t('key_type')}</Form.Label>
                   <Form.Select
                     // disabled={formPayment?.payment === 'pix'}
-                    {...register('key.type', { onChange: () => setValue('key.value', '') })}
+                    {...register('key.type', {
+                      onChange: () => setValue('key.value', ''),
+                    })}
                     defaultValue={pixSettings?.key?.type}
                   >
                     {keyArray?.map((type) => (
@@ -152,13 +164,16 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
                   </Form.Select>
                 </Col>
 
-                <Col md="5" lg className="mb-2 mt-2 position-relative">
+                <Col md="5" lg className="position-relative mb-2 mt-2">
                   <Form.Label>{t('key')}</Form.Label>
                   <Controller
                     name="key.value"
                     control={control}
                     defaultValue={pixSettings?.key?.value}
-                    rules={{ required: true, validate: (value) => validatePix(value) }}
+                    rules={{
+                      required: true,
+                      validate: (value) => validatePix(value),
+                    }}
                     render={({ field }) => (
                       <>
                         <InputMask
@@ -170,7 +185,11 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
                           onChange={field.onChange}
                           className={`form-control ${errors.key && 'is-invalid'} `}
                         />
-                        <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }}>
+                        <Form.Control.Feedback
+                          tooltip
+                          type="invalid"
+                          style={{ zIndex: 0 }}
+                        >
                           {t('invalid_pix')}
                         </Form.Control.Feedback>
                       </>
@@ -196,7 +215,7 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
                       //   formPayment?.payment === 'pix' ? (!!profileState?.options.recipient ? true : !!Object.keys(errors).length) : !!Object.keys(errors).length
                       // }
                       variant="success"
-                      className="flex-grow-1 mt-auto mb-3"
+                      className="flex-grow-1 mb-3 mt-auto"
                       type="submit"
                     >
                       {t('save')}
