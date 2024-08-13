@@ -27,13 +27,27 @@ class Profile extends Model {
       profile.address = JSON.stringify({})
       profile.formsPayment = [
         { flags: [], status: true, payment: 'money' },
-        { flags: [], status: true, payment: 'credit' },
         { flags: [], status: true, payment: 'debit' },
-        { flags: [], status: false, payment: 'snack' },
-        { flags: [], status: false, payment: 'food' },
-        { key: { type: '', value: '' }, status: false, payment: 'pix' },
-        { key: { type: 'email', value: '' }, status: false, payment: 'picpay' },
+        { flags: [], status: true, payment: 'credit' },
       ]
+
+      switch (profile.options.locale.language) {
+        case 'pt-BR':
+          profile.formsPayment.concat([
+            { flags: [], status: false, payment: 'snack' },
+            { flags: [], status: false, payment: 'food' },
+            { key: { type: '', value: '' }, status: false, payment: 'pix' },
+            { key: { type: 'email', value: '' }, status: false, payment: 'picpay' },
+          ])
+          break
+
+        case 'en-US':
+          profile.formsPayment.concat([
+            { flags: [], status: false, payment: 'snack' },
+            { flags: [], status: false, payment: 'food' },
+          ])
+          break
+      }
 
       const addon = { status: false, type: 'fee', valueType: 'fixed', value: 0 }
 
