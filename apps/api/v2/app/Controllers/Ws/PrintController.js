@@ -24,19 +24,18 @@ class PrintController {
     this.socket.broadcast('directPrint', data)
   }
 
-  onResume(data){
+  onResume(data) {
     this.socket.broadcast(`resume:${data.slug}`, data)
   }
 
   async onSucessesFullPrinting(data) {
-   const cart = await Cart.find(data.requestId)
-   if (cart) {
-    cart.print = true;
-   await cart.save()
-   }
-   this.socket.broadcast('sucessesFullPrinting', data)
+    const cart = await Cart.find(data.requestId)
+    if (cart) {
+      cart.print = true
+      await cart.save()
+    }
+    this.socket.broadcast('sucessesFullPrinting', data)
   }
-
 }
 
 module.exports = PrintController

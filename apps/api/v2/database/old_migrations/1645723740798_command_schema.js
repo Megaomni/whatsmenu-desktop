@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class CommandSchema extends Schema {
-  up () {
+  up() {
     this.table('commands', (table) => {
       // alter table
       table.json('fees').after('status')
@@ -12,7 +12,7 @@ class CommandSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('commands', (table) => {
       // reverse alternations
       table.dropColumn('fees')

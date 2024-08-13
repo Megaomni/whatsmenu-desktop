@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddFexPlanTypeSchema extends Schema {
-  up () {
+  up() {
     this.table('flex_plans', (table) => {
       table.enu('type', ['register', 'upgrade', 'promote']).after('name').notNullable().defaultTo('register')
     })
   }
 
-  down () {
+  down() {
     this.table('flex_plans', (table) => {
       table.dropColumn('type')
     })

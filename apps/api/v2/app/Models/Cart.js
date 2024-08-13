@@ -1,7 +1,7 @@
 'use strict'
 
 const { default: axios } = require('axios')
-const Env = use('Env');
+const Env = use('Env')
 
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')

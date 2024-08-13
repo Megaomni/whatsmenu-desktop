@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class AddinvoiceLimitSchema extends Schema {
-  up () {
+  up() {
     this.table('system_requests', (table) => {
       // alter table
       table.date('limit').nullable().after('expiration')
@@ -13,7 +13,7 @@ class AddinvoiceLimitSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('system_requests', (table) => {
       // reverse alternations
       table.dropColumn('limit')

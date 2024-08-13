@@ -18,20 +18,18 @@ class Invoice extends Model {
       invoice.itens = JSON.stringify(invoice.itens)
     })
 
-
-
     this.addHook('afterSave', async (invoice) => {
       invoice.itens = JSON.parse(invoice.itens)
-      const user = await invoice.user().with("profile").fetch()
+      const user = await invoice.user().with('profile').fetch()
 
-      if (invoice.status === 'paid'){
+      if (invoice.status === 'paid') {
         const profile = await user.profile().fetch()
         if (profile) {
           profile.status = 1
           await profile.save()
         }
 
-        if(user.controls.canceled){
+        if (user.controls.canceled) {
           user.controls.canceled = false
           await user.save()
         }
@@ -62,18 +60,15 @@ class Invoice extends Model {
 
         await GoogleProvider.sheets.addPaidPlan(spreadSheetId, range, valueFind);
         */
-
-
       }
     })
-
 
     this.addHook('afterFind', (invoice) => {
       invoice.itens = JSON.parse(invoice.itens)
     })
 
     this.addHook('afterFetch', (invoices) => {
-      invoices.forEach(invoice => {
+      invoices.forEach((invoice) => {
         invoice.itens = JSON.parse(invoice.itens)
       })
     })
@@ -88,7 +83,7 @@ class Invoice extends Model {
   }
 
   firstRequest(invoice_code = null) {
-    return this.hasMany('App/Models/ReadOnly/SystemRequest', 'id', 'invoiceId').where({ invoice_code }).first();
+    return this.hasMany('App/Models/ReadOnly/SystemRequest', 'id', 'invoiceId').where({ invoice_code }).first()
   }
 }
 

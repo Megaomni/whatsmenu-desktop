@@ -17,7 +17,6 @@ const Encryption = use('Encryption')
 
 class ProfileOptionSeeder {
   async run() {
-
     // const profiles = await Profile.all()
     // const optionsPackage = {
     //   active: false,
@@ -106,56 +105,51 @@ class ProfileOptionSeeder {
       //   await profile.save()
       // }
 
-      let page = 1;
-      let profiles;
+      let page = 1
+      let profiles
 
       do {
-
         profiles = await Profile.query().paginate(page, 1000)
 
         for (const profile of profiles.rows) {
-
-          
-          if (typeof profile.options === "string") {
+          if (typeof profile.options === 'string') {
             profile.options = JSON.parse(profile.options)
           }
-          
+
           if (profile.options.package.timePackage) {
-            profile.options.package.intervalTime = profile.options.package.timePackage.intervalTime;
+            profile.options.package.intervalTime = profile.options.package.timePackage.intervalTime
           } else {
-            profile.options.package.intervalTime = 30;
+            profile.options.package.intervalTime = 30
           }
-          
+
           if (profile.options.package.allowPackageDay !== undefined && profile.options.package.weekDistance !== undefined) {
             profile.options.package.distanceDays = {
               start: profile.options.package.allowPackageDay ? 0 : 1,
-              end: profile.options.package.weekDistance * 7
+              end: profile.options.package.weekDistance * 7,
             }
           } else {
             profile.options.package.distanceDays = {
               start: 0,
-              end: 7
+              end: 7,
             }
           }
-          
-          profile.options.package.week = profile.week;
-          profile.options.package.maxPackageHour = 1;
 
-          delete profile.options.package.allowPackageDay;
-          delete profile.options.package.timePackage;
-          delete profile.options.package.weekDays;
-          delete profile.options.package.weekDistance;
+          profile.options.package.week = profile.week
+          profile.options.package.maxPackageHour = 1
+
+          delete profile.options.package.allowPackageDay
+          delete profile.options.package.timePackage
+          delete profile.options.package.weekDays
+          delete profile.options.package.weekDistance
 
           await profile.save()
         }
 
-        page++;
-      } while (page <= profiles.pages.lastPage);
-
+        page++
+      } while (page <= profiles.pages.lastPage)
     } catch (e) {
       console.log(e)
     }
-
   }
 }
 

@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddProfileTypeSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       table.string('typeStore', 150).after('slug').nullable()
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       table.dropColumn('typeStore')
     })

@@ -10,9 +10,7 @@ const Ws = use('Ws')
 | Global middleware are executed on each Websocket channel subscription.
 |
 */
-const globalMiddleware = [
-]
-
+const globalMiddleware = []
 
 /*
 |--------------------------------------------------------------------------
@@ -30,10 +28,6 @@ const globalMiddleware = [
 | // use
 | Ws.channel('chat', 'ChatController').middleware(['auth'])
 */
-const namedMiddleware = {
-}
+const namedMiddleware = {}
 
-
-Ws
-  .registerGlobal(globalMiddleware)
-  .registerNamed(namedMiddleware)
+Ws.registerGlobal(globalMiddleware).registerNamed(namedMiddleware)

@@ -4,17 +4,16 @@
 const Schema = use('Schema')
 
 class ProductsSchema extends Schema {
-  up () {
+  up() {
     this.table('products', (table) => {
       // alter table
       table.float('valueTable').notNullable().defaultTo(0).after('promoteStatus')
       table.float('promoteValueTable').nullable().after('valueTable')
       table.boolean('promoteStatusTable').notNullable().defaultTo(false).after('promoteValueTable')
-
     })
   }
 
-  down () {
+  down() {
     this.table('products', (table) => {
       // reverse alternations
       table.dropColumn('valueTable')

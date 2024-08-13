@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class InventoryAlertSchema extends Schema {
-  up () {
+  up() {
     this.table('products', (table) => {
       table.integer('amount').nullable().after('description').defaultTo(0)
       table.integer('amount_alert').nullable().after('description').defaultTo(0)
@@ -12,7 +12,7 @@ class InventoryAlertSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('products', (table) => {
       table.dropColumn('amount')
       table.dropColumn('amount_alert')

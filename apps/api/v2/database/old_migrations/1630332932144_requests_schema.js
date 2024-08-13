@@ -4,15 +4,15 @@
 const Schema = use('Schema')
 
 class RequestsSchema extends Schema {
-  up () {
+  up() {
     this.table('requests', (table) => {
       table.integer('commandId').nullable().unsigned().references('id').inTable('commands').after('cupomId')
     })
   }
 
-  down () {
+  down() {
     this.table('requests', (table) => {
-      table.dropForeign('commandId', 'requests_commandid_foreign');
+      table.dropForeign('commandId', 'requests_commandid_foreign')
       table.dropColumn('commandId')
     })
   }

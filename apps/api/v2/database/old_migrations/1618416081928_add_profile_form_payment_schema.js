@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddProfileFormPaymentSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       table.json('formsPayment').nullable().after('address')
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       table.dropColumn('formsPayment')
     })

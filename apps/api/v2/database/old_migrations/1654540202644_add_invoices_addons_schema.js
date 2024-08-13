@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddInvoicesAddonsSchema extends Schema {
-  up () {
+  up() {
     this.table('invoices', (table) => {
       table.enu('type', ['first', 'monthly', 'upgrade', 'addon']).alter()
     })
   }
 
-  down () {
+  down() {
     this.table('invoices', (table) => {
       table.enu('type', ['first', 'monthly', 'upgrade']).alter()
     })

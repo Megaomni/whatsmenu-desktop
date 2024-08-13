@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class CupomSchema extends Schema {
-  up () {
+  up() {
     this.create('cupons', (table) => {
       table.increments()
       table.integer('profileId').unsigned().references('id').inTable('profiles').notNullable()
@@ -18,7 +18,7 @@ class CupomSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.drop('cupons')
   }
 }

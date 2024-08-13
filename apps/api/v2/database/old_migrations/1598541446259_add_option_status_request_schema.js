@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddOptionStatusRequestSchema extends Schema {
-  up () {
+  up() {
     this.table('requests', (table) => {
       table.enum('status', ['production', 'transport', 'delivered', 'canceled']).nullable().defaultTo(null).alter()
     })
   }
 
-  down () {
+  down() {
     this.table('requests', (table) => {
       table.enum('status', ['production', 'transport']).nullable().defaultTo(null).alter()
     })

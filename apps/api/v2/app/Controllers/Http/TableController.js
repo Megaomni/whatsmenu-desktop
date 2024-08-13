@@ -8,13 +8,11 @@ const Profile = use('App/Models/Profile')
 const Fee = use('App/Models/Fee')
 const Cashier = use('App/Models/Cashier')
 const Ws = use('Ws')
-const moment = require("moment")
+const moment = require('moment')
 const axios = require('axios')
 const { DateTime } = require('luxon')
 
-
 class TableController {
-
   async create({ request, response, auth }) {
     try {
       console.log('Starting: ', { controller: 'TableController', linha: 17, metodo: 'create' })
@@ -60,7 +58,6 @@ class TableController {
       table.merge(data)
       await table.save()
 
-
       return response.json(table)
     } catch (error) {
       console.error(error)
@@ -85,7 +82,7 @@ class TableController {
 
       let tables = await profile.tables().fetch()
       tables = tables.toJSON()
-      tables = tables.filter(table => table.status === 1 && table.deleted_at === null)
+      tables = tables.filter((table) => table.status === 1 && table.deleted_at === null)
 
       return response.json(tables)
     } catch (error) {
@@ -97,7 +94,7 @@ class TableController {
   async getTables({ request, response, auth, params }) {
     try {
       console.log('Starting: ', { controller: 'TableController', linha: 96, metodo: 'getTables' })
-      let profile, user;
+      let profile, user
       if (!params.profileId) {
         user = await auth.getUser()
         profile = await user.profile().fetch()
@@ -109,28 +106,38 @@ class TableController {
         return response.json([])
       }
 
-      let tables = await profile.tables().where('deleted_at', null).with('tablesOpened', query => {
-        return query
-          .whereBetween('updated_at', [
-            moment().subtract(DateTime.local().ts > DateTime.fromObject({ hour: 4, minute: 0 }).ts ? 0 : 1, 'days').format('YYYY-MM-DD'),
-            moment().add(1, 'days').format('YYYY-MM-DD')
-          ])
-          .where('status', 0)
-          .with('commands', query => {
-            return query.with('carts', (query) => {
-              return query.where('type', 'T')
+      let tables = await profile
+        .tables()
+        .where('deleted_at', null)
+        .with('tablesOpened', (query) => {
+          return query
+            .whereBetween('updated_at', [
+              moment()
+                .subtract(DateTime.local().ts > DateTime.fromObject({ hour: 4, minute: 0 }).ts ? 0 : 1, 'days')
+                .format('YYYY-MM-DD'),
+              moment().add(1, 'days').format('YYYY-MM-DD'),
+            ])
+            .where('status', 0)
+            .with('commands', (query) => {
+              return query.with('carts', (query) => {
+                return query.where('type', 'T')
+              })
             })
-          })
-      }).fetch()
+        })
+        .fetch()
 
       tables = tables.toJSON()
 
       for (const table of tables) {
-        const openedResult = await TableOpened.query().where('tableId', table.id).where('status', 1).with('commands', query => {
-          return query.with('carts', (query) => {
-            return query.where('type', 'T')
+        const openedResult = await TableOpened.query()
+          .where('tableId', table.id)
+          .where('status', 1)
+          .with('commands', (query) => {
+            return query.with('carts', (query) => {
+              return query.where('type', 'T')
+            })
           })
-        }).first()
+          .first()
         if (openedResult) {
           table.opened = openedResult.toJSON()
         }
@@ -146,8 +153,11 @@ class TableController {
   async getTable({ params, response }) {
     try {
       console.log('Starting: ', { controller: 'TableController', linha: 137, metodo: 'getTable' })
-      let table = await Table.query().where('id', params.tableId)
-        .with('opened', (openedQuery) => openedQuery.with('commands', commandQuery => commandQuery.with('carts', (cartsQuery) => cartsQuery.where('type', 'T').with('itens'))))
+      let table = await Table.query()
+        .where('id', params.tableId)
+        .with('opened', (openedQuery) =>
+          openedQuery.with('commands', (commandQuery) => commandQuery.with('carts', (cartsQuery) => cartsQuery.where('type', 'T').with('itens')))
+        )
         .first()
       return response.json(table)
     } catch (error) {
@@ -229,11 +239,11 @@ class TableController {
       return response.send(
         view.render('inner.settings.table', {
           profile: prof,
-          profileSettings: JSON.stringify(prof)
+          profileSettings: JSON.stringify(prof),
         })
       )
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -297,14 +307,14 @@ class TableController {
       let { fees, formsPayment, commands } = request.all()
 
       if (!openedId) {
-        return response.status(500).json({ message: "openedId não foi definido" })
+        return response.status(500).json({ message: 'openedId não foi definido' })
       }
 
       let opened = await TableOpened.query().with('commands').where('id', openedId).first()
       const table = await opened.table().fetch()
 
       for (const command of opened.$relations.commands.rows) {
-        const requestCommand = commands.find(c => c.id === command.id)
+        const requestCommand = commands.find((c) => c.id === command.id)
         if (requestCommand) {
           command.fees = JSON.stringify(requestCommand.fees)
         }
@@ -328,24 +338,29 @@ class TableController {
         topic.broadcast(`command:${profile.slug}`, { commandsWs: [{ ...commands[0] }], tableId: table.id, finish: 'table' })
       }
 
-      opened = await TableOpened.query().with('commands', (commandsQuery) => commandsQuery.with('carts', (cartsQuery) => cartsQuery.where('type', 'T').with('command.opened').with('itens'))).where('id', openedId).first()
+      opened = await TableOpened.query()
+        .with('commands', (commandsQuery) =>
+          commandsQuery.with('carts', (cartsQuery) => cartsQuery.where('type', 'T').with('command.opened').with('itens'))
+        )
+        .where('id', openedId)
+        .first()
 
       table.opened = opened.toJSON()
 
       const cashier = await Cashier.query().where({ id: cashierId }).with('openeds').with('carts').first()
       cashier.transactions.push({
         obs: `Encerramento mesa ${table.name}`,
-        type: "income",
+        type: 'income',
         formsPayment: opened.formsPayment,
-        value: opened.formsPayment.reduce((total, formPayment) => total += formPayment.value, 0),
-        created_at: DateTime.local().toFormat("yyyy-MM-dd HH:mm:ss")
+        value: opened.formsPayment.reduce((total, formPayment) => (total += formPayment.value), 0),
+        created_at: DateTime.local().toFormat('yyyy-MM-dd HH:mm:ss'),
       })
 
       await cashier.save()
 
       return response.json({ table, cashier })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }

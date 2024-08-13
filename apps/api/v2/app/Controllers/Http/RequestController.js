@@ -15,7 +15,6 @@ const Cupom = use('App/Models/Cupom')
 const Utility = use('Utility')
 const luxon = require('luxon')
 
-
 class RequestController {
   async index({ auth, response, view }) {
     try {
@@ -50,7 +49,7 @@ class RequestController {
           if (item.cupom.type === 'value') {
             value = item.cupom.value
           } else if (item.cupom.type === 'percent') {
-            value = item.total * item.cupom.value / 100
+            value = (item.total * item.cupom.value) / 100
           }
         }
 
@@ -62,7 +61,7 @@ class RequestController {
         view.render('inner.requests.newRequest', {
           profile: profile.toJSON(),
           requests: [],
-          placeholders: JSON.stringify(placeholders)
+          placeholders: JSON.stringify(placeholders),
         })
       )
       // response.send(
@@ -75,7 +74,7 @@ class RequestController {
     } catch (error) {
       console.error({
         date: new Date(),
-        error: error
+        error: error,
       })
       throw error
     }
@@ -95,7 +94,7 @@ class RequestController {
 
         response.json({
           success: true,
-          request: requestStore
+          request: requestStore,
         })
       } else if (profile.id === requestStore.profileId && data.id && data.package) {
         requestStore.packageDate = data.package
@@ -104,7 +103,7 @@ class RequestController {
         return response.json({
           success: true,
           text: 'Data atualizada com sucesso.',
-          request: requestStore
+          request: requestStore,
         })
       } else {
         response.status(403)
@@ -112,15 +111,14 @@ class RequestController {
           success: false,
           error: {
             code: 403,
-            message: 'Este pedido não é do seu perfil.'
-          }
+            message: 'Este pedido não é do seu perfil.',
+          },
         })
       }
-
     } catch (error) {
       console.error({
         date: new Date(),
-        error: error
+        error: error,
       })
     }
   }
@@ -130,7 +128,7 @@ class RequestController {
     // console.log(request.headers());
     // return response.json(request.headers());
     const data = request.except(['_csrf', '_method'])
-    data.client.ip = request.header('x-real-ip');
+    data.client.ip = request.header('x-real-ip')
     // console.log(data.client);
     const convertFromReal = (text) => {
       if (text && typeof text === 'string') {
@@ -164,58 +162,59 @@ class RequestController {
       console.log(profile.options.migrated_at)
       if (profile.options.migrated_at) {
         return response.status(401).json({
-          code: "401",
-          message: "Desculpe nos o transtorno, não foi possível registrar seu pedido, atualize a página e tente novamente."
+          code: '401',
+          message: 'Desculpe nos o transtorno, não foi possível registrar seu pedido, atualize a página e tente novamente.',
         })
       }
 
       if (!profile.status) {
         return response.status(401).json({
-          code: "401",
-          message: "Desculpe nos o transtorno, mas esta loja no momento se encontra fechada."
+          code: '401',
+          message: 'Desculpe nos o transtorno, mas esta loja no momento se encontra fechada.',
         })
       }
 
-      if (profile.options.blackList && profile.options.blackList.find(bl => bl.whatsapp === data.client.contact || bl.ip === data.client.ip)) {
+      if (profile.options.blackList && profile.options.blackList.find((bl) => bl.whatsapp === data.client.contact || bl.ip === data.client.ip)) {
         return response.status(403).json({
-          code: "403",
-          message: "Cliente Bloqueado!"
+          code: '403',
+          message: 'Cliente Bloqueado!',
         })
       }
 
       const user = await profile.user().fetch()
-      let newReq = null;
-      let printTopic = null;
-      let clientRequest = await Request.query().where({
-        profileId: profile.id,
-        code: data.code
-      }).first()
+      let newReq = null
+      let printTopic = null
+      let clientRequest = await Request.query()
+        .where({
+          profileId: profile.id,
+          code: data.code,
+        })
+        .first()
 
       let command
       let tableOpened
       let table
 
-      if (data.type === "T") {
-        command = data.type === "T" ? await Command.find(data.commandId) : undefined;
-        tableOpened = command ? await command.table().fetch() : undefined;
-        table = tableOpened ? await tableOpened.table().fetch() : undefined;
+      if (data.type === 'T') {
+        command = data.type === 'T' ? await Command.find(data.commandId) : undefined
+        tableOpened = command ? await command.table().fetch() : undefined
+        table = tableOpened ? await tableOpened.table().fetch() : undefined
         if (!table.status || !command.status) {
           response.status(405)
           return response.json({
             success: false,
             code: '405-3',
             message: !command.status ? 'Comanda Encerrada!' : 'Mesa pausada!',
-            tableIsPaused: true
+            tableIsPaused: true,
           })
         }
       }
 
-
-      await Database.transaction(async trx => {
-        profile.request++;
+      await Database.transaction(async (trx) => {
+        profile.request++
 
         data.code = profile.request
-        await profile.save(trx);
+        await profile.save(trx)
 
         let duplicate = null
         /*
@@ -239,29 +238,28 @@ class RequestController {
           return response.json({
             success: false,
             code: '405-2',
-            message: 'this request already exists!'
+            message: 'this request already exists!',
           })
         }
 
         if (!clientRequest && !duplicate) {
           let tx = { value: 0, time: 0 }
           if (profile.typeDelivery === 'km' && data.typeDelivery == 0) {
-            const km = profile.taxDelivery.find(tax => (tax.distance > 1000 ? tax.distance : tax.distance * 1000) >= data.client.distance)
+            const km = profile.taxDelivery.find((tax) => (tax.distance > 1000 ? tax.distance : tax.distance * 1000) >= data.client.distance)
 
             if (km) {
               tx = km
             } else {
               return response.status(403).json({
                 code: '403-239',
-                message: 'Delivery out of range'
-              });
+                message: 'Delivery out of range',
+              })
             }
-
           } else if (profile.typeDelivery === 'neighborhood' && data.typeDelivery == 0) {
-            const ct = profile.taxDelivery.find(t => t.city === data.client.city)
-            console.log(`ct: ${JSON.stringify(ct)}`);
-            tx = ct.neighborhoods.find(n => n.name === data.client.neighborhood)
-            console.log(`tx: ${JSON.stringify(tx)}`);
+            const ct = profile.taxDelivery.find((t) => t.city === data.client.city)
+            console.log(`ct: ${JSON.stringify(ct)}`)
+            tx = ct.neighborhoods.find((n) => n.name === data.client.neighborhood)
+            console.log(`tx: ${JSON.stringify(tx)}`)
           }
 
           if (data.cupom) {
@@ -281,57 +279,52 @@ class RequestController {
           // }
 
           if (profile.options.package.active && data.packageDate) {
-
-            let requestsP;
-            let requests = [];
+            let requestsP
+            let requests = []
             let page = 1
             const packageDateFormat = DateTime.fromJSDate(new Date(data.packageDate))
             const maxProfilePackage = Number(profile.options.package.maxPackage)
             const maxProfilePackageHour = Number(profile.options.package.maxPackageHour)
 
-
             do {
-              requestsP = await profile.requests()
+              requestsP = await profile
+                .requests()
                 .where('type', 'P')
-                .whereBetween('packageDate', [packageDateFormat.toFormat("yyyy-MM-dd 00:00:00"), packageDateFormat.toFormat("yyyy-MM-dd 23:59:59")])
-                .whereNull("status", query => query.orWhere("status", "!=", "canceled"))
+                .whereBetween('packageDate', [packageDateFormat.toFormat('yyyy-MM-dd 00:00:00'), packageDateFormat.toFormat('yyyy-MM-dd 23:59:59')])
+                .whereNull('status', (query) => query.orWhere('status', '!=', 'canceled'))
                 .orderBy('packageDate')
                 .paginate(page, 30)
 
               requests.push(...requestsP.rows)
               page++
-            } while (page <= requestsP.pages.lastPage);
+            } while (page <= requestsP.pages.lastPage)
 
-            const quantityRequestsPackage = requests.filter(req => {
-
-              return DateTime.fromJSDate(new Date(req.packageDate)).toFormat("yyyy-MM-dd HH:mm:ss") === data.packageDate
+            const quantityRequestsPackage = requests.filter((req) => {
+              return DateTime.fromJSDate(new Date(req.packageDate)).toFormat('yyyy-MM-dd HH:mm:ss') === data.packageDate
             }).length
 
             if (requests.length >= maxProfilePackage) {
-
               throw {
                 success: false,
                 code: '409',
                 date: data.packageDate,
                 message: 'A data escolhida não esta mais disponivel.<br> Por favor selecione uma outra data',
-                dates: [data.packageDate]
-              };
+                dates: [data.packageDate],
+              }
             }
 
             if (quantityRequestsPackage >= maxProfilePackageHour) {
-              const choiceHour = DateTime.fromJSDate(new Date(data.packageDate + ' '));
+              const choiceHour = DateTime.fromJSDate(new Date(data.packageDate + ' '))
 
               throw {
                 success: false,
                 code: 418,
                 message: 'Horário indisponível, ' + choiceHour.toFormat('HH:mm:') + '<br>Favor Escolher outro horário.',
                 hour: choiceHour.toFormat('HH:mm'),
-                date: data.packageDate
+                date: data.packageDate,
               }
             }
-
           }
-
 
           if (data.commandId) {
             const requestCommand = await Command.findBy('id', data.commandId)
@@ -361,19 +354,19 @@ class RequestController {
               latitude: data.client.latitude,
               longitude: data.client.longitude,
               distance: data.client.distance,
-              ip: data.client.ip
+              ip: data.client.ip,
             },
             cart: data.cart,
             cartPizza: data.cartPizza,
-            formPayment: data.client.formPayment || "-",
-            formPaymentFlag: data.client.formPaymentFlag || "-",
+            formPayment: data.client.formPayment || '-',
+            formPaymentFlag: data.client.formPaymentFlag || '-',
             typeDelivery: data.typeDelivery,
             taxDelivery: tx.value ? tx.value : data.taxDeliveryValue === null ? null : 0,
             timeDelivery: tx.time ? tx.time : 0,
             transshipment: data.client.formPayment !== 'Cartão' ? convertFromReal(data.client.transshipment) : 0,
             total: data.total,
             type: data.type,
-            packageDate: data.packageDate || null
+            packageDate: data.packageDate || null,
           }
 
           if (!data.bartenderId) {
@@ -392,118 +385,115 @@ class RequestController {
 
           //   throw error
           // });
-
-
         }
-        printTopic = Ws.getChannel('print:*').topic(`print:${data.slug}`);
-
+        printTopic = Ws.getChannel('print:*').topic(`print:${data.slug}`)
 
         if (printTopic) {
-          clientRequest.print = true;
-          await clientRequest.save(trx);
-        }
-
-      }).then(async () => {
-        const rqt = await Request.query().where('id', clientRequest.id).with('cupom').first()
-        const requestTopic = Ws.getChannel('request:*').topic(`request:${data.slug}`);
-
-        if (rqt) {
-          rqt.packageDate = DateTime.fromJSDate(new Date(rqt.packageDate)).toSQL();
-        }
-        // if (user.controls.print && user.controls.print.app) {
-        //   await this.onesignalSend(rqt.id, user.id)
-        //  }
-        /**
-         */
-        // const topic = Ws.getChannel('request:*')
-        // console.log(topic)
-        // if no one is listening, so the `topic('subscriptions')` method will return `null`
-        if (requestTopic && rqt) {
-          (async () => requestTopic.broadcast(`request:${data.slug}`, [rqt.toJSON()]))();
-
-          console.log({
-            code: data.code,
-            status: rqt.status,
-            slug: data.slug,
-            total: data.total
-          })
-        } else {
-          console.log({
-            topic: requestTopic,
-            slug: data.slug,
-            code: data.code,
-            date: moment().format()
-          })
-        }
-
-        if (clientRequest.type !== "P") {
-          const command = newReq.type === "T" ? await Command.find(newReq.commandId) : undefined;
-          const tableOpened = command ? await command.table().fetch() : undefined;
-          const table = tableOpened ? await tableOpened.table().fetch() : undefined;
-          const commandJSON = command ? command.toJSON() : null;
-          const bartender = await rqt.bartender().fetch()
-          const req = rqt.toJSON();
-
-          if (commandJSON) {
-            commandJSON.requests = [req];
-            commandJSON.subTotal = this.getTotalValue(commandJSON, "command");
-            commandJSON.totalValue = this.getTotalValue(commandJSON, "commandFee");
-            commandJSON.lack = this.getTotalValue(commandJSON, "lack");
-            commandJSON.paid = this.getTotalValue(commandJSON, "paid");
-            commandJSON.fees = commandJSON.fees.filter((fee) => fee.deleted_at === null)
-          }
-
-          let printLayoutResult
-
-          if (printTopic) {
-            try {
-              const { data: result } = await axios.post('https://adm.whatsmenu.com.br/api/printLayout', {
-                request: req,
-                table,
-                command,
-                profile,
-                bartender
-              })
-              printLayoutResult = result
-            } catch (error) {
-              console.error(error);
-            }
-
-            printTopic.broadcast(`print:${data.slug}`, {
-              requests: [req],
-              type: req.type,
-              command: commandJSON,
-              table
-            })
-
-            if (printLayoutResult) {
-              printTopic.broadcast(`print`, printLayoutResult.reactComponentString)
-            }
-          }
-        }
-
-        console.log('Transação finalizada com sucesso');
-        return response.json(clientRequest)
-      }).catch(error => {
-        console.error('Houve um erro na transação do pedido.');
-        console.error(error);
-        if (error.code) {
-          return response.status(error.code).json(error);
+          clientRequest.print = true
+          await clientRequest.save(trx)
         }
       })
+        .then(async () => {
+          const rqt = await Request.query().where('id', clientRequest.id).with('cupom').first()
+          const requestTopic = Ws.getChannel('request:*').topic(`request:${data.slug}`)
 
+          if (rqt) {
+            rqt.packageDate = DateTime.fromJSDate(new Date(rqt.packageDate)).toSQL()
+          }
+          // if (user.controls.print && user.controls.print.app) {
+          //   await this.onesignalSend(rqt.id, user.id)
+          //  }
+          /**
+           */
+          // const topic = Ws.getChannel('request:*')
+          // console.log(topic)
+          // if no one is listening, so the `topic('subscriptions')` method will return `null`
+          if (requestTopic && rqt) {
+            ;(async () => requestTopic.broadcast(`request:${data.slug}`, [rqt.toJSON()]))()
+
+            console.log({
+              code: data.code,
+              status: rqt.status,
+              slug: data.slug,
+              total: data.total,
+            })
+          } else {
+            console.log({
+              topic: requestTopic,
+              slug: data.slug,
+              code: data.code,
+              date: moment().format(),
+            })
+          }
+
+          if (clientRequest.type !== 'P') {
+            const command = newReq.type === 'T' ? await Command.find(newReq.commandId) : undefined
+            const tableOpened = command ? await command.table().fetch() : undefined
+            const table = tableOpened ? await tableOpened.table().fetch() : undefined
+            const commandJSON = command ? command.toJSON() : null
+            const bartender = await rqt.bartender().fetch()
+            const req = rqt.toJSON()
+
+            if (commandJSON) {
+              commandJSON.requests = [req]
+              commandJSON.subTotal = this.getTotalValue(commandJSON, 'command')
+              commandJSON.totalValue = this.getTotalValue(commandJSON, 'commandFee')
+              commandJSON.lack = this.getTotalValue(commandJSON, 'lack')
+              commandJSON.paid = this.getTotalValue(commandJSON, 'paid')
+              commandJSON.fees = commandJSON.fees.filter((fee) => fee.deleted_at === null)
+            }
+
+            let printLayoutResult
+
+            if (printTopic) {
+              try {
+                const { data: result } = await axios.post('https://adm.whatsmenu.com.br/api/printLayout', {
+                  request: req,
+                  table,
+                  command,
+                  profile,
+                  bartender,
+                })
+                printLayoutResult = result
+              } catch (error) {
+                console.error(error)
+              }
+
+              printTopic.broadcast(`print:${data.slug}`, {
+                requests: [req],
+                type: req.type,
+                command: commandJSON,
+                table,
+              })
+
+              if (printLayoutResult) {
+                printTopic.broadcast(`print`, printLayoutResult.reactComponentString)
+              }
+            }
+          }
+
+          console.log('Transação finalizada com sucesso')
+          return response.json(clientRequest)
+        })
+        .catch((error) => {
+          console.error('Houve um erro na transação do pedido.')
+          console.error(error)
+          if (error.code) {
+            return response.status(error.code).json(error)
+          }
+        })
     } catch (error) {
       console.error({
         date: moment().format(),
         data: request.all(),
-        error: error
+        error: error,
       })
 
       response.status(500)
       return response.json({
         success: false,
         profile: await Profile.findBy('slug', data.slug),
-        error: error
+        error: error,
       })
     }
   }
@@ -511,7 +501,14 @@ class RequestController {
   async printQueue({ response }) {
     try {
       console.log('Starting: ', { controller: 'RequestController', linha: 367, metodo: 'printQueue' })
-      const requests = await Request.query().where('print', 0).where('tentatives', '<', '3').where('created_at', '>', moment().subtract(1, 'days').format()).with('cupom').with('profile').with('bartender').fetch()
+      const requests = await Request.query()
+        .where('print', 0)
+        .where('tentatives', '<', '3')
+        .where('created_at', '>', moment().subtract(1, 'days').format())
+        .with('cupom')
+        .with('profile')
+        .with('bartender')
+        .fetch()
       const sends = {}
       for (let request of requests.rows) {
         request.tentatives += 1
@@ -520,19 +517,14 @@ class RequestController {
         const req = request.toJSON()
         const rqt = JSON.parse(JSON.stringify(req))
 
-
         rqt.deliveryAddress = JSON.parse(rqt.deliveryAddress)
         rqt.cart = JSON.parse(rqt.cart)
         rqt.cartPizza = JSON.parse(rqt.cartPizza)
 
         if (!sends[req.profile.slug]) {
-
           sends[req.profile.slug] = [rqt]
-
         } else {
-
           sends[req.profile.slug].push(rqt)
-
         }
       }
 
@@ -541,22 +533,23 @@ class RequestController {
       for (let slug in sends) {
         const topic = Ws.getChannel('request:*').topic(`request:${slug}`)
         if (topic) {
-
-          topic.broadcast(`request:${slug}`, sends[slug].map((request) => {
-            const { profile, ...rest } = request
-            return rest
-          }))
+          topic.broadcast(
+            `request:${slug}`,
+            sends[slug].map((request) => {
+              const { profile, ...rest } = request
+              return rest
+            })
+          )
         }
 
-        const printTopic = Ws.getChannel('print:*').topic(`print:${slug}`);
+        const printTopic = Ws.getChannel('print:*').topic(`print:${slug}`)
 
         for (let request of sends[slug]) {
-
           if (printTopic) {
-            const command = request.type === "T" ? await Command.find(request.commandId) : undefined;
-            const tableOpened = command ? await command.table().fetch() : undefined;
-            const table = tableOpened ? await tableOpened.table().fetch() : undefined;
-            const commandJSON = command ? command.toJSON() : null;
+            const command = request.type === 'T' ? await Command.find(request.commandId) : undefined
+            const tableOpened = command ? await command.table().fetch() : undefined
+            const table = tableOpened ? await tableOpened.table().fetch() : undefined
+            const commandJSON = command ? command.toJSON() : null
             const { bartender, profile } = request
 
             let printLayoutResult
@@ -566,19 +559,19 @@ class RequestController {
                 request,
                 command,
                 profile,
-                bartender
+                bartender,
               })
 
               printLayoutResult = result
             } catch (error) {
-              console.error(error);
+              console.error(error)
             }
 
             printTopic.broadcast(`print:${slug}`, {
               requests: [request],
               type: request.type,
               command: commandJSON,
-              table
+              table,
             })
 
             if (printLayoutResult) {
@@ -612,7 +605,7 @@ class RequestController {
       response.status(403)
       return response.json({
         error: '403-309',
-        message: 'this request not belongs your user!'
+        message: 'this request not belongs your user!',
       })
     } catch (error) {
       console.error(error)
@@ -622,32 +615,34 @@ class RequestController {
 
   async myRequests({ auth, response }) {
     try {
-      console.log('Starting: ', { controller: 'RequestController', linha: 437, metodo: 'myRequests' });
-      const user = await auth.getUser();
-      const profile = await user.profile().fetch();
+      console.log('Starting: ', { controller: 'RequestController', linha: 437, metodo: 'myRequests' })
+      const user = await auth.getUser()
+      const profile = await user.profile().fetch()
       if (!profile) {
-        const requests = [];
-        return response.json(requests);
+        const requests = []
+        return response.json(requests)
       }
 
       let fuso = { hour: '-03:00', zone: 'UTC-3' }
       switch (profile.timeZone) {
         case 'America/Rio_Branco':
           fuso = { hour: '-05:00', zone: 'UTC-5' }
-          break;
+          break
         case 'America/Manaus':
           fuso = { hour: '-04:00', zone: 'UTC-4' }
-          break;
+          break
         case 'America/Noronha':
           fuso = { hour: '-02:00', zone: 'UTC-2' }
-          break;
+          break
       }
 
-      const hourFuso = DateTime.local().setZone(fuso.zone)
+      const hourFuso = DateTime.local()
+        .setZone(fuso.zone)
         .minus({ day: DateTime.local().ts > DateTime.fromObject({ hour: 4, minute: 0 }).setZone(fuso.zone).ts ? 0 : 1 })
         .toFormat('yyyy-MM-dd')
-      const addDayInFuso = DateTime.local().plus({day: 1}).toFormat('yyyy-MM-dd')
-      const requests = await profile.requests()
+      const addDayInFuso = DateTime.local().plus({ day: 1 }).toFormat('yyyy-MM-dd')
+      const requests = await profile
+        .requests()
         .whereNot('type', 'P')
         .whereRaw(`(CONVERT_TZ(created_at,'-03:00','${fuso.hour}') BETWEEN '${hourFuso}' and '${addDayInFuso}')`)
         .orderBy('id', 'desc')
@@ -663,19 +658,26 @@ class RequestController {
 
   async myRequestsWs({ auth, request, response }) {
     try {
-      const user = await auth.getUser();
-      const profile = await user.profile().fetch();
-      const data = request.except(["_csrf"]);
+      const user = await auth.getUser()
+      const profile = await user.profile().fetch()
+      const data = request.except(['_csrf'])
 
       if (profile && profile.slug) {
-        const hourOpenProfile = profile.week[DateTime.local().setZone(profile.timeZone).toFormat("cccc").toLowerCase()][0];
-        const hourOpen = hourOpenProfile ? hourOpenProfile.open.split(":") : "01:00".split(":");
+        const hourOpenProfile = profile.week[DateTime.local().setZone(profile.timeZone).toFormat('cccc').toLowerCase()][0]
+        const hourOpen = hourOpenProfile ? hourOpenProfile.open.split(':') : '01:00'.split(':')
 
-        const initialHour = DateTime.local().set({ hour: hourOpen[0], minutes: hourOpen[1] }).setZone(profile.timeZone).toFormat("yyyy-MM-dd HH:mm:ss");
-        const finalHour = DateTime.local().setZone(profile.timeZone).toFormat("yyyy-MM-dd HH:mm:ss");
+        const initialHour = DateTime.local()
+          .set({ hour: hourOpen[0], minutes: hourOpen[1] })
+          .setZone(profile.timeZone)
+          .toFormat('yyyy-MM-dd HH:mm:ss')
+        const finalHour = DateTime.local().setZone(profile.timeZone).toFormat('yyyy-MM-dd HH:mm:ss')
 
-        const requests = await profile.requests().whereNotIn('id', data.requestsId.length ? data.requestsId : [1]).whereBetween('created_at', [initialHour, finalHour]).fetch();
-        const requestsEnv = requests.toJSON();
+        const requests = await profile
+          .requests()
+          .whereNotIn('id', data.requestsId.length ? data.requestsId : [1])
+          .whereBetween('created_at', [initialHour, finalHour])
+          .fetch()
+        const requestsEnv = requests.toJSON()
 
         const channel = Ws.getChannel('request:*').topic(`request:${profile.slug}`)
 
@@ -687,17 +689,15 @@ class RequestController {
       } else {
         return response.status(404).json({ success: false })
       }
-
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
 
   async request({ params, auth, response }) {
     console.log(params.id)
-    const req = await Request.find(params.id);
+    const req = await Request.find(params.id)
 
     return req
   }
@@ -712,7 +712,8 @@ class RequestController {
         return response.json([])
       }
 
-      let requests = await profile.requests()
+      let requests = await profile
+        .requests()
         .where('type', 'P')
         .where('packageDate', '>=', moment().format('YYYY-MM-DD'))
         .with('cupom')
@@ -723,10 +724,11 @@ class RequestController {
         const countPedidos = []
         const requestsDate = []
         let pageInt = 1
-        let requestCount;
+        let requestCount
 
         do {
-          requestCount = await profile.requests()
+          requestCount = await profile
+            .requests()
             .where('type', 'P')
             .where('packageDate', '>=', DateTime.local().setZone(profile.timeZone).toFormat('yyyy-MM-dd'))
             .orderBy('packageDate')
@@ -736,15 +738,15 @@ class RequestController {
           pageInt++
         } while (pageInt <= requestCount.pages.lastPage)
 
-        countPedidos.forEach(request => {
+        countPedidos.forEach((request) => {
           const idV = DateTime.fromJSDate(request.packageDate).toFormat('MMdd')
-          const index = requestsDate.findIndex(el => el.id === idV)
+          const index = requestsDate.findIndex((el) => el.id === idV)
 
           if (index === -1) {
             requestsDate.push({
               id: idV,
               date: request.packageDate,
-              max: 1
+              max: 1,
             })
           } else {
             requestsDate[index].max += 1
@@ -752,8 +754,8 @@ class RequestController {
         })
 
         requests.datesLength = requestsDate
-        requests.rows.forEach(req => {
-          req.packageDate = DateTime.fromJSDate(new Date(req.packageDate)).toSQL();
+        requests.rows.forEach((req) => {
+          req.packageDate = DateTime.fromJSDate(new Date(req.packageDate)).toSQL()
         })
       }
 
@@ -770,12 +772,11 @@ class RequestController {
       const request = await Request.query().where('id', params.id).with('cupom').first()
 
       if (request) {
-
         const profile = await request.profile().fetch()
 
         return response.json({
           profile: profile,
-          request: request
+          request: request,
         })
 
         // View.global('isProduction', () => Env.get('NODE_ENV', 'develepment') === 'production')
@@ -786,11 +787,10 @@ class RequestController {
         //     profile: profile.toJSON()
         //   })
         // )
-
       } else {
         return response.json({
           error: '404-110',
-          message: 'Pedido não encontrado!'
+          message: 'Pedido não encontrado!',
         })
       }
     } catch (error) {
@@ -809,7 +809,6 @@ class RequestController {
       if (request) {
         await this.onesignalSend(request.id, user.id)
       }
-
     } catch (error) {
       throw error
     }
@@ -849,8 +848,8 @@ class RequestController {
       const bartender = await Bartender.find(bartenderId)
       const req = await Request.find(requestId)
 
-      if (bartender && (bartender.controls.type !== 'manager') || (req.profileId !== bartender.profileId)) {
-        console.log(bartender, req);
+      if ((bartender && bartender.controls.type !== 'manager') || req.profileId !== bartender.profileId) {
+        console.log(bartender, req)
         return response.status(401).json({ message: 'Você não tem permissão para realizar essa operação!' })
       }
 
@@ -859,63 +858,55 @@ class RequestController {
       await req.save()
 
       return response.json(req)
-
     } catch (error) {
       console.error(error)
       throw error
     }
   }
 
-  getTotalValue(
-    command,
-    only,
-    value = 0
-  ) {
+  getTotalValue(command, only, value = 0) {
     const commandTotal = command.requests.reduce((commandTotal, request) => {
-      if (request.status !== "canceled") {
-        commandTotal += request.total;
+      if (request.status !== 'canceled') {
+        commandTotal += request.total
       }
-      return commandTotal;
-    }, 0);
+      return commandTotal
+    }, 0)
 
     const feeTotal = command.fees.reduce((feeTotal, fee) => {
       if (fee.status && fee.automatic) {
-        if (fee.type === "percent") {
-          feeTotal += (fee.value / 100) * commandTotal;
+        if (fee.type === 'percent') {
+          feeTotal += (fee.value / 100) * commandTotal
         } else {
-          feeTotal += fee.quantity ? fee.quantity * fee.value : 0;
+          feeTotal += fee.quantity ? fee.quantity * fee.value : 0
         }
       }
-      return feeTotal;
-    }, 0);
+      return feeTotal
+    }, 0)
 
-    const formsPaymentTotal = command.formsPayment.reduce(
-      (formsPaymentTotal, formPayment) => formsPaymentTotal + formPayment.value,
-      0
-    );
+    const formsPaymentTotal = command.formsPayment.reduce((formsPaymentTotal, formPayment) => formsPaymentTotal + formPayment.value, 0)
 
-    const total = commandTotal + feeTotal + formsPaymentTotal;
+    const total = commandTotal + feeTotal + formsPaymentTotal
     switch (only) {
-      case "":
-        return total;
-      case "fee":
-        return feeTotal;
-      case "commandFee":
-        return commandTotal + feeTotal;
-      case "formsPayment":
-        return formsPaymentTotal;
-      case "command":
-        return commandTotal;
-      case "lack":
-        return Math.max(commandTotal + feeTotal - formsPaymentTotal - value, 0);
-      case "paid":
-        return formsPaymentTotal + value;
+      case '':
+        return total
+      case 'fee':
+        return feeTotal
+      case 'commandFee':
+        return commandTotal + feeTotal
+      case 'formsPayment':
+        return formsPaymentTotal
+      case 'command':
+        return commandTotal
+      case 'lack':
+        return Math.max(commandTotal + feeTotal - formsPaymentTotal - value, 0)
+      case 'paid':
+        return formsPaymentTotal + value
     }
-  };
+  }
 
   async queueToRt2({ request, response }) {
     const sends = request.all()
-    console.log(sends);
+    console.log(sends)
     try {
       if (sends) {
         for (let slug in sends) {
@@ -924,12 +915,11 @@ class RequestController {
           if (topic) {
             topic.broadcast(`request:${slug}`, sends[slug])
           }
-
         }
         return response.json({ message: 'Pedidos enviados para rt2', success: true })
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -944,13 +934,10 @@ class RequestController {
       }
 
       response.redirect(link)
-
     } catch (error) {
       throw error
     }
   }
-
-
 }
 
 module.exports = RequestController

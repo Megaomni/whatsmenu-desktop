@@ -7,15 +7,15 @@ const Database = use('Database')
 
 class CategoriesSchema extends Schema {
   async up() {
-    await this.table('categories', table => {
+    await this.table('categories', (table) => {
       table.renameColumn('disponibility', 'disponibility3')
       table.json('disponibility2').after('type')
     })
 
-    await this.schedule(async trx => {
-      let page = 1;
+    await this.schedule(async (trx) => {
+      let page = 1
       let categories = {}
-      let i = 1;
+      let i = 1
 
       do {
         categories = await Categories.query().paginate(page, 1000)
@@ -25,8 +25,8 @@ class CategoriesSchema extends Schema {
             store: {
               delivery: false,
               table: false,
-              package: false
-            }
+              package: false,
+            },
           }
 
           switch (disponibility) {
@@ -34,22 +34,22 @@ class CategoriesSchema extends Schema {
               dispStore.store.delivery = true
               dispStore.store.table = true
               dispStore.store.package = true
-              break;
+              break
             case 'full':
               dispStore.store.delivery = true
               dispStore.store.table = true
               dispStore.store.package = true
-              break;
+              break
             case 'delivery':
               dispStore.store.delivery = true
               dispStore.store.table = false
               dispStore.store.package = false
-              break;
+              break
             case 'table':
               dispStore.store.delivery = false
               dispStore.store.table = true
               dispStore.store.package = false
-              break;
+              break
           }
 
           if (category.type !== 'default') {
@@ -62,26 +62,22 @@ class CategoriesSchema extends Schema {
 
         page++
       } while (page <= categories.pages.lastPage)
-
-
     })
 
-    this.table('categories', table => {
+    this.table('categories', (table) => {
       table.dropColumn('disponibility3')
       table.renameColumn('disponibility2', 'disponibility')
     })
-
   }
 
   async down() {
-
-    await this.table('categories', async table => {
+    await this.table('categories', async (table) => {
       table.renameColumn('disponibility', 'disponibility3')
       table.enum('disponibility2', ['all', 'delivery', 'table']).after('type').defaultTo('all').notNullable()
     })
 
-    await this.schedule(async trx => {
-      let page = 1;
+    await this.schedule(async (trx) => {
+      let page = 1
       let categories = {}
 
       do {
@@ -102,16 +98,13 @@ class CategoriesSchema extends Schema {
 
         page++
       } while (page <= categories.pages.lastPage)
-
     })
 
-    this.table('categories', table => {
+    this.table('categories', (table) => {
       table.dropColumn('disponibility3')
       table.renameColumn('disponibility2', 'disponibility')
     })
-
   }
-
 }
 
 module.exports = CategoriesSchema

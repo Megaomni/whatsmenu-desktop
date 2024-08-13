@@ -1096,12 +1096,7 @@
                     "https://adm.whatsmenu.com.br/pizzas/4.jpg"
                   ],
                   "status": true,
-                  "flavors": [
-                    1,
-                    2,
-                    3,
-                    4
-                  ]
+                  "flavors": [1, 2, 3, 4]
                 },
                 {
                   "code": "cdeff3",
@@ -1113,10 +1108,7 @@
                     "https://whatsmenu.com.br/pizzas/4.jpg"
                   ],
                   "status": true,
-                  "flavors": [
-                    1,
-                    3
-                  ]
+                  "flavors": [1, 3]
                 }
               ],
               "implementations": [
@@ -1214,12 +1206,7 @@
               "https://adm.whatsmenu.com.br/pizzas/4.jpg"
             ],
             "status": true,
-            "flavors": [
-              1,
-              2,
-              3,
-              4
-            ]
+            "flavors": [1, 2, 3, 4]
           },
           {
             "code": "cdeff3",
@@ -1231,10 +1218,7 @@
               "https://whatsmenu.com.br/pizzas/4.jpg"
             ],
             "status": true,
-            "flavors": [
-              1,
-              3
-            ]
+            "flavors": [1, 3]
           }
         ],
         "size": "Broto",

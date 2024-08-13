@@ -3,10 +3,9 @@ const Hash = use('Hash')
 const Mail = use('Mail')
 const User = use('App/Models/User')
 
-const { DateTime } = require("luxon")
+const { DateTime } = require('luxon')
 
 class AccountController {
-
   async recovery({ response, auth, request }) {
     console.log('Starting: ', { controller: 'AccountController', linha: 10, metodo: 'index' })
     const user = await auth.getUser()
@@ -15,7 +14,6 @@ class AccountController {
     const token = request.qs.token && request.qs.token.replace(/( )+/g, '+')
 
     if (user.controls.recovery && user.controls.recovery.token) {
-
       const expirationDate = DateTime.fromISO(user.controls.recovery.date).plus({ minutes: 10 })
       const now = DateTime.local()
 
@@ -113,19 +111,18 @@ class AccountController {
         user.controls.recovery = {}
       }
 
-      const tokenValid = user.controls.recovery.token ? Number(DateTime.fromISO(user.controls.recovery.date).plus({ minutes: 10 }).diffNow().toFormat('mm')) >= 0 : false
+      const tokenValid = user.controls.recovery.token
+        ? Number(DateTime.fromISO(user.controls.recovery.date).plus({ minutes: 10 }).diffNow().toFormat('mm')) >= 0
+        : false
 
       if (!tokenValid) {
         user.controls.recovery = {
           token: await Hash.make(JSON.stringify(user.id)),
-          date: DateTime.local().toISO()
+          date: DateTime.local().toISO(),
         }
 
-        await Mail.send('email.passwords.recoverysecuritypassword', { user: user.toJSON() }, message => {
-          message
-            .from('whatsmenu@grovecompany.com.br')
-            .to(user.email)
-            .subject('"Recuperação de Senha | WhatsMenu"')
+        await Mail.send('email.passwords.recoverysecuritypassword', { user: user.toJSON() }, (message) => {
+          message.from('whatsmenu@grovecompany.com.br').to(user.email).subject('"Recuperação de Senha | WhatsMenu"')
         })
       }
 

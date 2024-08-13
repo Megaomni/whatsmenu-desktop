@@ -4,8 +4,8 @@ const FlexPlan = use('App/Models/FlexPlan')
 
 class FlexPlanController {
   async index({ response }) {
-    const plans = await FlexPlan.all();
-    return response.json(plans);
+    const plans = await FlexPlan.all()
+    return response.json(plans)
   }
 
   async getFlexPlans({ response }) {

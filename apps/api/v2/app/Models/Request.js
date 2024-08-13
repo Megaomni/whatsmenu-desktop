@@ -37,7 +37,7 @@ class Request extends Model {
     })
 
     this.addHook('afterFetch', (requests) => {
-      requests.forEach(request => {
+      requests.forEach((request) => {
         request.deliveryAddress = JSON.parse(request.deliveryAddress)
         request.cart = JSON.parse(request.cart)
         request.cartPizza = JSON.parse(request.cartPizza)
@@ -45,7 +45,7 @@ class Request extends Model {
     })
 
     this.addHook('afterPaginate', (requests) => {
-      requests.forEach(request => {
+      requests.forEach((request) => {
         request.deliveryAddress = JSON.parse(request.deliveryAddress)
         request.cart = JSON.parse(request.cart)
         request.cartPizza = JSON.parse(request.cartPizza)
@@ -53,7 +53,7 @@ class Request extends Model {
     })
   }
 
-  profile () {
+  profile() {
     return this.belongsTo('App/Models/Profile', 'profileId', 'id')
   }
 

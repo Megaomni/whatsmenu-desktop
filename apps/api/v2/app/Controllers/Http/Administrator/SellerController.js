@@ -3,7 +3,7 @@ const Seller = use('App/Models/Seller')
 const User = use('App/Models/User')
 
 class SellerController {
-  async listSellers({request, response}) {
+  async listSellers({ request, response }) {
     try {
       console.log('Starting: ', { controller: 'SellerController', linha: 8, metodo: 'listSellers' })
       const data = request.except('_csrf')
@@ -16,7 +16,6 @@ class SellerController {
       }
 
       return response.json(sellers)
-
     } catch (error) {
       console.error(error)
       throw error

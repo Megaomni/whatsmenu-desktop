@@ -59,7 +59,7 @@ class CashierController {
 
       if (profile.options.package.cashierDate === 'deliveryDate') {
         const carts = await Cart.query()
-          .whereBetween('packageDate', [DateTime.local().toFormat('yyyy-MM-dd'), DateTime.local().plus({days: 1}).toFormat('yyyy-MM-dd')])
+          .whereBetween('packageDate', [DateTime.local().toFormat('yyyy-MM-dd'), DateTime.local().plus({ days: 1 }).toFormat('yyyy-MM-dd')])
           .where('type', 'P')
           .where({
             profileId: profile.id,
@@ -82,7 +82,7 @@ class CashierController {
             profileId: profile.id,
             cashierId: null,
           })
-          .whereBetween('created_at', [DateTime.local().toFormat('yyyy-MM-dd'), DateTime.local().plus({days: 1}).toFormat('yyyy-MM-dd')])
+          .whereBetween('created_at', [DateTime.local().toFormat('yyyy-MM-dd'), DateTime.local().plus({ days: 1 }).toFormat('yyyy-MM-dd')])
           .where('type', 'D')
           .fetch()
         for (const cart of cartsWithoutCashier.rows) {
@@ -96,7 +96,7 @@ class CashierController {
               profileId: profile.id,
               cashierId: null,
             })
-            .whereBetween('packageDate', [DateTime.local().toFormat('yyyy-MM-dd'), DateTime.local().plus({days: 1}).toFormat('yyyy-MM-dd')])
+            .whereBetween('packageDate', [DateTime.local().toFormat('yyyy-MM-dd'), DateTime.local().plus({ days: 1 }).toFormat('yyyy-MM-dd')])
             .where('type', 'P')
             .fetch()
 
@@ -226,8 +226,8 @@ class CashierController {
           ) AS paymentSummary WHERE created_at BETWEEN ${DateTime.fromJSDate(cashier.created_at).toFormat(
             '"yyyy-MM-dd HH:mm:ss"'
           )} AND ${closedDate} AND profileId = ${
-          profile.id
-        } AND (status <> "canceled" OR status IS NULL)  GROUP BY total, payment, flag, created_at, profileId, status;
+            profile.id
+          } AND (status <> "canceled" OR status IS NULL)  GROUP BY total, payment, flag, created_at, profileId, status;
       `
       ).on('query', console.log)
       const formsPayment = profile.formsPayment.filter((formsPayment) => formsPayment.status)

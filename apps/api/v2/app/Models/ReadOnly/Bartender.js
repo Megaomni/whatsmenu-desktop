@@ -5,41 +5,40 @@ const Model = use('Model')
 const Hash = use('Hash')
 
 class Bartender extends Model {
-
   static get connection() {
     return 'mysql_r'
   }
 
   static boot() {
-    super.boot();
+    super.boot()
 
-    this.addHook("beforeSave", async (bartender) => {
+    this.addHook('beforeSave', async (bartender) => {
       if (bartender.dirty.password) {
         bartender.password = await Hash.make(bartender.password)
       }
       bartender.controls = JSON.stringify(bartender.controls)
     })
 
-    this.addHook("beforeCreate", async (bartender) => {
+    this.addHook('beforeCreate', async (bartender) => {
       if (!bartender.controls) {
         bartender.controls = {
-          type: "bartender",
+          type: 'bartender',
           blockedCategories: [],
           defaultCashier: false,
         }
       }
     })
 
-    this.addHook("afterSave", (bartender) => {
+    this.addHook('afterSave', (bartender) => {
       bartender.controls = JSON.parse(bartender.controls)
       // bartender.password = ""
     })
 
     this.addHook('afterFetch', (bartenders) => {
-      bartenders.forEach(bartender => {
+      bartenders.forEach((bartender) => {
         bartender.controls = JSON.parse(bartender.controls)
         // bartender.password = ""
-      });
+      })
     })
 
     this.addHook('afterFind', (bartender) => {

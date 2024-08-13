@@ -18,12 +18,12 @@ const moment = use('moment')
 
 Ws.channel('request:*', async ({ socket }) => {
   // console.log('user joined with %s socket id', socket.id)
-  console.log({conected: socket.topic, date: moment().format()})
+  console.log({ conected: socket.topic, date: moment().format() })
 
   socket.on('close', async (e) => {
     console.log({
       close: socket.topic,
-      date: moment().format()
+      date: moment().format(),
     })
   })
 
@@ -39,11 +39,10 @@ Ws.channel('request:*', async ({ socket }) => {
   //     console.error(error)
   //   }
   // })
-
 })
 
 Ws.channel('command:*', async ({ socket }) => {
-  console.log({conected: socket.topic, date: moment().format()})
+  console.log({ conected: socket.topic, date: moment().format() })
 })
 
 Ws.channel('print:*', 'PrintController')

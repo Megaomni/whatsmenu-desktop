@@ -5,35 +5,35 @@ const Model = use('Model')
 
 class ClientAddress extends Model {
   static boot() {
-    super.boot();
+    super.boot()
 
-    this.addHook("beforeCreate", async (address) => {
+    this.addHook('beforeCreate', async (address) => {
       address.controls = '{}'
     })
 
-    this.addHook("beforeSave", async (address) => {
+    this.addHook('beforeSave', async (address) => {
       address.number = address.number === 'SN' ? null : address.number
       address.controls = address.controls ? JSON.stringify(address.controls) : '{}'
     })
 
-    this.addHook("afterSave", async (address) => {
+    this.addHook('afterSave', async (address) => {
       address.controls = JSON.parse(address.controls)
     })
 
-    this.addHook("afterFind", async (address) => {
+    this.addHook('afterFind', async (address) => {
       address.controls = JSON.parse(address.controls)
     })
 
-    this.addHook("afterFetch", async (addresses) => {
-      addresses.forEach(address => {
+    this.addHook('afterFetch', async (addresses) => {
+      addresses.forEach((address) => {
         address.controls = JSON.parse(address.controls)
-      });
+      })
     })
 
-    this.addHook("afterPaginate", async (addresses) => {
-      addresses.forEach(address => {
+    this.addHook('afterPaginate', async (addresses) => {
+      addresses.forEach((address) => {
         address.controls = JSON.parse(address.controls)
-      });
+      })
     })
   }
 }

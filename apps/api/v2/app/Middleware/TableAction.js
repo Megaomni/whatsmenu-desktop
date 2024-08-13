@@ -16,32 +16,34 @@ class TableAction {
   async handle({ request, response }, next, props) {
     try {
       const data = request.except(['_csrf'])
-      const table = await Table.query().where('id', ((data.id || data.tableId) || request.params.id)).with('tablesOpened', (query) => {
-        return query.from('table_openeds').where('status', 1).with('commands.carts')
-      }).first()
+      const table = await Table.query()
+        .where('id', data.id || data.tableId || request.params.id)
+        .with('tablesOpened', (query) => {
+          return query.from('table_openeds').where('status', 1).with('commands.carts')
+        })
+        .first()
 
       const tableJSON = table.toJSON()
 
       if (!props.length) {
-        return next();
+        return next()
       } else {
         for (const prop of props) {
-          console.log('Middlewere:TableAction:',prop)
+          console.log('Middlewere:TableAction:', prop)
           switch (prop) {
             case 'status':
               if (tableJSON.status && tableJSON.tablesOpened.length) {
                 return response.status(403).json({
                   table,
-                  message: 'Não é possivel realizar alterações em mesas com comandas abertas.'
+                  message: 'Não é possivel realizar alterações em mesas com comandas abertas.',
                 })
               }
               return next()
             default:
-              return next();
+              return next()
           }
         }
       }
-
     } catch (error) {
       console.error(error)
       throw error

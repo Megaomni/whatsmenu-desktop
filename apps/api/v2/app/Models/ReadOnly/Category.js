@@ -7,7 +7,6 @@ const WmProvider = use('WmProvider')
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 class Category extends Model {
-
   static get connection() {
     return 'mysql_r'
   }

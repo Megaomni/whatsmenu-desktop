@@ -4,7 +4,7 @@
 const Model = use('Model')
 
 class SystemRequest extends Model {
-  static boot () {
+  static boot() {
     super.boot()
 
     this.addHook('beforeSave', (request) => {
@@ -28,17 +28,17 @@ class SystemRequest extends Model {
     })
 
     this.addHook('afterFetch', (requests) => {
-      requests.forEach(request => {
+      requests.forEach((request) => {
         request.paghiper = JSON.parse(request.paghiper)
-      });
+      })
     })
   }
 
-  user () {
+  user() {
     return this.belongsTo('App/Models/User', 'userId', 'id')
   }
 
-  invoice () {
+  invoice() {
     return this.belongsTo('App/Models/Invoice', 'invoiceId', 'id')
   }
 }

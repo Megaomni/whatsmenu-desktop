@@ -4,16 +4,16 @@
 const Schema = use('Schema')
 
 class RelatedPlansSchema extends Schema {
-  up () {
+  up() {
     this.create('related_plans', (table) => {
       table.increments()
-      table.integer("plan_id").unsigned().references("id").inTable("flex_plans");
-      table.integer("plan_associated_id").unsigned().references("id").inTable("flex_plans");
+      table.integer('plan_id').unsigned().references('id').inTable('flex_plans')
+      table.integer('plan_associated_id').unsigned().references('id').inTable('flex_plans')
       table.timestamps()
     })
   }
 
-  down () {
+  down() {
     this.drop('related_plans')
   }
 }

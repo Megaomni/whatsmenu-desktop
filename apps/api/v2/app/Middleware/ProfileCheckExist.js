@@ -3,7 +3,6 @@
 const Profile = use('App/Models/Profile')
 
 class ProfileCheckExist {
-
   async handle({ params, response }, next) {
     // call next to advance the request
     try {
@@ -14,7 +13,7 @@ class ProfileCheckExist {
       }
       params.profile = profile
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
     await next()

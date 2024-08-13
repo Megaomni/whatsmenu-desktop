@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddRequestsPaymentFlagSchema extends Schema {
-  up () {
+  up() {
     this.table('requests', (table) => {
       table.string('formPaymentFlag', 200).nullable().defaultTo(null).after('formPayment')
     })
   }
 
-  down () {
+  down() {
     this.table('requests', (table) => {
       table.dropColumn('formPaymentFlag')
     })

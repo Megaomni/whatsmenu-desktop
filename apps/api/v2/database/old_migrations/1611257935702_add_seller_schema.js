@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddSellerSchema extends Schema {
-  up () {
+  up() {
     this.table('users', (table) => {
       table.integer('sellerId').after('password').nullable().unsigned().references('id').inTable('sellers')
     })
   }
 
-  down () {
+  down() {
     this.table('users', (table) => {
       table.dropColumn('sellerId')
     })

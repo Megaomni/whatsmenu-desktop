@@ -5,7 +5,6 @@ const Model = use('Model')
 const TableOpened = use('App/Models/TableOpened')
 
 class Command extends Model {
-
   static boot() {
     super.boot()
 
@@ -13,7 +12,7 @@ class Command extends Model {
       command.fees = typeof command.fees === 'string' ? JSON.parse(command.fees) : command.fees
       command.formsPayment = typeof command.formsPayment === 'string' ? JSON.parse(command.formsPayment) : command.formsPayment
       if (!command.fees) command.fees = []
-      command.fees.forEach(fee => {
+      command.fees.forEach((fee) => {
         fee.id = JSON.parse(fee.id)
         fee.value = JSON.parse(fee.value)
         fee.status = JSON.parse(fee.status)
@@ -22,8 +21,8 @@ class Command extends Model {
         fee.profileId = JSON.parse(fee.profileId)
       })
       if (!command.formsPayment) command.formsPayment = []
-      command.formsPayment.forEach(formPayment => {
-        console.log("FORMPAYMENT: ==>", formPayment)
+      command.formsPayment.forEach((formPayment) => {
+        console.log('FORMPAYMENT: ==>', formPayment)
         formPayment.value = JSON.parse(formPayment.value)
         if (formPayment.change) {
           formPayment.change = JSON.parse(formPayment.change)
@@ -36,24 +35,27 @@ class Command extends Model {
     this.addHook('afterSave', async (command) => {
       command.formsPayment = JSON.parse(command.formsPayment)
       command.fees = JSON.parse(command.fees)
-      let table = await TableOpened.query().where('id', command.tableOpenedId).with('commands', (query) => {
-        return query.from('commands').where('status', 1).with('carts')
-      }).first()
+      let table = await TableOpened.query()
+        .where('id', command.tableOpenedId)
+        .with('commands', (query) => {
+          return query.from('commands').where('status', 1).with('carts')
+        })
+        .first()
 
-      table.fees.forEach(fee => {
-        const allNotAutomatic = table.toJSON().commands.every(command => {
-          if (command.carts.filter(c => c.status !== 'canceled').length) {
-            const haveFee = command.fees.find(f => f.code === fee.code)
+      table.fees.forEach((fee) => {
+        const allNotAutomatic = table.toJSON().commands.every((command) => {
+          if (command.carts.filter((c) => c.status !== 'canceled').length) {
+            const haveFee = command.fees.find((f) => f.code === fee.code)
             if (haveFee) {
               return haveFee.automatic ? false : true
             }
           } else {
             return true
           }
-        });
+        })
 
         fee.automatic = allNotAutomatic ? 0 : 1
-      });
+      })
       command.tableId = table.tableId
       await table.save()
     })
@@ -62,24 +64,23 @@ class Command extends Model {
       for (let command of commands) {
         command.fees = JSON.parse(command.fees)
         command.formsPayment = JSON.parse(command.formsPayment)
-        command.formsPayment.forEach(formPayment => {
+        command.formsPayment.forEach((formPayment) => {
           formPayment.value = Number(formPayment.value)
           formPayment.change = formPayment.change && Number(formPayment.change)
-        });
+        })
       }
     })
 
     this.addHook('afterFind', (command) => {
-        command.fees = typeof command.fees === 'string' && JSON.parse(command.fees)
-        command.formsPayment = JSON.parse(command.formsPayment)
-        if (command.formsPayment) {
-          command.formsPayment.forEach(formPayment => {
+      command.fees = typeof command.fees === 'string' && JSON.parse(command.fees)
+      command.formsPayment = JSON.parse(command.formsPayment)
+      if (command.formsPayment) {
+        command.formsPayment.forEach((formPayment) => {
           formPayment.value = Number(formPayment.value)
           formPayment.change = formPayment.change && Number(formPayment.change)
-        });
-        }
+        })
+      }
     })
-
   }
 
   opened() {

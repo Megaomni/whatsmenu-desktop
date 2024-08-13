@@ -179,8 +179,8 @@ class Profile extends Model {
             welcomeMessage: {
               status: true,
               alwaysSend: false,
-            }
-          }
+            },
+          },
         },
       }
 
@@ -365,8 +365,8 @@ class Profile extends Model {
             welcomeMessage: {
               status: true,
               alwaysSend: false,
-            }
-          }
+            },
+          },
         }
       }
       Profile.profileEmojis(profile, 'decryptEmoji')
@@ -445,13 +445,15 @@ class Profile extends Model {
             welcomeMessage: {
               status: true,
               alwaysSend: false,
-            }
-          }
+            },
+          },
         }
       }
 
       if (profile.options.placeholders && profile.options.placeholders.cupomFirstMessage) {
-        const splitedCupomFirstMessage = profile.options.placeholders.cupomFirstMessage.split(`\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=`)
+        const splitedCupomFirstMessage = profile.options.placeholders.cupomFirstMessage.split(
+          `\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=`
+        )
         if (splitedCupomFirstMessage.length) {
           profile.options.placeholders.cupomFirstMessage = splitedCupomFirstMessage[0]
         }
@@ -567,8 +569,8 @@ class Profile extends Model {
               welcomeMessage: {
                 status: true,
                 alwaysSend: false,
-              }
-            }
+              },
+            },
           }
         }
 
@@ -635,8 +637,8 @@ class Profile extends Model {
                 welcomeMessage: {
                   status: false,
                   alwaysSend: true,
-                }
-              }
+                },
+              },
             }
           }
         }

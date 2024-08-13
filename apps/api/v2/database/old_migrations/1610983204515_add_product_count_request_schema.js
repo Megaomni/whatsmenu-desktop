@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddProductCountRequestSchema extends Schema {
-  up () {
+  up() {
     this.table('products', (table) => {
       table.integer('countRequests').after('promoteStatus').notNullable().defaultTo(0)
     })
   }
 
-  down () {
+  down() {
     this.table('products', (table) => {
       table.dropColumn('countRequests')
     })

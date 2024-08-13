@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class AddOrderProductsSchema extends Schema {
-  up () {
+  up() {
     this.table('products', (table) => {
       // alter table
       table.integer('order').notNullable().defaultTo(0).after('status')
@@ -14,7 +14,7 @@ class AddOrderProductsSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('products', (table) => {
       // reverse alternations
       table.dropColumn('order')

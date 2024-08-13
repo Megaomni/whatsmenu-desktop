@@ -1,10 +1,10 @@
 'use strict'
 
 class categoryRegister {
-  get rules () {
+  get rules() {
     return {
       type: 'required',
-      name: 'required|min:3'
+      name: 'required|min:3',
     }
   }
 

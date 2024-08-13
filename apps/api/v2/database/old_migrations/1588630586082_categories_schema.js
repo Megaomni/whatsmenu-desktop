@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class CategorySchema extends Schema {
-  up () {
+  up() {
     this.create('categories', (table) => {
       table.increments()
       table.integer('profileId').notNullable().unsigned().references('id').inTable('profiles')
@@ -16,7 +16,7 @@ class CategorySchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.drop('categories')
   }
 }

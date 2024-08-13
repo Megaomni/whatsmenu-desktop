@@ -150,19 +150,18 @@ class UserAdmClientController {
         })
         .first()
 
+      await updatedClient.merge(client)
+      await updatedClient.save()
 
-        await updatedClient.merge(client)
-        await updatedClient.save()
+      if (updatedClient) {
+        const requestsIds = updatedClient.last_requests.map((request) => request.id)
+        updatedClient.last_requests = await CartR.query().whereIn('id', requestsIds).with('cupom').fetch()
+      }
 
-        if (updatedClient) {
-          const requestsIds = updatedClient.last_requests.map((request) => request.id)
-          updatedClient.last_requests = await CartR.query().whereIn('id', requestsIds).with('cupom').fetch()
-        }
+      const updatedAddresses = await this.generateAddresses(clientAddresses, profile, updatedClient, 'update')
+      const newAddresses = await this.generateAddresses(addresses, profile, updatedClient, 'create')
 
-        const updatedAddresses = await this.generateAddresses(clientAddresses, profile, updatedClient, 'update')
-        const newAddresses = await this.generateAddresses(addresses, profile, updatedClient, 'create')
-
-        updatedClient.addresses = [...updatedAddresses, ...newAddresses]
+      updatedClient.addresses = [...updatedAddresses, ...newAddresses]
 
       return response.status(200).json({ client: updatedClient })
     } catch (error) {

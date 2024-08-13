@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class ProfileOptionsSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       table.json('options').after('week')
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       table.dropColumn('options')
     })

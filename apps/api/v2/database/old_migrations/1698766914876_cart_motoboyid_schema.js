@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class CartsSchema extends Schema {
-  up () {
+  up() {
     this.table('carts', (table) => {
       table.integer('motoboyId').nullable().unsigned().references('id').inTable('motoboys').after('cashierId')
     })
@@ -12,7 +12,7 @@ class CartsSchema extends Schema {
 
   down() {
     this.table('carts', (table) => {
-      table.dropForeign('motoboyId', 'carts_motoboyid_foreign');
+      table.dropForeign('motoboyId', 'carts_motoboyid_foreign')
       table.dropColumn('motoboyId')
     })
   }

@@ -9,7 +9,7 @@ class ClientCheck {
       const { slug } = params
       const { client, clientId } = request.all()
       const profile = await Profile.findBy('slug', slug)
-      
+
       let id
       if (client && client.id) {
         id = client.id
@@ -26,16 +26,18 @@ class ClientCheck {
       }
 
       if (client && client.whatsapp) {
-        const haveClient = await Client.query().where({
-          profileId: profile.id,
-          whatsapp: client.whatsapp,
-        }).first()
-        if (haveClient && (id != haveClient.id)) {
-          return response.status(409).json({ success: false, message: "Já existe um cliente com esse whatsapp" })
+        const haveClient = await Client.query()
+          .where({
+            profileId: profile.id,
+            whatsapp: client.whatsapp,
+          })
+          .first()
+        if (haveClient && id != haveClient.id) {
+          return response.status(409).json({ success: false, message: 'Já existe um cliente com esse whatsapp' })
         }
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
     await next()
   }

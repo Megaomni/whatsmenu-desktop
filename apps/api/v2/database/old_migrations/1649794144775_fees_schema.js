@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class FeesSchema extends Schema {
-  up () {
+  up() {
     this.table('fees', (table) => {
       // alter table
       table.enu('type', ['percent', 'fixed']).notNullable().alter()
@@ -12,7 +12,7 @@ class FeesSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('fees', (table) => {
       // reverse alternations
       table.dropColumn('automatic')

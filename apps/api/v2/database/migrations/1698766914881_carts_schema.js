@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class CartsSchema extends Schema {
-  up () {
+  up() {
     this.table('carts', (table) => {
-      table.enum('statusPayment',['offline', 'paid', 'pending', 'cancelled']).nullable().defaultTo(null).after('status')
+      table.enum('statusPayment', ['offline', 'paid', 'pending', 'cancelled']).nullable().defaultTo(null).after('status')
     })
   }
 
-  down () {
+  down() {
     this.table('carts', (table) => {
       table.dropColumn('statusPayment')
     })

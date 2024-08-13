@@ -25,7 +25,10 @@ class RequestToCartSeeder {
     let profilePage = 1
     let profiles = {}
     do {
-      profiles = await Profile.query().with('user').with('categories', (query) => query.with('products').with('product')).paginate(profilePage, 1)
+      profiles = await Profile.query()
+        .with('user')
+        .with('categories', (query) => query.with('products').with('product'))
+        .paginate(profilePage, 1)
       for (const profile of profiles.rows) {
         profile.options = {
           ...profile.options,
@@ -34,8 +37,8 @@ class RequestToCartSeeder {
             cashierManagement: false,
             clientConfig: {
               birthDate: false,
-              required: false
-            }
+              required: false,
+            },
           },
         }
         await Bartender.create({
@@ -43,8 +46,8 @@ class RequestToCartSeeder {
           profileId: profile.id,
           password: profile.toJSON().user.password,
           controls: {
-            type: 'manager'
-          }
+            type: 'manager',
+          },
         })
         profile.save()
         let requestPage = 1
@@ -56,8 +59,8 @@ class RequestToCartSeeder {
           requests = await profile.requests().paginate(requestPage, 100)
           for (const req of requests.rows) {
             const request = req.toJSON()
-            let requestDuplicate = duplicateRequests.find(r => r && r.code === req.code)
-            if (allCodes.some(code => code === req.code)) {
+            let requestDuplicate = duplicateRequests.find((r) => r && r.code === req.code)
+            if (allCodes.some((code) => code === req.code)) {
               if (!requestDuplicate) {
                 requestDuplicate = { code: request.code, times: 1 }
                 request.code += `*${requestDuplicate.times}`
@@ -110,18 +113,18 @@ class RequestToCartSeeder {
           case 'created_at':
           case 'updated_at':
             cart[key] = request[key]
-            break;
+            break
           case 'name':
             cart.clientId = await this.generateClient({
               clientSearchData: {
                 profileId: request.profileId,
-                whatsapp: request.contact
+                whatsapp: request.contact,
               },
               name: request.name,
               date_last_request: request.created_at,
-              profile
+              profile,
             })
-            break;
+            break
           case 'deliveryAddress':
             cart.controls.ip = value.ip
             delete request[key].ip
@@ -129,28 +132,28 @@ class RequestToCartSeeder {
               cart.addressId = await this.generateClientAddress({
                 deliveryAddress: request.deliveryAddress,
                 clientId: cart.clientId,
-                uf: profile.address.state
+                uf: profile.address.state,
               })
             }
-            break;
+            break
           case 'formPayment':
             const formPayment = await this.generateFormPayment({
               label: request.formPayment,
               flag: request.formPaymentFlag,
               value: request.total,
               change: request.transshipment,
-              profileFormsPayment: profile.formsPayment
+              profileFormsPayment: profile.formsPayment,
             })
             cart.formsPayment = [formPayment]
-            break;
+            break
           default:
-            break;
+            break
         }
       }
       cart = await Cart.create(cart)
       return cart
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -159,7 +162,7 @@ class RequestToCartSeeder {
       const categories = profile.toJSON().categories
       const products = categories.reduce((products, category) => [...products, ...category.products], [])
       cart = cart.map((product) => {
-        const profileProduct = products.find(p => p.id === product.id)
+        const profileProduct = products.find((p) => p.id === product.id)
         return {
           productId: profileProduct ? profileProduct.id : null,
           cartId,
@@ -171,16 +174,18 @@ class RequestToCartSeeder {
             complements: product.complements,
           },
           name: product.name,
-          type: 'default'
+          type: 'default',
         }
       })
 
-      const pizzas = categories.map(category => category.product).filter(pizza => pizza)
+      const pizzas = categories.map((category) => category.product).filter((pizza) => pizza)
 
-      cartPizza = cartPizza.map(pizza => {
-        const pizzaProfile = pizzas.find(pizzaProfile => {
-          return pizza.flavors.some(flavor => pizzaProfile.flavors.some(f => f.code === flavor.code)) ||
-            pizzaProfile.sizes.some(size => size.name === pizza.size)
+      cartPizza = cartPizza.map((pizza) => {
+        const pizzaProfile = pizzas.find((pizzaProfile) => {
+          return (
+            pizza.flavors.some((flavor) => pizzaProfile.flavors.some((f) => f.code === flavor.code)) ||
+            pizzaProfile.sizes.some((size) => size.name === pizza.size)
+          )
         })
 
         const flavors = pizza.flavors.map((flavor) => flavor.name).join()
@@ -196,10 +201,12 @@ class RequestToCartSeeder {
             size: pizza.size,
             complements: pizza.complements,
             flavors: pizza.flavors,
-            implementations: pizza.implementations
+            implementations: pizza.implementations,
           },
-          name: pizzaProfile ? `Pizza ${pizza.size} ${pizza.flavors.length} Sabor${pizza.flavors.length > 1 ? 'es' : ''} ${flavors} ${pizza.implementations.length ? 'com ' + pizza.implementations[0].name : ''}` : '-',
-          type: 'pizza'
+          name: pizzaProfile
+            ? `Pizza ${pizza.size} ${pizza.flavors.length} Sabor${pizza.flavors.length > 1 ? 'es' : ''} ${flavors} ${pizza.implementations.length ? 'com ' + pizza.implementations[0].name : ''}`
+            : '-',
+          type: 'pizza',
         }
       })
       const itens = [...cartPizza, ...cart]
@@ -257,14 +264,14 @@ class RequestToCartSeeder {
         formPayment.change = change
       }
 
-      const profileFormPayment = profileFormsPayment.find(f => f.label === label)
+      const profileFormPayment = profileFormsPayment.find((f) => f.label === label)
       if (profileFormPayment) {
         formPayment.payment = profileFormPayment.payment
         formPayment.code = randomBytes(3).toString('hex')
       }
       return formPayment
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 

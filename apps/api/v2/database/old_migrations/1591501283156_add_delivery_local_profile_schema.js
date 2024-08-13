@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddDeliveryLocalProfileSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       table.boolean('deliveryLocal').notNullable().defaultTo(true).after('status')
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       table.dropColumn('deliveryLocal')
     })

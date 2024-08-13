@@ -570,7 +570,7 @@ class ApiController {
         const inventoryControl = !product.bypass_amount
         const inventoryAvailable = inventoryControl
           ? (!product.amount && product.amount !== 0) ||
-          (edit ? amount + amountInCart - cart.find((item) => item.code === code).quantity : amount + amountInCart) <= product.amount
+            (edit ? amount + amountInCart - cart.find((item) => item.code === code).quantity : amount + amountInCart) <= product.amount
           : true
 
         const menuComplements = product.complements.reduce((itens, complement) => itens.concat(complement.itens), [])
@@ -581,12 +581,12 @@ class ApiController {
         const unavailableComplements = !orderComplements.length
           ? []
           : orderComplements.filter((item) => {
-            const availableQuantity = menuComplements.find((menuItem) => menuItem.code === item.code).amount
-            if (availableQuantity === undefined) return
-            if (item.quantity * amount > availableQuantity && !item.bypass_amount) {
-              return item
-            }
-          })
+              const availableQuantity = menuComplements.find((menuItem) => menuItem.code === item.code).amount
+              if (availableQuantity === undefined) return
+              if (item.quantity * amount > availableQuantity && !item.bypass_amount) {
+                return item
+              }
+            })
 
         if (unavailableComplements.length && profile.options.inventoryControl) {
           const names = unavailableComplements

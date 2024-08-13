@@ -3,14 +3,13 @@
 const UserController = use('App/Controllers/Http/UserController')
 const Invoice = use('App/Models/Invoice')
 const Request = use('App/Models/Request')
-const BonusSupport = use("App/Models/BonusSupport")
+const BonusSupport = use('App/Models/BonusSupport')
 const Seller = use('App/Models/Seller')
 const User = use('App/Models/User')
 const Profile = use('App/Models/Profile')
 const moment = use('moment')
 
 class ReportController {
-
   async registerIndex({ response, view, auth }) {
     try {
       console.log('Starting: ', { controller: 'ReportController', linha: 16, metodo: 'registerIndex' })
@@ -19,7 +18,7 @@ class ReportController {
 
       response.send(
         view.render('inner.adm.reports.sell', {
-          profile: profile ? profile.toJSON() : null
+          profile: profile ? profile.toJSON() : null,
         })
       )
     } catch (error) {
@@ -36,13 +35,13 @@ class ReportController {
 
       const relSeller = {
         seller: seller,
-        months: []
+        months: [],
       }
 
       while (month.format('YYYY-MM') !== moment().add(1, 'months').format('YYYY-MM')) {
         relSeller.months.push({
           month: month.format('YYYY-MM'),
-          users: []
+          users: [],
         })
         month = month.add(1, 'months')
       }
@@ -50,10 +49,8 @@ class ReportController {
       month = moment().subtract(6, 'months')
 
       while (month.format('YYYY-MM') !== moment().add(1, 'months').format('YYYY-MM')) {
-
         const between = [month.format('YYYY-MM-01'), month.add(1, 'months').format('YYYY-MM-01')]
         month.subtract(1, 'months')
-
 
         // const users = await seller.users().whereBetween('created_at', between).with('invoices', (invoice) => {
         //   invoice
@@ -64,21 +61,19 @@ class ReportController {
         //     .whereBetween('updated_at', between)
         // }).fetch()
 
-
         // const usrs = users.toJSON()
 
-        const invoices = await Invoice
-          .query()
+        const invoices = await Invoice.query()
           .where({
             status: 'paid',
-            type: 'first'
+            type: 'first',
           })
           .whereBetween('updated_at', between)
           .with('user.plans')
           .fetch()
 
         const invs = invoices.toJSON()
-        let users = invs.map(invoice => {
+        let users = invs.map((invoice) => {
           const user = invoice.user
           delete invoice.user
 
@@ -87,9 +82,9 @@ class ReportController {
           return user
         })
 
-        users = users.filter(u => u.sellerId == seller.id)
+        users = users.filter((u) => u.sellerId == seller.id)
 
-        relSeller.months.find(m => m.month === month.format('YYYY-MM')).users = users
+        relSeller.months.find((m) => m.month === month.format('YYYY-MM')).users = users
         // relSeller.months[month.format('YYYY-MM')].users = users
 
         // for (let user of usrs) {
@@ -106,7 +101,6 @@ class ReportController {
       }
 
       return response.json(relSeller)
-
     } catch (error) {
       console.error(error)
       throw error
@@ -121,13 +115,12 @@ class ReportController {
         registers: {},
         mensalities: {},
         upgrades: {},
-        canceleds: {}
+        canceleds: {},
       }
 
       const allcanceleds = []
 
       while (month.format('YYYY-MM') !== moment().add(1, 'months').format('YYYY-MM')) {
-
         result.registers[month.format('YYYY-MM')] = []
         result.mensalities[month.format('YYYY-MM')] = []
         result.upgrades[month.format('YYYY-MM')] = []
@@ -145,7 +138,7 @@ class ReportController {
         // REGISTROS
         invoices = invoices.toJSON()
         month.subtract(1, 'months')
-        result.registers[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+        result.registers[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
         // invoices.rows.forEach(invoice => {
         //   const usr = users.rows.find(u => u.id === invoice.userId)
@@ -171,7 +164,7 @@ class ReportController {
           .fetch()
 
         invoices = invoices.toJSON()
-        result.mensalities[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+        result.mensalities[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
         // users.rows.forEach(user => {
         //   const inv = invoices.rows.find(i => i.userId === user.id)
@@ -210,7 +203,7 @@ class ReportController {
           .fetch()
 
         invoices = invoices.toJSON()
-        result.upgrades[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+        result.upgrades[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
         // users.rows.forEach(user => {
         //   const inv = invoices.rows.find(i => i.userId === user.id)
@@ -229,7 +222,7 @@ class ReportController {
           .fetch()
 
         invoices = invoices.toJSON()
-        result.canceleds[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+        result.canceleds[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
         // users.rows.forEach(user => {
         //   const inv = invoices.rows.find(i => i.userId === user.id)
@@ -243,7 +236,6 @@ class ReportController {
       }
 
       response.json(result)
-
     } catch (error) {
       console.error(error)
       throw error
@@ -253,12 +245,12 @@ class ReportController {
   async financialPaginate({ response, params }) {
     try {
       console.log('Starting: ', { controller: 'ReportController', linha: 253, metodo: 'financialPaginate' })
-      let month = moment().set("month", params.month ).subtract(12, 'months')
+      let month = moment().set('month', params.month).subtract(12, 'months')
       const result = {
         registers: {},
         mensalities: {},
         upgrades: {},
-        canceleds: {}
+        canceleds: {},
       }
 
       const allcanceleds = []
@@ -280,7 +272,7 @@ class ReportController {
       // REGISTROS
       invoices = invoices.toJSON()
       month.subtract(1, 'months')
-      result.registers[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+      result.registers[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
       // invoices.rows.forEach(invoice => {
       //   const usr = users.rows.find(u => u.id === invoice.userId)
@@ -306,7 +298,7 @@ class ReportController {
         .fetch()
 
       invoices = invoices.toJSON()
-      result.mensalities[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+      result.mensalities[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
       // users.rows.forEach(user => {
       //   const inv = invoices.rows.find(i => i.userId === user.id)
@@ -345,7 +337,7 @@ class ReportController {
         .fetch()
 
       invoices = invoices.toJSON()
-      result.upgrades[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+      result.upgrades[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
       // users.rows.forEach(user => {
       //   const inv = invoices.rows.find(i => i.userId === user.id)
@@ -364,7 +356,7 @@ class ReportController {
         .fetch()
 
       invoices = invoices.toJSON()
-      result.canceleds[month.format('YYYY-MM')].push(...invoices.map(i => i.user))
+      result.canceleds[month.format('YYYY-MM')].push(...invoices.map((i) => i.user))
 
       // users.rows.forEach(user => {
       //   const inv = invoices.rows.find(i => i.userId === user.id)
@@ -375,13 +367,11 @@ class ReportController {
       // });
 
       response.json(result)
-
     } catch (error) {
       console.error(error)
       throw error
     }
   }
-
 
   async financialIndex({ auth, response, view }) {
     try {
@@ -391,7 +381,7 @@ class ReportController {
 
       return response.send(
         view.render('inner.adm.reports.financial', {
-          profile: profile ? profile.toJSON() : null
+          profile: profile ? profile.toJSON() : null,
         })
       )
     } catch (error) {
@@ -402,16 +392,13 @@ class ReportController {
 
   async getSupport({ response }) {
     try {
-
       console.log('Starting: ', { controller: 'ReportController', linha: 242, metodo: 'getSupport' })
       const users = await UserController.getAllSupportUsers()
 
       const reportComplete = []
 
       if (users) {
-
         for (let user of users.rows) {
-
           const support = user.toJSON()
           support.report = {}
 
@@ -420,46 +407,73 @@ class ReportController {
           const allcanceleds = []
 
           while (month.format('YYYY-MM') !== moment().add(1, 'months').format('YYYY-MM')) {
-
             support.report[month.format('YYYY-MM')] = {
               paids: [],
               paidLates: [],
-              canceleds: []
+              canceleds: [],
             }
 
-            const paids = await BonusSupport.query().where('created_at', 'like', month.format('YYYY-MM%')).where({ supportId: user.id, status: 'paid' }).fetch()
-            const paidLates = await BonusSupport.query().where('created_at', 'like', month.format('YYYY-MM%')).where({ supportId: user.id, status: 'paidLate' }).fetch()
-            const canceleds = await BonusSupport.query().where('created_at', 'like', month.format('YYYY-MM%')).where({ supportId: user.id, status: 'canceled' }).fetch()
+            const paids = await BonusSupport.query()
+              .where('created_at', 'like', month.format('YYYY-MM%'))
+              .where({ supportId: user.id, status: 'paid' })
+              .fetch()
+            const paidLates = await BonusSupport.query()
+              .where('created_at', 'like', month.format('YYYY-MM%'))
+              .where({ supportId: user.id, status: 'paidLate' })
+              .fetch()
+            const canceleds = await BonusSupport.query()
+              .where('created_at', 'like', month.format('YYYY-MM%'))
+              .where({ supportId: user.id, status: 'canceled' })
+              .fetch()
 
             if (paids && paids.rows.length > 0) {
-              support.report[month.format('YYYY-MM')].paids = (await User.query().whereIn('id', paids.rows.map(bonus => bonus.userId)).with('plans').fetch()).toJSON()
+              support.report[month.format('YYYY-MM')].paids = (
+                await User.query()
+                  .whereIn(
+                    'id',
+                    paids.rows.map((bonus) => bonus.userId)
+                  )
+                  .with('plans')
+                  .fetch()
+              ).toJSON()
             }
 
             if (paidLates && paidLates.rows.length > 0) {
-              support.report[month.format('YYYY-MM')].paidLates = (await User.query().whereIn('id', paidLates.rows.map(bonus => bonus.userId)).with('plans').fetch()).toJSON()
+              support.report[month.format('YYYY-MM')].paidLates = (
+                await User.query()
+                  .whereIn(
+                    'id',
+                    paidLates.rows.map((bonus) => bonus.userId)
+                  )
+                  .with('plans')
+                  .fetch()
+              ).toJSON()
             }
 
             if (canceleds && canceleds.rows.length > 0) {
-              support.report[month.format('YYYY-MM')].canceleds = (await User.query().whereIn('id', canceleds.rows.map(bonus => bonus.userId)).with('plans').fetch()).toJSON()
+              support.report[month.format('YYYY-MM')].canceleds = (
+                await User.query()
+                  .whereIn(
+                    'id',
+                    canceleds.rows.map((bonus) => bonus.userId)
+                  )
+                  .with('plans')
+                  .fetch()
+              ).toJSON()
             }
 
             month = month.add(1, 'months')
-
           }
 
           reportComplete.push(support)
-
         }
-
       }
 
       return response.json(reportComplete)
-
     } catch (error) {
       console.error(error)
       throw error
     }
-
   }
 
   async getSupportPage({ auth, response, view }) {
@@ -470,21 +484,17 @@ class ReportController {
 
       if (user.controls.type === 'adm' || user.controls.type === 'support') {
         return response.send(
-
           view.render('inner.adm.reports.supportBonus', {
-            profile: profile ? profile.toJSON() : null
+            profile: profile ? profile.toJSON() : null,
           })
-
         )
-
       } else {
         response.status(403)
         return response.json({
           code: '403-259',
-          message: 'Access Deny'
+          message: 'Access Deny',
         })
       }
-
     } catch (error) {
       console.error(error)
       throw error
@@ -495,64 +505,72 @@ class ReportController {
     try {
       console.log('Starting: ', { controller: 'ReportController', linha: 332, metodo: 'reportWeekWithOuRequest' })
       const user = await auth.getUser()
-      let clients;
+      let clients
       const relUnrequests = []
 
       switch (user.controls.type) {
         case 'adm':
-          clients = await User.query().where('created_at', '>=', moment().subtract(3, 'month').format()).with('profile').with('support').with('seller').fetch()
+          clients = await User.query()
+            .where('created_at', '>=', moment().subtract(3, 'month').format())
+            .with('profile')
+            .with('support')
+            .with('seller')
+            .fetch()
 
           for (let client of clients.rows) {
-
             const cl = client.toJSON()
 
             if (cl.profile && cl.profile.status) {
-
-              const totalRequests = await Request.query().where('profileId', cl.profile.id).whereBetween('created_at', [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format()]).getCount()
+              const totalRequests = await Request.query()
+                .where('profileId', cl.profile.id)
+                .whereBetween('created_at', [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format()])
+                .getCount()
 
               if (totalRequests == 0) {
                 cl.profile.totalRequests = totalRequests
                 relUnrequests.push(cl)
               }
-
             }
           }
-          break;
+          break
 
         case 'support':
-
-          clients = await User.query().where('supportId', user.id).where('created_at', '>=', moment().subtract(3, 'month').format()).with('profile').with('support').with('seller').fetch()
+          clients = await User.query()
+            .where('supportId', user.id)
+            .where('created_at', '>=', moment().subtract(3, 'month').format())
+            .with('profile')
+            .with('support')
+            .with('seller')
+            .fetch()
 
           for (let client of clients.rows) {
-
             const cl = client.toJSON()
 
             if (cl.profile && cl.profile.status) {
-
-              const totalRequests = await Request.query().where('profileId', cl.profile.id).whereBetween('created_at', [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format()]).getCount()
+              const totalRequests = await Request.query()
+                .where('profileId', cl.profile.id)
+                .whereBetween('created_at', [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format()])
+                .getCount()
 
               if (totalRequests == 0) {
                 cl.profile.totalRequests = totalRequests
                 relUnrequests.push(cl)
               }
-
             }
           }
-          break;
+          break
 
         default:
           clients = []
-          break;
+          break
       }
 
       return response.json(relUnrequests)
-
     } catch (error) {
       console.error(error)
       throw error
     }
   }
-
 }
 
 module.exports = ReportController

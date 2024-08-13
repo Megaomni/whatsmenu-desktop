@@ -22,7 +22,7 @@ class SecurityKey {
       }
       let isSame = await Hash.verify(security_key, user.security_key)
       if (!isSame) {
-        return response.status(403).json({ message: "Senha de segurança inválida!", code: '403-s', data: { url: '', body: request.all() } })
+        return response.status(403).json({ message: 'Senha de segurança inválida!', code: '403-s', data: { url: '', body: request.all() } })
       }
       return await next()
     } catch (error) {

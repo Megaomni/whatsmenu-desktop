@@ -4,15 +4,15 @@
 const Schema = use('Schema')
 
 class AddUserSupportSchema extends Schema {
-  up () {
+  up() {
     this.table('users', (table) => {
       table.integer('supportId').unsigned().nullable().defaultTo(null).references('id').inTable('users').after('sellerId')
     })
   }
 
-  down () {
+  down() {
     this.table('users', (table) => {
-      table.dropForeign('supportId', 'users_supportid_foreign');
+      table.dropForeign('supportId', 'users_supportid_foreign')
       table.dropColumn('supportId')
     })
   }

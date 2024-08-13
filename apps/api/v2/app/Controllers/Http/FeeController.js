@@ -1,6 +1,6 @@
 'use strict'
 
-const moment = require("moment")
+const moment = require('moment')
 
 const Fee = use('App/Models/Fee')
 
@@ -15,7 +15,7 @@ class FeeController {
 
       data.profileId = profile.id
 
-      const haveFee = fees.find(fee => fee.code.trim() === data.code.trim())
+      const haveFee = fees.find((fee) => fee.code.trim() === data.code.trim())
 
       if (haveFee) {
         return response.status(400).json({ message: 'Ja existe uma taxa com esse mesmo nome!' })
@@ -86,7 +86,6 @@ class FeeController {
       throw error
     }
   }
-
 }
 
 module.exports = FeeController

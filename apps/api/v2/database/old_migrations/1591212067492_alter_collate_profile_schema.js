@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class AlterCollateProfileSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       // alter table
       table.string('name').notNullable().collate('utf8mb4_general_ci').alter()
@@ -12,7 +12,7 @@ class AlterCollateProfileSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       // reverse alternations
       table.string('name').notNullable().alter()

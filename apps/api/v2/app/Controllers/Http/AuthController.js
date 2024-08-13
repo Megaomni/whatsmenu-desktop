@@ -265,9 +265,9 @@ class AuthController {
         // }
 
         // await auth.attempt(email, password)
-        const { data } = await axios.post("http://localhost:3339/login/app", {
+        const { data } = await axios.post('http://localhost:3339/login/app', {
           email,
-          password
+          password,
         })
         if (!data.authenticated) {
           return response.status(401).json({ success: false, message: 'Email ou senha inválidos.' })
@@ -484,7 +484,7 @@ class AuthController {
           userWithToken = await auth.generate(user)
           return response.json(userWithToken)
         }
-  
+
         if (admMode) {
           userWithToken = await auth.generate(user)
         } else {

@@ -25,30 +25,28 @@ class Table extends Model {
     })
 
     this.addHook('afterFetch', (tables) => {
-      tables.forEach(table => {
-        table.name = WmProvider.decryptEmoji(table.name);
+      tables.forEach((table) => {
+        table.name = WmProvider.decryptEmoji(table.name)
         if (table.deleted_at !== null) {
           table.status = 0
         }
-      });
+      })
     })
 
     this.addHook('afterFind', (table) => {
-      table.name = WmProvider.decryptEmoji(table.name);
+      table.name = WmProvider.decryptEmoji(table.name)
       if (table.deleted_at !== null) {
         table.status = 0
       }
-
     })
 
     this.addHook('afterPaginate', (table) => {
-      table.name = WmProvider.decryptEmoji(table.name);
+      table.name = WmProvider.decryptEmoji(table.name)
     })
 
     this.addHook('afterSave', (table) => {
-      table.name = WmProvider.decryptEmoji(table.name);
+      table.name = WmProvider.decryptEmoji(table.name)
     })
-
   }
 
   profile() {

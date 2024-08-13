@@ -9,7 +9,7 @@ const Model = use('Model')
 const QueueController = use('App/Controllers/Http/QueueController')
 
 class User extends Model {
-  static boot () {
+  static boot() {
     super.boot()
 
     /**
@@ -29,7 +29,7 @@ class User extends Model {
 
     this.addHook('afterCreate', async (user) => {
       user.controls = JSON.parse(user.controls)
-      user.controls.attempts =  0
+      user.controls.attempts = 0
       // if (user.controls.disableInvoice && !user.controls.type) {
       //   await QueueController.setClientSupport(user.id)
       // }
@@ -48,14 +48,14 @@ class User extends Model {
     })
 
     this.addHook('afterFetch', async (users) => {
-      users.forEach(user => {
+      users.forEach((user) => {
         user.controls = JSON.parse(user.controls)
         user.controls.attempts = user.controls.attempts ? user.controls.attempts : 0
       })
     })
 
     this.addHook('afterPaginate', async (users) => {
-      users.forEach(user => {
+      users.forEach((user) => {
         user.controls = JSON.parse(user.controls)
         user.controls.attempts = user.controls.attempts ? user.controls.attempts : 0
       })
@@ -72,35 +72,35 @@ class User extends Model {
    *
    * @return {Object}
    */
-  tokens () {
+  tokens() {
     return this.hasMany('App/Models/Token')
   }
 
-  profile () {
+  profile() {
     return this.hasOne('App/Models/Profile', 'id', 'userId')
   }
 
-  profiles () {
+  profiles() {
     return this.hasMany('App/Models/Profile', 'id', 'userId')
   }
 
-  profileAll () {
+  profileAll() {
     return this.hasMany('App/Models/Profile', 'id', 'userId')
   }
 
-  plan () {
+  plan() {
     return this.belongsTo('App/Models/Plan', 'planId', 'id')
   }
 
-  seller () {
+  seller() {
     return this.belongsTo('App/Models/Seller', 'sellerId', 'id')
   }
 
-  requests () {
+  requests() {
     return this.hasMany('App/Models/SystemRequest', 'id', 'userId')
   }
 
-  support () {
+  support() {
     return this.hasOne('App/Models/User', 'supportId', 'id')
   }
 
@@ -112,7 +112,7 @@ class User extends Model {
     return this.belongsToMany('App/Models/FlexPlan', 'userId', 'flexPlanId', 'id', 'id').pivotTable('user_plans')
   }
 
-  invoices () {
+  invoices() {
     return this.hasMany('App/Models/Invoice', 'id', 'userId')
   }
 }
