@@ -11,14 +11,14 @@ on:
       - main
 
     paths:
-      - "apps/api/v2"
+      - "apps/api/v2/**"
 
 env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
   package:
-    if: github.ref_name == 'beta' || github.event.pull_request.merged == true && contains(github.event.pull_request.changed_files, 'apps/api/v2/')
+    if: github.ref_name == 'beta' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     outputs:
