@@ -3,8 +3,25 @@ import { useInfiniteScroll } from '@hooks/useInfiniteScroll'
 import { apiRoute } from '@utils/wm-functions'
 import { ArcElement, Chart as ChartJS, Legend, Tooltip } from 'chart.js'
 import { useSession } from 'next-auth/react'
-import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from 'react'
-import { Button, Card, Col, Container, Form, Nav, Row, Tab, Table } from 'react-bootstrap'
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Nav,
+  Row,
+  Tab,
+  Table,
+} from 'react-bootstrap'
 import { Pie } from 'react-chartjs-2'
 import { useReactToPrint } from 'react-to-print'
 import Cart from '../../types/cart'
@@ -43,7 +60,8 @@ interface ClientReportProps {
 export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
   const { t } = useTranslation()
   ChartJS.register(ArcElement, Tooltip, Legend)
-  const { handleShowToast, setRequestsToPrint, currency } = useContext(AppContext)
+  const { handleShowToast, setRequestsToPrint, currency } =
+    useContext(AppContext)
   const { data: session } = useSession()
   const [clientSelected, setClientSelected] = useState<any | null>(null)
   const [carts, setCarts] = useState<{
@@ -59,7 +77,10 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
     perPage: 30,
     total: 0,
   })
-  const [top10, setTop10] = useState<{ clientsMaxTotal: any[]; clientsMaxQuantity: any[] } | null>(null)
+  const [top10, setTop10] = useState<{
+    clientsMaxTotal: any[]
+    clientsMaxQuantity: any[]
+  } | null>(null)
   const { register, handleSubmit, watch, reset } = useForm<Top10Form>({
     resolver: zodResolver(Top10FormSchema),
   })
@@ -71,14 +92,22 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
   const fetchCarts = async () => {
     if (clientSelected && (carts.page === 1 || carts.page <= carts.lastPage)) {
       try {
-        const { data } = await apiRoute(`/dashboard/report/client/carts/${carts.page}?notValidate=true`, session, 'POST', {
-          clientId: clientSelected.id,
-        })
+        const { data } = await apiRoute(
+          `/dashboard/report/client/carts/${carts.page}?notValidate=true`,
+          session,
+          'POST',
+          {
+            clientId: clientSelected.id,
+          }
+        )
         setCarts((state) => {
           return {
             ...data.carts,
             page: state.page + 1,
-            data: data.carts.page === 1 ? data.carts.data : [...(state ? state.data : []), ...data.carts.data],
+            data:
+              data.carts.page === 1
+                ? data.carts.data
+                : [...(state ? state.data : []), ...data.carts.data],
           }
         })
       } catch (error) {
@@ -90,7 +119,11 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
   const fetchClients = async () => {
     if (clients.page <= clients.lastPage) {
       try {
-        const { data: clientsPaginate } = await apiRoute(`/dashboard/report/client/${clients?.page || 1}?notValidate=true`, session, 'POST')
+        const { data: clientsPaginate } = await apiRoute(
+          `/dashboard/report/client/${clients?.page || 1}?notValidate=true`,
+          session,
+          'POST'
+        )
         setClients((state) => {
           return {
             ...clientsPaginate,
@@ -107,7 +140,11 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
   const fetchTop10 = async () => {
     if (!top10) {
       try {
-        const { data } = await apiRoute(`/dashboard/report/client/top10?notValidate=true`, session, 'POST')
+        const { data } = await apiRoute(
+          `/dashboard/report/client/top10?notValidate=true`,
+          session,
+          'POST'
+        )
         setTop10(data)
       } catch (error) {
         console.error(error)
@@ -128,8 +165,12 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
     }
   }
 
-  const clientsNameQuantity = top10?.clientsMaxQuantity?.map((client: any) => client.name) || []
-  const maxValueQuantity = top10?.clientsMaxQuantity?.map((client: any) => client.controls?.requests?.quantity) || []
+  const clientsNameQuantity =
+    top10?.clientsMaxQuantity?.map((client: any) => client.name) || []
+  const maxValueQuantity =
+    top10?.clientsMaxQuantity?.map(
+      (client: any) => client.controls?.requests?.quantity
+    ) || []
   const pizzaMaxQuantity = {
     labels: clientsNameQuantity,
     datasets: [
@@ -164,8 +205,12 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
       },
     ],
   }
-  const quantitiesTotal = top10?.clientsMaxTotal?.map((client: any) => client.controls?.requests?.total) || []
-  const clientsNameTotal = top10?.clientsMaxTotal?.map((client: any) => client.name) || []
+  const quantitiesTotal =
+    top10?.clientsMaxTotal?.map(
+      (client: any) => client.controls?.requests?.total
+    ) || []
+  const clientsNameTotal =
+    top10?.clientsMaxTotal?.map((client: any) => client.name) || []
 
   const pizzaMaxTotal = {
     labels: clientsNameTotal,
@@ -228,7 +273,10 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
     copyStyles: false,
   })
 
-  useInfiniteScroll({ callback: activeTab === 'top10' || clientSelected ? fetchCarts : fetchClients })
+  useInfiniteScroll({
+    callback:
+      activeTab === 'top10' || clientSelected ? fetchCarts : fetchClients,
+  })
 
   useEffect(() => {
     if (clientSelected) {
@@ -242,7 +290,14 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
         <Card.Header className="d-flex gap-3">
           <h4>{t('search')}</h4>
           <div className="vr"></div>
-          <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/hMTYKIVi9nU', title: i18n.t('customer_report') }]} />
+          <HelpVideos.Trigger
+            urls={[
+              {
+                src: 'https://www.youtube.com/embed/hMTYKIVi9nU',
+                title: i18n.t('customer_report'),
+              },
+            ]}
+          />
         </Card.Header>
         <Card.Body>
           <SearchForm
@@ -259,26 +314,58 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
         <>
           <div className="d-flex">
             <Container fluid className="p-0">
-              <Row className="text-center border bg-white p-3">
-                <Col xs={12} md className={`${window.innerWidth >= 768 ? 'border-end' : 'mb-3'} d-flex flex-column justify-content-center`}>
-                  <h1 className={`text-danger align-middle mb-0 ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}>{clientSelected?.name}</h1>
+              <Row className="border bg-white p-3 text-center">
+                <Col
+                  xs={12}
+                  md
+                  className={`${window.innerWidth >= 768 ? 'border-end' : 'mb-3'} d-flex flex-column justify-content-center`}
+                >
+                  <h1
+                    className={`text-danger mb-0 align-middle ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}
+                  >
+                    {clientSelected?.name}
+                  </h1>
                   <h6 className="fw-bold">{t('client')}</h6>
                 </Col>
-                <Col xs={4} md className="border-end d-flex flex-column justify-content-center">
-                  <h1 className={`text-danger align-middle mb-0 ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}>
+                <Col
+                  xs={4}
+                  md
+                  className="border-end d-flex flex-column justify-content-center"
+                >
+                  <h1
+                    className={`text-danger mb-0 align-middle ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}
+                  >
                     {clientSelected?.controls.requests?.quantity}
                   </h1>
                   <h6 className="fw-bold">{t('number_of_orders')}</h6>
                 </Col>
-                <Col xs={4} md className="border-end d-flex flex-column justify-content-center">
-                  <h1 className={`text-danger align-middle mb-0 ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}>
-                    {currency({ value: clientSelected?.controls.requests?.total })}
+                <Col
+                  xs={4}
+                  md
+                  className="border-end d-flex flex-column justify-content-center"
+                >
+                  <h1
+                    className={`text-danger mb-0 align-middle ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}
+                  >
+                    {currency({
+                      value: clientSelected?.controls.requests?.total,
+                    })}
                   </h1>
                   <h6 className="fw-bold">{t('total_orders')}</h6>
                 </Col>
-                <Col xs={4} md className=" d-flex flex-column justify-content-center">
-                  <h1 className={`text-danger align-middle mb-0 ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}>
-                    {currency({ value: clientSelected?.controls.requests?.total / clientSelected?.controls.requests?.quantity })}
+                <Col
+                  xs={4}
+                  md
+                  className=" d-flex flex-column justify-content-center"
+                >
+                  <h1
+                    className={`text-danger mb-0 align-middle ${window.innerWidth >= 768 ? 'fs-3' : 'fs-6'}`}
+                  >
+                    {currency({
+                      value:
+                        clientSelected?.controls.requests?.total /
+                        clientSelected?.controls.requests?.quantity,
+                    })}
                   </h1>
                   <h6 className="fw-bold">{t('average_ticket')}</h6>
                 </Col>
@@ -288,7 +375,9 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
               <Card className="table-responsive no-more-tables">
                 <Table
                   className={
-                    window.innerWidth <= 768 ? 'col-sm-12 table-bordered table-striped table-condensed cf' : 'table responsive table-striped'
+                    window.innerWidth <= 768
+                      ? 'col-sm-12 table-bordered table-striped table-condensed cf'
+                      : 'responsive table-striped table'
                   }
                 >
                   <thead>
@@ -317,36 +406,54 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
                         key={index}
                         onClick={() => {
                           setRequestsToPrint({
-                            carts: [new Cart({ ...cart, client: clientSelected })],
+                            carts: [
+                              new Cart({ ...cart, client: clientSelected }),
+                            ],
                             report: true,
                             show: true,
                             command: null,
                           })
                         }}
                       >
-                        <td className="ps-2 p-0 p-md-2 text-md-center">
-                          <span className="fw-bold d-md-none">{t('order_code')}: </span>
+                        <td className="p-md-2 text-md-center p-0 ps-2">
+                          <span className="fw-bold d-md-none">
+                            {t('order_code')}:{' '}
+                          </span>
                           <span>{cart.code}</span>
                         </td>
 
-                        <td className="ps-2 p-0 p-md-2">
+                        <td className="p-md-2 p-0 ps-2">
                           <span className="fw-bold d-md-none">Total: </span>
                           <span>{currency({ value: cart.total })}</span>
                         </td>
 
-                        <td className="ps-2 p-0 p-md-2">
-                          <span className="fw-bold d-md-none">{t('payment')}: </span>
+                        <td className="p-md-2 p-0 ps-2">
+                          <span className="fw-bold d-md-none">
+                            {t('payment')}:{' '}
+                          </span>
                           <span>{cart.formsPayment[0].label}</span>
                         </td>
 
-                        <td className="ps-2 p-0 p-md-2">
-                          <span className="fw-bold d-md-none">{t('change_for')}: </span>
-                          <span>{currency({ value: cart.formsPayment[0].change })}</span>
+                        <td className="p-md-2 p-0 ps-2">
+                          <span className="fw-bold d-md-none">
+                            {t('change_for')}:{' '}
+                          </span>
+                          <span>
+                            {currency({ value: cart.formsPayment[0].change })}
+                          </span>
                         </td>
 
-                        <td className="ps-2 p-0 p-md-2">
-                          <span className="fw-bold d-md-none">{t('change')}: </span>
-                          <span>{currency({ value: cart.formsPayment[0].change - cart.formsPayment[0].value })}</span>
+                        <td className="p-md-2 p-0 ps-2">
+                          <span className="fw-bold d-md-none">
+                            {t('change')}:{' '}
+                          </span>
+                          <span>
+                            {currency({
+                              value:
+                                cart.formsPayment[0].change -
+                                cart.formsPayment[0].value,
+                            })}
+                          </span>
                         </td>
                       </tr>
                     ))}
@@ -359,7 +466,10 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
       )}
 
       {!clientSelected && (
-        <Tab.Container defaultActiveKey={activeTab} onSelect={(tab) => setActiveTab(tab!)}>
+        <Tab.Container
+          defaultActiveKey={activeTab}
+          onSelect={(tab) => setActiveTab(tab!)}
+        >
           <Nav variant="tabs" className="flex-column flex-md-row gap-1">
             <Nav.Item>
               <Nav.Link eventKey="all" className="m-0 p-3 text-center">
@@ -367,7 +477,11 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="top-10" className="m-0 p-3 text-center" onClick={fetchTop10}>
+              <Nav.Link
+                eventKey="top-10"
+                className="m-0 p-3 text-center"
+                onClick={fetchTop10}
+              >
                 TOP 10
               </Nav.Link>
             </Nav.Item>
@@ -376,7 +490,10 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
           <Tab.Content>
             <Tab.Pane eventKey="all">
               <Card>
-                <ClientTable onClientClick={(client) => setClientSelected(client)} clients={clients?.data || []} />
+                <ClientTable
+                  onClientClick={(client) => setClientSelected(client)}
+                  clients={clients?.data || []}
+                />
               </Card>
             </Tab.Pane>
 
@@ -384,7 +501,7 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
               <>
                 <section ref={ref} id="printReport">
                   <Container fluid className="mx-0 p-0">
-                    <Row className="notPrint px-3 my-2 align-items-center">
+                    <Row className="notPrint align-items-center my-2 px-3">
                       <Card
                         as="form"
                         onSubmit={handleSubmit(fetchTop10ByDate)}
@@ -396,20 +513,30 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
                         <Card.Body className="d-flex flex-column flex-md-row gap-2">
                           <Form.Label className="m-0">
                             <span>{t('start_date')}</span>
-                            <Form.Control type="date" {...register('startDate', { required: false })} max={DateTime.local().toFormat('yyyy-MM-dd')} />
+                            <Form.Control
+                              type="date"
+                              {...register('startDate', { required: false })}
+                              max={DateTime.local().toFormat('yyyy-MM-dd')}
+                            />
                           </Form.Label>
                           <Form.Label className="m-0">
                             <span>{t('end_date')}</span>
                             <Form.Control
                               type="date"
                               {...register('endDate', { required: false })}
-                              min={DateTime.fromFormat(watch('startDate') || DateTime.local().toFormat('yyyy-MM-dd'), 'yyyy-MM-dd').toFormat(
+                              min={DateTime.fromFormat(
+                                watch('startDate') ||
+                                  DateTime.local().toFormat('yyyy-MM-dd'),
                                 'yyyy-MM-dd'
-                              )}
+                              ).toFormat('yyyy-MM-dd')}
                               max={DateTime.local().toFormat('yyyy-MM-dd')}
                             />
                           </Form.Label>
-                          <Button className="mt-auto" type="submit" variant="success">
+                          <Button
+                            className="mt-auto"
+                            type="submit"
+                            variant="success"
+                          >
                             {t('filter')}
                           </Button>
                           <Button className="mt-auto" type="reset">
@@ -418,19 +545,34 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
                         </Card.Body>
                       </Card>
                     </Row>
-                    {top10?.clientsMaxQuantity.length && top10?.clientsMaxTotal ? (
+                    {top10?.clientsMaxQuantity.length &&
+                    top10?.clientsMaxTotal ? (
                       <Row>
-                        <Col xs={{ order: 1, offset: '12' }} md={{ order: 1, span: '6' }}>
-                          <Card className="notPrint" style={{ height: window.innerWidth >= 768 ? '480px' : 'auto' }}>
+                        <Col
+                          xs={{ order: 1, offset: '12' }}
+                          md={{ order: 1, span: '6' }}
+                        >
+                          <Card
+                            className="notPrint"
+                            style={{
+                              height:
+                                window.innerWidth >= 768 ? '480px' : 'auto',
+                            }}
+                          >
                             <Card.Body>
-                              <Card.Title className="p-0">{t('order_volume')}</Card.Title>
+                              <Card.Title className="p-0">
+                                {t('order_volume')}
+                              </Card.Title>
                               <Pie
                                 data={pizzaMaxQuantity}
                                 style={{ maxHeight: '400px' }}
                                 options={{
                                   plugins: {
                                     legend: {
-                                      position: window.innerWidth >= 768 ? 'left' : 'top',
+                                      position:
+                                        window.innerWidth >= 768
+                                          ? 'left'
+                                          : 'top',
                                       maxHeight: 200,
                                     },
                                   },
@@ -440,17 +582,31 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
                           </Card>
                         </Col>
 
-                        <Col xs={{ order: 3, offset: '12' }} md={{ order: 3, span: '6' }}>
-                          <Card className="notPrint" style={{ height: window.innerWidth >= 768 ? '480px' : 'auto' }}>
+                        <Col
+                          xs={{ order: 3, offset: '12' }}
+                          md={{ order: 3, span: '6' }}
+                        >
+                          <Card
+                            className="notPrint"
+                            style={{
+                              height:
+                                window.innerWidth >= 768 ? '480px' : 'auto',
+                            }}
+                          >
                             <Card.Body>
-                              <Card.Title className="p-0">{t('amount_consumed')}</Card.Title>
+                              <Card.Title className="p-0">
+                                {t('amount_consumed')}
+                              </Card.Title>
                               <Pie
                                 data={pizzaMaxTotal}
                                 style={{ maxHeight: '400px' }}
                                 options={{
                                   plugins: {
                                     legend: {
-                                      position: window.innerWidth >= 768 ? 'left' : 'top',
+                                      position:
+                                        window.innerWidth >= 768
+                                          ? 'left'
+                                          : 'top',
                                       maxHeight: 200,
                                     },
                                   },
@@ -460,21 +616,37 @@ export const ClientReport = ({ clients, setClients }: ClientReportProps) => {
                           </Card>
                         </Col>
 
-                        <Col xs={{ order: 2, offset: '12' }} md={{ order: 2, span: '6' }}>
+                        <Col
+                          xs={{ order: 2, offset: '12' }}
+                          md={{ order: 2, span: '6' }}
+                        >
                           <Card>
-                            <ClientTable onClientClick={(client) => setClientSelected(client)} clients={top10?.clientsMaxQuantity || []} />
+                            <ClientTable
+                              onClientClick={(client) =>
+                                setClientSelected(client)
+                              }
+                              clients={top10?.clientsMaxQuantity || []}
+                            />
                           </Card>
                         </Col>
 
-                        <Col xs={{ order: 4, offset: '12' }} md={{ order: 4, span: '6' }}>
+                        <Col
+                          xs={{ order: 4, offset: '12' }}
+                          md={{ order: 4, span: '6' }}
+                        >
                           <Card>
-                            <ClientTable onClientClick={(client) => setClientSelected(client)} clients={top10?.clientsMaxTotal || []} />
+                            <ClientTable
+                              onClientClick={(client) =>
+                                setClientSelected(client)
+                              }
+                              clients={top10?.clientsMaxTotal || []}
+                            />
                           </Card>
                         </Col>
                       </Row>
                     ) : (
                       <Card>
-                        <Card.Body className="text-center p-5">
+                        <Card.Body className="p-5 text-center">
                           <h3>{t('no_results_found')}</h3>
                         </Card.Body>
                       </Card>

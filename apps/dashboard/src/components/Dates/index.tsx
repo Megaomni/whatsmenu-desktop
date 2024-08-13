@@ -1,6 +1,24 @@
 import { useSession } from 'next-auth/react'
-import { Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Form, OverlayTrigger, Popover, Row, Table } from 'react-bootstrap'
+import {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  OverlayTrigger,
+  Popover,
+  Row,
+  Table,
+} from 'react-bootstrap'
 import { RiErrorWarningFill } from 'react-icons/ri'
 import { AppContext } from '../../context/app.ctx'
 import { apiRoute, compareItems, copy, hash } from '../../utils/wm-functions'
@@ -22,7 +40,8 @@ interface DatesProps {
 export function Dates({ setInvalidWeek, ...props }: DatesProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { handleShowToast, setChangeConfig, changeConfig, setProfile } = useContext(AppContext)
+  const { handleShowToast, setChangeConfig, changeConfig, setProfile } =
+    useContext(AppContext)
   let { title, type, week: propsWeek, setWeek: setWeekProps } = props
   const [week, setWeek] = useState(propsWeek)
   const [checkAllDays, setCheckAllDays] = useState(false)
@@ -38,7 +57,9 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
 
   useEffect(() => {
     if (setInvalidWeek) {
-      const haveInvalid = Object.values(week).some((date) => date.some((day: DateType) => day.open >= day.close))
+      const haveInvalid = Object.values(week).some((date) =>
+        date.some((day: DateType) => day.open >= day.close)
+      )
 
       setInvalidWeek((invalid) => haveInvalid)
     }
@@ -58,7 +79,9 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
 
   //Compara mudanças no objeto e verifica se foi salva
   useEffect(() => {
-    const haveInvalid = Object.values(week).some((date) => date.some((day: DateType) => day.open >= day.close))
+    const haveInvalid = Object.values(week).some((date) =>
+      date.some((day: DateType) => day.open >= day.close)
+    )
 
     setInvalid(haveInvalid)
 
@@ -85,8 +108,10 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
   const convertHour = (text: string) => parseFloat(text.replace(':', '.'))
 
   const handleAddDate = () => {
-    const openDate = (document.querySelector('#openDate') as HTMLInputElement)?.value
-    const closeDate = (document.querySelector('#closeDate') as HTMLInputElement)?.value
+    const openDate = (document.querySelector('#openDate') as HTMLInputElement)
+      ?.value
+    const closeDate = (document.querySelector('#closeDate') as HTMLInputElement)
+      ?.value
     const selectedDays = Array.from(document.querySelectorAll('.dayCheckbox'))
       .filter((input) => (input.childNodes[0] as HTMLInputElement).checked)
       .map((div) => div.childNodes[0]) as HTMLInputElement[]
@@ -165,7 +190,12 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
   const handleSaveProfileWeek = useCallback(async () => {
     if (!invalid && type === 'profile') {
       try {
-        const { data } = await apiRoute('/dashboard/profile/week', session, 'POST', { week })
+        const { data } = await apiRoute(
+          '/dashboard/profile/week',
+          session,
+          'POST',
+          { week }
+        )
         setProfile((prevState) => {
           if (prevState) {
             return { ...prevState, week: data }
@@ -192,7 +222,15 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
       })
     }
     setChangeConfig({})
-  }, [handleShowToast, invalid, session, week, setChangeConfig, type, setProfile])
+  }, [
+    handleShowToast,
+    invalid,
+    session,
+    week,
+    setChangeConfig,
+    type,
+    setProfile,
+  ])
 
   useEffect(() => {
     const { changeState, confirmSave } = changeConfig
@@ -205,10 +243,16 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
 
   switch (type) {
     case 'menu':
-      video = { src: 'https://www.youtube.com/embed/3CKI4sh9wKA', title: t('product_availability') }
+      video = {
+        src: 'https://www.youtube.com/embed/3CKI4sh9wKA',
+        title: t('product_availability'),
+      }
       break
     default:
-      video = { src: 'https://www.youtube.com/embed/POrBnzbrSm4', title: t('setting_operating_hours') }
+      video = {
+        src: 'https://www.youtube.com/embed/POrBnzbrSm4',
+        title: t('setting_operating_hours'),
+      }
       break
   }
 
@@ -229,12 +273,12 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
             </Card.Header>
             <Card.Body className="text-dark">
               <Container fluid className="mx-0 px-0">
-                <Row className="fs-6 gap-2 align-items-baseline">
+                <Row className="fs-6 align-items-baseline gap-2">
                   {days.map((element) => (
                     <Col key={element.day} sm="1" style={{ maxWidth: '25%' }}>
                       <Form.Check
                         label={element.label?.replace(/^(\S{3})(\S+)/, '$1.')}
-                        className="mt-auto dayCheckbox"
+                        className="dayCheckbox mt-auto"
                         name={element.day}
                         id={element.weekDay}
                         data-name={element.label}
@@ -245,7 +289,10 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
                   <Col md>
                     <Row className="justify-content-end">
                       <Col lg="8" className="d-flex">
-                        <Button className="flex-grow-1" onClick={() => setCheckAllDays(!checkAllDays)}>
+                        <Button
+                          className="flex-grow-1"
+                          onClick={() => setCheckAllDays(!checkAllDays)}
+                        >
                           {t('select_all')}
                         </Button>
                       </Col>
@@ -254,31 +301,45 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
                 </Row>
                 <hr />
                 <Row>
-                  <Col md="3" className="d-flex gap-2 align-items-baseline mb-2">
+                  <Col
+                    md="3"
+                    className="d-flex align-items-baseline mb-2 gap-2"
+                  >
                     <Form.Label className="w-25">{t('from')}</Form.Label>
                     <Form.Control
                       type="time"
                       defaultValue="00:00"
                       id="openDate"
                       onChange={(e) => {
-                        e.target.value = !!e.target.value ? e.target.value : '00:00'
+                        e.target.value = !!e.target.value
+                          ? e.target.value
+                          : '00:00'
                       }}
                     />
                   </Col>
-                  <Col md="3" className="d-flex gap-2 align-items-baseline mb-2">
+                  <Col
+                    md="3"
+                    className="d-flex align-items-baseline mb-2 gap-2"
+                  >
                     <Form.Label className="w-25">{t('until')}</Form.Label>
                     <Form.Control
                       type="time"
                       defaultValue="23:59"
                       id="closeDate"
                       onChange={(e) => {
-                        e.target.value = !!e.target.value ? e.target.value : '23:59'
+                        e.target.value = !!e.target.value
+                          ? e.target.value
+                          : '23:59'
                       }}
                     />
                   </Col>
                   <Col md>
                     <Row className="justify-content-end mb-2">
-                      <Col lg="4" md="5" className="d-flex align-items-baseline">
+                      <Col
+                        lg="4"
+                        md="5"
+                        className="d-flex align-items-baseline"
+                      >
                         <Button className="flex-grow-1" onClick={handleAddDate}>
                           + {t('add')}
                         </Button>
@@ -302,7 +363,11 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
                         <td colSpan={3}></td>
                         <td>
                           <div className="d-flex justify-content-end">
-                            <Button variant="success" className="mt-auto flex-fill flex-lg-grow-0" onClick={() => handleSaveProfileWeek()}>
+                            <Button
+                              variant="success"
+                              className="flex-fill flex-lg-grow-0 mt-auto"
+                              onClick={() => handleSaveProfileWeek()}
+                            >
                               {t('save')}
                             </Button>
                           </div>
@@ -311,129 +376,186 @@ export function Dates({ setInvalidWeek, ...props }: DatesProps) {
                     </tfoot>
                   )}
                   <tbody>
-                    {Object.values(week).map((day: DateType[], index, weekArr) => {
-                      return day.map((date) => (
-                        <tr key={date.code} className={`${date.open >= date.close && 'wm-warning'} text-dark`}>
-                          <td className="position-relative">
-                            {date.open >= date.close && (
-                              <OverlayTrigger
-                                placement="auto"
-                                overlay={
-                                  <Popover id="popover-basic">
-                                    <Popover.Header as="h3" className="with-icon">
-                                      <RiErrorWarningFill className="text-warning" />
-                                      <b>{t('invalid_time')}</b>
-                                    </Popover.Header>
-                                    <Popover.Body>
-                                      <p>{t('if_work_overnight')}:</p>
-                                      <p>
-                                        {days[date.weekDay < 6 ? date.weekDay + 1 : 0].label} - {t('from')}: {date.open} {t('until')}: 23:59
-                                      </p>
-                                      <p className="m-0">
-                                        <span>
-                                          {days[date.weekDay < 6 ? date.weekDay + 1 : 0].label} - {t('from')}: {date.open} {t('until')}:{' '}
-                                          {(document.querySelector(`#close-${date.code}`) as HTMLInputElement)?.value}
-                                        </span>
-                                      </p>
-                                      <p>
-                                        <span>
-                                          {days[date.weekDay < 6 ? date.weekDay + 1 : 0].label} - {t('from')}: 00:00 {t('until')}:{' '}
-                                          {(document.querySelector(`#close-${date.code}`) as HTMLInputElement)?.value !== '00:00'
-                                            ? (document.querySelector(`#close-${date.code}`) as HTMLInputElement)?.value
-                                            : '23:59'}
-                                        </span>
-                                      </p>
-                                    </Popover.Body>
-                                  </Popover>
-                                }
-                              >
-                                <span>
-                                  <RiErrorWarningFill className="text-warning" />
-                                </span>
-                              </OverlayTrigger>
-                            )}
-                            <span className="ms-2">{Week.label(date.weekDay)}</span>
-                          </td>
-                          <td>
-                            <Form.Control
-                              type="time"
-                              defaultValue={date.open}
-                              id={`${date.code}-open`}
-                              onChange={(e) => {
-                                e.target.value = !!e.target.value ? e.target.value : '00:00'
+                    {Object.values(week).map(
+                      (day: DateType[], index, weekArr) => {
+                        return day.map((date) => (
+                          <tr
+                            key={date.code}
+                            className={`${date.open >= date.close && 'wm-warning'} text-dark`}
+                          >
+                            <td className="position-relative">
+                              {date.open >= date.close && (
+                                <OverlayTrigger
+                                  placement="auto"
+                                  overlay={
+                                    <Popover id="popover-basic">
+                                      <Popover.Header
+                                        as="h3"
+                                        className="with-icon"
+                                      >
+                                        <RiErrorWarningFill className="text-warning" />
+                                        <b>{t('invalid_time')}</b>
+                                      </Popover.Header>
+                                      <Popover.Body>
+                                        <p>{t('if_work_overnight')}:</p>
+                                        <p>
+                                          {
+                                            days[
+                                              date.weekDay < 6
+                                                ? date.weekDay + 1
+                                                : 0
+                                            ].label
+                                          }{' '}
+                                          - {t('from')}: {date.open}{' '}
+                                          {t('until')}: 23:59
+                                        </p>
+                                        <p className="m-0">
+                                          <span>
+                                            {
+                                              days[
+                                                date.weekDay < 6
+                                                  ? date.weekDay + 1
+                                                  : 0
+                                              ].label
+                                            }{' '}
+                                            - {t('from')}: {date.open}{' '}
+                                            {t('until')}:{' '}
+                                            {
+                                              (
+                                                document.querySelector(
+                                                  `#close-${date.code}`
+                                                ) as HTMLInputElement
+                                              )?.value
+                                            }
+                                          </span>
+                                        </p>
+                                        <p>
+                                          <span>
+                                            {
+                                              days[
+                                                date.weekDay < 6
+                                                  ? date.weekDay + 1
+                                                  : 0
+                                              ].label
+                                            }{' '}
+                                            - {t('from')}: 00:00 {t('until')}:{' '}
+                                            {(
+                                              document.querySelector(
+                                                `#close-${date.code}`
+                                              ) as HTMLInputElement
+                                            )?.value !== '00:00'
+                                              ? (
+                                                  document.querySelector(
+                                                    `#close-${date.code}`
+                                                  ) as HTMLInputElement
+                                                )?.value
+                                              : '23:59'}
+                                          </span>
+                                        </p>
+                                      </Popover.Body>
+                                    </Popover>
+                                  }
+                                >
+                                  <span>
+                                    <RiErrorWarningFill className="text-warning" />
+                                  </span>
+                                </OverlayTrigger>
+                              )}
+                              <span className="ms-2">
+                                {Week.label(date.weekDay)}
+                              </span>
+                            </td>
+                            <td>
+                              <Form.Control
+                                type="time"
+                                defaultValue={date.open}
+                                id={`${date.code}-open`}
+                                onChange={(e) => {
+                                  e.target.value = !!e.target.value
+                                    ? e.target.value
+                                    : '00:00'
 
-                                if (week) {
-                                  setTimeout(() => {
-                                    date.open = e.target.value
-                                    setWeek({ ...week })
-                                  }, 1)
-                                }
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <Form.Control
-                              type="time"
-                              defaultValue={date.close}
-                              id={`close-${date.code}`}
-                              onChange={(e) => {
-                                e.target.value = !!e.target.value ? e.target.value : '23:59'
-                                if (week) {
-                                  setTimeout(() => {
-                                    date.close = e.target.value
-                                    setWeek({ ...week })
-                                  }, 1)
-                                }
-                              }}
-                            />
-                          </td>
-                          <td>
-                            <div className="d-flex gap-1">
-                              {type === 'menu' && (
+                                  if (week) {
+                                    setTimeout(() => {
+                                      date.open = e.target.value
+                                      setWeek({ ...week })
+                                    }, 1)
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <Form.Control
+                                type="time"
+                                defaultValue={date.close}
+                                id={`close-${date.code}`}
+                                onChange={(e) => {
+                                  e.target.value = !!e.target.value
+                                    ? e.target.value
+                                    : '23:59'
+                                  if (week) {
+                                    setTimeout(() => {
+                                      date.close = e.target.value
+                                      setWeek({ ...week })
+                                    }, 1)
+                                  }
+                                }}
+                              />
+                            </td>
+                            <td>
+                              <div className="d-flex gap-1">
+                                {type === 'menu' && (
+                                  <Button
+                                    variant="orange text-white"
+                                    className="flex-grow-2"
+                                    onClick={() => {
+                                      if (week) {
+                                        setTimeout(() => {
+                                          date.active = !date.active
+                                          setWeek({ ...week })
+                                        }, 1)
+                                      }
+                                    }}
+                                  >
+                                    {date.active ? t('pause') : t('unpause')}
+                                  </Button>
+                                )}
                                 <Button
-                                  variant="orange text-white"
+                                  variant="danger"
                                   className="flex-grow-2"
                                   onClick={() => {
-                                    if (week) {
-                                      setTimeout(() => {
-                                        date.active = !date.active
-                                        setWeek({ ...week })
-                                      }, 1)
+                                    const filteredDay = days.find(
+                                      (d) => d.weekDay === date.weekDay
+                                    )
+                                    if (filteredDay) {
+                                      week[filteredDay.day] = week[
+                                        filteredDay.day
+                                      ].filter(
+                                        (d: DateType) => d.code !== date.code
+                                      )
                                     }
+                                    setTimeout(() => {
+                                      setWeek({ ...week })
+                                    }, 1)
+                                    // handleShowToast({
+                                    //   type: "success",
+                                    //   title: "Excluir horário",
+                                    //   content: `Horário de ${
+                                    //     type === "profile"
+                                    //       ? "funcionamento"
+                                    //       : "disponibilidade"
+                                    //   } excluído com sucesso`,
+                                    // });
                                   }}
                                 >
-                                  {date.active ? t('pause') : t('unpause')}
+                                  {t('delete')}
                                 </Button>
-                              )}
-                              <Button
-                                variant="danger"
-                                className="flex-grow-2"
-                                onClick={() => {
-                                  const filteredDay = days.find((d) => d.weekDay === date.weekDay)
-                                  if (filteredDay) {
-                                    week[filteredDay.day] = week[filteredDay.day].filter((d: DateType) => d.code !== date.code)
-                                  }
-                                  setTimeout(() => {
-                                    setWeek({ ...week })
-                                  }, 1)
-                                  // handleShowToast({
-                                  //   type: "success",
-                                  //   title: "Excluir horário",
-                                  //   content: `Horário de ${
-                                  //     type === "profile"
-                                  //       ? "funcionamento"
-                                  //       : "disponibilidade"
-                                  //   } excluído com sucesso`,
-                                  // });
-                                }}
-                              >
-                                {t('delete')}
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    })}
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      }
+                    )}
                   </tbody>
                 </Table>
               </Container>

@@ -11,9 +11,14 @@ interface RequestBody {
   motoboyId: string
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   try {
-    let { report, security_key, session, motoboyId }: RequestBody = JSON.parse(req.body)
+    let { report, security_key, session, motoboyId }: RequestBody = JSON.parse(
+      req.body
+    )
     const body: any = {}
     const today = new Date().toISOString().split('T')[0]
     if (report === 'bestSellers' || report === 'motoboys') {
@@ -34,29 +39,47 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     )
     let resumeFetched
-    if (report !== 'finance' && report !== 'cashier' && report !== 'bestSellers' && report !== 'client' && report !== 'motoboys') {
-      const { data: resumeFetchedData } = await apiRoute(`/dashboard/report/resume`, session, 'POST', {
-        security_key,
-        notValidate: session?.user?.admMode,
-        ...body,
-        type: report,
-        filter: 'delivery',
-        date: DateTime.local().toFormat('yyyy-MM-dd'),
-      })
+    if (
+      report !== 'finance' &&
+      report !== 'cashier' &&
+      report !== 'bestSellers' &&
+      report !== 'client' &&
+      report !== 'motoboys'
+    ) {
+      const { data: resumeFetchedData } = await apiRoute(
+        `/dashboard/report/resume`,
+        session,
+        'POST',
+        {
+          security_key,
+          notValidate: session?.user?.admMode,
+          ...body,
+          type: report,
+          filter: 'delivery',
+          date: DateTime.local().toFormat('yyyy-MM-dd'),
+        }
+      )
       resumeFetched = resumeFetchedData
     } else if (report === 'motoboys') {
-      const { data: resumeFetchedData } = await apiRoute(`/dashboard/report/motoboys/report/resume`, session, 'POST', {
-        ...body,
-        security_key,
-        // not_validate: session?.user?.admMode,
-      })
+      const { data: resumeFetchedData } = await apiRoute(
+        `/dashboard/report/motoboys/report/resume`,
+        session,
+        'POST',
+        {
+          ...body,
+          security_key,
+          // not_validate: session?.user?.admMode,
+        }
+      )
 
       resumeFetched = resumeFetchedData
     }
     return res.status(200).json({ validate: true, data, resume: resumeFetched })
   } catch (error: any) {
     console.error(error)
-    return res.status(403).json({ message: error.response?.data.message, validate: false, error })
+    return res
+      .status(403)
+      .json({ message: error.response?.data.message, validate: false, error })
   }
 }
 

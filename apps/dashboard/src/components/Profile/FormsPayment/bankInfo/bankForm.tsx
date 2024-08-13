@@ -8,7 +8,16 @@ import { DateTime } from 'luxon'
 import { UserType } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import { useContext, useEffect, useRef, useState } from 'react'
-import { Button, Card, Col, Form, InputGroup, Modal, Row, Image } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  InputGroup,
+  Modal,
+  Row,
+  Image,
+} from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import InputMask from 'react-input-mask'
 import { BankAccountProps } from '..'
@@ -85,14 +94,19 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
     setUpdateDataCallback((state: any) => {
       state = async () => {
         try {
-          const { data: response } = await apiRoute('/dashboard/asaas/asaasCreateSubAccount', session, 'POST', {
-            ...data,
-            terms: {
-              ip,
-              userAgent: navigator.userAgent,
-              created_at: DateTime.local().toFormat('yyyy-MM-dd HH:mm:ss'),
-            },
-          })
+          const { data: response } = await apiRoute(
+            '/dashboard/asaas/asaasCreateSubAccount',
+            session,
+            'POST',
+            {
+              ...data,
+              terms: {
+                ip,
+                userAgent: navigator.userAgent,
+                created_at: DateTime.local().toFormat('yyyy-MM-dd HH:mm:ss'),
+              },
+            }
+          )
           setProfile(response.profile)
           setShowResponseAlert(true)
           handleShowToast({
@@ -104,7 +118,8 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
           console.error(error)
           handleShowToast({
             type: 'erro',
-            content: (error as AxiosError<{ error: { message: string } }, any>).response?.data?.error?.message,
+            content: (error as AxiosError<{ error: { message: string } }, any>)
+              .response?.data?.error?.message,
           })
           throw error
         } finally {
@@ -131,7 +146,10 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
   }, [widthWindow])
 
   useEffect(() => {
-    if (showFinPassModal === false && dataToBeUpdated?.payment === paymentMethod) {
+    if (
+      showFinPassModal === false &&
+      dataToBeUpdated?.payment === paymentMethod
+    ) {
       reset()
     }
   }, [showFinPassModal])
@@ -140,14 +158,15 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
     <>
       <Form id="formAsaas" onSubmit={handleSubmit(createAsaasSubAccount)}>
         <Card.Header className="text-dark d-flex justify-content-between ">
-          <h4 className="text-sm mb-0 d-flex align-items-center justify-content-between w-100">
+          <h4 className="d-flex align-items-center justify-content-between w-100 mb-0 text-sm">
             <div>
               <p>
                 <b>PIX Automatizado + Crédito Online:</b>
               </p>
               <span className="fw-normal" style={{ fontSize: '1.125rem' }}>
-                Evite golpes, erros e atrasos no atendimento verificando comprovantes no app do banco e enviando maquininhas para pagamentos no
-                cartão.
+                Evite golpes, erros e atrasos no atendimento verificando
+                comprovantes no app do banco e enviando maquininhas para
+                pagamentos no cartão.
               </span>
             </div>
             <img src="/images/logo-asaas-2.svg" alt="Logo Asaas" />
@@ -286,28 +305,44 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
               </InputGroup>
             </Col>
           </Row>
-          <div className="d-lg-flex gap-4 justify-content-center">
+          <div className="d-lg-flex justify-content-center gap-4">
             <div className="d-flex flex-column align-items-center">
               <p>
                 <strong> PIX Automatizado</strong>
               </p>
               <div
                 className="d-flex flex-column align-items-center justify-content-center"
-                style={{ border: '2px dashed #D6D6D6', borderRadius: '1rem', width: '15.5rem', height: '8.5rem' }}
+                style={{
+                  border: '2px dashed #D6D6D6',
+                  borderRadius: '1rem',
+                  width: '15.5rem',
+                  height: '8.5rem',
+                }}
               >
                 <p className="m-0 p-0">
-                  de: <strong style={{ textDecoration: 'line-through' }}> {t('coin')}0,99</strong>
+                  de:{' '}
+                  <strong style={{ textDecoration: 'line-through' }}>
+                    {' '}
+                    {t('coin')}0,99
+                  </strong>
                 </p>
-                <p className="text-primary d-flex gap-2 m-0 p-0">
+                <p className="text-primary d-flex m-0 gap-2 p-0">
                   <span className="mt-1">por:</span>
-                  <h3 className="p-0 m-0">
+                  <h3 className="m-0 p-0">
                     <strong>{t('coin')} 0,49</strong>
                   </h3>
                 </p>
-                <p className="p-0 m-0">nos primeiros 3 meses</p>
+                <p className="m-0 p-0">nos primeiros 3 meses</p>
               </div>
 
-              <Image src="/images/pix-logo.svg" alt="Logo Asaas" className="m-0 p-0" height={70} width={70} style={{ padding: '0', margin: '0' }} />
+              <Image
+                src="/images/pix-logo.svg"
+                alt="Logo Asaas"
+                className="m-0 p-0"
+                height={70}
+                width={70}
+                style={{ padding: '0', margin: '0' }}
+              />
             </div>
 
             <div className="d-flex flex-column align-items-center">
@@ -316,16 +351,29 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
               </p>
               <div
                 className="d-md-flex justify-content-evenly  align-items-center "
-                style={{ border: '2px dashed #D6D6D6', borderRadius: '1rem', width: '98%', height: '8.5rem' }}
+                style={{
+                  border: '2px dashed #D6D6D6',
+                  borderRadius: '1rem',
+                  width: '98%',
+                  height: '8.5rem',
+                }}
               >
-                <div className="d-flex flex-column align-items-center justify-content-center mt-1 mb-3 mb-md-0">
+                <div className="d-flex flex-column align-items-center justify-content-center mb-md-0 mb-3 mt-1">
                   <h3 className="text-primary m-0 p-0">
                     <strong> 2,99%</strong>
                   </h3>
-                  <p className="p-0 m-0">32 dias</p>
+                  <p className="m-0 p-0">32 dias</p>
                 </div>
 
-                {showTag && <div style={{ border: '1px solid #E4E2E2', height: '80%', width: '0' }}></div>}
+                {showTag && (
+                  <div
+                    style={{
+                      border: '1px solid #E4E2E2',
+                      height: '80%',
+                      width: '0',
+                    }}
+                  ></div>
+                )}
 
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <h3 className="text-primary m-0 p-0">
@@ -334,7 +382,7 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
                   <span>2 dias úteis</span>
                 </div>
               </div>
-              <div className="d-md-flex d-sm-block  gap-3 mt-1">
+              <div className="d-md-flex d-sm-block  mt-1 gap-3">
                 <Image
                   src="/images/visa-logo.svg"
                   alt="Logo Asaas"
@@ -351,7 +399,14 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
                   width={50}
                   style={{ padding: '0', margin: '0' }}
                 />
-                <Image src="/images/elo-logo.svg" alt="Logo Asaas" className="m-0 p-0" height={50} width={50} style={{ padding: '0', margin: '0' }} />
+                <Image
+                  src="/images/elo-logo.svg"
+                  alt="Logo Asaas"
+                  className="m-0 p-0"
+                  height={50}
+                  width={50}
+                  style={{ padding: '0', margin: '0' }}
+                />
                 <Image
                   src="/images/americanexpress-logo.svg"
                   alt="Logo Asaas"
@@ -389,14 +444,25 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
           </div>
         </Card.Body>
         <Card.Footer className="d-flex justify-content-end align-items-center gap-3">
-          <Button type="button" disabled={!isValid} onClick={() => setAsaasTermsModal(true)}>
+          <Button
+            type="button"
+            disabled={!isValid}
+            onClick={() => setAsaasTermsModal(true)}
+          >
             Criar conta
           </Button>
         </Card.Footer>
       </Form>
       {/* <BankConfirmationModal show={showConfirmationModal} setShow={toggleConfirmationModal} formValues={getValues()} /> */}
       <OverlaySpinner show={showSpinner || false} />
-      <Modal backdrop="static" show={asaasTermsModal} size="lg" scrollable centered onHide={() => setAsaasTermsModal(false)}>
+      <Modal
+        backdrop="static"
+        show={asaasTermsModal}
+        size="lg"
+        scrollable
+        centered
+        onHide={() => setAsaasTermsModal(false)}
+      >
         <Modal.Header closeButton>
           <h4 className="fw-bold m-0">Termo de uso</h4>
         </Modal.Header>
@@ -405,13 +471,20 @@ export default function BankForm({ paymentMethod }: BankAccountProps) {
         </Modal.Body>
         <Modal.Footer className="d-flex justify-content-between">
           <Button
-            style={{ backgroundColor: 'var(--bs-secondary)', borderColor: 'var(--bs-secondary)' }}
+            style={{
+              backgroundColor: 'var(--bs-secondary)',
+              borderColor: 'var(--bs-secondary)',
+            }}
             type="button"
             onClick={() => setAsaasTermsModal(false)}
           >
             Cancelar
           </Button>
-          <Button form="formAsaas" style={{ backgroundColor: 'var(--bs-primary)' }} type="submit">
+          <Button
+            form="formAsaas"
+            style={{ backgroundColor: 'var(--bs-primary)' }}
+            type="submit"
+          >
             Aceito os termos de uso
           </Button>
         </Modal.Footer>

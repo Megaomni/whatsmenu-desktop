@@ -1,17 +1,24 @@
-import React, { useRef, useState } from 'react';
-import { Button } from 'react-bootstrap';
-import { Br, Cut, Line, Printer, Text, Row, render } from 'react-thermal-printer';
-import { useReactToPrint } from 'react-to-print';
+import React, { useRef, useState } from 'react'
+import { Button } from 'react-bootstrap'
+import {
+  Br,
+  Cut,
+  Line,
+  Printer,
+  Text,
+  Row,
+  render,
+} from 'react-thermal-printer'
+import { useReactToPrint } from 'react-to-print'
 
 export const Test = () => {
-
   const printRef = useRef<any>()
   const [data, setData] = useState<any>()
   const handlePrint = useReactToPrint({ content: () => printRef.current })
   const receipt = (
     <Printer type="epson" width={42} characterSet="korea">
-      <Text bold={true} >BOLD</Text>
-      <Text bold={false} >no BOLD</Text>
+      <Text bold={true}>BOLD</Text>
+      <Text bold={false}>no BOLD</Text>
       {/* <Text size={{ width: 2, height: 2 }}>9,500원</Text>
       <Text bold={true}>BOLD</Text>
       <Br />
@@ -40,11 +47,11 @@ export const Test = () => {
       <Text align="center">Wifi: some-wifi / PW: 123123</Text>
       <Cut /> */}
     </Printer>
-  );
+  )
 
   const print = async () => {
-    const result = await render(receipt);
-    console.log(result);
+    const result = await render(receipt)
+    console.log(result)
     setData(result)
   }
 
@@ -53,5 +60,5 @@ export const Test = () => {
       <Button onClick={handlePrint}>Print</Button>
       <div ref={printRef}>{receipt}</div>
     </div>
-  );
+  )
 }

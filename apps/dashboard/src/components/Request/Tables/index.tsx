@@ -1,10 +1,22 @@
 import { useSession } from 'next-auth/react'
 import { FormEvent, useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Row,
+} from 'react-bootstrap'
 import { AppContext } from '../../../context/app.ctx'
 import { TableContext } from '../../../context/table.ctx'
 import Table, { TableType } from '../../../types/table'
-import { apiRoute, encryptEmoji, scrollToElement } from '../../../utils/wm-functions'
+import {
+  apiRoute,
+  encryptEmoji,
+  scrollToElement,
+} from '../../../utils/wm-functions'
 import { HelpVideos } from '../../Modals/HelpVideos'
 import { OverlaySpinner } from '../../OverlaySpinner'
 import { TableComponent } from './TableComponent'
@@ -56,7 +68,13 @@ export function Tables() {
 
   const handleAddTable = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (tables.some((t) => t.name.trim().toLocaleLowerCase() === newTable.name?.trim().toLocaleLowerCase())) {
+    if (
+      tables.some(
+        (t) =>
+          t.name.trim().toLocaleLowerCase() ===
+          newTable.name?.trim().toLocaleLowerCase()
+      )
+    ) {
       handleShowToast({
         type: 'alert',
         content: t('table_name_already_exists'),
@@ -81,9 +99,14 @@ export function Tables() {
 
     try {
       setOverlayShow(true)
-      const { data } = await apiRoute('/dashboard/table/create', session, 'POST', {
-        ...newTable,
-      })
+      const { data } = await apiRoute(
+        '/dashboard/table/create',
+        session,
+        'POST',
+        {
+          ...newTable,
+        }
+      )
       setTables([...tables, new Table(data)])
       setNewTableContent(false)
       setNewTable({
@@ -129,8 +152,14 @@ export function Tables() {
           <div className="vr"></div>
           <HelpVideos.Trigger
             urls={[
-              { src: 'https://www.youtube.com/embed/jrckOGksJKk', title: t('creating_table') },
-              { src: 'https://www.youtube.com/embed/cU_kEAe9ZgQ', title: t('using_table_system') },
+              {
+                src: 'https://www.youtube.com/embed/jrckOGksJKk',
+                title: t('creating_table'),
+              },
+              {
+                src: 'https://www.youtube.com/embed/cU_kEAe9ZgQ',
+                title: t('using_table_system'),
+              },
             ]}
           />
         </Card.Header>
@@ -147,10 +176,18 @@ export function Tables() {
                           setNewTable({ name: e.target.value })
                         }}
                       />
-                      <Button variant="outline-success" className="px-4 text-nowrap" type="submit">
+                      <Button
+                        variant="outline-success"
+                        className="text-nowrap px-4"
+                        type="submit"
+                      >
                         Salvar
                       </Button>
-                      <Button variant="outline-danger" onClick={() => setNewTableContent(false)} className="px-4 text-nowrap">
+                      <Button
+                        variant="outline-danger"
+                        onClick={() => setNewTableContent(false)}
+                        className="text-nowrap px-4"
+                      >
                         {t('cancel')}
                       </Button>
                     </InputGroup>
@@ -160,20 +197,30 @@ export function Tables() {
             </>
           ) : (
             <>
-              <Container fluid className="px-0 mx-0">
-                <Row className="align-items-baseline justify-content-between gap-1 mb-3">
+              <Container fluid className="mx-0 px-0">
+                <Row className="align-items-baseline justify-content-between mb-3 gap-1">
                   <Col md="8" className="text-center">
-                    <div className="fs-7 d-block d-md-flex gap-2 mt-1 align-items-baseline justify-content-start">
+                    <div className="fs-7 d-block d-md-flex align-items-baseline justify-content-start mt-1 gap-2">
                       <span className="text-center">{t('caption')}:</span>
-                      <div className="badge d-block my-2 my-md-0 wm-default rounded-pill text-dark fw-normal p-2">{t('available')}</div>
-                      <div className="badge d-block my-2 my-md-0 wm-busy rounded-pill fw-normal p-2">{t('occupied')}</div>
-                      <div className="badge d-block my-2 my-md-0 wm-paused rounded-pill fw-normal p-2">{t('paused_a')}</div>
-                      <div className="badge d-block my-2 my-md-0 wm-selected rounded-pill text-dark fw-normal p-2">{t('selected')}</div>
+                      <div className="badge d-block my-md-0 wm-default rounded-pill text-dark fw-normal my-2 p-2">
+                        {t('available')}
+                      </div>
+                      <div className="badge d-block my-md-0 wm-busy rounded-pill fw-normal my-2 p-2">
+                        {t('occupied')}
+                      </div>
+                      <div className="badge d-block my-md-0 wm-paused rounded-pill fw-normal my-2 p-2">
+                        {t('paused_a')}
+                      </div>
+                      <div className="badge d-block my-md-0 wm-selected rounded-pill text-dark fw-normal my-2 p-2">
+                        {t('selected')}
+                      </div>
                     </div>
                   </Col>
-                  <Col sm="10" md className="d-flex gap-2 justify-content-end">
+                  <Col sm="10" md className="d-flex justify-content-end gap-2">
                     <Button onClick={() => handleNewTableContent()}>
-                      <span className="px-1 text-nowrap">+ {t('create_table')}</span>
+                      <span className="text-nowrap px-1">
+                        + {t('create_table')}
+                      </span>
                     </Button>
                     {/* <Link href="/dashboard/settings/table">
                       <Button
@@ -188,7 +235,7 @@ export function Tables() {
                 </Row>
               </Container>
               {tables?.length ? (
-                <div className="d-flex flex-wrap gap-4 justify-content-beetwen mt-4">
+                <div className="d-flex justify-content-beetwen mt-4 flex-wrap gap-4">
                   {tables.map((tableMap) => (
                     <Card
                       key={tableMap.id}
@@ -196,10 +243,10 @@ export function Tables() {
                         tableMap.id === table?.id
                           ? 'wm-selected'
                           : tableMap.status
-                          ? tableMap.activeCommands().length
-                            ? 'wm-busy'
-                            : 'wm-default'
-                          : 'wm-paused'
+                            ? tableMap.activeCommands().length
+                              ? 'wm-busy'
+                              : 'wm-default'
+                            : 'wm-paused'
                       }`}
                       onClick={(e) => {
                         scrollToElement('#tableInfoCard', {
@@ -212,7 +259,10 @@ export function Tables() {
                       }}
                     >
                       <Card.Body>
-                        <span className="p-2" style={{ wordBreak: 'break-all' }}>
+                        <span
+                          className="p-2"
+                          style={{ wordBreak: 'break-all' }}
+                        >
                           {tableMap.name}
                         </span>
                       </Card.Body>
@@ -220,7 +270,9 @@ export function Tables() {
                   ))}
                 </div>
               ) : (
-                <h2 className="text-center my-5 py-5">{t('you_haven_registered_tables')}.</h2>
+                <h2 className="my-5 py-5 text-center">
+                  {t('you_haven_registered_tables')}.
+                </h2>
               )}
             </>
           )}
@@ -235,11 +287,17 @@ export function Tables() {
                 {t('table')}: <span className="text-red-500">{table.name}</span>
               </b>
             </h4>
-            <span className="d-sm-inline d-block align-middle float-md-end">
+            <span className="d-sm-inline d-block float-md-end align-middle">
               <HelpVideos.Trigger
                 urls={[
-                  { title: t('how_close_entire_table'), src: 'https://www.youtube.com/embed/95eLzKAnWaM' },
-                  { title: t('how_close_individual'), src: 'https://www.youtube.com/embed/ORL_4ahUE4Q' },
+                  {
+                    title: t('how_close_entire_table'),
+                    src: 'https://www.youtube.com/embed/95eLzKAnWaM',
+                  },
+                  {
+                    title: t('how_close_individual'),
+                    src: 'https://www.youtube.com/embed/ORL_4ahUE4Q',
+                  },
                 ]}
               />
             </span>

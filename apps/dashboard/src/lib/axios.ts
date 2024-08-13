@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios'
 
 export const apiV2 = axios.create({
-  baseURL: process.env.WHATSMENU_API
+  baseURL: process.env.WHATSMENU_API,
 })
 
 export const api = axios.create({

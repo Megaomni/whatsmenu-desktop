@@ -22,7 +22,13 @@ interface CropModalTypes {
   maxWidth?: number //Corte  maximo de largura
   maxHeight?: number //Corte maximo de altura
   aspectInitial?: boolean // Manter aspect Ratios?
-  typeCrop?: 'profileCover' | 'profileLogo' | 'profileIcon' | 'productImage' | 'pizzaSizeCover' | 'pizzaFlavorImage'
+  typeCrop?:
+    | 'profileCover'
+    | 'profileLogo'
+    | 'profileIcon'
+    | 'productImage'
+    | 'pizzaSizeCover'
+    | 'pizzaFlavorImage'
   inputFile?: HTMLInputElement
   setImageBlob?: (...props: any) => void
   onHide: () => void
@@ -31,7 +37,17 @@ interface CropModalTypes {
 export function CropModal(props: CropModalTypes) {
   const { t } = useTranslation()
   const { profile } = useContext(AppContext)
-  const { show, quality, onHide, aspectInitial, maxWidth, maxHeight, setImageBlob, typeCrop, inputFile } = props
+  const {
+    show,
+    quality,
+    onHide,
+    aspectInitial,
+    maxWidth,
+    maxHeight,
+    setImageBlob,
+    typeCrop,
+    inputFile,
+  } = props
 
   const [crop, setCrop] = useState<Crop | null>(null)
   const [widthCrop, setWidthCrop] = useState<number>(crop?.width || 0)
@@ -58,7 +74,11 @@ export function CropModal(props: CropModalTypes) {
             const newUrl = await resizeImage(16, 16)
             setCrop({ unit: 'px', width: 16, height: 16, y: 0, x: 0 })
             setTimeout(async () => {
-              await createImage({ unit: 'px', width: 16, height: 16, y: 0, x: 0 }, `${profile.slug}${hash(15)}jpeg`, newUrl)
+              await createImage(
+                { unit: 'px', width: 16, height: 16, y: 0, x: 0 },
+                `${profile.slug}${hash(15)}jpeg`,
+                newUrl
+              )
               onHide()
             }, 10)
             break
@@ -120,7 +140,17 @@ export function CropModal(props: CropModalTypes) {
     ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
     ctx.imageSmoothingQuality = 'high'
 
-    ctx.drawImage(image, crop.x * scaleX, crop.y * scaleY, crop.width * scaleX, crop.height * scaleY, 0, 0, crop.width, crop.height)
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    )
 
     // const dataURL = canvas.toDataURL('jpeg', 'base64');
     // As Base64 string
@@ -184,8 +214,14 @@ export function CropModal(props: CropModalTypes) {
           })
           .then((result) => picture.toBlob(result, 'image/jpeg', 0.8))
       } else {
-        const imageReactCrop = document.getElementsByClassName('ReactCrop__image')[0] as HTMLImageElement
-        imageBlob = (await getCroppedImg(imageReactCrop, crop, fileName)) as Blob
+        const imageReactCrop = document.getElementsByClassName(
+          'ReactCrop__image'
+        )[0] as HTMLImageElement
+        imageBlob = (await getCroppedImg(
+          imageReactCrop,
+          crop,
+          fileName
+        )) as Blob
       }
 
       const imageCroppedUrl = (await blobToBase64(imageBlob)) as string
@@ -248,12 +284,20 @@ export function CropModal(props: CropModalTypes) {
           aria-labelledby="contained-modal-title-vcenter"
           centered
           onExit={() => setCrop(null)}
-          style={{ zIndex: 99999999, opacity: typeCrop === 'profileIcon' ? 0 : 1 }}
+          style={{
+            zIndex: 99999999,
+            opacity: typeCrop === 'profileIcon' ? 0 : 1,
+          }}
         >
           <Modal.Header>
-            <Modal.Title id="contained-modal-title-vcenter">{t('image_preview')}</Modal.Title>
+            <Modal.Title id="contained-modal-title-vcenter">
+              {t('image_preview')}
+            </Modal.Title>
           </Modal.Header>
-          <Modal.Body id="modal-body" style={{ maxHeight: '70vh', overflow: 'auto' }}>
+          <Modal.Body
+            id="modal-body"
+            style={{ maxHeight: '70vh', overflow: 'auto' }}
+          >
             <div className="d-flex justify-content-center gap-2">
               {/* <InputGroup className="w-25">
               <Form.Range min="1" max="10" id="zoom-range" onChange={(e) => {

@@ -16,15 +16,23 @@ interface AuthReportProps {
   report: ReportType
 }
 
-export default function AuthReport({ setData, setValidation, setResume, report }: AuthReportProps) {
+export default function AuthReport({
+  setData,
+  setValidation,
+  setResume,
+  report,
+}: AuthReportProps) {
   const { t } = useTranslation()
   const { handleShowToast, profile } = useContext(AppContext)
   const { data: session } = useSession()
   const handleSubmit = async (e: FormEvent<HTMLElement>) => {
     e.preventDefault()
 
-    const security_key = (document.querySelector('#security_key') as HTMLInputElement).value
-    const motoboyId = (document.querySelector('#motoboyId') as HTMLInputElement).value
+    const security_key = (
+      document.querySelector('#security_key') as HTMLInputElement
+    ).value
+    const motoboyId = (document.querySelector('#motoboyId') as HTMLInputElement)
+      .value
     const response = await fetch('/api/middleware/reports', {
       body: JSON.stringify({ security_key, report, session, motoboyId }),
       method: 'POST',
@@ -54,29 +62,50 @@ export default function AuthReport({ setData, setValidation, setResume, report }
   //
   switch (report) {
     case 'finance':
-      video = { src: 'https://www.youtube.com/embed/oYUhPHihzq0', title: 'Relatorio Financeiro' }
+      video = {
+        src: 'https://www.youtube.com/embed/oYUhPHihzq0',
+        title: 'Relatorio Financeiro',
+      }
       break
     case 'daily':
-      video = { src: 'https://www.youtube.com/embed/Ye8ZSTtXnXU', title: 'Relatório Diário' }
+      video = {
+        src: 'https://www.youtube.com/embed/Ye8ZSTtXnXU',
+        title: 'Relatório Diário',
+      }
       break
     case 'monthly':
-      video = { src: 'https://www.youtube.com/embed/KEmlQ8wWhJU', title: 'Relatório Mensal' }
+      video = {
+        src: 'https://www.youtube.com/embed/KEmlQ8wWhJU',
+        title: 'Relatório Mensal',
+      }
       break
     case 'cashier':
-      video = { src: 'https://www.youtube.com/embed/-rtskl9XiVI', title: 'Relatório de Caixa' }
+      video = {
+        src: 'https://www.youtube.com/embed/-rtskl9XiVI',
+        title: 'Relatório de Caixa',
+      }
       break
     case 'motoboys':
-      video = { src: 'https://www.youtube.com/embed/DF8j9EV58rI', title: 'Relatório de Entregadores' }
+      video = {
+        src: 'https://www.youtube.com/embed/DF8j9EV58rI',
+        title: 'Relatório de Entregadores',
+      }
       break
     case 'client':
-      video = { src: 'https://www.youtube.com/embed/hMTYKIVi9nU', title: 'Relatório de Clientes' }
+      video = {
+        src: 'https://www.youtube.com/embed/hMTYKIVi9nU',
+        title: 'Relatório de Clientes',
+      }
       break
   }
 
   return (
-    <div style={{ minHeight: 'inherit' }} className="d-flex justify-content-center position-relative">
+    <div
+      style={{ minHeight: 'inherit' }}
+      className="d-flex justify-content-center position-relative"
+    >
       {report !== 'bestSellers' && (
-        <div className="position-absolute top-0 start-0">
+        <div className="position-absolute start-0 top-0">
           <HelpVideos.Trigger urls={[video]} />
         </div>
       )}

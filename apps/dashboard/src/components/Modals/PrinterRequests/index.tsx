@@ -20,13 +20,32 @@ import { useTranslation } from 'react-i18next'
 export function PrinterRequests() {
   const { t } = useTranslation()
   const { possibleMobile } = useContext(AppContext)
-  const { carts, showLostRequestsModal, setShowLostRequestsModal, motoboys, setCart, updateMotoboyId, cartEvents } = useContext(CartsContext)
+  const {
+    carts,
+    showLostRequestsModal,
+    setShowLostRequestsModal,
+    motoboys,
+    setCart,
+    updateMotoboyId,
+    cartEvents,
+  } = useContext(CartsContext)
   const { data: session } = useSession()
   const [cartsNotPrinted, setCartsNotPrinted] = useState<Cart[]>([])
 
-  const { setRequestsToPrint, handleShowToast, profile, handleConfirmModal, audio, wsPrint, requestsToPrint, setPrintStart, door, setDoor } =
-    useContext(AppContext)
-  const { tablesFetched, tables, updateTableBeforeClose } = useContext(TableContext)
+  const {
+    setRequestsToPrint,
+    handleShowToast,
+    profile,
+    handleConfirmModal,
+    audio,
+    wsPrint,
+    requestsToPrint,
+    setPrintStart,
+    door,
+    setDoor,
+  } = useContext(AppContext)
+  const { tablesFetched, tables, updateTableBeforeClose } =
+    useContext(TableContext)
   const {
     carts: cartsToPrint,
     profileOptions,
@@ -40,11 +59,14 @@ export function PrinterRequests() {
     onFinished,
     table,
   } = requestsToPrint
-  const waitMillis = localStorage.getItem('waitMillis') ? Number(localStorage.getItem('waitMillis')) : 5000
+  const waitMillis = localStorage.getItem('waitMillis')
+    ? Number(localStorage.getItem('waitMillis'))
+    : 5000
 
   const [showAlterDateModal, setShowAlterDateModal] = useState<boolean>(false)
   const [printQueueActive, setPrintQueueActive] = useState(false)
-  const [alreadyPrintedLostRequests, setAlreadyPrintedLostRequests] = useState(false)
+  const [alreadyPrintedLostRequests, setAlreadyPrintedLostRequests] =
+    useState(false)
   const [detaildTable, setDetaildTable] = useState(false)
 
   // const componentRef = useRef<HTMLTableElement>(null);
@@ -56,7 +78,10 @@ export function PrinterRequests() {
 
   const copies = report ? 1 : (profileOptions ?? profile.options)?.print.copies
   const copiesTimes = Array(copies > 100 || copies < 0 ? 1 : copies).fill('.')
-  const CompTablePrint: any = (profileOptions ?? profile.options)?.print.textOnly ? TextOnly : TablePrinter
+  const CompTablePrint: any = (profileOptions ?? profile.options)?.print
+    .textOnly
+    ? TextOnly
+    : TablePrinter
 
   const { printBluetooth, printUsb } = useWebPrint()
 
@@ -172,11 +197,18 @@ export function PrinterRequests() {
           : (profileOptions ?? profile.options)?.print.copies
         : Number(sessionStorage.getItem(`${cartsToPrint[0].id}_copies`) ?? 1)
 
-      if (copies === (report ? 1 : (profileOptions ?? profile.options)?.print.copies)) {
+      if (
+        copies ===
+        (report ? 1 : (profileOptions ?? profile.options)?.print.copies)
+      ) {
         onFinished && onFinished()
       }
 
-      if (copies < (report ? 1 : (profileOptions ?? profile.options)?.print.copies) && cartsToPrint[0]) {
+      if (
+        copies <
+          (report ? 1 : (profileOptions ?? profile.options)?.print.copies) &&
+        cartsToPrint[0]
+      ) {
         sessionStorage.setItem(`${cartsToPrint[0].id}_copies`, `${copies + 1}`)
         if (audio && wsPrinting) {
           audio.onended = () => {
@@ -236,7 +268,10 @@ export function PrinterRequests() {
     },
   }
 
-  if ((profileOptions ?? profile.options)?.print?.web && (profileOptions ?? profile.options)?.print?.web !== '') {
+  if (
+    (profileOptions ?? profile.options)?.print?.web &&
+    (profileOptions ?? profile.options)?.print?.web !== ''
+  ) {
     // let dataToPrint = componentRef.current?.innerText
     printConfig.print = async () => {
       if (componentRef.current?.innerText) {
@@ -253,10 +288,16 @@ export function PrinterRequests() {
       if ('WhatsMenuPrintApi' in window) {
         ;(window.WhatsMenuPrintApi as any).print(
           JSON.stringify({
-            cart: { ...cartsToPrint[0], motoboy: motoboys.find((motoboy) => motoboy.id === cartsToPrint[0].motoboyId) },
+            cart: {
+              ...cartsToPrint[0],
+              motoboy: motoboys.find(
+                (motoboy) => motoboy.id === cartsToPrint[0].motoboyId
+              ),
+            },
             profile: { ...profile, ...profileOptions },
             table,
-            printType: type === 'command' || type === 'table' ? type : undefined,
+            printType:
+              type === 'command' || type === 'table' ? type : undefined,
           })
         )
       }
@@ -324,13 +365,28 @@ export function PrinterRequests() {
 
   // //Verificação se o modal esta aberto e fecha para o pedido que chegou ser impresso
   useEffect(() => {
-    if (!profile.options?.print.app && door && requestsToPrint.show && cartsNotPrinted.length && !wsPrinting) {
+    if (
+      !profile.options?.print.app &&
+      door &&
+      requestsToPrint.show &&
+      cartsNotPrinted.length &&
+      !wsPrinting
+    ) {
       setRequestsToPrint({ carts: [] })
     }
-  }, [door, cartsNotPrinted, requestsToPrint, carts, setRequestsToPrint, wsPrinting])
+  }, [
+    door,
+    cartsNotPrinted,
+    requestsToPrint,
+    carts,
+    setRequestsToPrint,
+    wsPrinting,
+  ])
 
   useEffect(() => {
-    const cartsWithPrintZero = carts.filter((cart) => !cart.print).sort((cartA, cartB) => Number(cartA.code) - Number(cartB.code))
+    const cartsWithPrintZero = carts
+      .filter((cart) => !cart.print)
+      .sort((cartA, cartB) => Number(cartA.code) - Number(cartB.code))
     setCartsNotPrinted(cartsWithPrintZero)
   }, [carts, setCartsNotPrinted])
 
@@ -367,14 +423,22 @@ export function PrinterRequests() {
 
   useEffect(() => {
     //Remove printQueue sessionStorage
-    if (door && (!cartsNotPrinted.length || (!carts.length && !cartsNotPrinted.length))) {
+    if (
+      door &&
+      (!cartsNotPrinted.length || (!carts.length && !cartsNotPrinted.length))
+    ) {
       sessionStorage.removeItem('printedQueue')
     }
 
     //Requests que ainda não foram impressos
     const requestsTable = cartsNotPrinted.some((req) => req.type === 'T')
 
-    if ((tablesFetched && requestsTable ? tablesFetched : true) && door && cartsNotPrinted.length && !cartsToPrint.length) {
+    if (
+      (tablesFetched && requestsTable ? tablesFetched : true) &&
+      door &&
+      cartsNotPrinted.length &&
+      !cartsToPrint.length
+    ) {
       const cartNotPrinted = cartsNotPrinted[0]
       if (cartNotPrinted) {
         let tableToPrint = cartNotPrinted.command?.opened?.table
@@ -409,7 +473,12 @@ export function PrinterRequests() {
           }
         }
 
-        if (cartsNotPrinted.length > 3 && !printQueueActive && !alreadyPrintedLostRequests && showLostRequestsModal) {
+        if (
+          cartsNotPrinted.length > 3 &&
+          !printQueueActive &&
+          !alreadyPrintedLostRequests &&
+          showLostRequestsModal
+        ) {
           setShowLostRequestsModal((showLostState) => {
             if (showLostState) {
               setDoor((door) => false)
@@ -445,7 +514,10 @@ export function PrinterRequests() {
             return false
           })
         } else if (cartsNotPrinted.length) {
-          if (cartNotPrinted.status !== 'canceled' && !profile.options.print.app) {
+          if (
+            cartNotPrinted.status !== 'canceled' &&
+            !profile.options.print.app
+          ) {
             audio?.load()
             audio?.play().catch(() => {
               console.error(`${t('could_not_play_sound')}`)
@@ -466,9 +538,13 @@ export function PrinterRequests() {
       cart={cartsToPrint[0]}
       newStatus={cartsToPrint[0]?.status === 'canceled' ? null : 'canceled'}
       button={{
-        name: cartsToPrint[0]?.status === 'canceled' ? t('reinstate_order') : t('cancel_order'),
+        name:
+          cartsToPrint[0]?.status === 'canceled'
+            ? t('reinstate_order')
+            : t('cancel_order'),
         props: {
-          variant: cartsToPrint[0]?.status === 'canceled' ? 'primary' : 'danger',
+          variant:
+            cartsToPrint[0]?.status === 'canceled' ? 'primary' : 'danger',
           className: 'fs-7 w-100 text-nowrap',
           disabled: false,
         },
@@ -509,7 +585,10 @@ export function PrinterRequests() {
   return (
     <>
       {requestsToPrint.directPrint ? (
-        <div className="table-container" style={{ position: 'absolute', zIndex: -99999, top: '-100%' }}>
+        <div
+          className="table-container"
+          style={{ position: 'absolute', zIndex: -99999, top: '-100%' }}
+        >
           <NotePrint
             ref={componentRef}
             profile={{ ...profile, options: profileOptions ?? profile.options }}
@@ -566,7 +645,9 @@ export function PrinterRequests() {
       ) : (
         <div
           onClick={(e) => {
-            if ((e.target as HTMLElement).className.includes('fade modal show')) {
+            if (
+              (e.target as HTMLElement).className.includes('fade modal show')
+            ) {
               handleClose()
             }
           }}
@@ -582,14 +663,26 @@ export function PrinterRequests() {
             style={{ zIndex: 99999 }}
             onHide={handleClose}
           >
-            <Modal.Header className="justify-content-between align-items-center  " closeButton>
-              <h4 className="fw-bold ms-auto">{report ? t('report_request') : printerTest ? t('teste_print_order') : t('order_preview')}</h4>
+            <Modal.Header
+              className="justify-content-between align-items-center  "
+              closeButton
+            >
+              <h4 className="fw-bold ms-auto">
+                {report
+                  ? t('report_request')
+                  : printerTest
+                    ? t('teste_print_order')
+                    : t('order_preview')}
+              </h4>
             </Modal.Header>
             <Modal.Body className="p-0" style={{ overflowX: 'hidden' }}>
               <Row>
-                <Col sm={report || printerCenter ? '12' : '8'} className="d-flex justify-content-center">
+                <Col
+                  sm={report || printerCenter ? '12' : '8'}
+                  className="d-flex justify-content-center"
+                >
                   <div
-                    className="border-start border-end border-dark py-3 overflow-auto"
+                    className="border-start border-end border-dark overflow-auto py-3"
                     style={{
                       width: 'auto',
                       padding: '0 1rem',
@@ -600,11 +693,18 @@ export function PrinterRequests() {
                     <div className="d-flex justify-content-center">
                       <NotePrint
                         ref={componentRef}
-                        profile={{ ...profile, options: profileOptions ?? profile.options }}
+                        profile={{
+                          ...profile,
+                          options: profileOptions ?? profile.options,
+                        }}
                         cart={cartsToPrint[0]}
                         report={report}
                         table={table}
-                        printType={type === 'command' || type === 'table' ? type : undefined}
+                        printType={
+                          type === 'command' || type === 'table'
+                            ? type
+                            : undefined
+                        }
                         detailedTable={detaildTable}
                       />
                     </div>
@@ -649,42 +749,65 @@ export function PrinterRequests() {
                   </div>
                 </Col>
                 {!report && !printerCenter && (
-                  <Col sm="4" className="border-start d-flex align-items-center">
-                    <Row className="w-100 mt-2 mx-auto">
+                  <Col
+                    sm="4"
+                    className="border-start d-flex align-items-center"
+                  >
+                    <Row className="w-100 mx-auto mt-2">
                       <Col className="d-flex flex-column gap-2">
-                        {cartsToPrint[0] && !report && type !== 'table' && type !== 'command' && (
-                          <>
-                            <SendStatusMessageForm
-                              profileOptions={profileOptions}
-                              cart={cartsToPrint[0]}
-                              newStatus="production"
-                              button={{
-                                name: cartsToPrint[0].type !== 'T' ? t('received') : t('preparation'),
-                                props: {
-                                  variant: cartsToPrint[0].status !== null ? 'outline-primary' : 'primary',
-                                  className: 'fs-7',
-                                  disabled: cartsToPrint[0]?.status === 'canceled',
-                                },
-                              }}
-                            />
-                            <SendStatusMessageForm
-                              profileOptions={profileOptions}
-                              cart={cartsToPrint[0]}
-                              newStatus="transport"
-                              button={{
-                                name: !cartsToPrint[0].address ? t('ready_for_pickup') : cartsToPrint[0].type !== 'T' ? t('delivering') : t('served'),
-                                props: {
-                                  variant: cartsToPrint[0].status === 'transport' ? 'outline-orange' : 'orange',
-                                  className: 'fs-7 persist-outline',
-                                  disabled: cartsToPrint[0]?.status === 'canceled',
-                                },
-                              }}
-                            />
-                          </>
-                        )}
+                        {cartsToPrint[0] &&
+                          !report &&
+                          type !== 'table' &&
+                          type !== 'command' && (
+                            <>
+                              <SendStatusMessageForm
+                                profileOptions={profileOptions}
+                                cart={cartsToPrint[0]}
+                                newStatus="production"
+                                button={{
+                                  name:
+                                    cartsToPrint[0].type !== 'T'
+                                      ? t('received')
+                                      : t('preparation'),
+                                  props: {
+                                    variant:
+                                      cartsToPrint[0].status !== null
+                                        ? 'outline-primary'
+                                        : 'primary',
+                                    className: 'fs-7',
+                                    disabled:
+                                      cartsToPrint[0]?.status === 'canceled',
+                                  },
+                                }}
+                              />
+                              <SendStatusMessageForm
+                                profileOptions={profileOptions}
+                                cart={cartsToPrint[0]}
+                                newStatus="transport"
+                                button={{
+                                  name: !cartsToPrint[0].address
+                                    ? t('ready_for_pickup')
+                                    : cartsToPrint[0].type !== 'T'
+                                      ? t('delivering')
+                                      : t('served'),
+                                  props: {
+                                    variant:
+                                      cartsToPrint[0].status === 'transport'
+                                        ? 'outline-orange'
+                                        : 'orange',
+                                    className: 'fs-7 persist-outline',
+                                    disabled:
+                                      cartsToPrint[0]?.status === 'canceled',
+                                  },
+                                }}
+                              />
+                            </>
+                          )}
                         {cartsToPrint[0] && cartsToPrint[0].type !== 'T' && (
                           <>
-                            {window.innerWidth > 768 && !report && cancelRequestButton}
+                            {window.innerWidth > 768 &&
+                              !report &&
+                              cancelRequestButton}
                             {(type === 'D' || type === 'P') && (
                               <SendStatusMessageForm
                                 profileOptions={profileOptions}
@@ -700,29 +823,37 @@ export function PrinterRequests() {
                             )}
                           </>
                         )}
-                        {cartsToPrint[0]?.addressId && cartsToPrint[0]?.type !== 'T' && (
-                          <Form.Select
-                            defaultValue={cartsToPrint[0].motoboyId || ''}
-                            onChange={(e) =>
-                              cartsToPrint[0].setMotoboyId(parseInt(e.target.value), () => {
-                                setCart(cartsToPrint[0])
-                                if (session) {
-                                  updateMotoboyId(cartsToPrint[0].id, parseInt(e.target.value), session)
-                                }
-                              })
-                            }
-                          >
-                            <option>{t('select')}</option>
-                            {motoboys.map(
-                              (motoboy) =>
-                                motoboy.status && (
-                                  <option key={motoboy.id} value={motoboy.id}>
-                                    {motoboy.name}
-                                  </option>
+                        {cartsToPrint[0]?.addressId &&
+                          cartsToPrint[0]?.type !== 'T' && (
+                            <Form.Select
+                              defaultValue={cartsToPrint[0].motoboyId || ''}
+                              onChange={(e) =>
+                                cartsToPrint[0].setMotoboyId(
+                                  parseInt(e.target.value),
+                                  () => {
+                                    setCart(cartsToPrint[0])
+                                    if (session) {
+                                      updateMotoboyId(
+                                        cartsToPrint[0].id,
+                                        parseInt(e.target.value),
+                                        session
+                                      )
+                                    }
+                                  }
                                 )
-                            )}
-                          </Form.Select>
-                        )}
+                              }
+                            >
+                              <option>{t('select')}</option>
+                              {motoboys.map(
+                                (motoboy) =>
+                                  motoboy.status && (
+                                    <option key={motoboy.id} value={motoboy.id}>
+                                      {motoboy.name}
+                                    </option>
+                                  )
+                              )}
+                            </Form.Select>
+                          )}
                       </Col>
                     </Row>
                   </Col>
@@ -735,14 +866,23 @@ export function PrinterRequests() {
                   <>
                     <Col sm="4" className="px-1">
                       {window.innerWidth > 768 ? (
-                        <Button variant="outline-primary" className=" fs-7 w-100 text-nowrap  mt-1" onClick={handleClose}>
+                        <Button
+                          variant="outline-primary"
+                          className=" fs-7 w-100 mt-1  text-nowrap"
+                          onClick={handleClose}
+                        >
                           <span className="align-middle">{t('close')}</span>
                         </Button>
                       ) : (
-                        !report && (type === 'D' || type === 'P') && cancelRequestButton
+                        !report &&
+                        (type === 'D' || type === 'P') &&
+                        cancelRequestButton
                       )}
                     </Col>
-                    <Col sm="4" className="px-1 d-flex align-items-center justify-content-center">
+                    <Col
+                      sm="4"
+                      className="d-flex align-items-center justify-content-center px-1"
+                    >
                       {cartsToPrint[0].type === 'P' && !report && $btnAlterDate}
                       {report && cartsToPrint[0].type === 'T' && (
                         <Form.Switch
@@ -756,7 +896,10 @@ export function PrinterRequests() {
                     </Col>
                   </>
                 )}
-                <Col sm="4" className={`px-1 ${!cartsToPrint[0] ? 'ms-auto' : ''}`}>
+                <Col
+                  sm="4"
+                  className={`px-1 ${!cartsToPrint[0] ? 'ms-auto' : ''}`}
+                >
                   <Button
                     variant="outline-secondary"
                     className=" fs-7 w-100 mt-1"

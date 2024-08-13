@@ -11,7 +11,13 @@ import { useTranslation } from 'react-i18next'
 export function ProfileOpeningHours() {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile, plansCategory, handleShowToast, setChangeConfig, changeConfig } = useContext(AppContext)
+  const {
+    profile,
+    plansCategory,
+    handleShowToast,
+    setChangeConfig,
+    changeConfig,
+  } = useContext(AppContext)
 
   // const [profile, setProfile] = useState<Profile>(profile);
   const [week, setWeek] = useState<Week>(new Week(profile.week))
@@ -21,7 +27,10 @@ export function ProfileOpeningHours() {
 
   const [nextDate, setNextDate] = useState('')
   const [forceClose, setForceClose] = useState(profile.options.forceClose)
-  const [forceCloseOn, setForceCloseOn] = useState(!!profile.options.forceClose && DateTime.fromISO(profile.options.forceClose) > DateTime.local())
+  const [forceCloseOn, setForceCloseOn] = useState(
+    !!profile.options.forceClose &&
+      DateTime.fromISO(profile.options.forceClose) > DateTime.local()
+  )
   const [propertyChange, setPropertyChange] = useState<{
     fuso?: boolean
     forceClose?: boolean
@@ -73,7 +82,10 @@ export function ProfileOpeningHours() {
 
   useEffect(() => {
     const differFuso = !compareItems(profile.timeZone, fuso)
-    const differForceClose = !compareItems(profile.options.forceClose, forceClose)
+    const differForceClose = !compareItems(
+      profile.options.forceClose,
+      forceClose
+    )
     setChangeConfig({
       changeState: differFuso || differForceClose,
     })
@@ -85,9 +97,20 @@ export function ProfileOpeningHours() {
   }, [profile, fuso, forceClose, setChangeConfig])
 
   useEffect(() => {
-    const weekDays = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    const weekDays = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ]
 
-    const tomorrow = DateTime.local().plus({ days: 1 }).toFormat('cccc').toLowerCase()
+    const tomorrow = DateTime.local()
+      .plus({ days: 1 })
+      .toFormat('cccc')
+      .toLowerCase()
 
     const indexOfDay = weekDays.findIndex((item) => item === tomorrow)
 
@@ -96,10 +119,15 @@ export function ProfileOpeningHours() {
     for (let item of weekDays.filter((item, index) => index >= indexOfDay)) {
       if (week[item].length > 0) {
         let x = 1
-        while (DateTime.local().plus({ days: x }).toFormat('cccc').toLowerCase() !== item) {
+        while (
+          DateTime.local().plus({ days: x }).toFormat('cccc').toLowerCase() !==
+          item
+        ) {
           x++
         }
-        nextOpen = DateTime.local().plus({ days: x }).toFormat('yyyy-MM-dd') + `T${week[item][0].open}`
+        nextOpen =
+          DateTime.local().plus({ days: x }).toFormat('yyyy-MM-dd') +
+          `T${week[item][0].open}`
         break
       }
     }
@@ -108,17 +136,25 @@ export function ProfileOpeningHours() {
       for (let item of weekDays) {
         if (week[item].length > 0) {
           let x = 1
-          while (DateTime.local().plus({ days: x }).toFormat('cccc').toLowerCase() !== item) {
+          while (
+            DateTime.local()
+              .plus({ days: x })
+              .toFormat('cccc')
+              .toLowerCase() !== item
+          ) {
             x++
           }
-          nextOpen = DateTime.local().plus({ days: x }).toFormat('yyyy-MM-dd') + `T${week[item][0].open}`
+          nextOpen =
+            DateTime.local().plus({ days: x }).toFormat('yyyy-MM-dd') +
+            `T${week[item][0].open}`
           break
         }
       }
     }
 
     if (!nextOpen) {
-      nextOpen = DateTime.local().plus({ days: 1 }).toFormat('yyyy-MM-dd') + `T00:00`
+      nextOpen =
+        DateTime.local().plus({ days: 1 }).toFormat('yyyy-MM-dd') + `T00:00`
     }
     setNextDate(nextOpen)
   }, [week])
@@ -163,7 +199,7 @@ export function ProfileOpeningHours() {
             <Container className="mx-0 px-0">
               <Row>
                 <Col md>
-                  <div className="d-flex gap-2 flex-row-reverse justify-content-end">
+                  <div className="d-flex justify-content-end flex-row-reverse gap-2">
                     <Form.Label htmlFor="forceClose">{t('close')}?</Form.Label>
                     <Form.Switch
                       id="forceClose"
@@ -174,7 +210,9 @@ export function ProfileOpeningHours() {
                       }}
                     />
                   </div>
-                  <Form.Label className="mt-3">{t('reopening_date')}</Form.Label>
+                  <Form.Label className="mt-3">
+                    {t('reopening_date')}
+                  </Form.Label>
                   <Row>
                     <Col md="10" className="mb-2">
                       <Form.Control
@@ -223,15 +261,17 @@ export function ProfileOpeningHours() {
                     setFuso(e.target.value)
                   }}
                 >
-                  {(t('timezones', { returnObjects: true }) as any[]).map((fuso) => (
-                    <option key={fuso.label} value={fuso.value}>
-                      {fuso.label}
-                    </option>
-                  ))}
+                  {(t('timezones', { returnObjects: true }) as any[]).map(
+                    (fuso) => (
+                      <option key={fuso.label} value={fuso.value}>
+                        {fuso.label}
+                      </option>
+                    )
+                  )}
                 </Form.Select>
               </Col>
               <Col md className="d-flex mb-2">
-                <div className="mt-auto flex-grow-1">
+                <div className="flex-grow-1 mt-auto">
                   <Form.Label>{t('now')}</Form.Label>
                   <Form.Control readOnly value={now} />
                 </div>
@@ -239,7 +279,7 @@ export function ProfileOpeningHours() {
               <Col md="2" className="d-flex mb-2">
                 <Button
                   variant="success"
-                  className="mt-auto flex-grow-1"
+                  className="flex-grow-1 mt-auto"
                   onClick={() => {
                     handleFuso()
                   }}
@@ -252,7 +292,14 @@ export function ProfileOpeningHours() {
         </Card.Body>
       </Card>
       <br />
-      {profile && <Dates type="profile" title={t('add_business_hours')} week={week} setWeek={setWeek} />}
+      {profile && (
+        <Dates
+          type="profile"
+          title={t('add_business_hours')}
+          week={week}
+          setWeek={setWeek}
+        />
+      )}
     </section>
   )
 }

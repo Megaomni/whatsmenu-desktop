@@ -3,7 +3,10 @@ import { Col, Row, Card, Form } from 'react-bootstrap'
 import { KmFreight } from './KmFreight'
 import { NeighborhoodFreight } from './NeighborhoodFreight'
 import { AppContext } from '../../../context/app.ctx'
-import { ProfileTaxDeliveryKM, ProfileTaxDeliveryNeighborhood } from '../../../types/profile'
+import {
+  ProfileTaxDeliveryKM,
+  ProfileTaxDeliveryNeighborhood,
+} from '../../../types/profile'
 import { apiRoute } from '../../../utils/wm-functions'
 import { useSession } from 'next-auth/react'
 import { OverlaySpinner } from '../../OverlaySpinner'
@@ -14,7 +17,13 @@ import { useTranslation } from 'react-i18next'
 export function ProfileFreight() {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile, plansCategory, setProfile, handleConfirmModal, handleShowToast } = useContext(AppContext)
+  const {
+    profile,
+    plansCategory,
+    setProfile,
+    handleConfirmModal,
+    handleShowToast,
+  } = useContext(AppContext)
   const [showSpinner, setShowSpinner] = useState(false)
 
   const handleChangeFreight = async () => {
@@ -23,7 +32,12 @@ export function ProfileFreight() {
       typeDelivery: profile.typeDelivery !== 'km' ? 'km' : 'neighborhood',
     }
     try {
-      const { data } = await apiRoute('/dashboard/profile/taxDelivery/alter', session, 'PUT', body)
+      const { data } = await apiRoute(
+        '/dashboard/profile/taxDelivery/alter',
+        session,
+        'PUT',
+        body
+      )
       setProfile({
         ...profile,
         taxDelivery: data.taxDelivery,
@@ -44,9 +58,17 @@ export function ProfileFreight() {
   return (
     <>
       <section className="position-relative">
-        <OverlaySpinner show={showSpinner} textSpinner={t('loading')} style={{ zIndex: 99999 }} />
+        <OverlaySpinner
+          show={showSpinner}
+          textSpinner={t('loading')}
+          style={{ zIndex: 99999 }}
+        />
         {plansCategory.every((plan) => plan === 'table') ? (
-          <AddPlan notDefaultTitle plan="delivery" title={t('message_plan_not_include_delivery')} />
+          <AddPlan
+            notDefaultTitle
+            plan="delivery"
+            title={t('message_plan_not_include_delivery')}
+          />
         ) : (
           <>
             {profile.options.delivery.enableKm && (
@@ -56,7 +78,10 @@ export function ProfileFreight() {
                 </Card.Header>
                 <Card.Body>
                   <Row>
-                    <Col sm="2" className="d-flex flex-row-reverse gap-2 justify-content-end">
+                    <Col
+                      sm="2"
+                      className="d-flex justify-content-end flex-row-reverse gap-2"
+                    >
                       <Form.Label htmlFor="km">{t('by_mile')}</Form.Label>
                       <Form.Check
                         type="radio"
@@ -76,8 +101,13 @@ export function ProfileFreight() {
                         id="km"
                       />
                     </Col>
-                    <Col sm="2" className="d-flex flex-row-reverse gap-2 justify-content-end">
-                      <Form.Label htmlFor="neighborhood">{t('by_neighborhood')}</Form.Label>
+                    <Col
+                      sm="2"
+                      className="d-flex justify-content-end flex-row-reverse gap-2"
+                    >
+                      <Form.Label htmlFor="neighborhood">
+                        {t('by_neighborhood')}
+                      </Form.Label>
                       <Form.Check
                         type="radio"
                         id="neighborhood"
@@ -107,8 +137,14 @@ export function ProfileFreight() {
                   <div className="vr"></div>
                   <HelpVideos.Trigger
                     urls={[
-                      { src: 'https://www.youtube.com/embed/0zdst312OkQ?si=xRvVnTz4ECWh2ZY6', title: t('shipping_neighborhood') },
-                      { src: 'https://www.youtube.com/embed/7PkgbAmpJS8', title: t('shipping_by_mi') },
+                      {
+                        src: 'https://www.youtube.com/embed/0zdst312OkQ?si=xRvVnTz4ECWh2ZY6',
+                        title: t('shipping_neighborhood'),
+                      },
+                      {
+                        src: 'https://www.youtube.com/embed/7PkgbAmpJS8',
+                        title: t('shipping_by_mi'),
+                      },
                     ]}
                   />
                 </div>
@@ -116,9 +152,17 @@ export function ProfileFreight() {
               {profile && (
                 <Card.Body>
                   {profile.typeDelivery === 'km' ? (
-                    <KmFreight taxDelivery={profile.taxDelivery as ProfileTaxDeliveryKM[]} />
+                    <KmFreight
+                      taxDelivery={
+                        profile.taxDelivery as ProfileTaxDeliveryKM[]
+                      }
+                    />
                   ) : (
-                    <NeighborhoodFreight taxDelivery={profile.taxDelivery as ProfileTaxDeliveryNeighborhood[]} />
+                    <NeighborhoodFreight
+                      taxDelivery={
+                        profile.taxDelivery as ProfileTaxDeliveryNeighborhood[]
+                      }
+                    />
                   )}
                 </Card.Body>
               )}

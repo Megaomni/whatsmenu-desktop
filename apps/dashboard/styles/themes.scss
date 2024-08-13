@@ -1,26 +1,25 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "three-dots/sass/variables";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/utilities";
-@import "bootstrap/scss/utilities/api";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'three-dots/sass/variables';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+@import 'bootstrap/scss/utilities/api';
 
 $dot-color: $success;
 
 $theme-colors: (
-  "primary":    $primary,
-  "secondary":  $secondary,
-  "success":    $success,
-  "info":       $info,
-  "warning":    $warning,
-  "danger":     #FF3355,
-  "light":      $light,
-  "dark":       #2b2e36,
-  "orange":     $orange,
-  "teal":       $teal,
-  "gray":       rgba(207, 207, 207, .2)
+  'primary': $primary,
+  'secondary': $secondary,
+  'success': $success,
+  'info': $info,
+  'warning': $warning,
+  'danger': #ff3355,
+  'light': $light,
+  'dark': #2b2e36,
+  'orange': $orange,
+  'teal': $teal,
+  'gray': rgba(207, 207, 207, 0.2),
 );
-
 
 .bd-callout {
   padding: 1.25rem;
@@ -29,11 +28,10 @@ $theme-colors: (
   border: 1px solid #e9ecef;
   border-left-color: rgb(233, 236, 239);
   border-left-width: 1px;
-  border-left-width: .25rem;
-  border-radius: .25rem;
+  border-left-width: 0.25rem;
+  border-radius: 0.25rem;
   background-color: #fff;
 }
-
 
 @keyframes pulse {
   from {
@@ -50,7 +48,7 @@ $theme-colors: (
 
 @each $name, $color in $theme-colors {
   .pulse-#{$name} {
-    animation: pulse .8s infinite alternate ease-in-out;
+    animation: pulse 0.8s infinite alternate ease-in-out;
     border-color: $color;
     &:hover {
       background-color: $color !important;
@@ -60,7 +58,6 @@ $theme-colors: (
   .bd-callout-#{$name} {
     border-left-color: $color !important;
   }
-
 }
 
-@import "~bootstrap/scss/bootstrap";
+@import '~bootstrap/scss/bootstrap';

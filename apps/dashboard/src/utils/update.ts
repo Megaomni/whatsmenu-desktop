@@ -27,12 +27,16 @@ export const updates: IUpdate[] = [
       {
         plan: 'all',
         name: 'Complementos - (Cardápio)',
-        items: ['Possibilidade de editar o complemento reutilizado de outro item - (Usar complementos de outro item)'],
+        items: [
+          'Possibilidade de editar o complemento reutilizado de outro item - (Usar complementos de outro item)',
+        ],
       },
       {
         plan: 'table',
         name: 'Geral',
-        items: ['Mesa pausada durante processo de encerramento (comandas e mesas)'],
+        items: [
+          'Mesa pausada durante processo de encerramento (comandas e mesas)',
+        ],
       },
       {
         plan: 'table',
@@ -75,7 +79,9 @@ export const updates: IUpdate[] = [
         plan: 'delivery',
         type: 'fix',
         name: 'Listagem de pedidos',
-        items: ['Pedidos sempre listados por código do pedido do maior para o menor'],
+        items: [
+          'Pedidos sempre listados por código do pedido do maior para o menor',
+        ],
       },
       {
         plan: 'all',
@@ -87,7 +93,10 @@ export const updates: IUpdate[] = [
         plan: 'all',
         type: 'fix',
         name: 'Reordernar Cardápio',
-        items: ['Arrastar itens em smartphones melhorada', 'Reordernar itens de complemento corrigido'],
+        items: [
+          'Arrastar itens em smartphones melhorada',
+          'Reordernar itens de complemento corrigido',
+        ],
       },
       {
         plan: 'all',
@@ -105,7 +114,9 @@ export const updates: IUpdate[] = [
         plan: 'table',
         type: 'upgrade',
         name: 'Encerramento de mesa/comanda',
-        items: ['Pausa a mesa ao iniciar ação de encerramento e despausa ao finalizar ou cancelar o encerramento '],
+        items: [
+          'Pausa a mesa ao iniciar ação de encerramento e despausa ao finalizar ou cancelar o encerramento ',
+        ],
       },
       {
         plan: 'package',
@@ -124,7 +135,9 @@ export const updates: IUpdate[] = [
         plan: 'all',
         type: 'upgrade',
         name: 'Relatórios',
-        items: ['Agora os relatórios de delivery e encomendas exibiram os valores de cada cupom utilizado no dia'],
+        items: [
+          'Agora os relatórios de delivery e encomendas exibiram os valores de cada cupom utilizado no dia',
+        ],
       },
       {
         plan: 'table',
@@ -143,7 +156,9 @@ export const updates: IUpdate[] = [
     description: 'Separação do layout da loja das informações do perfil',
     upgrades: [
       {
-        items: ['Agora na tela de perfil terá uma nova aba "Layout da Loja" para edição de cor da loja e imagens de logo e plano de fundo da loja'],
+        items: [
+          'Agora na tela de perfil terá uma nova aba "Layout da Loja" para edição de cor da loja e imagens de logo e plano de fundo da loja',
+        ],
         plan: 'all',
         type: 'upgrade',
         name: 'Aba Layout da Loja',
@@ -156,7 +171,9 @@ export const updates: IUpdate[] = [
     description: 'Exportando Relatórios',
     upgrades: [
       {
-        items: ['Agora na tela de relatórios tera um botão para exportação do relatório para uma planilha excel'],
+        items: [
+          'Agora na tela de relatórios tera um botão para exportação do relatório para uma planilha excel',
+        ],
         plan: 'all',
         type: 'new',
         name: 'Aba Layout da Loja',
@@ -172,20 +189,26 @@ export const updates: IUpdate[] = [
         plan: 'all',
         type: 'new',
         name: 'Pagamentos Online e Automatizados ',
-        items: ['Receba pagamentos de cartão de crédito e pix de maneira automática com segurança e confiabilidade.'],
+        items: [
+          'Receba pagamentos de cartão de crédito e pix de maneira automática com segurança e confiabilidade.',
+        ],
       },
 
       {
         plan: 'all',
         type: 'new',
         name: 'Taxas ou Descontos por forma de pagamento',
-        items: ['Cadastre taxas ou descontos para cada forma de pagamento na entrega.'],
+        items: [
+          'Cadastre taxas ou descontos para cada forma de pagamento na entrega.',
+        ],
       },
       {
         plan: 'all',
         type: 'new',
         name: 'Ícone de Entregadores ',
-        items: ['Cadastre e controle todas as entregas feitas pela equipe de entregadores.'],
+        items: [
+          'Cadastre e controle todas as entregas feitas pela equipe de entregadores.',
+        ],
       },
       {
         plan: 'all',
@@ -215,13 +238,17 @@ export const updates: IUpdate[] = [
         plan: 'all',
         type: 'new',
         name: 'Controle de Estoque',
-        items: ['Ative ou desative o controle de estoque, onde você pode controlar todos seus produtos e complementos.'],
+        items: [
+          'Ative ou desative o controle de estoque, onde você pode controlar todos seus produtos e complementos.',
+        ],
       },
       {
         plan: 'all',
         type: 'fix',
         name: 'WM-Status',
-        items: ['Atualização do recurso para um envio mais rápido e estantâneo.'],
+        items: [
+          'Atualização do recurso para um envio mais rápido e estantâneo.',
+        ],
       },
       {
         plan: 'table',
@@ -241,7 +268,9 @@ export const updates: IUpdate[] = [
         plan: 'all',
         type: 'new',
         name: 'Cupom de primeira compra',
-        items: ['Crie um cupom que só poderá ser utilizado na primeira compra de seus clientes.'],
+        items: [
+          'Crie um cupom que só poderá ser utilizado na primeira compra de seus clientes.',
+        ],
       },
     ],
   },
@@ -254,9 +283,12 @@ export const updates: IUpdate[] = [
         plan: 'all',
         type: 'new',
         name: 'Aplicação Desktop WhatsMenu',
-        items: ["🤖 Atendente virtual para WhatsApp", "🤩 Envio de mensagem de cupom de primeira compra", "😎 Envio de status sem abertura de abas",],
+        items: [
+          '🤖 Atendente virtual para WhatsApp',
+          '🤩 Envio de mensagem de cupom de primeira compra',
+          '😎 Envio de status sem abertura de abas',
+        ],
       },
     ],
-  }
+  },
 ]
- 

@@ -1,4 +1,12 @@
-import React, { Dispatch, FormHTMLAttributes, SetStateAction, useContext, useEffect, useRef, useState } from 'react'
+import React, {
+  Dispatch,
+  FormHTMLAttributes,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { ButtonProps, Button, Spinner } from 'react-bootstrap'
 import Cart from '../../types/cart'
 import { AppContext } from '../../context/app.ctx'
@@ -18,14 +26,33 @@ type SendStatusMessageFormProps = {
   profileOptions?: ProfileOptions
 } & FormHTMLAttributes<HTMLFormElement>
 
-export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions, ...rest }: SendStatusMessageFormProps) => {
+export const SendStatusMessageForm = ({
+  button,
+  cart,
+  newStatus,
+  profileOptions,
+  ...rest
+}: SendStatusMessageFormProps) => {
   const { data: session } = useSession()
-  const { door, lastRequestDate, profile, handleShowToast, setRequestsToPackage, requestsToPackage, possibleMobile } = useContext(AppContext)
+  const {
+    door,
+    lastRequestDate,
+    profile,
+    handleShowToast,
+    setRequestsToPackage,
+    requestsToPackage,
+    possibleMobile,
+  } = useContext(AppContext)
   const { setCarts, carts, setCart } = useContext(CartsContext)
 
-  const [message, setMessage] = useState((profileOptions ?? profile.options).placeholders.clientText)
+  const [message, setMessage] = useState(
+    (profileOptions ?? profile.options).placeholders.clientText
+  )
   const [loading, setLoading] = useState<boolean>(false)
-  const [closeTabs, setCloseTabs] = useLocalStorage('@wmstatus:closeTabs', localStorage.getItem('@wmstatus:closeTabs') ?? false)
+  const [closeTabs, setCloseTabs] = useLocalStorage(
+    '@wmstatus:closeTabs',
+    localStorage.getItem('@wmstatus:closeTabs') ?? false
+  )
 
   const { sendMessage, onMessageSend } = useWhatsAppBot()
 
@@ -39,10 +66,15 @@ export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions,
 
       const sendToWhatsApp = () => {
         if (buttonRef.current) {
-          const { linkWhatsapp, whatsappOficial } = profileOptions ?? profile.options
+          const { linkWhatsapp, whatsappOficial } =
+            profileOptions ?? profile.options
           const isWindows = navigator.userAgent.includes('Windows')
 
-          if (whatsappOficial || possibleMobile || (linkWhatsapp && !isWindows)) {
+          if (
+            whatsappOficial ||
+            possibleMobile ||
+            (linkWhatsapp && !isWindows)
+          ) {
             window.open(
               `whatsapp://send?phone=55${cart.client.whatsapp}&text=${encodeTextURL(
                 cart.client.name,
@@ -54,7 +86,9 @@ export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions,
           }
 
           if (!('isElectron' in window)) {
-            window.open(`https://web.whatsapp.com/send?phone=55${cart.client.whatsapp}&text=${encodeTextURL(cart.client.name, phoneMessage)}`)
+            window.open(
+              `https://web.whatsapp.com/send?phone=55${cart.client.whatsapp}&text=${encodeTextURL(cart.client.name, phoneMessage)}`
+            )
             buttonRef.current.disabled = false
             return
           }
@@ -63,7 +97,11 @@ export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions,
             const contact = cart.client?.controls?.whatsapp?.contactId
               ? cart.client?.controls?.whatsapp?.contactId.user
               : `${i18n.t('ddi')}${cart.client.whatsapp}`
-            sendMessage(contact, phoneMessage.replaceAll('[NOME]', cart.client.name), cart.client)
+            sendMessage(
+              contact,
+              phoneMessage.replaceAll('[NOME]', cart.client.name),
+              cart.client
+            )
             onMessageSend((client: any) => {
               cart.client = client
               setCart(cart)
@@ -74,27 +112,45 @@ export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions,
       }
 
       if (newStatus || newStatus === null) {
-        const waitMillis = localStorage.getItem('waitMillis') ? Number(localStorage.getItem('waitMillis')) : 5000
+        const waitMillis = localStorage.getItem('waitMillis')
+          ? Number(localStorage.getItem('waitMillis'))
+          : 5000
         const oldStatus = cart.status
 
         if (newStatus !== null) {
           switch (newStatus) {
             case 'production':
               phoneMessage =
-                (profileOptions ?? profile.options).placeholders.statusProduction ??
-                (cart.type === 'P' ? cart.defaultStatusProductionPackage : cart.defaultStatusProductionMessage)
+                (profileOptions ?? profile.options).placeholders
+                  .statusProduction ??
+                (cart.type === 'P'
+                  ? cart.defaultStatusProductionPackage
+                  : cart.defaultStatusProductionMessage)
               setMessage(
-                (profileOptions ?? profile.options).placeholders.statusProduction ??
-                  (cart.type === 'P' ? cart.defaultStatusProductionPackage : cart.defaultStatusProductionMessage)
+                (profileOptions ?? profile.options).placeholders
+                  .statusProduction ??
+                  (cart.type === 'P'
+                    ? cart.defaultStatusProductionPackage
+                    : cart.defaultStatusProductionMessage)
               )
               break
             case 'transport':
               if (cart.address) {
-                phoneMessage = (profileOptions ?? profile.options).placeholders.statusSend || cart.defaultStatusTransportMessage
-                setMessage((profileOptions ?? profile.options).placeholders.statusSend || cart.defaultStatusTransportMessage)
+                phoneMessage =
+                  (profileOptions ?? profile.options).placeholders.statusSend ||
+                  cart.defaultStatusTransportMessage
+                setMessage(
+                  (profileOptions ?? profile.options).placeholders.statusSend ||
+                    cart.defaultStatusTransportMessage
+                )
               } else {
-                phoneMessage = (profileOptions ?? profile.options).placeholders.statusToRemove || cart.defaultStatusToRemoveMessage
-                setMessage((profileOptions ?? profile.options).placeholders.statusToRemove || cart.defaultStatusToRemoveMessage)
+                phoneMessage =
+                  (profileOptions ?? profile.options).placeholders
+                    .statusToRemove || cart.defaultStatusToRemoveMessage
+                setMessage(
+                  (profileOptions ?? profile.options).placeholders
+                    .statusToRemove || cart.defaultStatusToRemoveMessage
+                )
               }
               break
             case 'canceled':
@@ -102,14 +158,20 @@ export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions,
               setMessage(cart.defaultCanceledMessage)
               break
             default:
-              phoneMessage = (profileOptions ?? profile.options).placeholders.clientText
-              setMessage((profileOptions ?? profile.options).placeholders.clientText)
+              phoneMessage = (profileOptions ?? profile.options).placeholders
+                .clientText
+              setMessage(
+                (profileOptions ?? profile.options).placeholders.clientText
+              )
               break
           }
         }
 
         if (cart.print || profile.options.print.app || cart.type === 'P') {
-          if (door && DateTime.local().toMillis() - lastRequestDate > waitMillis) {
+          if (
+            door &&
+            DateTime.local().toMillis() - lastRequestDate > waitMillis
+          ) {
             try {
               setLoading && setLoading(true)
               await cart.updateStatus(newStatus, session)
@@ -154,7 +216,12 @@ export const SendStatusMessageForm = ({ button, cart, newStatus, profileOptions,
     <Button ref={buttonRef} {...button.props} onClick={handleSendMessage}>
       {loading ? (
         <>
-          <Spinner size="sm" animation="border" variant="light" className="d-inline-block ms-1" />
+          <Spinner
+            size="sm"
+            animation="border"
+            variant="light"
+            className="d-inline-block ms-1"
+          />
           <span className="d-inline-block ms-1">{i18n.t('please_wait_n')}</span>
         </>
       ) : (

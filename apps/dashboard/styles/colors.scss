@@ -1,75 +1,85 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/utilities";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
 
 $grays: (
-  "gray-100": $gray-100,
-  "gray-200": $gray-200,
-  "gray-300": $gray-300,
-  "gray-400": $gray-400,
-  "gray-500": $gray-500,
-  "gray-600": $gray-600,
-  "gray-700": $gray-700,
-  "gray-800": $gray-800,
-  "gray-900": $gray-900
+  'gray-100': $gray-100,
+  'gray-200': $gray-200,
+  'gray-300': $gray-300,
+  'gray-400': $gray-400,
+  'gray-500': $gray-500,
+  'gray-600': $gray-600,
+  'gray-700': $gray-700,
+  'gray-800': $gray-800,
+  'gray-900': $gray-900,
 ) !default;
 
-$all-colors: map-merge-multiple($blues, $indigos, $purples, $pinks, $reds, $oranges, $yellows, $greens, $teals, $cyans, $grays);
+$all-colors: map-merge-multiple(
+  $blues,
+  $indigos,
+  $purples,
+  $pinks,
+  $reds,
+  $oranges,
+  $yellows,
+  $greens,
+  $teals,
+  $cyans,
+  $grays
+);
 
 $utilities: map-merge(
   $utilities,
   (
-    "color": map-merge(
-      map-get($utilities, "color"),
-      (
-        values: map-merge(
-          map-get(map-get($utilities, "color"), "values"),
-          (
-            $all-colors 
-          ),
-        ),
+    'color':
+      map-merge(
+        map-get($utilities, 'color'),
+        (
+          values:
+            map-merge(
+              map-get(map-get($utilities, 'color'), 'values'),
+              ($all-colors)
+            ),
+        )
       ),
-    ),
   )
 );
 
 $wm-styles: (
-  "default" var(--bs-gray-400) var(--bs-gray-200),
-  "busy" #2185d0 #ddf4ff,
-  "paused" #db2828 #ffe1df,
-  "selected"  #50fa9f #c9fde1, 
-  "green-day" #228B22 #fafff5,
-  "green-open" #4cd137 #ddffeb #4cd137,
-  "orange-day" #FF8C00 #fffaf3,
-  "normal-day" #858585 #e2e2e2,
-  "request-delivery" #2185D0 #DDF4FF,
-  "request-table"  #A5673F #F7E5D2,
-  "request-package"  #3c3c3c #dfdfdf,
-  "request-canceled" #E75459 #FFE1DF,
-  "dragged-start" #aaaaaa #d3d3d3
-  "dragged-over" #818181 #d1d1d1,
-  "dark-1" #000 #000 #FFF,
-  "dark-2" #000 darken(#2b2e36, 5%) #FFF,
-  "warning" $yellow-500 $yellow-200 #3c3c3c
-  );
-
+  'default' var(--bs-gray-400) var(--bs-gray-200),
+  'busy' #2185d0 #ddf4ff,
+  'paused' #db2828 #ffe1df,
+  'selected' #50fa9f #c9fde1,
+  'green-day' #228b22 #fafff5,
+  'green-open' #4cd137 #ddffeb #4cd137,
+  'orange-day' #ff8c00 #fffaf3,
+  'normal-day' #858585 #e2e2e2,
+  'request-delivery' #2185d0 #ddf4ff,
+  'request-table' #a5673f #f7e5d2,
+  'request-package' #3c3c3c #dfdfdf,
+  'request-canceled' #e75459 #ffe1df,
+  'dragged-start' #aaaaaa #d3d3d3 'dragged-over' #818181 #d1d1d1,
+  'dark-1' #000 #000 #fff,
+  'dark-2' #000 darken(#2b2e36, 5%) #fff,
+  'warning' $yellow-500 $yellow-200 #3c3c3c
+);
 
 @each $name, $border-color, $bg-color, $font-color in $wm-styles {
   .wm-#{$name} {
     border: 1px solid $border-color !important;
     background-color: $bg-color !important;
-    @if($font-color) {
+    @if ($font-color) {
       color: $font-color;
     } @else {
       color: $border-color !important;
     }
   }
 
-  .wm-#{$name}-focused:focus{
-    background-color: #1087FF !important;
+  .wm-#{$name}-focused:focus {
+    background-color: #1087ff !important;
     color: #fff !important;
-    border: 1px solid #1087FF !important;
+    border: 1px solid #1087ff !important;
   }
 
   .wm-#{$name}-border-y {
@@ -77,7 +87,7 @@ $wm-styles: (
     border-left-width: 0px !important;
     border-right-width: 0px !important;
     background-color: $bg-color !important;
-    @if($font-color) {
+    @if ($font-color) {
       color: $font-color;
     } @else {
       color: $border-color;
@@ -89,7 +99,7 @@ $wm-styles: (
     border-top: 0px !important;
     border-bottom: 0px !important;
     background-color: $bg-color !important;
-    @if($font-color) {
+    @if ($font-color) {
       color: $font-color;
     } @else {
       color: $border-color;
@@ -99,7 +109,7 @@ $wm-styles: (
   .wm-#{$name}-border-none {
     border: none !important;
     background-color: $bg-color !important;
-    @if($font-color) {
+    @if ($font-color) {
       color: $font-color;
     } @else {
       color: $border-color;
@@ -109,19 +119,18 @@ $wm-styles: (
   .wm-#{$name}-text {
     border: none !important;
     background-color: $bg-color !important;
-    @if($font-color) {
+    @if ($font-color) {
       color: $font-color !important;
     } @else {
       color: $border-color !important;
     }
   }
-
-};
+}
 
 $wm-toasts: (
-  "success" $green-100 $green-500,
-  "erro" $red-100 $red-500,
-  "alert" $yellow-100 $yellow-600,
+  'success' $green-100 $green-500,
+  'erro' $red-100 $red-500,
+  'alert' $yellow-100 $yellow-600
 );
 
 @each $name, $bg-color, $color in $wm-toasts {
@@ -134,6 +143,6 @@ $wm-toasts: (
       color: $color !important;
     }
   }
-};
+}
 
-@import "bootstrap/scss/utilities/api";
+@import 'bootstrap/scss/utilities/api';

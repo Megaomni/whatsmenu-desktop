@@ -1,4 +1,9 @@
-import React, { Dispatch, KeyboardEvent, SetStateAction, useContext } from 'react'
+import React, {
+  Dispatch,
+  KeyboardEvent,
+  SetStateAction,
+  useContext,
+} from 'react'
 import axios, { AxiosResponse } from 'axios'
 import { DateTime } from 'luxon'
 import { Session } from 'next-auth'
@@ -17,7 +22,8 @@ import Profile, { ProfileOptions } from '../types/profile'
 /** Retorna um hash aleatório */
 export const hash = (length = 6) => {
   var result = ''
-  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  var characters =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
   var charactersLength = characters.length
   for (var i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength))
@@ -67,7 +73,10 @@ export const currency = ({
   }).format(value)
 } //
 
-export const getNow = ({ timeZone, format }: { timeZone?: string; format?: string } = {}) => {
+export const getNow = ({
+  timeZone,
+  format,
+}: { timeZone?: string; format?: string } = {}) => {
   const now = DateTime.local()
   const nowFuse = now.setZone(timeZone)
   const nowFuseFormat = now.setZone(timeZone).toFormat(format || '')
@@ -109,9 +118,15 @@ export const colorLuminosity = (color: string, packageA: boolean = false) => {
     colorArr = color.split('')
     long = colorArr.length > 4
 
-    r = long ? parseInt(colorArr[1] + colorArr[2], 16) : parseInt(colorArr[1], 16) * 17
-    g = long ? parseInt(colorArr[3] + colorArr[4], 16) : parseInt(colorArr[2], 16) * 17
-    b = long ? parseInt(colorArr[5] + colorArr[6], 16) : parseInt(colorArr[3], 16) * 17
+    r = long
+      ? parseInt(colorArr[1] + colorArr[2], 16)
+      : parseInt(colorArr[1], 16) * 17
+    g = long
+      ? parseInt(colorArr[3] + colorArr[4], 16)
+      : parseInt(colorArr[2], 16) * 17
+    b = long
+      ? parseInt(colorArr[5] + colorArr[6], 16)
+      : parseInt(colorArr[3], 16) * 17
     lum = (r * 299 + g * 587 + b * 114) / 1000
 
     arr.push(r, g, b)
@@ -167,15 +182,18 @@ export async function apiRoute<T, R = any>(
   if (!headers) {
     headers = {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session?.accessToken}`,
+      Authorization: `Bearer ${session?.accessToken}`,
     }
   }
 
-  const response = await axios(route.includes('://') ? route : `${process.env.WHATSMENU_API}${route}`, {
-    headers,
-    method,
-    data,
-  })
+  const response = await axios(
+    route.includes('://') ? route : `${process.env.WHATSMENU_API}${route}`,
+    {
+      headers,
+      method,
+      data,
+    }
+  )
 
   if (callback) {
     const result = callback(response)
@@ -188,7 +206,10 @@ export async function apiRoute<T, R = any>(
 }
 
 /** Cria um cópia do objeto e retorna no formato escolhido */
-export const copy: (element: unknown, type?: 'parse' | 'json' | 'copy') => any = (element, type = 'copy'): any => {
+export const copy: (
+  element: unknown,
+  type?: 'parse' | 'json' | 'copy'
+) => any = (element, type = 'copy'): any => {
   if (type === 'parse' && typeof element === 'string') {
     return JSON.parse(element as string)
   }
@@ -208,7 +229,13 @@ export const mask = (
   mask: 'cpf/cnpj' | 'tel' | 'cep' | 'currency' | 'email',
   maxLength?: number
 ): { type: string; valid: boolean } => {
-  if (e.key === 'Backspace' || e.key === 'Delete' || e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'Tab') {
+  if (
+    e.key === 'Backspace' ||
+    e.key === 'Delete' ||
+    e.key === 'ArrowLeft' ||
+    e.key === 'ArrowRight' ||
+    e.key === 'Tab'
+  ) {
     return { type: '', valid: false }
   }
 
@@ -216,7 +243,10 @@ export const mask = (
     case 'currency':
       e.currentTarget.maxLength = maxLength ?? 10
       e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
-      e.currentTarget.value = e.currentTarget.value.replace(/([0-9])([0-9]{1,2}$)/g, '$1.$2')
+      e.currentTarget.value = e.currentTarget.value.replace(
+        /([0-9])([0-9]{1,2}$)/g,
+        '$1.$2'
+      )
       break
     case 'cep':
       {
@@ -224,7 +254,10 @@ export const mask = (
         switch (i18n.language) {
           case 'pt-BR': {
             e.currentTarget.maxLength = 9
-            e.currentTarget.value = e.currentTarget.value.replace(/^(\d{5})(\d)/g, '$1-$2')
+            e.currentTarget.value = e.currentTarget.value.replace(
+              /^(\d{5})(\d)/g,
+              '$1-$2'
+            )
             break
           }
           case 'en-US':
@@ -296,7 +329,9 @@ export const mask = (
                 .replace(/-/g, '')
                 .replace(/(\d{5})(\d)/, '$1-$2')
             } else {
-              e.currentTarget.value = e.currentTarget.value.replace(/^(\d{2})(\d)/, '$1 $2').replace(/(\d{4})(\d)/, '$1-$2')
+              e.currentTarget.value = e.currentTarget.value
+                .replace(/^(\d{2})(\d)/, '$1 $2')
+                .replace(/(\d{4})(\d)/, '$1-$2')
             }
             break
           }
@@ -304,9 +339,13 @@ export const mask = (
             e.currentTarget.maxLength = 14
 
             if (e.currentTarget.value.length > 10) {
-              e.currentTarget.value = e.currentTarget.value.replace(/^(\d{3})(\d)/, '($1) $2').replace(/(\d{3})(\d{4})$/, '$1-$2')
+              e.currentTarget.value = e.currentTarget.value
+                .replace(/^(\d{3})(\d)/, '($1) $2')
+                .replace(/(\d{3})(\d{4})$/, '$1-$2')
             } else {
-              e.currentTarget.value = e.currentTarget.value.replace(/^(\d{3})(\d)/, '($1) $2').replace(/(\d{3})(\d{4})$/, '$1-$2')
+              e.currentTarget.value = e.currentTarget.value
+                .replace(/^(\d{3})(\d)/, '($1) $2')
+                .replace(/(\d{3})(\d{4})$/, '$1-$2')
             }
             break
           }
@@ -315,7 +354,9 @@ export const mask = (
       break
     case 'email':
       // const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-      e.currentTarget.value = e.currentTarget.value.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      e.currentTarget.value = e.currentTarget.value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
       const mailformat = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/
       const valid = !mailformat.test(e.target.value)
 
@@ -353,7 +394,9 @@ export const scrollToElement = (
 ) => {
   const elementInterval = setInterval(() => {
     const element = document.querySelector(querySelector) as HTMLElement
-    const elementFocus = document.querySelector(idInputElementFocus || '#empty') as HTMLInputElement
+    const elementFocus = document.querySelector(
+      idInputElementFocus || '#empty'
+    ) as HTMLInputElement
     const topbar = document.getElementById('header') as HTMLElement
 
     if (element) {
@@ -368,17 +411,26 @@ export const scrollToElement = (
         }
       } else {
         if (queryParentElement) {
-          const parentElement = document.querySelector(`${queryParentElement}`) as HTMLElement
+          const parentElement = document.querySelector(
+            `${queryParentElement}`
+          ) as HTMLElement
 
           if (parentElement) {
-            const distance = element.getBoundingClientRect().top + (parentElement.scrollTop + differTop)
+            const distance =
+              element.getBoundingClientRect().top +
+              (parentElement.scrollTop + differTop)
 
             parentElement.scrollTo({
               top: distance,
             })
           }
         } else {
-          window.scroll(0, element.getBoundingClientRect().y + (window?.visualViewport?.pageTop ?? 0) - (topbar?.clientHeight ?? 0))
+          window.scroll(
+            0,
+            element.getBoundingClientRect().y +
+              (window?.visualViewport?.pageTop ?? 0) -
+              (topbar?.clientHeight ?? 0)
+          )
         }
       }
 
@@ -420,7 +472,10 @@ export const textPackage = (label2?: boolean, lowerCase: boolean = false) => {
 }
 
 /** Verifica os planos e retorna Delivery, Encomendas ou Delivery/Encomendas */
-export const textDeliveryOrPackage = (plansCategory: ('package' | 'basic' | 'table')[], label2?: boolean) => {
+export const textDeliveryOrPackage = (
+  plansCategory: ('package' | 'basic' | 'table')[],
+  label2?: boolean
+) => {
   let planText = ''
 
   if (plansCategory.includes('basic')) {
@@ -442,7 +497,10 @@ export const encodeTextURL = (name: string, text: string) => {
 }
 
 /** Normaliza uma string para comparação removendo caracteres especiais */
-export const normalizeCaracter = (text: string = '', typeFunction: 'toLowerCase' | 'toLocaleLowerCase' = 'toLowerCase') => {
+export const normalizeCaracter = (
+  text: string = '',
+  typeFunction: 'toLowerCase' | 'toLocaleLowerCase' = 'toLowerCase'
+) => {
   return text
     .toString()
     .normalize('NFD')
@@ -457,9 +515,17 @@ type inputProps = {
   differTop?: number
 }
 /** Busca o elemento pela query passada e seta o focus no input elemento, se o elemento for encontrado. */
-export const inputFocus: (querySelector: string, data?: inputProps) => Promise<HTMLInputElement> = (
+export const inputFocus: (
   querySelector: string,
-  { selectText = true, scroll = true, queryParentElement, differTop }: inputProps = {}
+  data?: inputProps
+) => Promise<HTMLInputElement> = (
+  querySelector: string,
+  {
+    selectText = true,
+    scroll = true,
+    queryParentElement,
+    differTop,
+  }: inputProps = {}
 ) => {
   let tentatives = 0
 
@@ -535,7 +601,11 @@ export const verifyEmptyNameLength = (
   if (arr.length) {
     const el = arr.find((el: any) => el.name?.trim() === '')
     if (el && el.name?.trim() === '') {
-      inputFocus(`${partialQuery}${el[prop]}`, { queryParentElement, differTop, scroll: true })
+      inputFocus(`${partialQuery}${el[prop]}`, {
+        queryParentElement,
+        differTop,
+        scroll: true,
+      })
       return true
     }
   }
@@ -552,7 +622,9 @@ export const getAndSetterElementValue = (
   element && (element[propObject] = value.text)
 
   if (element && value.textLength && value.maxLength) {
-    value.textLength >= value.maxLength ? element.classList.add('text-red-500') : element.classList.remove('text-red-500')
+    value.textLength >= value.maxLength
+      ? element.classList.add('text-red-500')
+      : element.classList.remove('text-red-500')
   }
 }
 
@@ -562,7 +634,13 @@ export const getItem = (prop: any, value: any, arr: any[]) => {
 }
 
 /** Função que altera as formas de caixas das fontes por atalhos, tem que ser usada no evento de teclado */
-export const modifyFontValues = (e: KeyboardEvent, { prop, setUpdateHTML }: { prop?: string; setUpdateHTML?: Dispatch<SetStateAction<number>> }) => {
+export const modifyFontValues = (
+  e: KeyboardEvent,
+  {
+    prop,
+    setUpdateHTML,
+  }: { prop?: string; setUpdateHTML?: Dispatch<SetStateAction<number>> }
+) => {
   const target = e.target as HTMLInputElement
   let value = target.value
   if (e.altKey) {
@@ -596,8 +674,13 @@ export const modifyFontValues = (e: KeyboardEvent, { prop, setUpdateHTML }: { pr
 }
 
 /** Recebe o Event e copia o texto do Event.target */
-export const handleCopy = (e: any, handleShowToast: ({}: WMToastProps) => void, callback?: () => void) => {
-  const text = typeof e === 'string' ? e : (e.target as HTMLSpanElement).textContent || ''
+export const handleCopy = (
+  e: any,
+  handleShowToast: ({}: WMToastProps) => void,
+  callback?: () => void
+) => {
+  const text =
+    typeof e === 'string' ? e : (e.target as HTMLSpanElement).textContent || ''
   if (navigator.clipboard) {
     navigator.clipboard?.writeText(text.trim()).then(() => {
       handleShowToast({
@@ -631,64 +714,112 @@ export const handlePrintApp = (
   carts?: Cart[],
   type?: string,
   report?: boolean,
-  tableConfigs?: { table?: Table; opened?: TableOpened; command?: Command | null }
+  tableConfigs?: {
+    table?: Table
+    opened?: TableOpened
+    command?: Command | null
+  }
 ) => {
   if (tableConfigs) {
     if ((type === 'command' || type === 'T') && tableConfigs.command) {
-      tableConfigs.command.subTotal = tableConfigs.command.getTotalValue('command')
-      tableConfigs.command.totalValue = tableConfigs.command.getTotalValue('commandFee')
+      tableConfigs.command.subTotal =
+        tableConfigs.command.getTotalValue('command')
+      tableConfigs.command.totalValue =
+        tableConfigs.command.getTotalValue('commandFee')
       tableConfigs.command.lack = tableConfigs.command.getTotalValue('lack')
       tableConfigs.command.paid = tableConfigs.command.getTotalValue('paid')
-      tableConfigs.command.fees = tableConfigs.command.fees.filter((fee) => fee.deleted_at === null)
+      tableConfigs.command.fees = tableConfigs.command.fees.filter(
+        (fee) => fee.deleted_at === null
+      )
     } else if (type === 'table') {
       if (tableConfigs.opened) {
-        tableConfigs.opened.subTotal = tableConfigs.opened.getTotalValue('table') || 0
-        tableConfigs.opened.totalValue = tableConfigs.opened.getTotalValue('tableFee') || 0
-        tableConfigs.opened.lack = tableConfigs.opened.getTotalValue('lack') || 0
-        tableConfigs.opened.paid = tableConfigs.opened.getTotalValue('paid') || 0
+        tableConfigs.opened.subTotal =
+          tableConfigs.opened.getTotalValue('table') || 0
+        tableConfigs.opened.totalValue =
+          tableConfigs.opened.getTotalValue('tableFee') || 0
+        tableConfigs.opened.lack =
+          tableConfigs.opened.getTotalValue('lack') || 0
+        tableConfigs.opened.paid =
+          tableConfigs.opened.getTotalValue('paid') || 0
         tableConfigs.opened.wsFormsPayment = tableConfigs.opened.formsPayment
         tableConfigs.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.opened?.created_at as string).toFormat('HH:mm')}/${
-          report ? DateTime.fromSQL(tableConfigs.opened?.updated_at as string).toFormat('HH:mm') : DateTime.local().toFormat('HH:mm')
+          report
+            ? DateTime.fromSQL(
+                tableConfigs.opened?.updated_at as string
+              ).toFormat('HH:mm')
+            : DateTime.local().toFormat('HH:mm')
         } - ${
           report
             ? DateTime.fromSQL(tableConfigs.opened?.updated_at as string)
-                .diff(DateTime.fromSQL(tableConfigs.opened?.created_at as string), 'seconds')
+                .diff(
+                  DateTime.fromSQL(tableConfigs.opened?.created_at as string),
+                  'seconds'
+                )
                 .toFormat("hh'h'mm")
             : DateTime.local()
-                .diff(DateTime.fromSQL(tableConfigs.opened?.created_at as string), 'seconds')
+                .diff(
+                  DateTime.fromSQL(tableConfigs.opened?.created_at as string),
+                  'seconds'
+                )
                 .toFormat("hh'h'mm")
         }`
-        tableConfigs.opened.updatedFees = tableConfigs.opened.getUpdatedFees(!report).filter((fee) => fee.deleted_at === null)
+        tableConfigs.opened.updatedFees = tableConfigs.opened
+          .getUpdatedFees(!report)
+          .filter((fee) => fee.deleted_at === null)
         tableConfigs.opened?.commands.forEach((c) => {
           c.totalValue = c.getTotalValue('command')
         })
       }
 
       if (tableConfigs.table && tableConfigs.table.opened) {
-        tableConfigs.table.opened.subTotal = tableConfigs.table.opened.getTotalValue('table') || 0
-        tableConfigs.table.opened.totalValue = tableConfigs.table.opened.getTotalValue('tableFee') || 0
-        tableConfigs.table.opened.lack = tableConfigs.table.opened.getTotalValue('lack') || 0
-        tableConfigs.table.opened.paid = tableConfigs.table.opened.getTotalValue('paid') || 0
-        tableConfigs.table.opened.wsFormsPayment = tableConfigs.table.opened.formsPayment
+        tableConfigs.table.opened.subTotal =
+          tableConfigs.table.opened.getTotalValue('table') || 0
+        tableConfigs.table.opened.totalValue =
+          tableConfigs.table.opened.getTotalValue('tableFee') || 0
+        tableConfigs.table.opened.lack =
+          tableConfigs.table.opened.getTotalValue('lack') || 0
+        tableConfigs.table.opened.paid =
+          tableConfigs.table.opened.getTotalValue('paid') || 0
+        tableConfigs.table.opened.wsFormsPayment =
+          tableConfigs.table.opened.formsPayment
         tableConfigs.table.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.table.opened?.created_at as string).toFormat('HH:mm')}/${
-          report ? DateTime.fromSQL(tableConfigs.table.opened?.updated_at as string).toFormat('HH:mm') : DateTime.local().toFormat('HH:mm')
+          report
+            ? DateTime.fromSQL(
+                tableConfigs.table.opened?.updated_at as string
+              ).toFormat('HH:mm')
+            : DateTime.local().toFormat('HH:mm')
         } - ${
           report
             ? DateTime.fromSQL(tableConfigs.table.opened?.updated_at as string)
-                .diff(DateTime.fromSQL(tableConfigs.table.opened?.created_at as string), 'seconds')
+                .diff(
+                  DateTime.fromSQL(
+                    tableConfigs.table.opened?.created_at as string
+                  ),
+                  'seconds'
+                )
                 .toFormat("hh'h'mm")
             : DateTime.local()
-                .diff(DateTime.fromSQL(tableConfigs.table.opened?.created_at as string), 'seconds')
+                .diff(
+                  DateTime.fromSQL(
+                    tableConfigs.table.opened?.created_at as string
+                  ),
+                  'seconds'
+                )
                 .toFormat("hh'h'mm")
         }`
-        tableConfigs.table.opened.updatedFees = tableConfigs.table.opened.getUpdatedFees(!report).filter((fee) => fee.deleted_at === null)
+        tableConfigs.table.opened.updatedFees = tableConfigs.table.opened
+          .getUpdatedFees(!report)
+          .filter((fee) => fee.deleted_at === null)
         tableConfigs.table?.opened?.commands.forEach((c) => {
           c.totalValue = c.getTotalValue('command')
         })
       }
     }
 
-    channel?.wsEmit('print', JSON.parse(JSON.stringify({ carts, type, ...tableConfigs })))
+    channel?.wsEmit(
+      'print',
+      JSON.parse(JSON.stringify({ carts, type, ...tableConfigs }))
+    )
   } else {
     // channel.emit("print", { requests, type })
   }
@@ -779,68 +910,99 @@ export const getMobileOS = () => {
   const ua = navigator.userAgent
   if (/android/i.test(ua)) {
     return 'Android'
-  } else if (/iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
+  } else if (
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+  ) {
     return 'iOS'
   }
   return 'Other'
 }
 
-export const groupCart = (data: Cart | CartItem[] | null, groupItems?: boolean) => {
+export const groupCart = (
+  data: Cart | CartItem[] | null,
+  groupItems?: boolean
+) => {
   if (data) {
-    return (data instanceof Cart ? data.itens : data).reduce((newItems: CartItem[], cartItem) => {
-      if (groupItems) {
-        switch (cartItem.type) {
-          case 'default':
-            const newItem = newItems.find(
-              (item) =>
-                item.productId === cartItem.productId &&
-                item.details.value === cartItem.details.value &&
-                item.details.complements.length === cartItem.details.complements.length
-            )
-            if (newItem) {
-              const allComplements = verifyEqualsComplements(newItem.details.complements, cartItem.details.complements)
+    return (data instanceof Cart ? data.itens : data).reduce(
+      (newItems: CartItem[], cartItem) => {
+        if (groupItems) {
+          switch (cartItem.type) {
+            case 'default':
+              const newItem = newItems.find(
+                (item) =>
+                  item.productId === cartItem.productId &&
+                  item.details.value === cartItem.details.value &&
+                  item.details.complements.length ===
+                    cartItem.details.complements.length
+              )
+              if (newItem) {
+                const allComplements = verifyEqualsComplements(
+                  newItem.details.complements,
+                  cartItem.details.complements
+                )
 
-              if (allComplements) {
-                newItem.quantity += cartItem.quantity
+                if (allComplements) {
+                  newItem.quantity += cartItem.quantity
+                } else {
+                  newItems.push(new CartItem(cartItem))
+                }
               } else {
                 newItems.push(new CartItem(cartItem))
               }
-            } else {
-              newItems.push(new CartItem(cartItem))
-            }
-            break
-          case 'pizza':
-            const pizza = newItems.find(
-              (item) =>
-                item.pizzaId === cartItem.pizzaId &&
-                item.details.flavors.length === cartItem.details.flavors.length &&
-                item.details.implementations.length === cartItem.details.implementations.length &&
-                item.details.complements.length === cartItem.details.complements.length
-            )
+              break
+            case 'pizza':
+              const pizza = newItems.find(
+                (item) =>
+                  item.pizzaId === cartItem.pizzaId &&
+                  item.details.flavors.length ===
+                    cartItem.details.flavors.length &&
+                  item.details.implementations.length ===
+                    cartItem.details.implementations.length &&
+                  item.details.complements.length ===
+                    cartItem.details.complements.length
+              )
 
-            const verificationOne = pizza?.details.flavors.every((pizzaFlavor) =>
-              cartItem.details.flavors?.some((elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code)
-            )
-            const verificationTwo = cartItem.details.flavors?.every((pizzaFlavor) =>
-              pizza?.details.flavors?.some((elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code)
-            )
+              const verificationOne = pizza?.details.flavors.every(
+                (pizzaFlavor) =>
+                  cartItem.details.flavors?.some(
+                    (elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code
+                  )
+              )
+              const verificationTwo = cartItem.details.flavors?.every(
+                (pizzaFlavor) =>
+                  pizza?.details.flavors?.some(
+                    (elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code
+                  )
+              )
 
-            const implementations = pizza?.details.implementations?.every((pizzaImplementation) =>
-              cartItem.details?.implementations.some((elPizzaImplementation) => elPizzaImplementation.code === pizzaImplementation.code)
-            )
-            if (verificationOne && verificationTwo && implementations && pizza) {
-              pizza.quantity += cartItem.quantity
-            } else {
-              newItems.push(new CartItem(cartItem))
-            }
-            break
+              const implementations = pizza?.details.implementations?.every(
+                (pizzaImplementation) =>
+                  cartItem.details?.implementations.some(
+                    (elPizzaImplementation) =>
+                      elPizzaImplementation.code === pizzaImplementation.code
+                  )
+              )
+              if (
+                verificationOne &&
+                verificationTwo &&
+                implementations &&
+                pizza
+              ) {
+                pizza.quantity += cartItem.quantity
+              } else {
+                newItems.push(new CartItem(cartItem))
+              }
+              break
+          }
+        } else {
+          newItems.push(new CartItem(cartItem))
         }
-      } else {
-        newItems.push(new CartItem(cartItem))
-      }
 
-      return newItems
-    }, [])
+        return newItems
+      },
+      []
+    )
   }
 
   return []
@@ -877,11 +1039,22 @@ export const groupAllCarts = (carts: Cart[]) => {
   }
 }
 
-export const verifyEqualsComplements = (complements: Complement[] | ComplementType[], complementsVerify: Complement[] | ComplementType[]) => {
+export const verifyEqualsComplements = (
+  complements: Complement[] | ComplementType[],
+  complementsVerify: Complement[] | ComplementType[]
+) => {
   return complements.every((compl) => {
     return complementsVerify.some((complV) => {
-      if (complV.id === compl.id && compl.itens.length === complV.itens.length) {
-        return complV.itens.every((cvItem) => compl.itens.some((cItem) => cItem.code === cvItem.code && cItem.quantity === cvItem.quantity))
+      if (
+        complV.id === compl.id &&
+        compl.itens.length === complV.itens.length
+      ) {
+        return complV.itens.every((cvItem) =>
+          compl.itens.some(
+            (cItem) =>
+              cItem.code === cvItem.code && cItem.quantity === cvItem.quantity
+          )
+        )
       }
     })
   })
@@ -890,17 +1063,28 @@ export const verifyEqualsComplements = (complements: Complement[] | ComplementTy
 /**
  * Caso não seja passado o priceId, @return preço padrão do produto
  */
-export const getProductAndPrice = (data: { systemProducts?: SystemProduct[]; productId?: number; priceId?: string; product?: SystemProduct }) => {
+export const getProductAndPrice = (data: {
+  systemProducts?: SystemProduct[]
+  productId?: number
+  priceId?: string
+  product?: SystemProduct
+}) => {
   if (data.productId && data.priceId && data.systemProducts) {
-    const product = data.systemProducts.find((prod) => prod.id === data.productId)
-    const price = product?.operations.prices.find((pr) => pr.id === (data.priceId ?? product?.default_price))
+    const product = data.systemProducts.find(
+      (prod) => prod.id === data.productId
+    )
+    const price = product?.operations.prices.find(
+      (pr) => pr.id === (data.priceId ?? product?.default_price)
+    )
 
     return {
       product,
       price,
     }
   } else {
-    const price = data.product?.operations.prices.find((pr) => pr.id === (data.priceId ?? data.product?.default_price))
+    const price = data.product?.operations.prices.find(
+      (pr) => pr.id === (data.priceId ?? data.product?.default_price)
+    )
     return {
       product: data.product,
       price,
@@ -919,8 +1103,12 @@ export const getPlanProperty = ({
   products: SystemProduct[]
   period: 'monthly' | 'semester' | 'yearly'
 }) => {
-  const product = products.find((prod) => prod.plan_id === plan.id && prod.operations.type === period)
-  const price = product?.operations.prices.find((price) => price.id === product.default_price)
+  const product = products.find(
+    (prod) => prod.plan_id === plan.id && prod.operations.type === period
+  )
+  const price = product?.operations.prices.find(
+    (price) => price.id === product.default_price
+  )
   const price_id = price?.id
 
   if (product && price && price.currencies) {

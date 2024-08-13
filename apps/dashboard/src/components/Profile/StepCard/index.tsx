@@ -32,13 +32,32 @@ type GenerateCheckout = {
   line_items: any[]
 }
 
-export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Invoice[]; systemProducts: SystemProduct[]; plans: Plan[] }) {
+export function PaymentCard({
+  invoices,
+  systemProducts,
+  plans,
+}: {
+  invoices: Invoice[]
+  systemProducts: SystemProduct[]
+  plans: Plan[]
+}) {
   const { t } = useTranslation()
   const router = useRouter()
 
-  const { handleConfirmModal, handleShowToast, gateway, user, dispatchUser, currency } = useContext(AppContext)
+  const {
+    handleConfirmModal,
+    handleShowToast,
+    gateway,
+    user,
+    dispatchUser,
+    currency,
+  } = useContext(AppContext)
   const { data: session } = useSession()
-  const [collectCard, setCollectCard] = useState<{ show: boolean; review?: boolean; callback: Function }>({
+  const [collectCard, setCollectCard] = useState<{
+    show: boolean
+    review?: boolean
+    callback: Function
+  }>({
     show: false,
     callback: () => {},
   })
@@ -53,10 +72,19 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
       if (invoice.type !== 'first' && !invoicesId.has(invoice.id)) {
         invoice.itens.forEach((item: any) => {
           if (invoice.type === 'monthly' ? true : item.service !== 'plan') {
-            const product = cart.find((product) => product?.service === item.service && item.service !== 'plan')
+            const product = cart.find(
+              (product) =>
+                product?.service === item.service && item.service !== 'plan'
+            )
 
-            if (invoices.find((inv) => inv.type === 'first' && inv.status === 'pending') || product) {
-              const current_difference_value = (item.value * 100) / (Number(product?.value ?? 0) / 100)
+            if (
+              invoices.find(
+                (inv) => inv.type === 'first' && inv.status === 'pending'
+              ) ||
+              product
+            ) {
+              const current_difference_value =
+                (item.value * 100) / (Number(product?.value ?? 0) / 100)
               if (current_difference_value === 100 && product) {
                 product.quantity += item.quantity
               }
@@ -84,25 +112,34 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
     [cart, invoices, invoicesId]
   )
 
-  const changeCharge = async (card_id: string, installments: number = 1): Promise<any> => {
+  const changeCharge = async (
+    card_id: string,
+    installments: number = 1
+  ): Promise<any> => {
     try {
       if (card_id) {
         switch (user?.controls?.paymentInfo?.gateway) {
           case 'pagarme':
             try {
-              const { data: newPurchasePagarmeCard } = await gateway?.changeChargeCard(card_id, {
-                line_items: generateLineItemsPagarme(),
-                invoices: JSON.stringify(Array.from(invoicesId)),
-                installments,
-              })
-              if (newPurchasePagarmeCard.last_transaction.status === 'with_error') {
+              const { data: newPurchasePagarmeCard } =
+                await gateway?.changeChargeCard(card_id, {
+                  line_items: generateLineItemsPagarme(),
+                  invoices: JSON.stringify(Array.from(invoicesId)),
+                  installments,
+                })
+              if (
+                newPurchasePagarmeCard.last_transaction.status === 'with_error'
+              ) {
                 throw new Error(t('there_failure_transaction'))
               } else {
                 if (newPurchasePagarmeCard.last_transaction.acquirer_message) {
                   handleShowToast({
                     title: t('change_card'),
-                    content: newPurchasePagarmeCard.last_transaction.acquirer_message,
-                    type: newPurchasePagarmeCard.last_transaction.success ? 'success' : 'alert',
+                    content:
+                      newPurchasePagarmeCard.last_transaction.acquirer_message,
+                    type: newPurchasePagarmeCard.last_transaction.success
+                      ? 'success'
+                      : 'alert',
                   })
 
                   if (newPurchasePagarmeCard.last_transaction.success) {
@@ -140,8 +177,12 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
         case 'stripe':
           try {
             //Criando uma sessão de pagamento
-            const invoicesPending = invoices.filter((inv) => invoicesId.has(inv.id))
-            const allAddons = invoicesPending.every((inv) => inv.type === 'addon') && invoicesPending.length
+            const invoicesPending = invoices.filter((inv) =>
+              invoicesId.has(inv.id)
+            )
+            const allAddons =
+              invoicesPending.every((inv) => inv.type === 'addon') &&
+              invoicesPending.length
 
             const stripeCheckoutData = generateCheckout({
               gateway: 'stripe',
@@ -170,7 +211,8 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
                 success_url: `${process.env.BASE_URL}/dashboard/profile`,
                 line_items: generateLineItemsPagarme(),
               })
-              const { data } = await gateway?.createCheckout(pagarmeCheckoutData)
+              const { data } =
+                await gateway?.createCheckout(pagarmeCheckoutData)
 
               handleShowToast({
                 title: 'Checkout',
@@ -203,7 +245,10 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
     }
   }
 
-  const createSubscription = async <T,>(cardId?: string, installments?: number): Promise<any> => {
+  const createSubscription = async <T,>(
+    cardId?: string,
+    installments?: number
+  ): Promise<any> => {
     if (cardId) {
       switch (userGateway) {
         case 'pagarme':
@@ -290,14 +335,20 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
   }
 
   const disabledPayButtonInvoice = (invoice: Invoice) => {
-    if (invoicesId.has(invoice.id) && invoices.some((inv) => inv.type !== invoice.type)) {
+    if (
+      invoicesId.has(invoice.id) &&
+      invoices.some((inv) => inv.type !== invoice.type)
+    ) {
       return {
         title: t('ongoing_monthly_invoice'),
         disabled: true,
       }
     }
 
-    if (user?.controls?.paymentInfo?.subscription?.status === 'canceled' && invoice.type === 'addon') {
+    if (
+      user?.controls?.paymentInfo?.subscription?.status === 'canceled' &&
+      invoice.type === 'addon'
+    ) {
       return {
         title: t('subscription_canceled'),
         disabled: true,
@@ -305,7 +356,13 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
     }
   }
 
-  const generateCheckout = ({ gateway, method, success_url, cancel_url, line_items }: GenerateCheckout) => {
+  const generateCheckout = ({
+    gateway,
+    method,
+    success_url,
+    cancel_url,
+    line_items,
+  }: GenerateCheckout) => {
     return {
       line_items,
       payments: [
@@ -333,7 +390,10 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
 
         const pagarmePriceId = `${item.service}_${item.product_id}_${item.price_id}`
         const value =
-          period === 'yearly' && discount ? item.quantity * item.value - (item.quantityDiscount ?? 0) * item.value : item.quantity * item.value
+          period === 'yearly' && discount
+            ? item.quantity * item.value -
+              (item.quantityDiscount ?? 0) * item.value
+            : item.quantity * item.value
         return {
           amount: parseInt(value.toString()),
           value: String(parseInt(value.toString())),
@@ -348,7 +408,9 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
 
   const generateLineItemsStripe = () => {
     return cart.map((item) => {
-      const product = systemProducts.find((prod) => prod.id === Number(item.product_id))
+      const product = systemProducts.find(
+        (prod) => prod.id === Number(item.product_id)
+      )
       const { price } = getProductAndPrice({ product, priceId: item.price_id })
 
       return {
@@ -407,7 +469,11 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
     }
   }
 
-  const purchaseCard = async (card_id: string, installments: number = 1, type: 'credit_card' | 'debit_card' = 'credit_card') => {
+  const purchaseCard = async (
+    card_id: string,
+    installments: number = 1,
+    type: 'credit_card' | 'debit_card' = 'credit_card'
+  ) => {
     try {
       const {
         data: { checkout: payment },
@@ -490,10 +556,16 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
       setCart(
         newItems
           .map((item) => {
-            const product = systemProducts.find((prod) => prod.id === Number(item.id))
-            const { price } = getProductAndPrice({ product, priceId: item.price_id })
+            const product = systemProducts.find(
+              (prod) => prod.id === Number(item.id)
+            )
+            const { price } = getProductAndPrice({
+              product,
+              priceId: item.price_id,
+            })
             if (price && price.id && product) {
-              const priceId = userGateway === 'stripe' ? price.gateways.stripe.id : price.id
+              const priceId =
+                userGateway === 'stripe' ? price.gateways.stripe.id : price.id
 
               return {
                 name: item.name,
@@ -513,15 +585,20 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
   }, [invoices, systemProducts, userGateway])
 
   useEffect(() => {
-    const invoicesInstallments = invoices.filter((invoice) => invoicesId.has(invoice.id))
+    const invoicesInstallments = invoices.filter((invoice) =>
+      invoicesId.has(invoice.id)
+    )
 
-    const newInstallments = invoicesInstallments.reduce((installment, invoice) => {
-      if (invoice.installments && invoice.installments > installment) {
-        return invoice.installments
-      }
+    const newInstallments = invoicesInstallments.reduce(
+      (installment, invoice) => {
+        if (invoice.installments && invoice.installments > installment) {
+          return invoice.installments
+        }
 
-      return installment
-    }, 1)
+        return installment
+      },
+      1
+    )
 
     setInstallments(newInstallments)
   }, [invoicesId, invoices])
@@ -529,7 +606,9 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
   return (
     <>
       <Card>
-        <Card.Header className="fw-bold fs-5">{t('outstanding_invoices')}</Card.Header>
+        <Card.Header className="fw-bold fs-5">
+          {t('outstanding_invoices')}
+        </Card.Header>
         <Card.Body>
           <Table responsive>
             <thead>
@@ -554,9 +633,20 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
             <tbody>
               {invoices.map((invoice) => {
                 return (
-                  <tr key={invoice.itens.toString()} style={{ backgroundColor: invoicesId.has(invoice.id) ? 'rgba(0, 0, 0, .1' : '' }}>
+                  <tr
+                    key={invoice.itens.toString()}
+                    style={{
+                      backgroundColor: invoicesId.has(invoice.id)
+                        ? 'rgba(0, 0, 0, .1'
+                        : '',
+                    }}
+                  >
                     <td>
-                      <span>{DateTime.fromJSDate(new Date(invoice.expiration)).toFormat('dd-MM-yyyy')}</span>
+                      <span>
+                        {DateTime.fromJSDate(
+                          new Date(invoice.expiration)
+                        ).toFormat('dd-MM-yyyy')}
+                      </span>
                     </td>
                     <td>
                       <span>{currency({ value: invoice.value })}</span>
@@ -600,7 +690,9 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
                         disabled={disabledPayButtonInvoice(invoice)?.disabled}
                         onClick={() => addInvoiceToPayment(invoice)}
                       >
-                        {invoicesId.has(invoice.id) ? t('In Progress') : t('pay')}
+                        {invoicesId.has(invoice.id)
+                          ? t('In Progress')
+                          : t('pay')}
                       </Button>
                     </td>
                   </tr>
@@ -612,7 +704,8 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
       </Card>
       <Card>
         <Card.Header className="fw-bold fs-5">
-          {t('cart')} - {cart.length ? t('check_items') : t('there_no_items_moment')}
+          {t('cart')} -{' '}
+          {cart.length ? t('check_items') : t('there_no_items_moment')}
         </Card.Header>
         {cart.length ? (
           <>
@@ -621,15 +714,25 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
                 {cart.map((product, index) => {
                   if (product) {
                     const unitValue = Number(product.value) / 100
-                    const value = unitValue * product.quantity - unitValue * (product.quantityDiscount ?? 0)
+                    const value =
+                      unitValue * product.quantity -
+                      unitValue * (product.quantityDiscount ?? 0)
                     return (
-                      <Col key={`${product.name}-${index}`} className="mb-2 d-flex flex-column" sm="2">
+                      <Col
+                        key={`${product.name}-${index}`}
+                        className="d-flex flex-column mb-2"
+                        sm="2"
+                      >
                         <div className="text-center ">
                           <img
                             className="mx-auto"
                             src={product.image ?? '/images/logoh.png'}
                             alt={product.name}
-                            style={{ maxWidth: '100%', maxHeight: '100%', display: 'block' }}
+                            style={{
+                              maxWidth: '100%',
+                              maxHeight: '100%',
+                              display: 'block',
+                            }}
                           />
                         </div>
                         <div className="d-flex flex-column align-items-center flex-grow-1 justify-content-between">
@@ -638,15 +741,30 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
                             {/* <p className="fs-7">{product.description}</p> */}
                           </div>
                           <div className="text-center">
-                            <span className="fs-7" style={{ textDecoration: product.quantityDiscount ? 'line-through' : '' }}>
-                              {product.quantity}X {currency({ value: unitValue })}
+                            <span
+                              className="fs-7"
+                              style={{
+                                textDecoration: product.quantityDiscount
+                                  ? 'line-through'
+                                  : '',
+                              }}
+                            >
+                              {product.quantity}X{' '}
+                              {currency({ value: unitValue })}
                             </span>
                             <br />
-                            <span className="fs-6 fw-bold">{currency({ value })}</span>
+                            <span className="fs-6 fw-bold">
+                              {currency({ value })}
+                            </span>
                             {product.service !== 'plan' ? (
                               <span>/{t('unique')}</span>
                             ) : (
-                              <span>/{user?.controls?.period === 'monthly' ? t('month') : t('year')}</span>
+                              <span>
+                                /
+                                {user?.controls?.period === 'monthly'
+                                  ? t('month')
+                                  : t('year')}
+                              </span>
                             )}
                           </div>
                         </div>
@@ -659,12 +777,13 @@ export function PaymentCard({ invoices, systemProducts, plans }: { invoices: Inv
               <Row className="mt-3">
                 <Col>
                   <p>
-                    {t('hello')}, <b>{user?.name}</b> {t('after_payment_confirmation')}
+                    {t('hello')}, <b>{user?.name}</b>{' '}
+                    {t('after_payment_confirmation')}
                   </p>
                 </Col>
               </Row>
             </Card.Body>
-            <Card.Footer className="d-flex gap-2 flex-column flex-md-row">
+            <Card.Footer className="d-flex flex-column flex-md-row gap-2">
               <Button onClick={getPaymentMethod}>{t('proceed_payment')}</Button>
               {/* {
                                     (user?.controls?.paymentInfo?.subscription?.id) &&

@@ -103,9 +103,12 @@ export default class Cart {
   itens: CartItem[]
 
   public defaultStatusProductionPackage = 'Olá [NOME], seu pedido foi recebido.'
-  public defaultStatusProductionMessage = 'Olá [NOME], seu pedido está em produção.'
-  public defaultStatusToRemoveMessage = 'Obaaa [NOME], seu pedido está pronto para retirada.'
-  public defaultStatusTransportMessage = 'Obaaa [NOME], seu pedido está a caminho.'
+  public defaultStatusProductionMessage =
+    'Olá [NOME], seu pedido está em produção.'
+  public defaultStatusToRemoveMessage =
+    'Obaaa [NOME], seu pedido está pronto para retirada.'
+  public defaultStatusTransportMessage =
+    'Obaaa [NOME], seu pedido está a caminho.'
   public defaultCanceledMessage = 'Olá [NOME], seu pedido foi cancelado.'
 
   constructor({
@@ -191,9 +194,15 @@ export default class Cart {
         }
         if (this.client) {
           if (this.client.whatsapp.length > 10) {
-            return this.client.whatsapp.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+            return this.client.whatsapp.replace(
+              /(\d{2})(\d{5})(\d{4})/,
+              '($1) $2-$3'
+            )
           }
-          return this.client.whatsapp.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
+          return this.client.whatsapp.replace(
+            /(\d{2})(\d{4})(\d{4})/,
+            '($1) $2-$3'
+          )
         }
         break
 
@@ -203,9 +212,15 @@ export default class Cart {
         }
         if (this.client) {
           if (this.client.whatsapp.length === 11) {
-            return this.client.whatsapp.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '+$1 ($2) $3-$4')
+            return this.client.whatsapp.replace(
+              /(\d{1})(\d{3})(\d{3})(\d{4})/,
+              '+$1 ($2) $3-$4'
+            )
           } else if (this.client.whatsapp.length === 10) {
-            return this.client.whatsapp.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3')
+            return this.client.whatsapp.replace(
+              /(\d{3})(\d{3})(\d{4})/,
+              '($1) $2-$3'
+            )
           }
         }
         break
@@ -224,28 +239,52 @@ export default class Cart {
 
   public date() {
     const formatted = `${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(`${i18n.t('date_format')}`)} ${
-      DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat('ss').includes('01')
+      DateTime.fromSQL(this.packageDate, { setZone: true })
+        .toFormat('ss')
+        .includes('01')
         ? '(SH)'
-        : DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat('HH:mm')
+        : DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(
+            'HH:mm'
+          )
     }`
 
     return {
       date: this.packageDate,
-      onlyDate: DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(`${i18n.t('date_format')}`),
-      zero: DateTime.fromSQL(this.packageDate, { setZone: true }).set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
+      onlyDate: DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(
+        `${i18n.t('date_format')}`
+      ),
+      zero: DateTime.fromSQL(this.packageDate, { setZone: true }).set({
+        hour: 0,
+        minute: 0,
+        second: 0,
+        millisecond: 0,
+      }),
       formatted,
     }
   }
 
   public transshipment() {
-    return this.formsPayment.reduce((total, formPayment) => (total += formPayment.payment === 'money' ? formPayment.change ?? 0 : 0), 0)
+    return this.formsPayment.reduce(
+      (total, formPayment) =>
+        (total +=
+          formPayment.payment === 'money' ? (formPayment.change ?? 0) : 0),
+      0
+    )
   }
 
   //Cart Api
 
-  public async updateStatus(status: null | 'production' | 'transport' | 'delivered' | 'canceled', session: Session | null) {
+  public async updateStatus(
+    status: null | 'production' | 'transport' | 'delivered' | 'canceled',
+    session: Session | null
+  ) {
     try {
-      const { data } = await apiRoute(`/dashboard/carts/${this.id}/status`, session, 'PATCH', { status, id: this.id })
+      const { data } = await apiRoute(
+        `/dashboard/carts/${this.id}/status`,
+        session,
+        'PATCH',
+        { status, id: this.id }
+      )
 
       this.status = data.cart.status
 
@@ -258,13 +297,22 @@ export default class Cart {
   public async alterDate(session: Session | null, packageDate: string) {
     if (this.type === 'P') {
       try {
-        const { data } = await apiRoute(`/dashboard/carts/${this.id}/package/date`, session, 'PATCH', {
-          package: DateTime.fromJSDate(
-            new Date(`${packageDate} ${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat('HH:mm:ss')}`)
-          ).toISO(),
-          id: this.id,
-        })
-        this.packageDate = DateTime.fromISO(data.cart.packageDate, { setZone: true }).toSQL()
+        const { data } = await apiRoute(
+          `/dashboard/carts/${this.id}/package/date`,
+          session,
+          'PATCH',
+          {
+            package: DateTime.fromJSDate(
+              new Date(
+                `${packageDate} ${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat('HH:mm:ss')}`
+              )
+            ).toISO(),
+            id: this.id,
+          }
+        )
+        this.packageDate = DateTime.fromISO(data.cart.packageDate, {
+          setZone: true,
+        }).toSQL()
       } catch (error) {
         console.error(error)
         throw error
@@ -274,7 +322,10 @@ export default class Cart {
     }
   }
 
-  public async cancelOrUncancel(session: Session | null, options?: ProfileOptions) {
+  public async cancelOrUncancel(
+    session: Session | null,
+    options?: ProfileOptions
+  ) {
     try {
       if (this.status !== 'canceled') {
         const status = await this.updateStatus('canceled', session)
@@ -317,21 +368,34 @@ export default class Cart {
 
   public async setPrinted(session: Session) {
     try {
-      const { data } = await apiRoute(`/dashboard/carts/${this.id}/print`, session, 'PATCH')
+      const { data } = await apiRoute(
+        `/dashboard/carts/${this.id}/print`,
+        session,
+        'PATCH'
+      )
       this.print = JSON.parse(data.cart.print) ? 1 : 0
     } catch (error) {
       console.error(error)
     }
   }
 
-  public typeDeliveryText(textPackage: 'Encomendas' | 'Agendamentos' = 'Encomendas', textOnly = false) {
+  public typeDeliveryText(
+    textPackage: 'Encomendas' | 'Agendamentos' = 'Encomendas',
+    textOnly = false
+  ) {
     let textDelivery = ''
     switch (this.type) {
       case 'D':
-        textDelivery = this.address && !textOnly ? `**Delivery**\n\r` : '**Vou retirar no local**'
+        textDelivery =
+          this.address && !textOnly
+            ? `**Delivery**\n\r`
+            : '**Vou retirar no local**'
         break
       case 'P':
-        textDelivery = this.address && !textOnly ? `**${textPackage}**\r\n` : '**Vou Retirar no Local**'
+        textDelivery =
+          this.address && !textOnly
+            ? `**${textPackage}**\r\n`
+            : '**Vou Retirar no Local**'
         break
       case 'T':
         textDelivery = '**Pedido Mesa**'
@@ -345,17 +409,32 @@ export default class Cart {
     return this.type
   }
 
-  public getTotalValue(sumWith: 'subtotal' | 'total' | 'lack' | 'addon' | 'paid' | 'cashback') {
+  public getTotalValue(
+    sumWith: 'subtotal' | 'total' | 'lack' | 'addon' | 'paid' | 'cashback'
+  ) {
     const total = this.total
     let addonTotal = 0
-    if (this.formsPayment && this.formsPayment[0] && this.formsPayment[0].addon && this.formsPayment[0].addon.status) {
-      const { type: addonType, value: addonValue, valueType: addonValueType } = this.formsPayment[0].addon
-      addonTotal = addonValueType === 'percentage' ? (addonValue / 100) * this.total : addonValue
+    if (
+      this.formsPayment &&
+      this.formsPayment[0] &&
+      this.formsPayment[0].addon &&
+      this.formsPayment[0].addon.status
+    ) {
+      const {
+        type: addonType,
+        value: addonValue,
+        valueType: addonValueType,
+      } = this.formsPayment[0].addon
+      addonTotal =
+        addonValueType === 'percentage'
+          ? (addonValue / 100) * this.total
+          : addonValue
       if (addonType === 'discount') {
         addonTotal *= -1
       }
     }
-    const totalResult = total + this.taxDelivery - this.calcCupomValue() + addonTotal
+    const totalResult =
+      total + this.taxDelivery - this.calcCupomValue() + addonTotal
 
     const cashbackValue = Math.min(
       totalResult,
@@ -380,7 +459,10 @@ export default class Cart {
             total +
               this.taxDelivery -
               Math.max(
-                this.formsPayment.reduce((total, formPayment) => (total += formPayment.value), 0),
+                this.formsPayment.reduce(
+                  (total, formPayment) => (total += formPayment.value),
+                  0
+                ),
                 0
               ) +
               addonTotal
@@ -389,7 +471,12 @@ export default class Cart {
       case 'addon':
         return addonTotal
       case 'paid':
-        return this.formsPayment?.reduce((total, formPayment) => (total += formPayment.value), 0) || 0
+        return (
+          this.formsPayment?.reduce(
+            (total, formPayment) => (total += formPayment.value),
+            0
+          ) || 0
+        )
       case 'cashback':
         return cashbackValue
     }
@@ -419,21 +506,31 @@ export default class Cart {
 
   static calcValuePizza(pizza: CartItemType, onlyPizza = false) {
     if (onlyPizza) {
-      const totalImplementations = pizza.details.implementations.reduce((total, implementation) => (total += implementation.value), 0)
+      const totalImplementations = pizza.details.implementations.reduce(
+        (total, implementation) => (total += implementation.value),
+        0
+      )
       return pizza.details.value - totalImplementations
     }
 
     return pizza.details.value * pizza.quantity
   }
 
-  public permenance(report: boolean, opened = this.command?.opened): string | undefined {
+  public permenance(
+    report: boolean,
+    opened = this.command?.opened
+  ): string | undefined {
     let permenance
     if (!opened) {
       return permenance
     }
 
-    const tableOpenDate = DateTime.fromSQL(opened.created_at as string).toFormat('HH:mm')
-    const tableCloseDate = report ? DateTime.fromSQL(opened.updated_at as string).toFormat('HH:mm') : DateTime.local().toFormat('HH:mm')
+    const tableOpenDate = DateTime.fromSQL(
+      opened.created_at as string
+    ).toFormat('HH:mm')
+    const tableCloseDate = report
+      ? DateTime.fromSQL(opened.updated_at as string).toFormat('HH:mm')
+      : DateTime.local().toFormat('HH:mm')
     const perm =
       opened.perm ??
       DateTime.local()
@@ -452,10 +549,14 @@ export default class Cart {
                 item.productId === cartItem.productId &&
                 item.obs === cartItem.obs &&
                 item.details.value === cartItem.details.value &&
-                item.details.complements.length === cartItem.details.complements.length
+                item.details.complements.length ===
+                  cartItem.details.complements.length
             )
             if (newItem) {
-              const allComplements = verifyEqualsComplements(newItem.details.complements, cartItem.details.complements)
+              const allComplements = verifyEqualsComplements(
+                newItem.details.complements,
+                cartItem.details.complements
+              )
 
               if (allComplements) {
                 newItem.quantity += cartItem.quantity
@@ -472,22 +573,40 @@ export default class Cart {
                 item.pizzaId === cartItem.pizzaId &&
                 item.details.value === cartItem.details.value &&
                 item.details.sizeCode === cartItem.details.sizeCode &&
-                item.details.flavors.length === cartItem.details.flavors.length &&
-                item.details.implementations.length === cartItem.details.implementations.length &&
-                item.details.complements.length === cartItem.details.complements.length
+                item.details.flavors.length ===
+                  cartItem.details.flavors.length &&
+                item.details.implementations.length ===
+                  cartItem.details.implementations.length &&
+                item.details.complements.length ===
+                  cartItem.details.complements.length
             )
 
-            const verificationOne = pizza?.details.flavors.every((pizzaFlavor) =>
-              cartItem.details.flavors?.some((elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code)
+            const verificationOne = pizza?.details.flavors.every(
+              (pizzaFlavor) =>
+                cartItem.details.flavors?.some(
+                  (elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code
+                )
             )
-            const verificationTwo = cartItem.details.flavors?.every((pizzaFlavor) =>
-              pizza?.details.flavors?.some((elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code)
+            const verificationTwo = cartItem.details.flavors?.every(
+              (pizzaFlavor) =>
+                pizza?.details.flavors?.some(
+                  (elPizzaFlavor) => elPizzaFlavor.code === pizzaFlavor.code
+                )
             )
 
-            const implementations = pizza?.details.implementations?.every((pizzaImplementation) =>
-              cartItem.details?.implementations.some((elPizzaImplementation) => elPizzaImplementation.code === pizzaImplementation.code)
+            const implementations = pizza?.details.implementations?.every(
+              (pizzaImplementation) =>
+                cartItem.details?.implementations.some(
+                  (elPizzaImplementation) =>
+                    elPizzaImplementation.code === pizzaImplementation.code
+                )
             )
-            if (verificationOne && verificationTwo && implementations && pizza) {
+            if (
+              verificationOne &&
+              verificationTwo &&
+              implementations &&
+              pizza
+            ) {
               pizza.quantity += cartItem.quantity
             } else {
               newItems.push(new CartItem(cartItem, this.code))
@@ -527,7 +646,12 @@ export default class Cart {
           value: 169.5,
           status: true,
           payment: 'money',
-          addon: { status: true, type: 'fee', valueType: 'percentage', value: 10 },
+          addon: {
+            status: true,
+            type: 'fee',
+            valueType: 'percentage',
+            value: 10,
+          },
         },
       ],
       print: 1,
@@ -552,7 +676,8 @@ export default class Cart {
               {
                 code: '53e5e0',
                 name: 'Atum',
-                image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                image:
+                  'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                 status: true,
                 values: {
                   Broto: 15,
@@ -569,14 +694,16 @@ export default class Cart {
               {
                 code: 'a0b3c5',
                 name: 'Frango com Catupiry',
-                image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                image:
+                  'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                 status: true,
                 values: {
                   Broto: 22,
                   Grande: 44,
                 },
                 complements: [],
-                description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                description:
+                  'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                 valuesTable: {
                   Broto: 22,
                   Grande: 44,
@@ -614,14 +741,16 @@ export default class Cart {
               {
                 code: 'a0b3c5',
                 name: 'Frango com Catupiry',
-                image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                image:
+                  'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                 status: true,
                 values: {
                   Broto: 22,
                   Grande: 44,
                 },
                 complements: [],
-                description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                description:
+                  'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                 valuesTable: {
                   Broto: 22,
                   Grande: 44,
@@ -631,7 +760,8 @@ export default class Cart {
               {
                 code: '53e5e0',
                 name: 'Atum',
-                image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                image:
+                  'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                 status: true,
                 values: {
                   Broto: 15,
@@ -900,7 +1030,8 @@ export default class Cart {
                     {
                       code: '53e5e0',
                       name: 'Atum',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                       status: true,
                       values: {
                         Broto: 15,
@@ -910,7 +1041,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, atum, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, atum, orégano e azeitonas',
                       valuesTable: {
                         Broto: 15,
                         Grande: 30,
@@ -923,7 +1055,8 @@ export default class Cart {
                     {
                       code: 'a0b3c5',
                       name: 'Frango com Catupiry',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -933,7 +1066,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                       valuesTable: {
                         Broto: 22,
                         Grande: 44,
@@ -968,7 +1102,8 @@ export default class Cart {
                     {
                       code: 'a0b3c5',
                       name: 'Frango com Catupiry',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -978,7 +1113,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                       valuesTable: {
                         Broto: 22,
                         Grande: 44,
@@ -991,7 +1127,8 @@ export default class Cart {
                     {
                       code: '53e5e0',
                       name: 'Atum',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                       status: true,
                       values: {
                         Broto: 15,
@@ -1001,7 +1138,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, atum, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, atum, orégano e azeitonas',
                       valuesTable: {
                         Broto: 15,
                         Grande: 30,
@@ -1271,7 +1409,8 @@ export default class Cart {
                     {
                       code: '53e5e0',
                       name: 'Atum',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                       status: true,
                       values: {
                         Broto: 15,
@@ -1281,7 +1420,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, atum, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, atum, orégano e azeitonas',
                       valuesTable: {
                         Broto: 15,
                         Grande: 30,
@@ -1294,7 +1434,8 @@ export default class Cart {
                     {
                       code: 'a0b3c5',
                       name: 'Frango com Catupiry',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1304,7 +1445,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                       valuesTable: {
                         Broto: 22,
                         Grande: 44,
@@ -1332,7 +1474,8 @@ export default class Cart {
                     {
                       code: 'a0dbd2',
                       name: 'Quatro Queijos',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1474,7 +1617,8 @@ export default class Cart {
                     {
                       code: '53e5e0',
                       name: 'Atum',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                       status: true,
                       values: {
                         Broto: 15,
@@ -1484,7 +1628,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, atum, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, atum, orégano e azeitonas',
                       valuesTable: {
                         Broto: 15,
                         Grande: 30,
@@ -1497,7 +1642,8 @@ export default class Cart {
                     {
                       code: 'a0b3c5',
                       name: 'Frango com Catupiry',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1507,7 +1653,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                       valuesTable: {
                         Broto: 22,
                         Grande: 44,
@@ -1535,7 +1682,8 @@ export default class Cart {
                     {
                       code: 'a0dbd2',
                       name: 'Quatro Queijos',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1677,7 +1825,8 @@ export default class Cart {
                     {
                       code: '53e5e0',
                       name: 'Atum',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                       status: true,
                       values: {
                         Broto: 15,
@@ -1687,7 +1836,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, atum, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, atum, orégano e azeitonas',
                       valuesTable: {
                         Broto: 15,
                         Grande: 30,
@@ -1700,7 +1850,8 @@ export default class Cart {
                     {
                       code: 'a0b3c5',
                       name: 'Frango com Catupiry',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1710,7 +1861,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                       valuesTable: {
                         Broto: 22,
                         Grande: 44,
@@ -1738,7 +1890,8 @@ export default class Cart {
                     {
                       code: 'a0dbd2',
                       name: 'Quatro Queijos',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1880,7 +2033,8 @@ export default class Cart {
                     {
                       code: '53e5e0',
                       name: 'Atum',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/53e5e0/4.jpg',
                       status: true,
                       values: {
                         Broto: 15,
@@ -1890,7 +2044,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, atum, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, atum, orégano e azeitonas',
                       valuesTable: {
                         Broto: 15,
                         Grande: 30,
@@ -1903,7 +2058,8 @@ export default class Cart {
                     {
                       code: 'a0b3c5',
                       name: 'Frango com Catupiry',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0b3c5/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,
@@ -1913,7 +2069,8 @@ export default class Cart {
                         type: 0,
                       },
                       complements: [],
-                      description: 'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
+                      description:
+                        'Molho, mussarela, frango, catupiry original, orégano e azeitonas',
                       valuesTable: {
                         Broto: 22,
                         Grande: 44,
@@ -1941,7 +2098,8 @@ export default class Cart {
                     {
                       code: 'a0dbd2',
                       name: 'Quatro Queijos',
-                      image: 'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
+                      image:
+                        'https://s3.us-west-2.amazonaws.com/whatsmenu/production/restaurantbrazil/pizza-products/a0dbd2/4.jpeg',
                       status: true,
                       values: {
                         Broto: 22,

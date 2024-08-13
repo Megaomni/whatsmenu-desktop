@@ -3,7 +3,15 @@ import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import { useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Form, InputGroup, Row, Table } from 'react-bootstrap'
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  InputGroup,
+  Row,
+  Table,
+} from 'react-bootstrap'
 import { api } from 'src/lib/axios'
 import { HelpVideos } from '../../../components/Modals/HelpVideos'
 import { OverlaySpinner } from '../../../components/OverlaySpinner'
@@ -19,11 +27,20 @@ interface CuponsProps {
 
 export default function Cupons(props: CuponsProps) {
   const { t } = useTranslation()
-  const { profile, plansCategory, setProfile, handleShowToast, user, currency } = useContext(AppContext)
+  const {
+    profile,
+    plansCategory,
+    setProfile,
+    handleShowToast,
+    user,
+    currency,
+  } = useContext(AppContext)
 
   const [cupons, setCupons] = useState<Cupom[]>(props.cupons)
   const [cupomCode, setCupomCode] = useState<string>('')
-  const [offerType, setOfferType] = useState<'value' | 'percent' | 'freight'>('value')
+  const [offerType, setOfferType] = useState<'value' | 'percent' | 'freight'>(
+    'value'
+  )
   const [cupomType, setCupomType] = useState<'default' | 'firstOnly'>('default')
   const [cupomValue, setCupomValue] = useState<any>(0)
   const [cupomMinValue, setCupomMinValue] = useState<any>(0)
@@ -40,7 +57,9 @@ export default function Cupons(props: CuponsProps) {
 
   const handleCreateCupom = async () => {
     try {
-      const codeInput = document.querySelector('input[name=codeInput]') as HTMLInputElement
+      const codeInput = document.querySelector(
+        'input[name=codeInput]'
+      ) as HTMLInputElement
 
       if (cupomCodeInvalid || !cupomCode.trim()) {
         codeInput.focus()
@@ -77,7 +96,10 @@ export default function Cupons(props: CuponsProps) {
         firstOnly: cupomType === 'firstOnly',
       }
 
-      const { data: cupomCreated } = await api.post('/dashboard/cupons', newCupom)
+      const { data: cupomCreated } = await api.post(
+        '/dashboard/cupons',
+        newCupom
+      )
       if (cupomCreated.firstOnly) {
         profile.firstOnlyCupom = cupomCreated
         storeProfile(profile)
@@ -151,7 +173,9 @@ export default function Cupons(props: CuponsProps) {
       await api.put('/dashboard/cupons/feature')
       profile.options.activeCupom = !profile.options.activeCupom
       setProfile(profile)
-      profile.firstOnlyCupom = profile.options.activeCupom ? profile.firstOnlyCupom : undefined
+      profile.firstOnlyCupom = profile.options.activeCupom
+        ? profile.firstOnlyCupom
+        : undefined
       storeProfile(profile)
       return handleShowToast({
         type: 'success',
@@ -166,24 +190,43 @@ export default function Cupons(props: CuponsProps) {
 
   return (
     <>
-      <Title title="Cupons" className="mb-4" componentTitle={t('coupon_management')} />
+      <Title
+        title="Cupons"
+        className="mb-4"
+        componentTitle={t('coupon_management')}
+      />
       <Card id="created-cupom">
         <Card.Header>
           <Row>
             <Col md className="d-flex gap-3">
               <h4 className="m-0">{t('coupon')}</h4>
               <div className="vr"></div>
-              <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/Tj--vDDbSnY?si=60a-UOfcGz1ttueV', title: t('coupons') }]} />
+              <HelpVideos.Trigger
+                urls={[
+                  {
+                    src: 'https://www.youtube.com/embed/Tj--vDDbSnY?si=60a-UOfcGz1ttueV',
+                    title: t('coupons'),
+                  },
+                ]}
+              />
             </Col>
             <Col md={2} className="d-flex align-items-center">
-              <Form.Switch onChange={handleActiveDeactive} checked={profile.options.activeCupom} className="fs-5" label={t('activate')} id="Ativar" />
+              <Form.Switch
+                onChange={handleActiveDeactive}
+                checked={profile.options.activeCupom}
+                className="fs-5"
+                label={t('activate')}
+                id="Ativar"
+              />
             </Col>
           </Row>
         </Card.Header>
         <Card.Body>
           <Row className="mb-3 text-nowrap">
             <Col md className="mb-1">
-              <Form.Label className="fw-bold mt-auto fs-7">{t('coupon_code')}</Form.Label>
+              <Form.Label className="fw-bold fs-7 mt-auto">
+                {t('coupon_code')}
+              </Form.Label>
               <div className="position-relative">
                 <Form.Control
                   type="text"
@@ -195,7 +238,13 @@ export default function Cupons(props: CuponsProps) {
                   onChange={(e) => {
                     const target = e.target
 
-                    if (cupons.find((cup) => cup.code.toLowerCase() === target.value.toLowerCase() && !cup.deleted_at)) {
+                    if (
+                      cupons.find(
+                        (cup) =>
+                          cup.code.toLowerCase() ===
+                            target.value.toLowerCase() && !cup.deleted_at
+                      )
+                    ) {
                       !cupomCodeInvalid && setCupomCodeInvalid(true)
                     } else {
                       cupomCodeInvalid && setCupomCodeInvalid(false)
@@ -204,17 +253,26 @@ export default function Cupons(props: CuponsProps) {
                     setCupomCode(target.value?.trim().toUpperCase())
                   }}
                 />
-                <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }}>
+                <Form.Control.Feedback
+                  tooltip
+                  type="invalid"
+                  style={{ zIndex: 0 }}
+                >
                   {t('coupon_already_exists')}
                 </Form.Control.Feedback>
               </div>
             </Col>
             <Col md className="mb-1">
-              <Form.Label className="fw-bold mt-auto fs-7">{t('offer_type')}</Form.Label>
+              <Form.Label className="fw-bold fs-7 mt-auto">
+                {t('offer_type')}
+              </Form.Label>
               <Form.Select
                 value={offerType}
                 onChange={(e) => {
-                  const value = e.target.value as 'value' | 'percent' | 'freight'
+                  const value = e.target.value as
+                    | 'value'
+                    | 'percent'
+                    | 'freight'
                   setOfferType(value)
                 }}
               >
@@ -224,7 +282,9 @@ export default function Cupons(props: CuponsProps) {
               </Form.Select>
             </Col>
             <Col md className="mb-1">
-              <Form.Label className="fw-bold mt-auto fs-7">{t('coupon_type')}</Form.Label>
+              <Form.Label className="fw-bold fs-7 mt-auto">
+                {t('coupon_type')}
+              </Form.Label>
               <Form.Select
                 value={cupomType}
                 onChange={(e) => {
@@ -233,15 +293,26 @@ export default function Cupons(props: CuponsProps) {
                 }}
               >
                 <option value="default">{t('standard')}</option>
-                <option value="firstOnly" disabled={cupons.some((cupom) => cupom.firstOnly)}>
+                <option
+                  value="firstOnly"
+                  disabled={cupons.some((cupom) => cupom.firstOnly)}
+                >
                   {t('first_purchase')}
                 </option>
               </Form.Select>
             </Col>
             <Col md className="mb-1">
-              <Form.Label className="fw-bold mt-auto fs-7">{t('discount_amount')}</Form.Label>
+              <Form.Label className="fw-bold fs-7 mt-auto">
+                {t('discount_amount')}
+              </Form.Label>
               <InputGroup>
-                {offerType !== 'freight' && <InputGroup.Text>{offerType === 'percent' ? '%' : currency({ value: 0, symbol: true })}</InputGroup.Text>}
+                {offerType !== 'freight' && (
+                  <InputGroup.Text>
+                    {offerType === 'percent'
+                      ? '%'
+                      : currency({ value: 0, symbol: true })}
+                  </InputGroup.Text>
+                )}
                 <Form.Control
                   type="number"
                   value={offerType === 'freight' ? '' : cupomValue}
@@ -249,7 +320,8 @@ export default function Cupons(props: CuponsProps) {
                   disabled={offerType === 'freight'}
                   placeholder={offerType === 'freight' ? t('fee_shipping') : ''}
                   onChange={(e) => {
-                    e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value
+                    e.target.value =
+                      Number(e.target.value) < 0 ? '0' : e.target.value
                     if (offerType === 'value') {
                       mask(e, 'currency')
                     }
@@ -259,9 +331,13 @@ export default function Cupons(props: CuponsProps) {
               </InputGroup>
             </Col>
             <Col md className="mb-1">
-              <Form.Label className="fw-bold mt-auto fs-7">{t('minimum_amount')}</Form.Label>
+              <Form.Label className="fw-bold fs-7 mt-auto">
+                {t('minimum_amount')}
+              </Form.Label>
               <InputGroup>
-                <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                <InputGroup.Text>
+                  {currency({ value: 0, symbol: true })}
+                </InputGroup.Text>
                 <Form.Control
                   type="number"
                   value={cupomMinValue}
@@ -274,7 +350,10 @@ export default function Cupons(props: CuponsProps) {
               </InputGroup>
             </Col>
             <Col md="2" className="d-flex mb-1">
-              <Button className="mt-auto flex-grow-1" onClick={handleCreateCupom}>
+              <Button
+                className="flex-grow-1 mt-auto"
+                onClick={handleCreateCupom}
+              >
                 {t('create')}
               </Button>
             </Col>
@@ -317,38 +396,50 @@ export default function Cupons(props: CuponsProps) {
                       </td>
                       <td>
                         <span>
-                          {cupom.type === 'percent' ? t('percentage_of') : cupom.type === 'value' ? t('fixed_amount_n') : t('fee_shipping')}
+                          {cupom.type === 'percent'
+                            ? t('percentage_of')
+                            : cupom.type === 'value'
+                              ? t('fixed_amount_n')
+                              : t('fee_shipping')}
                         </span>
                       </td>
                       <td>
-                        <span>{cupom.firstOnly ? t('first_purchase') : t('standard')}</span>
+                        <span>
+                          {cupom.firstOnly
+                            ? t('first_purchase')
+                            : t('standard')}
+                        </span>
                       </td>
                       <td className="text-center">
                         <span>
                           {cupom.type === 'value'
                             ? currency({ value: Number(cupom.value || 0) })
                             : cupom.type === 'percent'
-                            ? `${cupom.value}%`
-                            : 'Frete Grátis'}
+                              ? `${cupom.value}%`
+                              : 'Frete Grátis'}
                         </span>
                       </td>
                       <td className="text-center">
-                        <span>{currency({ value: Number(cupom.minValue || 0) })}</span>
+                        <span>
+                          {currency({ value: Number(cupom.minValue || 0) })}
+                        </span>
                       </td>
                       <td>
                         <div className="d-flex">
                           <Button
                             variant="orange text-white"
-                            className="ms-1 flex-grow-1"
+                            className="flex-grow-1 ms-1"
                             onClick={() => {
                               handlePlayPause(cupom)
                             }}
                           >
-                            <span>{cupom.status === 1 ? t('pause') : t('paused')}</span>
+                            <span>
+                              {cupom.status === 1 ? t('pause') : t('paused')}
+                            </span>
                           </Button>
                           <Button
                             variant="danger"
-                            className="ms-1 flex-grow-1"
+                            className="flex-grow-1 ms-1"
                             onClick={() => {
                               handleDeleteCupom(cupom)
                             }}

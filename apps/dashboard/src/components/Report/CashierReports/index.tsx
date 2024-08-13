@@ -1,7 +1,16 @@
 import { CashierReportModal } from '@components/Modals/CashierReportModal'
 import { apiRoute } from '@utils/wm-functions'
 import { AppContext } from '@context/app.ctx'
-import { BarElement, CategoryScale, ChartData, Chart as ChartJS, Legend, LinearScale, Title, Tooltip } from 'chart.js'
+import {
+  BarElement,
+  CategoryScale,
+  ChartData,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
+  Title,
+  Tooltip,
+} from 'chart.js'
 import { DateTime } from 'luxon'
 import { useSession } from 'next-auth/react'
 import { useCallback, useEffect, useRef, useState, useContext } from 'react'
@@ -27,14 +36,20 @@ export const CashierReport = (props: CashierReportProps) => {
   const { data: session } = useSession()
   const formRef = useRef<HTMLFormElement>(null)
 
-  const [bartenders, setBartenders] = useState<Bartender[]>(props.bartenders?.map((bartender) => new Bartender(bartender)))
+  const [bartenders, setBartenders] = useState<Bartender[]>(
+    props.bartenders?.map((bartender) => new Bartender(bartender))
+  )
   const [filter, setFilter] = useState<'daily' | 'monthly'>('daily')
   const [bartenderFilter, setBartenderFilter] = useState<string | number>('all')
   const [month, setMonth] = useState<number>(DateTime.local().month)
   const [year, setYear] = useState<number>(DateTime.local().year)
   const [date, setDate] = useState(DateTime.local().toISODate())
 
-  const [modalData, setModalData] = useState<{ show: boolean; cashier?: Cashier; bartender?: Bartender }>({ show: false })
+  const [modalData, setModalData] = useState<{
+    show: boolean
+    cashier?: Cashier
+    bartender?: Bartender
+  }>({ show: false })
 
   const days = Array(DateTime.fromObject({ month }).daysInMonth)
     .fill('-')
@@ -42,25 +57,50 @@ export const CashierReport = (props: CashierReportProps) => {
 
   const handleFetchCashiers = useCallback(async () => {
     try {
-      const { data } = await apiRoute(`/dashboard/report/cashier?notValidate=true`, session, 'POST', { date, filter })
-      setBartenders(data.bartenders?.map((bartender: BartenderType) => new Bartender(bartender)))
+      const { data } = await apiRoute(
+        `/dashboard/report/cashier?notValidate=true`,
+        session,
+        'POST',
+        { date, filter }
+      )
+      setBartenders(
+        data.bartenders?.map(
+          (bartender: BartenderType) => new Bartender(bartender)
+        )
+      )
     } catch (error) {
       console.error(error)
     }
   }, [date, filter, session])
 
   const data: ChartData<'bar', number[]> = {
-    labels: filter === 'daily' ? bartenders?.map((bartender) => bartender.name) : days,
+    labels:
+      filter === 'daily'
+        ? bartenders?.map((bartender) => bartender.name)
+        : days,
     datasets: [
       {
         data: bartenders?.flatMap((b) =>
-          b.cashiers.reduce((total, cashier) => (total += cashier.getTotalTransactions({ type: 'income', onlyTransactions: true })), 0)
+          b.cashiers.reduce(
+            (total, cashier) =>
+              (total += cashier.getTotalTransactions({
+                type: 'income',
+                onlyTransactions: true,
+              })),
+            0
+          )
         ),
         backgroundColor: '#42CE5C',
         label: t('incomes'),
       },
       {
-        data: bartenders?.flatMap((b) => b.cashiers.reduce((total, transaction) => (total += transaction.getOnlyTableClousres()), 0)),
+        data: bartenders?.flatMap((b) =>
+          b.cashiers.reduce(
+            (total, transaction) =>
+              (total += transaction.getOnlyTableClousres()),
+            0
+          )
+        ),
         backgroundColor: '#9400d3',
         label: `${t('orders')} (${t('table')})`,
       },
@@ -68,14 +108,27 @@ export const CashierReport = (props: CashierReportProps) => {
         data: bartenders?.flatMap((b) =>
           b.cashiers
             .flatMap((cashier) => cashier.carts)
-            .reduce((total, cashier) => (total += !cashier.addressId ? cashier.getTotalValue('total') : 0), 0)
+            .reduce(
+              (total, cashier) =>
+                (total += !cashier.addressId
+                  ? cashier.getTotalValue('total')
+                  : 0),
+              0
+            )
         ),
         backgroundColor: '#ff00cd',
         label: `${t('orders')} (${t('counter')})`,
       },
       {
         data: bartenders?.flatMap((b) =>
-          b.cashiers.reduce((total, cashier) => (total += cashier.getTotalCartsValue({ type: 'P', withPayments: false })), 0)
+          b.cashiers.reduce(
+            (total, cashier) =>
+              (total += cashier.getTotalCartsValue({
+                type: 'P',
+                withPayments: false,
+              })),
+            0
+          )
         ),
         backgroundColor: '#ff0',
         label: `${t('orders')} (${t('package')})`,
@@ -84,13 +137,25 @@ export const CashierReport = (props: CashierReportProps) => {
         data: bartenders?.flatMap((b) =>
           b.cashiers
             .flatMap((cashier) => cashier.carts)
-            .reduce((total, cashier) => (total += cashier.addressId ? cashier.getTotalValue('total') : 0), 0)
+            .reduce(
+              (total, cashier) =>
+                (total += cashier.addressId
+                  ? cashier.getTotalValue('total')
+                  : 0),
+              0
+            )
         ),
         backgroundColor: '#00f',
         label: `${t('orders')} (Delivery)`,
       },
       {
-        data: bartenders?.flatMap((b) => b.cashiers.reduce((total, cashier) => (total += cashier.getTotalTransactions({ type: 'outcome' })), 0)),
+        data: bartenders?.flatMap((b) =>
+          b.cashiers.reduce(
+            (total, cashier) =>
+              (total += cashier.getTotalTransactions({ type: 'outcome' })),
+            0
+          )
+        ),
         backgroundColor: '#FF0500',
         label: t('outputs'),
       },
@@ -113,30 +178,51 @@ export const CashierReport = (props: CashierReportProps) => {
         <Card.Header className="d-flex gap-3">
           <h4 className="">{t('report')}</h4>
           <div className="vr"></div>
-          <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/-rtskl9XiVI', title: t('box_report') }]} />
+          <HelpVideos.Trigger
+            urls={[
+              {
+                src: 'https://www.youtube.com/embed/-rtskl9XiVI',
+                title: t('box_report'),
+              },
+            ]}
+          />
         </Card.Header>
         <Card.Body>
           <Form ref={formRef} className="d-flex align-items-end gap-3">
             <div className="flex-grow-1 d-flex flex-column">
-              <Form.Select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+              <Form.Select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value as any)}
+              >
                 <option value="daily">{t('daily')}</option>
                 <option value="monthly">{t('monthly')}</option>
               </Form.Select>
             </div>
             <div>
               {filter === 'daily' ? (
-                <Form.Control type="date" className="flex-grow-0" value={date} onChange={(e) => setDate(e.target.value)} />
+                <Form.Control
+                  type="date"
+                  className="flex-grow-0"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
               ) : (
                 <div className="d-flex gap-3">
                   <div>
                     <Form.Label>{t('month')}:</Form.Label>
-                    <Form.Select className="flex-grow-0" onChange={(e) => setMonth(Number(e.target.value))} value={month}>
+                    <Form.Select
+                      className="flex-grow-0"
+                      onChange={(e) => setMonth(Number(e.target.value))}
+                      value={month}
+                    >
                       {Array(12)
                         .fill(0)
                         .map((_, index) => {
                           return (
                             <option key={index} value={index + 1}>
-                              {DateTime.fromObject({ month: index + 1 }).toFormat('MM')}
+                              {DateTime.fromObject({
+                                month: index + 1,
+                              }).toFormat('MM')}
                             </option>
                           )
                         })}
@@ -144,8 +230,13 @@ export const CashierReport = (props: CashierReportProps) => {
                   </div>
                   <div>
                     <Form.Label>{t('year')}:</Form.Label>
-                    <Form.Select className="flex-grow-0" onChange={(e) => setYear(Number(e.target.value))}>
-                      <option value={2023}>{DateTime.local().toFormat('yyyy')}</option>
+                    <Form.Select
+                      className="flex-grow-0"
+                      onChange={(e) => setYear(Number(e.target.value))}
+                    >
+                      <option value={2023}>
+                        {DateTime.local().toFormat('yyyy')}
+                      </option>
                     </Form.Select>
                   </div>
                 </div>
@@ -169,12 +260,18 @@ export const CashierReport = (props: CashierReportProps) => {
 
       {/* BARTENDERS */}
       <h2>{t('operators_boxes')}</h2>
-      <div className="d-flex flex-column flex-md-row gap-3 flex-wrap justify-content-center">
+      <div className="d-flex flex-column flex-md-row justify-content-center flex-wrap gap-3">
         {bartenders?.map((bartender) => (
           <CashierReportTable key={bartender.id} bartender={bartender} />
         ))}
         <CashierReportTable
-          bartender={{ name: 'Total', cashiers: bartenders?.flatMap((b) => b.cashiers).map((cashier) => new Cashier(cashier)) || [] }}
+          bartender={{
+            name: 'Total',
+            cashiers:
+              bartenders
+                ?.flatMap((b) => b.cashiers)
+                .map((cashier) => new Cashier(cashier)) || [],
+          }}
         />
       </div>
 
@@ -184,7 +281,10 @@ export const CashierReport = (props: CashierReportProps) => {
           <h3>{t('box_listing')}</h3>
           <div className="d-flex aligns-items-center gap-2">
             <Form.Label className="fw-bold m-auto">{t('operator')}</Form.Label>
-            <Form.Select value={bartenderFilter} onChange={(e) => setBartenderFilter(Number(e.target.value))}>
+            <Form.Select
+              value={bartenderFilter}
+              onChange={(e) => setBartenderFilter(Number(e.target.value))}
+            >
               <option value="all">{t('all')}</option>
               {bartenders?.map((bartender) => (
                 <option key={bartender.id} value={bartender.id}>
@@ -210,29 +310,65 @@ export const CashierReport = (props: CashierReportProps) => {
             </thead>
             <tbody>
               {bartenders
-                ?.filter((bartender) => (bartenderFilter !== 'all' ? bartender.id === bartenderFilter : true))
+                ?.filter((bartender) =>
+                  bartenderFilter !== 'all'
+                    ? bartender.id === bartenderFilter
+                    : true
+                )
                 .flatMap((bartenders) => bartenders.cashiers)
                 .map((cashier, index) => {
-                  const bartender: Bartender | undefined = bartenders.find((bartender) => bartender.id === cashier.bartenderId)
+                  const bartender: Bartender | undefined = bartenders.find(
+                    (bartender) => bartender.id === cashier.bartenderId
+                  )
                   return (
-                    <tr className="cursor-pointer" key={cashier.id} onClick={() => setModalData({ show: true, cashier, bartender })}>
+                    <tr
+                      className="cursor-pointer"
+                      key={cashier.id}
+                      onClick={() =>
+                        setModalData({ show: true, cashier, bartender })
+                      }
+                    >
                       <td>{index + 1}</td>
                       <td>{bartender?.name}</td>
                       <td>{currency({ value: cashier.initialValue })}</td>
                       <td>
                         {currency({
                           value:
-                            cashier.getTotalTransactions({ type: 'income', withInitialValue: false, onlyTransactions: false }) +
+                            cashier.getTotalTransactions({
+                              type: 'income',
+                              withInitialValue: false,
+                              onlyTransactions: false,
+                            }) +
                               cashier.carts
                                 .filter((c) => c.type !== 'T')
                                 .filter((c) => c.status !== 'canceled')
-                                .reduce((totalCart, cart) => (totalCart += cart.getTotalValue('total')), 0) || 0,
+                                .reduce(
+                                  (totalCart, cart) =>
+                                    (totalCart += cart.getTotalValue('total')),
+                                  0
+                                ) || 0,
                         })}
                       </td>
-                      <td>{currency({ value: cashier.getTotalTransactions({ type: 'outcome' }) || 0 })}</td>
-                      <td>{DateTime.fromSQL(cashier.created_at).toFormat(`${t('date_format')} HH:mm`)}</td>
+                      <td>
+                        {currency({
+                          value:
+                            cashier.getTotalTransactions({ type: 'outcome' }) ||
+                            0,
+                        })}
+                      </td>
+                      <td>
+                        {DateTime.fromSQL(cashier.created_at).toFormat(
+                          `${t('date_format')} HH:mm`
+                        )}
+                      </td>
                       <td>{cashier.closed_at ? t('closed_o') : t('open_n')}</td>
-                      <td>{cashier.closed_at ? DateTime.fromISO(cashier.closed_at).toFormat(`${t('date_format')} HH:mm`) : '-'}</td>
+                      <td>
+                        {cashier.closed_at
+                          ? DateTime.fromISO(cashier.closed_at).toFormat(
+                              `${t('date_format')} HH:mm`
+                            )
+                          : '-'}
+                      </td>
                     </tr>
                   )
                 })}

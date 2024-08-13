@@ -1,17 +1,40 @@
 import { GetServerSideProps } from 'next'
 import { getSession, useSession } from 'next-auth/react'
 import { useContext, useEffect, useState } from 'react'
-import { Accordion, Button, Card, Col, Form, FormControl, InputGroup, Modal, Row } from 'react-bootstrap'
+import {
+  Accordion,
+  Button,
+  Card,
+  Col,
+  Form,
+  FormControl,
+  InputGroup,
+  Modal,
+  Row,
+} from 'react-bootstrap'
 import { Title } from '../../../components/Partials/title'
 import { AppContext } from '../../../context/app.ctx'
 import { Plan, SystemProduct } from '../../../types/plan'
-import { apiRoute, copy, hash, inputFocus, mask } from '../../../utils/wm-functions'
+import {
+  apiRoute,
+  copy,
+  hash,
+  inputFocus,
+  mask,
+} from '../../../utils/wm-functions'
 import i18n from 'i18n'
 
-export default function Products({ plans, products }: { plans: Plan[]; products: SystemProduct[] }) {
+export default function Products({
+  plans,
+  products,
+}: {
+  plans: Plan[]
+  products: SystemProduct[]
+}) {
   const { data: session } = useSession()
 
-  const { handleShowToast, handleConfirmModal, currency } = useContext(AppContext)
+  const { handleShowToast, handleConfirmModal, currency } =
+    useContext(AppContext)
 
   const [modalConfig, setModalConfig] = useState<{
     show: boolean
@@ -79,7 +102,10 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
   const createOrUpdate = async () => {
     try {
       if (modalConfig.product && modalConfig.product.name.length) {
-        if (!modalConfig.product.service && modalConfig.category === 'products') {
+        if (
+          !modalConfig.product.service &&
+          modalConfig.category === 'products'
+        ) {
           handleShowToast({
             title: 'Criação de Produto',
             content: 'É necessário escolher um tipo de serviço para o produto.',
@@ -95,15 +121,20 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
 
           const {
             data: { systemProduct: data },
-          } = await apiRoute(`/adm/system/products`, session, modalConfig.type === 'create' ? 'POST' : 'PATCH', {
-            gateway,
-            period: modalConfig.period,
-            plan: modalConfig.plan,
-            product: {
-              ...modalConfig.product,
-            },
-            recurring: modalConfig.recurring,
-          })
+          } = await apiRoute(
+            `/adm/system/products`,
+            session,
+            modalConfig.type === 'create' ? 'POST' : 'PATCH',
+            {
+              gateway,
+              period: modalConfig.period,
+              plan: modalConfig.plan,
+              product: {
+                ...modalConfig.product,
+              },
+              recurring: modalConfig.recurring,
+            }
+          )
 
           if (modalConfig.type === 'create') {
             products.push(data)
@@ -158,9 +189,14 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
         const itemName = period ? 'Planos' : 'Produtos'
 
         try {
-          const { data } = await apiRoute(`/adm/system/products/${productId}`, session, 'DELETE', {
-            period,
-          })
+          const { data } = await apiRoute(
+            `/adm/system/products/${productId}`,
+            session,
+            'DELETE',
+            {
+              period,
+            }
+          )
           products.forEach((pr, index, arr) => {
             if (pr.id === productId) {
               delete arr[index]
@@ -188,7 +224,12 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
     <>
       <Row>
         <Col sm>
-          <Title title="ADM" componentTitle="Gestão de Produtos" className="mb-4" child={['products']} />
+          <Title
+            title="ADM"
+            componentTitle="Gestão de Produtos"
+            className="mb-4"
+            child={['products']}
+          />
         </Col>
       </Row>
 
@@ -207,7 +248,7 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
               </Row>
               {plans?.map((plan: Plan) => {
                 return (
-                  <Accordion key={plan.name + plan.id} className="border mb-1">
+                  <Accordion key={plan.name + plan.id} className="mb-1 border">
                     <Accordion.Header className="fs-5">
                       <Row className="w-100">
                         <Col md={2}>
@@ -216,13 +257,23 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                           </span>
                         </Col>
                         <Col md={2}>
-                          <span>{plan.type === 'register' ? 'Normal' : 'Desconto'}</span>
+                          <span>
+                            {plan.type === 'register' ? 'Normal' : 'Desconto'}
+                          </span>
                         </Col>
                         <Col md={2}>
-                          <span>{plan.category === 'basic' ? 'Básico' : plan.category === 'table' ? 'Mesas' : 'Encomendas'}</span>
+                          <span>
+                            {plan.category === 'basic'
+                              ? 'Básico'
+                              : plan.category === 'table'
+                                ? 'Mesas'
+                                : 'Encomendas'}
+                          </span>
                         </Col>
                         <Col md={2}>
-                          <span style={{ color: plan.status ? '' : 'red' }}>{plan.status ? 'Ativo' : 'Inativo'}</span>
+                          <span style={{ color: plan.status ? '' : 'red' }}>
+                            {plan.status ? 'Ativo' : 'Inativo'}
+                          </span>
                         </Col>
                       </Row>
                     </Accordion.Header>
@@ -241,43 +292,85 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                           },
                         ].map((item, index, arr) => {
                           const planProduct = products.find((prod) => {
-                            return prod && prod.status && prod.plan_id === plan.id && prod.operations.type === item.period
+                            return (
+                              prod &&
+                              prod.status &&
+                              prod.plan_id === plan.id &&
+                              prod.operations.type === item.period
+                            )
                           })
                           if (planProduct) {
                             return (
-                              <Col key={item.period} sm={12 / arr.length} className={`d-flex flex-column ${index > 0 ? 'border-start' : ''}`}>
+                              <Col
+                                key={item.period}
+                                sm={12 / arr.length}
+                                className={`d-flex flex-column ${index > 0 ? 'border-start' : ''}`}
+                              >
                                 <h5>{item.name}</h5>
                                 <div className="">
                                   <div className="ps-2">
                                     {planProduct && (
                                       <Row>
-                                        {planProduct.operations.prices.map((price, index, prices) => {
-                                          return (
-                                            <Col sm={12} key={price.id}>
-                                              <Row className="d-flex gap-2 justify-content-between">
-                                                <Col>
-                                                  <span className="fs-7 my-1 d-block">{price.id}</span>
-                                                </Col>
-                                              </Row>
-                                              {Object.entries(price.currencies).map((currencyMoney, index) => {
-                                                return (
-                                                  <Row key={currencyMoney[0] + index}>
-                                                    <Col>
-                                                      <p className="m-0 fs-7">
-                                                        Moeda <span className="fw-bold">{currencyMoney[0].toUpperCase()}</span> -{' '}
-                                                        {currency({ value: currencyMoney[1].unit_amount / 100 })}
-                                                      </p>
-                                                    </Col>
-                                                  </Row>
-                                                )
-                                              })}
-                                              {index + 1 < prices.length && <hr />}
-                                            </Col>
-                                          )
-                                        })}
+                                        {planProduct.operations.prices.map(
+                                          (price, index, prices) => {
+                                            return (
+                                              <Col sm={12} key={price.id}>
+                                                <Row className="d-flex justify-content-between gap-2">
+                                                  <Col>
+                                                    <span className="fs-7 d-block my-1">
+                                                      {price.id}
+                                                    </span>
+                                                  </Col>
+                                                </Row>
+                                                {Object.entries(
+                                                  price.currencies
+                                                ).map(
+                                                  (currencyMoney, index) => {
+                                                    return (
+                                                      <Row
+                                                        key={
+                                                          currencyMoney[0] +
+                                                          index
+                                                        }
+                                                      >
+                                                        <Col>
+                                                          <p className="fs-7 m-0">
+                                                            Moeda{' '}
+                                                            <span className="fw-bold">
+                                                              {currencyMoney[0].toUpperCase()}
+                                                            </span>{' '}
+                                                            -{' '}
+                                                            {currency({
+                                                              value:
+                                                                currencyMoney[1]
+                                                                  .unit_amount /
+                                                                100,
+                                                            })}
+                                                          </p>
+                                                        </Col>
+                                                      </Row>
+                                                    )
+                                                  }
+                                                )}
+                                                {index + 1 < prices.length && (
+                                                  <hr />
+                                                )}
+                                              </Col>
+                                            )
+                                          }
+                                        )}
                                         <Col sm="12" className="pt-4">
-                                          <div className="mt-auto  justify-content-between  d-flex gap-2">
-                                            <Button size="sm" variant="danger" onClick={() => deleteProductOrPlanStripe(planProduct.id, item.period)}>
+                                          <div className="justify-content-between  d-flex  mt-auto gap-2">
+                                            <Button
+                                              size="sm"
+                                              variant="danger"
+                                              onClick={() =>
+                                                deleteProductOrPlanStripe(
+                                                  planProduct.id,
+                                                  item.period
+                                                )
+                                              }
+                                            >
                                               Excluir
                                             </Button>
                                             <Button
@@ -295,9 +388,14 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                                                   },
                                                   period: item.period,
                                                   recurring: {
-                                                    interval: item.abbr as 'month' | 'year',
+                                                    interval: item.abbr as
+                                                      | 'month'
+                                                      | 'year',
                                                   },
-                                                  product: copy(planProduct, 'copy'),
+                                                  product: copy(
+                                                    planProduct,
+                                                    'copy'
+                                                  ),
                                                 })
                                               }}
                                             >
@@ -314,7 +412,10 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                             )
                           } else {
                             return (
-                              <Col key={item.period} className={`ms-2 ${index > 0 ? 'border-start' : ''}`}>
+                              <Col
+                                key={item.period}
+                                className={`ms-2 ${index > 0 ? 'border-start' : ''}`}
+                              >
                                 <h5>{item.name}</h5>
                                 <Button
                                   size="sm"
@@ -431,7 +532,10 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                 .filter((prod) => prod.service !== 'plan')
                 .map((systemProduct) => {
                   return (
-                    <Accordion key={systemProduct.default_price} className="border mb-1">
+                    <Accordion
+                      key={systemProduct.default_price}
+                      className="mb-1 border"
+                    >
                       <Accordion.Header>
                         <Row className="flex-grow-1 fs-4">
                           <Col sm={3}>{systemProduct.name}</Col>
@@ -439,38 +543,67 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                       </Accordion.Header>
                       <Accordion.Body>
                         <Row>
-                          {systemProduct.description && <Col sm={12}>{systemProduct.description}</Col>}
+                          {systemProduct.description && (
+                            <Col sm={12}>{systemProduct.description}</Col>
+                          )}
 
-                          {systemProduct.operations.prices.map((price, index, arrPrice) => {
-                            return (
-                              <Col sm={3} className="fs-6" key={`${price.id}`}>
-                                <Row>
-                                  <Col sm={12} key={price.id} className={`ps - 4 mb - 2 ${index > 0 ? 'border-start' : ''} `}>
-                                    {/* <div>
+                          {systemProduct.operations.prices.map(
+                            (price, index, arrPrice) => {
+                              return (
+                                <Col
+                                  sm={3}
+                                  className="fs-6"
+                                  key={`${price.id}`}
+                                >
+                                  <Row>
+                                    <Col
+                                      sm={12}
+                                      key={price.id}
+                                      className={`ps - 4 mb - 2 ${index > 0 ? 'border-start' : ''} `}
+                                    >
+                                      {/* <div>
                                                                           <p className="fw-bold m-0 fs-6">{price.id}</p>
                                                                       </div> */}
-                                    {Object.entries(price.currencies).map((currencyType) => {
-                                      const currencyName = currencyType[0]
-                                      const currency_amout = currencyType[1].unit_amount
-                                      return (
-                                        <div key={`${price.id}-${currencyName}`}>
-                                          <p className="m-0 fs-7">
-                                            Moeda <span className="fw-bold">{currencyName.toUpperCase()}</span>:{' '}
-                                            {currency({ value: currency_amout / 100 })}
-                                          </p>
-                                        </div>
-                                      )
-                                    })}
-                                  </Col>
-                                </Row>
-                              </Col>
-                            )
-                          })}
+                                      {Object.entries(price.currencies).map(
+                                        (currencyType) => {
+                                          const currencyName = currencyType[0]
+                                          const currency_amout =
+                                            currencyType[1].unit_amount
+                                          return (
+                                            <div
+                                              key={`${price.id}-${currencyName}`}
+                                            >
+                                              <p className="fs-7 m-0">
+                                                Moeda{' '}
+                                                <span className="fw-bold">
+                                                  {currencyName.toUpperCase()}
+                                                </span>
+                                                :{' '}
+                                                {currency({
+                                                  value: currency_amout / 100,
+                                                })}
+                                              </p>
+                                            </div>
+                                          )
+                                        }
+                                      )}
+                                    </Col>
+                                  </Row>
+                                </Col>
+                              )
+                            }
+                          )}
                         </Row>
                         <Row className="mt-1">
-                          <Col className="d-flex gap-2 align-items-center justify-content-end mb-2">
+                          <Col className="d-flex align-items-center justify-content-end mb-2 gap-2">
                             <div className="d-flex gap-3">
-                              <Button size="sm" variant="danger" onClick={() => deleteProductOrPlanStripe(systemProduct.id)}>
+                              <Button
+                                size="sm"
+                                variant="danger"
+                                onClick={() =>
+                                  deleteProductOrPlanStripe(systemProduct.id)
+                                }
+                              >
                                 Excluir
                               </Button>
                               <Button
@@ -485,13 +618,15 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                                       id: systemProduct.id,
                                       name: systemProduct.name,
                                       description: systemProduct.description,
-                                      default_price: systemProduct.default_price,
+                                      default_price:
+                                        systemProduct.default_price,
                                       status: systemProduct.status,
                                       // images: product.images,
                                       service: systemProduct.service,
                                       operations: {
                                         prices: systemProduct.operations.prices,
-                                        gateways: systemProduct.operations.gateways,
+                                        gateways:
+                                          systemProduct.operations.gateways,
                                       },
                                     },
                                   })
@@ -512,18 +647,26 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
       </Row>
       <Modal
         show={modalConfig.show}
-        onHide={() => setModalConfig({ show: false, type: 'none', category: 'none' })}
+        onHide={() =>
+          setModalConfig({ show: false, type: 'none', category: 'none' })
+        }
         dialogClassName="modal-100h modal-0-my modal-dialog-100-h"
       >
         <Modal.Header closeButton>
-          {modalConfig.type === 'create' ? 'Criando' : modalConfig.type === 'update' ? 'Atualizando' : ''} Produto{' '}
-          {modalConfig.plan?.name ? modalConfig.plan.name : ''}{' '}
+          {modalConfig.type === 'create'
+            ? 'Criando'
+            : modalConfig.type === 'update'
+              ? 'Atualizando'
+              : ''}{' '}
+          Produto {modalConfig.plan?.name ? modalConfig.plan.name : ''}{' '}
           <span className="fw-bold ms-1">
             {' '}
-            {modalConfig.category === 'plans' ? `- Plano ${getRecurringType(modalConfig.recurring?.interval ?? '')} ` : ''}
+            {modalConfig.category === 'plans'
+              ? `- Plano ${getRecurringType(modalConfig.recurring?.interval ?? '')} `
+              : ''}
           </span>
         </Modal.Header>
-        <Modal.Body className="overflow-auto modal-system-products">
+        <Modal.Body className="modal-system-products overflow-auto">
           <Row>
             {/* {
                           modalConfig.type === 'update' &&
@@ -533,22 +676,27 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                       } */}
             <Col sm="12">
               {modalConfig.product?.operations.gateways &&
-                Object.entries(modalConfig.product.operations.gateways).map((gat, index, arr) => {
-                  const name = gat[0]
-                    .split('')
-                    .map((lr, index) => (index === 0 ? lr.toUpperCase() : lr))
-                    .join('')
+                Object.entries(modalConfig.product.operations.gateways).map(
+                  (gat, index, arr) => {
+                    const name = gat[0]
+                      .split('')
+                      .map((lr, index) => (index === 0 ? lr.toUpperCase() : lr))
+                      .join('')
 
-                  return (
-                    <div key={name + index}>
-                      <div className="d-flex gap-2 align-items-center" key={name}>
-                        <h6 className="m-0">Gateway {name} ID: </h6>
-                        <p className="fw-bold m-0 fs-6">{gat[1].id}</p>
+                    return (
+                      <div key={name + index}>
+                        <div
+                          className="d-flex align-items-center gap-2"
+                          key={name}
+                        >
+                          <h6 className="m-0">Gateway {name} ID: </h6>
+                          <p className="fw-bold fs-6 m-0">{gat[1].id}</p>
+                        </div>
+                        {arr.length - index === 1 && <hr />}
                       </div>
-                      {arr.length - index === 1 && <hr />}
-                    </div>
-                  )
-                })}
+                    )
+                  }
+                )}
             </Col>
             <Col sm="12">
               <Form.Label>
@@ -608,7 +756,12 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                     }
                   }}
                 >
-                  <option disabled {...(modalConfig.product?.service ? {} : { selected: true })}>
+                  <option
+                    disabled
+                    {...(modalConfig.product?.service
+                      ? {}
+                      : { selected: true })}
+                  >
                     Selecione uma opção
                   </option>
                   {[
@@ -632,7 +785,10 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
             </Row>
           )}
           <Row className="mt-5">
-            <Col sm={12} className="d-flex align-items-center justify-content-between">
+            <Col
+              sm={12}
+              className="d-flex align-items-center justify-content-between"
+            >
               <h5 className="m-0">Preços</h5>
               <Button
                 size="sm"
@@ -641,7 +797,11 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                     let id: any
                     while (!id) {
                       const newId = hash(15)
-                      if (!modalConfig.product.operations.prices.some((pr) => pr.id === newId)) {
+                      if (
+                        !modalConfig.product.operations.prices.some(
+                          (pr) => pr.id === newId
+                        )
+                      ) {
                         id = newId
                       }
                     }
@@ -675,7 +835,10 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
                     })
 
                     setTimeout(() => {
-                      inputFocus(`#brl-${id}`, { selectText: true, queryParentElement: '.modal-system-products' })
+                      inputFocus(`#brl-${id}`, {
+                        selectText: true,
+                        queryParentElement: '.modal-system-products',
+                      })
                     }, 100)
                   }
                 }}
@@ -684,85 +847,134 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
               </Button>
             </Col>
             <Col>
-              {modalConfig.product?.operations.prices.map((price, index, prices) => {
-                return (
-                  <div key={price.id}>
-                    <hr />
-                    <div>
-                      <Row className="my-1 align-items-center mb-2">
-                        <Col sm={7}>
-                          <span className="fs-7 d-block">ID: {price.id}</span>
-                        </Col>
-                        <Col sm={5} className="d-flex justify-content-end gap-2 align-items-center">
-                          <label className="text-nowrap" title="Moeda padrão do preço, é a moeda que será cobrada se nenhuma for encontrada.">
-                            Padrão :
-                          </label>
-                          <Form.Select
-                            disabled={modalConfig.type === 'update' && !price.new}
-                            defaultValue={price.default_currency}
-                            onChange={(e) => {
-                              if (modalConfig.product) {
-                                const newPrices = prices.map((pr) => {
-                                  if (pr.id === price.id) {
-                                    pr.default_currency = e.target.value
-                                  }
-
-                                  return pr
-                                })
-
-                                setModalConfig({
-                                  ...modalConfig,
-                                  product: {
-                                    ...modalConfig.product,
-                                    operations: {
-                                      ...modalConfig.product.operations,
-                                      prices: newPrices,
-                                    },
-                                  },
-                                })
-                              }
-                            }}
+              {modalConfig.product?.operations.prices.map(
+                (price, index, prices) => {
+                  return (
+                    <div key={price.id}>
+                      <hr />
+                      <div>
+                        <Row className="align-items-center my-1 mb-2">
+                          <Col sm={7}>
+                            <span className="fs-7 d-block">ID: {price.id}</span>
+                          </Col>
+                          <Col
+                            sm={5}
+                            className="d-flex justify-content-end align-items-center gap-2"
                           >
-                            {Object.entries(price.currencies).map((currency, index) => {
-                              return (
-                                <option key={currency[0] + index} value={currency[0]}>
-                                  {currency[0].toUpperCase()}
-                                </option>
-                              )
-                            })}
-                          </Form.Select>
-                        </Col>
-                      </Row>
+                            <label
+                              className="text-nowrap"
+                              title="Moeda padrão do preço, é a moeda que será cobrada se nenhuma for encontrada."
+                            >
+                              Padrão :
+                            </label>
+                            <Form.Select
+                              disabled={
+                                modalConfig.type === 'update' && !price.new
+                              }
+                              defaultValue={price.default_currency}
+                              onChange={(e) => {
+                                if (modalConfig.product) {
+                                  const newPrices = prices.map((pr) => {
+                                    if (pr.id === price.id) {
+                                      pr.default_currency = e.target.value
+                                    }
 
-                      {['brl', 'eur', 'usd'].map((currencyType, index, arrCurrency) => {
-                        return (
-                          <Row className="mb-2 align-items-center" key={currencyType[0] + index}>
-                            <Col sm={3}>
-                              <p className="m-0" style={{ whiteSpace: 'nowrap' }}>
-                                Moeda <span className="fw-bold">{currencyType.toUpperCase()}</span>:{' '}
-                              </p>
-                            </Col>
-                            <Col>
-                              <div>
-                                <InputGroup>
-                                  <InputGroup.Text style={{ width: 60 }}>{currency({ value: 0, symbol: true })}</InputGroup.Text>
-                                  <FormControl
-                                    id={`${currencyType}-${price.id}`}
-                                    className={modalConfig.type === 'update' && !price.new ? 'not-allowed' : ''}
-                                    disabled={modalConfig.type === 'update' && !price.new}
-                                    defaultValue={currency({ value: price.currencies[currencyType]?.unit_amount / 100, withoutSymbol: true })}
-                                    onChange={(e) => {
-                                      mask(e, 'currency')
-                                      if (price.currencies[currencyType]) {
-                                        price.currencies[currencyType].unit_amount = Number(e.target.value.replace(/\D+/, ''))
-                                      } else {
-                                        price.currencies[currencyType] = {
-                                          unit_amount: Number(e.target.value.replace(/\D+/, '')),
+                                    return pr
+                                  })
+
+                                  setModalConfig({
+                                    ...modalConfig,
+                                    product: {
+                                      ...modalConfig.product,
+                                      operations: {
+                                        ...modalConfig.product.operations,
+                                        prices: newPrices,
+                                      },
+                                    },
+                                  })
+                                }
+                              }}
+                            >
+                              {Object.entries(price.currencies).map(
+                                (currency, index) => {
+                                  return (
+                                    <option
+                                      key={currency[0] + index}
+                                      value={currency[0]}
+                                    >
+                                      {currency[0].toUpperCase()}
+                                    </option>
+                                  )
+                                }
+                              )}
+                            </Form.Select>
+                          </Col>
+                        </Row>
+
+                        {['brl', 'eur', 'usd'].map(
+                          (currencyType, index, arrCurrency) => {
+                            return (
+                              <Row
+                                className="align-items-center mb-2"
+                                key={currencyType[0] + index}
+                              >
+                                <Col sm={3}>
+                                  <p
+                                    className="m-0"
+                                    style={{ whiteSpace: 'nowrap' }}
+                                  >
+                                    Moeda{' '}
+                                    <span className="fw-bold">
+                                      {currencyType.toUpperCase()}
+                                    </span>
+                                    :{' '}
+                                  </p>
+                                </Col>
+                                <Col>
+                                  <div>
+                                    <InputGroup>
+                                      <InputGroup.Text style={{ width: 60 }}>
+                                        {currency({ value: 0, symbol: true })}
+                                      </InputGroup.Text>
+                                      <FormControl
+                                        id={`${currencyType}-${price.id}`}
+                                        className={
+                                          modalConfig.type === 'update' &&
+                                          !price.new
+                                            ? 'not-allowed'
+                                            : ''
                                         }
-                                      }
-                                    }}
-                                  />
-                                  {/* <InputGroup.Text
+                                        disabled={
+                                          modalConfig.type === 'update' &&
+                                          !price.new
+                                        }
+                                        defaultValue={currency({
+                                          value:
+                                            price.currencies[currencyType]
+                                              ?.unit_amount / 100,
+                                          withoutSymbol: true,
+                                        })}
+                                        onChange={(e) => {
+                                          mask(e, 'currency')
+                                          if (price.currencies[currencyType]) {
+                                            price.currencies[
+                                              currencyType
+                                            ].unit_amount = Number(
+                                              e.target.value.replace(/\D+/, '')
+                                            )
+                                          } else {
+                                            price.currencies[currencyType] = {
+                                              unit_amount: Number(
+                                                e.target.value.replace(
+                                                  /\D+/,
+                                                  ''
+                                                )
+                                              ),
+                                            }
+                                          }
+                                        }}
+                                      />
+                                      {/* <InputGroup.Text
                                                                           className="text-center bg-white cursor-pointer"
                                                                           onClick={() => {
                                                                               if (price.default_currency !== currencyType && modalConfig.product && price.new) {
@@ -791,65 +1003,72 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
 
                                                                           }
                                                                       </InputGroup.Text> */}
-                                </InputGroup>
-                                {/* </Col> */}
-                              </div>
-                            </Col>
-                          </Row>
-                        )
-                      })}
-                      <Row>
-                        {
-                          <Col className="d-flex justify-content-between align-items-center gap-2">
-                            <Button
-                              variant={`${modalConfig.product?.default_price === price.id ? 'outline-orange' : 'orange'} `}
-                              size="sm"
-                              className="p-1"
-                              style={{ height: 25 }}
-                              onClick={() => {
-                                if (modalConfig.product) {
-                                  setModalConfig({
-                                    ...modalConfig,
-                                    product: {
-                                      ...modalConfig.product,
-                                      default_price: price.id,
-                                    },
-                                  })
-                                }
-                              }}
-                            >
-                              Definir como preço padrão
-                            </Button>
-                            {!price.new && prices.length > 1 && modalConfig.product?.default_price !== price.id && (
+                                    </InputGroup>
+                                    {/* </Col> */}
+                                  </div>
+                                </Col>
+                              </Row>
+                            )
+                          }
+                        )}
+                        <Row>
+                          {
+                            <Col className="d-flex justify-content-between align-items-center gap-2">
                               <Button
-                                className="p-1 ms-auto"
+                                variant={`${modalConfig.product?.default_price === price.id ? 'outline-orange' : 'orange'} `}
+                                size="sm"
+                                className="p-1"
                                 style={{ height: 25 }}
                                 onClick={() => {
-                                  const newPrices = prices.filter((pr) => pr.id !== price.id)
                                   if (modalConfig.product) {
                                     setModalConfig({
                                       ...modalConfig,
                                       product: {
                                         ...modalConfig.product,
-                                        operations: {
-                                          ...modalConfig.product.operations,
-                                          prices: newPrices,
-                                        },
+                                        default_price: price.id,
                                       },
                                     })
                                   }
                                 }}
                               >
-                                Remover
+                                Definir como preço padrão
                               </Button>
-                            )}
-                          </Col>
-                        }
-                      </Row>
+                              {!price.new &&
+                                prices.length > 1 &&
+                                modalConfig.product?.default_price !==
+                                  price.id && (
+                                  <Button
+                                    className="ms-auto p-1"
+                                    style={{ height: 25 }}
+                                    onClick={() => {
+                                      const newPrices = prices.filter(
+                                        (pr) => pr.id !== price.id
+                                      )
+                                      if (modalConfig.product) {
+                                        setModalConfig({
+                                          ...modalConfig,
+                                          product: {
+                                            ...modalConfig.product,
+                                            operations: {
+                                              ...modalConfig.product.operations,
+                                              prices: newPrices,
+                                            },
+                                          },
+                                        })
+                                      }
+                                    }}
+                                  >
+                                    Remover
+                                  </Button>
+                                )}
+                            </Col>
+                          }
+                        </Row>
+                      </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                }
+              )}
             </Col>
           </Row>
         </Modal.Body>
@@ -857,11 +1076,16 @@ export default function Products({ plans, products }: { plans: Plan[]; products:
           <Button
             variant="danger"
             disabled={!modalConfig.product?.operations.prices.length}
-            onClick={() => setModalConfig({ category: 'none', type: 'none', show: false })}
+            onClick={() =>
+              setModalConfig({ category: 'none', type: 'none', show: false })
+            }
           >
             Cancelar
           </Button>
-          <Button disabled={!modalConfig.product?.operations.prices.length} onClick={createOrUpdate}>
+          <Button
+            disabled={!modalConfig.product?.operations.prices.length}
+            onClick={createOrUpdate}
+          >
             Finalizar
           </Button>
         </Modal.Footer>

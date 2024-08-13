@@ -22,7 +22,14 @@ import { CartsContext } from '@context/cart.ctx'
 import { HelpVideos } from '@components/Modals/HelpVideos'
 import { useTranslation } from 'react-i18next'
 
-export type ReportType = 'finance' | 'monthly' | 'daily' | 'cashier' | 'motoboys' | 'bestSellers' | 'client'
+export type ReportType =
+  | 'finance'
+  | 'monthly'
+  | 'daily'
+  | 'cashier'
+  | 'motoboys'
+  | 'bestSellers'
+  | 'client'
 interface ReportProps {
   report: ReportType
   isValid: boolean
@@ -39,7 +46,9 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
 
   const [validation, setValidation] = useState(false)
   const [data, setData] = useState<any>()
-  const [resume, setResume] = useState<IResumeData | undefined | any>(props.resume)
+  const [resume, setResume] = useState<IResumeData | undefined | any>(
+    props.resume
+  )
   const [initialFetched, setInitialFetched] = useState(false)
 
   useEffect(() => {
@@ -72,22 +81,31 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
 
           if (dataFetched) {
             if (dataFetched.carts) {
-              dataFetched.carts.data = dataFetched.carts.data.map((c: CartType) => new Cart(c))
+              dataFetched.carts.data = dataFetched.carts.data.map(
+                (c: CartType) => new Cart(c)
+              )
             }
 
             if (dataFetched.tables) {
-              dataFetched.tables.data = dataFetched.tables.data.map((t: Table) => new Table(t))
+              dataFetched.tables.data = dataFetched.tables.data.map(
+                (t: Table) => new Table(t)
+              )
             }
             setData(() => dataFetched)
           }
 
           if (report !== 'finance' && report !== 'motoboys') {
-            const { data: resumeFetched } = await apiRoute(`/dashboard/report/resume`, session, 'POST', {
-              notValidate: isValid,
-              type: report,
-              filter: 'delivery',
-              date: DateTime.local().toFormat('yyyy-MM-dd'),
-            })
+            const { data: resumeFetched } = await apiRoute(
+              `/dashboard/report/resume`,
+              session,
+              'POST',
+              {
+                notValidate: isValid,
+                type: report,
+                filter: 'delivery',
+                date: DateTime.local().toFormat('yyyy-MM-dd'),
+              }
+            )
             if (resumeFetched) {
               setResume(() => resumeFetched)
             }
@@ -111,9 +129,21 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
       case 'finance':
         return (
           <>
-            <Title title={t('financial_report')} componentTitle={t('financial')} className="mb-4" />
+            <Title
+              title={t('financial_report')}
+              componentTitle={t('financial')}
+              className="mb-4"
+            />
             <div className="d-flex align-self-end mb-3">
-              <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/oYUhPHihzq0', title: t('financial_report') }]} className="ms-auto" />
+              <HelpVideos.Trigger
+                urls={[
+                  {
+                    src: 'https://www.youtube.com/embed/oYUhPHihzq0',
+                    title: t('financial_report'),
+                  },
+                ]}
+                className="ms-auto"
+              />
             </div>
             <Card>
               <Card.Header>
@@ -126,7 +156,10 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
                     variant="link-dark"
                     onClick={(e) => {
                       e.preventDefault()
-                      router.push('/dashboard/report/daily?notValidate=true', '/dashboard/report/daily')
+                      router.push(
+                        '/dashboard/report/daily?notValidate=true',
+                        '/dashboard/report/daily'
+                      )
                     }}
                   >
                     {t('click_here_view_details')}!
@@ -142,13 +175,19 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
                 <h4>{t('summary_last_months')}</h4>
               </Card.Header>
               <Card.Body>
-                <Link href="/dashboard/report/monthly?notValidate" legacyBehavior>
+                <Link
+                  href="/dashboard/report/monthly?notValidate"
+                  legacyBehavior
+                >
                   <Button
                     className="text-decoration-underline fw-bold text-wrap"
                     variant="link-dark"
                     onClick={(e) => {
                       e.preventDefault()
-                      router.push('/dashboard/report/monthly?notValidate=true', '/dashboard/report/monthly')
+                      router.push(
+                        '/dashboard/report/monthly?notValidate=true',
+                        '/dashboard/report/monthly'
+                      )
                     }}
                   >
                     {t('click_here_view_details')}!
@@ -163,21 +202,45 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
       case 'daily':
         return (
           <>
-            <Title title={t('daily_orders')} componentTitle={t('daily_orders_report')} className="mb-4" />
-            <ReportsLayout setData={setData} data={data} setResume={setResume} resume={resume} type={report} />
+            <Title
+              title={t('daily_orders')}
+              componentTitle={t('daily_orders_report')}
+              className="mb-4"
+            />
+            <ReportsLayout
+              setData={setData}
+              data={data}
+              setResume={setResume}
+              resume={resume}
+              type={report}
+            />
           </>
         )
       case 'monthly':
         return (
           <>
-            <Title title={t('monthly_orders')} componentTitle={t('monthly_orders_report')} className="mb-4" />
-            <ReportsLayout setData={setData} data={data} setResume={setResume} resume={resume} type={report} />
+            <Title
+              title={t('monthly_orders')}
+              componentTitle={t('monthly_orders_report')}
+              className="mb-4"
+            />
+            <ReportsLayout
+              setData={setData}
+              data={data}
+              setResume={setResume}
+              resume={resume}
+              type={report}
+            />
           </>
         )
       case 'cashier':
         return (
           <>
-            <Title title={t('box_closures')} componentTitle={t('box_report')} className="mb-4" />
+            <Title
+              title={t('box_closures')}
+              componentTitle={t('box_report')}
+              className="mb-4"
+            />
             <CashierReport bartenders={data?.bartenders} />
             {/* <ReportsLayout setData={setData} data={data} setResume={setResume} resume={resume} type={report} /> */}
           </>
@@ -185,30 +248,60 @@ export default function Report({ report, isValid, ...props }: ReportProps) {
       case 'motoboys':
         return (
           <>
-            <MotoboyReport data={data} isValid={true} setData={setData} resume={resume} report={report} />
+            <MotoboyReport
+              data={data}
+              isValid={true}
+              setData={setData}
+              resume={resume}
+              report={report}
+            />
           </>
         )
 
       case 'client':
         return (
           <>
-            <Title title={t('customer_report_v2')} componentTitle={t('customer_report_v2')} className="mb-4" />
+            <Title
+              title={t('customer_report_v2')}
+              componentTitle={t('customer_report_v2')}
+              className="mb-4"
+            />
             <ClientReport clients={data} setClients={setData} isValid={true} />
           </>
         )
       case 'bestSellers':
         return (
           <>
-            <Title title={t('best_selling_report')} componentTitle={t('best_sellers_v2')} className="mb-4" />
-            <BestSellersReport isValid={true} report={report} data={data} setData={setData} />
+            <Title
+              title={t('best_selling_report')}
+              componentTitle={t('best_sellers_v2')}
+              className="mb-4"
+            />
+            <BestSellersReport
+              isValid={true}
+              report={report}
+              data={data}
+              setData={setData}
+            />
           </>
         )
     }
   }
-  return <AuthReport report={report} setData={setData} setResume={setResume} setValidation={setValidation} />
+  return (
+    <AuthReport
+      report={report}
+      setData={setData}
+      setResume={setResume}
+      setValidation={setValidation}
+    />
+  )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ params, query, req }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  params,
+  query,
+  req,
+}) => {
   const session = await getSession({ req })
   if (!params) {
     return {

@@ -12,7 +12,13 @@ import { WMToast, WMToastProps } from '../../components/WMToast'
 import useLocalStorage from '../../hooks/useLocalStorage'
 import { stripe } from '../../payment/stripe'
 import { Plan, SelectedPlan, SystemProduct } from '../../types/plan'
-import { apiRoute, currency, getPlanProperty, getProductAndPrice, mask } from '../../utils/wm-functions'
+import {
+  apiRoute,
+  currency,
+  getPlanProperty,
+  getProductAndPrice,
+  mask,
+} from '../../utils/wm-functions'
 import { AppContext } from '@context/app.ctx'
 import i18n from 'i18n'
 
@@ -32,7 +38,15 @@ export default function Register({
 // printValue: printServiceValue,
 RegisterProps) {
   const [cart, setCart] = useState<
-    { id: number; price_id: string; value: number; quantity: number; name: string; service: string; category?: string }[]
+    {
+      id: number
+      price_id: string
+      value: number
+      quantity: number
+      name: string
+      service: string
+      category?: string
+    }[]
   >([])
   const [emailInvalid, setEmailInvalid] = useState<boolean>()
   const [printer, setPrinter] = useState({
@@ -44,7 +58,10 @@ RegisterProps) {
     type: string
     valid: boolean
   }>()
-  const [currentSeller, setCurrentSeller] = useLocalStorage('currentSeller', localStorage.getItem('currentSeller') ?? 1)
+  const [currentSeller, setCurrentSeller] = useLocalStorage(
+    'currentSeller',
+    localStorage.getItem('currentSeller') ?? 1
+  )
   const [gateway, setGateway] = useState<string | undefined>()
   const [newUser, setNewUser] = useState<Partial<UserType>>({
     name: '',
@@ -84,7 +101,8 @@ RegisterProps) {
     if (!gateway && newUser.controls?.disableInvoice) {
       handleShowToast({
         title: 'Criação',
-        content: 'Selecione o gateway de pagamento para o usuário antes de continuar.',
+        content:
+          'Selecione o gateway de pagamento para o usuário antes de continuar.',
       })
       return
     }
@@ -146,7 +164,10 @@ RegisterProps) {
   }
 
   const getTotal = (divided: boolean = true) => {
-    const value = cart.reduce((acc, item) => acc + item.quantity * item.value, 0)
+    const value = cart.reduce(
+      (acc, item) => acc + item.quantity * item.value,
+      0
+    )
     return divided ? value / installments : value
   }
 
@@ -156,7 +177,12 @@ RegisterProps) {
     period = newUser.controls?.period,
     salePrint = newUser.controls?.salePrint,
   }: any = {}) => {
-    return serviceStart && salePrint && period === 'yearly' && invoiceInstallments >= 2
+    return (
+      serviceStart &&
+      salePrint &&
+      period === 'yearly' &&
+      invoiceInstallments >= 2
+    )
   }
 
   useEffect(() => {
@@ -166,7 +192,8 @@ RegisterProps) {
     if (printer) {
       const { price } = getProductAndPrice({ product: printer })
       if (price) {
-        const value = price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
+        const value =
+          price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
 
         setPrinter((oldPrint) => {
           return {
@@ -181,7 +208,8 @@ RegisterProps) {
       const { price } = getProductAndPrice({ product: printer })
 
       if (price) {
-        const value = price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
+        const value =
+          price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
       }
     }
 
@@ -192,10 +220,15 @@ RegisterProps) {
         } else {
           const product = products.find((prod) => prod.id === item.id)
           if (product) {
-            const { price } = getProductAndPrice({ product, priceId: item.price_id })
+            const { price } = getProductAndPrice({
+              product,
+              priceId: item.price_id,
+            })
 
             if (price) {
-              const value = price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
+              const value =
+                price.currencies[newUser.controls?.currency ?? 'brl']
+                  .unit_amount ?? 0
               item.value = value / 100
             }
           }
@@ -212,9 +245,14 @@ RegisterProps) {
         <title>Cadastrar Cliente - WhatsMenu</title>
       </Head>
       <div className="d-flex">
-        <Card className="mx-auto mt-5 w-75 text-center">
+        <Card className="w-75 mx-auto mt-5 text-center">
           <Card.Header>
-            <Image src="/images/logoWhatsVertical.png" height={80} width={140} alt="Logo" />
+            <Image
+              src="/images/logoWhatsVertical.png"
+              height={80}
+              width={140}
+              alt="Logo"
+            />
             <h4 className="mt-4">Cadastrar Cliente</h4>
           </Card.Header>
           <Card.Body>
@@ -227,7 +265,9 @@ RegisterProps) {
                   <Form.Control
                     placeholder="Nome do dono do estabelecimento"
                     value={newUser.name}
-                    onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, name: e.target.value })
+                    }
                   />
                 </Col>
               </Row>
@@ -240,7 +280,9 @@ RegisterProps) {
                     <Form.Control
                       placeholder="CPF ou CNPJ"
                       value={newUser.secretNumber}
-                      isInvalid={secretNumberInvalid && !secretNumberInvalid?.valid}
+                      isInvalid={
+                        secretNumberInvalid && !secretNumberInvalid?.valid
+                      }
                       isValid={secretNumberInvalid?.valid}
                       onChange={(e) => {
                         const isValid = mask(e, 'cpf/cnpj')
@@ -252,7 +294,12 @@ RegisterProps) {
                       }}
                       maxLength={18}
                     />
-                    <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
+                    <Form.Control.Feedback
+                      tooltip
+                      type="invalid"
+                      style={{ zIndex: 0 }}
+                      className="mt-2"
+                    >
                       {secretNumberInvalid?.type} inválido
                     </Form.Control.Feedback>
                   </div>
@@ -271,11 +318,18 @@ RegisterProps) {
                       isInvalid={emailInvalid}
                       isValid={emailInvalid !== undefined && !emailInvalid}
                       onChange={(e) => {
-                        e.target.value === '' ? setEmailInvalid(undefined) : setEmailInvalid(mask(e, 'email').valid)
+                        e.target.value === ''
+                          ? setEmailInvalid(undefined)
+                          : setEmailInvalid(mask(e, 'email').valid)
                         setNewUser({ ...newUser, email: e.target.value })
                       }}
                     />
-                    <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
+                    <Form.Control.Feedback
+                      tooltip
+                      type="invalid"
+                      style={{ zIndex: 0 }}
+                      className="mt-2"
+                    >
                       Email inválido
                     </Form.Control.Feedback>
                   </div>
@@ -309,7 +363,9 @@ RegisterProps) {
                     placeholder="Cadastre uma Senha"
                     value={newUser.password}
                     id="passwordRegister"
-                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                    onChange={(e) =>
+                      setNewUser({ ...newUser, password: e.target.value })
+                    }
                   />
                 </Col>
               </Row>
@@ -372,11 +428,15 @@ RegisterProps) {
                             },
                           }
                         })
-                        const selectStartValue = document.getElementById('select_start_value') as HTMLSelectElement
+                        const selectStartValue = document.getElementById(
+                          'select_start_value'
+                        ) as HTMLSelectElement
                         if (selectStartValue && productMenu) {
                           selectStartValue.value = productMenu.default_price
                         }
-                        const selectPrinter = document.getElementById('printer_value') as HTMLSelectElement
+                        const selectPrinter = document.getElementById(
+                          'printer_value'
+                        ) as HTMLSelectElement
                         if (selectPrinter && productPrinter) {
                           selectPrinter.value = productPrinter.default_price
                         }
@@ -401,7 +461,9 @@ RegisterProps) {
                           controls: {
                             ...newUser.controls,
                             period: e.target.value as any,
-                            bilhetParcelament: getBilhetParcelament({ period: e.target.value }),
+                            bilhetParcelament: getBilhetParcelament({
+                              period: e.target.value,
+                            }),
                           },
                         })
                       }
@@ -414,8 +476,10 @@ RegisterProps) {
                 </Col>
               </Row>
               <Row className="mt-2">
-                <Col className="d-flex gap-2 flex-row-reverse justify-content-end mt-4">
-                  <Form.Label htmlFor="cardMensality">Mensalidade no cartão</Form.Label>
+                <Col className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
+                  <Form.Label htmlFor="cardMensality">
+                    Mensalidade no cartão
+                  </Form.Label>
                   <Form.Check
                     id="cardMensality"
                     checked={newUser.controls?.disableInvoice ?? false}
@@ -426,7 +490,8 @@ RegisterProps) {
                           controls: {
                             ...newUser.controls,
                             disableInvoice: e.target.checked,
-                            bilhetParcelament: !e.target.checked && getBilhetParcelament(),
+                            bilhetParcelament:
+                              !e.target.checked && getBilhetParcelament(),
                           },
                         })
                       }
@@ -435,8 +500,10 @@ RegisterProps) {
                 </Col>
               </Row>
               <Row className="d-flex gap-2 ">
-                <Col className="d-flex flex-row-reverse gap-2 justify-content-end">
-                  <Form.Label htmlFor="registerService">Adicionar serviço de cadastro</Form.Label>
+                <Col className="d-flex justify-content-end flex-row-reverse gap-2">
+                  <Form.Label htmlFor="registerService">
+                    Adicionar serviço de cadastro
+                  </Form.Label>
                   <Form.Check
                     id="registerService"
                     checked={newUser.controls?.serviceStart ?? false}
@@ -447,11 +514,15 @@ RegisterProps) {
                           controls: {
                             ...newUser.controls,
                             serviceStart: e.target.checked,
-                            bilhetParcelament: getBilhetParcelament({ serviceStart: e.target.checked }),
+                            bilhetParcelament: getBilhetParcelament({
+                              serviceStart: e.target.checked,
+                            }),
                           },
                         })
                         if (productMenu) {
-                          const price = productMenu.operations.prices.find((pr) => pr.id === productMenu.default_price)
+                          const price = productMenu.operations.prices.find(
+                            (pr) => pr.id === productMenu.default_price
+                          )
                           if (price) {
                             if (e.target.checked) {
                               setCart([
@@ -461,13 +532,20 @@ RegisterProps) {
                                   price_id: price.id,
                                   name: productMenu.name,
                                   service: 'menu',
-                                  value: price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount / 100,
+                                  value:
+                                    price.currencies[
+                                      newUser.controls?.currency ?? 'brl'
+                                    ].unit_amount / 100,
                                   quantity: 1,
                                 },
                               ])
                             } else {
-                              setCart(cart.filter((pr) => pr.service !== 'menu'))
-                              const select = document.getElementById('select_start_value') as HTMLSelectElement
+                              setCart(
+                                cart.filter((pr) => pr.service !== 'menu')
+                              )
+                              const select = document.getElementById(
+                                'select_start_value'
+                              ) as HTMLSelectElement
                               if (select) {
                                 select.value = productMenu.default_price
                               }
@@ -489,9 +567,15 @@ RegisterProps) {
                         setCart((oldCart) => {
                           return oldCart.map((item) => {
                             if (item.service === 'menu') {
-                              const { price } = getProductAndPrice({ product: productMenu, priceId: e.target.value })
+                              const { price } = getProductAndPrice({
+                                product: productMenu,
+                                priceId: e.target.value,
+                              })
                               if (price) {
-                                const value = price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
+                                const value =
+                                  price.currencies[
+                                    newUser.controls?.currency ?? 'brl'
+                                  ].unit_amount ?? 0
                                 item.price_id = price.id
                                 item.value = value / 100
                               }
@@ -507,10 +591,15 @@ RegisterProps) {
                       if (pr.status === false) {
                         return null
                       }
-                      const currencyM = pr.currencies[newUser.controls?.currency ?? 'brl']
+                      const currencyM =
+                        pr.currencies[newUser.controls?.currency ?? 'brl']
 
                       return (
-                        <option key={pr.id} value={pr.id} data-currency-value={currencyM.unit_amount}>
+                        <option
+                          key={pr.id}
+                          value={pr.id}
+                          data-currency-value={currencyM.unit_amount}
+                        >
                           {currency({
                             currency: newUser.controls?.currency,
                             language: newUser.controls?.language,
@@ -524,7 +613,7 @@ RegisterProps) {
               </Row>
               <Row>
                 <Col sm>
-                  <div className="d-flex gap-2 flex-row-reverse justify-content-end">
+                  <div className="d-flex justify-content-end flex-row-reverse gap-2">
                     <Form.Label htmlFor="withPrinter" className="mb-0">
                       Com impressora
                     </Form.Label>
@@ -539,12 +628,16 @@ RegisterProps) {
                               ...newUser.controls,
                               salePrint: e.target.checked,
                               salePrintQTD: 1,
-                              bilhetParcelament: getBilhetParcelament({ salePrint: e.target.checked }),
+                              bilhetParcelament: getBilhetParcelament({
+                                salePrint: e.target.checked,
+                              }),
                             },
                           })
 
                           if (productPrinter) {
-                            const price = productPrinter.operations.prices.find((pr) => pr.id === productPrinter.default_price)
+                            const price = productPrinter.operations.prices.find(
+                              (pr) => pr.id === productPrinter.default_price
+                            )
                             if (price) {
                               if (e.target.checked) {
                                 setCart([
@@ -553,21 +646,33 @@ RegisterProps) {
                                     price_id: price.id,
                                     name: productPrinter.name,
                                     service: 'printer',
-                                    value: price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount / 100,
+                                    value:
+                                      price.currencies[
+                                        newUser.controls?.currency ?? 'brl'
+                                      ].unit_amount / 100,
                                     quantity: 1,
                                   },
                                   ...cart,
                                 ])
                               } else {
                                 setCart((old) => {
-                                  return old.filter((item) => item.service !== 'printer')
+                                  return old.filter(
+                                    (item) => item.service !== 'printer'
+                                  )
                                 })
-                                const select = document.getElementById('printer_value') as HTMLSelectElement
+                                const select = document.getElementById(
+                                  'printer_value'
+                                ) as HTMLSelectElement
                                 if (select && productPrinter) {
                                   select.value = productPrinter.default_price
-                                  const { price } = getProductAndPrice({ product: productPrinter })
+                                  const { price } = getProductAndPrice({
+                                    product: productPrinter,
+                                  })
                                   if (price) {
-                                    const value = price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
+                                    const value =
+                                      price.currencies[
+                                        newUser.controls?.currency ?? 'brl'
+                                      ].unit_amount ?? 0
                                     setPrinter({
                                       quantity: 1,
                                       value: value / 100,
@@ -622,7 +727,10 @@ RegisterProps) {
                     </InputGroup.Text>
                   </InputGroup>
                 </Col>
-                <Col sm={4} className={`d-flex align-items-end justify-content-center`}>
+                <Col
+                  sm={4}
+                  className={`d-flex align-items-end justify-content-center`}
+                >
                   {/* <span style={{ textDecoration: !newUser.controls?.salePrint ? 'line-through' : '' }}>{
                     currency({ value: (printer.value * printer.quantity) })
                   }</span> */}
@@ -635,9 +743,15 @@ RegisterProps) {
                         setCart((oldCart) => {
                           return oldCart.map((item) => {
                             if (item.service === 'printer') {
-                              const { price } = getProductAndPrice({ product: productPrinter, priceId: e.target.value })
+                              const { price } = getProductAndPrice({
+                                product: productPrinter,
+                                priceId: e.target.value,
+                              })
                               if (price) {
-                                const value = price.currencies[newUser.controls?.currency ?? 'brl'].unit_amount ?? 0
+                                const value =
+                                  price.currencies[
+                                    newUser.controls?.currency ?? 'brl'
+                                  ].unit_amount ?? 0
                                 item.price_id = price.id
                                 item.value = value / 100
 
@@ -655,10 +769,15 @@ RegisterProps) {
                     }}
                   >
                     {productPrinter?.operations.prices?.map((pr) => {
-                      const currencyM = pr.currencies[newUser.controls?.currency ?? 'brl']
+                      const currencyM =
+                        pr.currencies[newUser.controls?.currency ?? 'brl']
 
                       return (
-                        <option key={pr.id} value={pr.id} data-currency-value={currencyM.unit_amount}>
+                        <option
+                          key={pr.id}
+                          value={pr.id}
+                          data-currency-value={currencyM.unit_amount}
+                        >
                           {currency({
                             currency: newUser.controls?.currency,
                             language: newUser.controls?.language,
@@ -671,7 +790,8 @@ RegisterProps) {
                 </Col>
               </Row>
               <br />
-              {(newUser.controls?.disableInvoice || newUser.controls?.period === 'yearly') && (
+              {(newUser.controls?.disableInvoice ||
+                newUser.controls?.period === 'yearly') && (
                 <Row>
                   <Col md className="text-center">
                     <Form.Label>
@@ -686,7 +806,9 @@ RegisterProps) {
                             ...newUser,
                             controls: {
                               ...newUser.controls,
-                              bilhetParcelament: getBilhetParcelament({ invoiceInstallments }),
+                              bilhetParcelament: getBilhetParcelament({
+                                invoiceInstallments,
+                              }),
                             },
                           })
                         }
@@ -698,7 +820,11 @@ RegisterProps) {
                         .map((item, index) => {
                           const indexValue = index + 1
                           return (
-                            <option key={index} selected={indexValue === 1} value={indexValue}>
+                            <option
+                              key={index}
+                              selected={indexValue === 1}
+                              value={indexValue}
+                            >
                               {indexValue}
                             </option>
                           )
@@ -714,7 +840,11 @@ RegisterProps) {
                   </Form.Label>
                   <Form.Select
                     disabled={!newUser.controls?.disableInvoice}
-                    title={!newUser.controls?.disableInvoice ? 'Ative mensalidade no cartão para habilitar o gateway' : ''}
+                    title={
+                      !newUser.controls?.disableInvoice
+                        ? 'Ative mensalidade no cartão para habilitar o gateway'
+                        : ''
+                    }
                     onChange={(e) => {
                       setGateway(e.target.value)
                     }}
@@ -737,7 +867,7 @@ RegisterProps) {
                 products={products}
               />
               <br />
-              <h4 className="text-start fw-bold">Carrinho</h4>
+              <h4 className="fw-bold text-start">Carrinho</h4>
               <hr />
               {cart.map((item) => {
                 return (
@@ -749,14 +879,18 @@ RegisterProps) {
                     </Col>
                     <Col className="text-end">
                       <span>
-                        {currency({ currency: newUser.controls?.currency, language: newUser.controls?.language, value: item.value * item.quantity })}
+                        {currency({
+                          currency: newUser.controls?.currency,
+                          language: newUser.controls?.language,
+                          value: item.value * item.quantity,
+                        })}
                       </span>
                     </Col>
                   </Row>
                 )
               })}
               <hr />
-              <div className="d-flex justify-content-center align-items-center gap-2 flex-column">
+              <div className="d-flex justify-content-center align-items-center flex-column gap-2">
                 <span className="border-bottom ">
                   <b>Total: </b>
                   {installments}X{' '}
@@ -778,13 +912,14 @@ RegisterProps) {
               </div>
               <br />
               <p className="fs-8 mt-3">
-                Ao prosseguir, aceito que o WhatsMenu entre em contato comigo por telefone, e-mail ou WhatsApp (incluindo mensagens automáticas para
-                fins comerciais).
+                Ao prosseguir, aceito que o WhatsMenu entre em contato comigo
+                por telefone, e-mail ou WhatsApp (incluindo mensagens
+                automáticas para fins comerciais).
               </p>
             </div>
             <Button
               variant="success"
-              className="align-middle mx-auto"
+              className="mx-auto align-middle"
               onClick={handleCreateNewUser}
               disabled={emailInvalid || !secretNumberInvalid?.valid}
             >
@@ -818,7 +953,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
 
   const types = ['adm', 'seller', 'support', 'test', 'manager']
 
-  if (session && session.user?.controls?.type && !types.includes(session.user.controls.type)) {
+  if (
+    session &&
+    session.user?.controls?.type &&
+    !types.includes(session.user.controls.type)
+  ) {
     return {
       props: {},
       redirect: {

@@ -8,7 +8,11 @@ export const PrintLineSeparator = () => {
   const separator = new Array(paperWidthSize).fill('_')
   return (
     <pre className={`lineseparator ${printMode}`}>
-      {printMode !== 'pdf' ? separator.join('') + '\n' : <View style={{ border: '1px dashed black', height: 0 }} />}
+      {printMode !== 'pdf' ? (
+        separator.join('') + '\n'
+      ) : (
+        <View style={{ border: '1px dashed black', height: 0 }} />
+      )}
     </pre>
   )
 }

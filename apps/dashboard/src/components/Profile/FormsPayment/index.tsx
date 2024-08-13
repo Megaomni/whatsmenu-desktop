@@ -30,10 +30,19 @@ export interface PaymentSettingsProps {
   formPayment?: ProfileFormPayment
 }
 
-export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentProps) {
+export function ProfileFormsPayment({
+  isActive = false,
+}: ProfileFormsPaymentProps) {
   const { t } = useTranslation()
-  const { profileState, setDataResponse, handleProfileUpdate, toggleModal, dataToBeUpdated, handleDataToBeUpdated, updateDataCallback } =
-    useContext(PaymentMethodContext)
+  const {
+    profileState,
+    setDataResponse,
+    handleProfileUpdate,
+    toggleModal,
+    dataToBeUpdated,
+    handleDataToBeUpdated,
+    updateDataCallback,
+  } = useContext(PaymentMethodContext)
   const [updateSuccess, setUpdateSuccess] = useState<boolean | null>(null)
   const [asaasTermsModal, setAsaasTermsModal] = useState(false)
 
@@ -49,37 +58,71 @@ export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentPro
 
   useEffect(() => {
     if (!updateSuccess || !profileState) return
-    const index = profileState.formsPayment?.findIndex((method) => method.payment === dataToBeUpdated?.payment)
+    const index = profileState.formsPayment?.findIndex(
+      (method) => method.payment === dataToBeUpdated?.payment
+    )
     const updatedFormsPayment = [...profileState.formsPayment]
     updatedFormsPayment[index] = dataToBeUpdated
     handleProfileUpdate({ ...profileState, formsPayment: updatedFormsPayment })
     handleDataToBeUpdated(null)
     setUpdateSuccess(null)
-  }, [updateSuccess, dataToBeUpdated, handleDataToBeUpdated, profileState, handleProfileUpdate])
+  }, [
+    updateSuccess,
+    dataToBeUpdated,
+    handleDataToBeUpdated,
+    profileState,
+    handleProfileUpdate,
+  ])
 
   if (!profileState) return <OverlaySpinner show />
 
   return (
     <>
-      <FinPasswordModal dataToBeUpdated={dataToBeUpdated} setUpdateSuccess={setUpdateSuccess} updateDataCallback={updateDataCallback} />
-      <Accordion defaultActiveKey="0" className="d-flex flex-column gap-4 payment-accordion">
+      <FinPasswordModal
+        dataToBeUpdated={dataToBeUpdated}
+        setUpdateSuccess={setUpdateSuccess}
+        updateDataCallback={updateDataCallback}
+      />
+      <Accordion
+        defaultActiveKey="0"
+        className="d-flex flex-column payment-accordion gap-4"
+      >
         {profileState.options?.asaas ? (
           <Card className="m-0">
             <Card.Body>
               <div className="d-flex flex-column flex-md-row-reverse justify-content-md-between align-items-center align-items-md-baseline gap-3">
-                <h2 className="m-0 order-1">{t('online_payment_automatic')}</h2>
-                <Image src="/images/logo-asaas-2.svg" alt="Logo Asaas" width={127} height={38} className="mx-auto ms-md-auto order-0 order-md-2" />
-                <p className="m-0 mt-2 d-md-none order-2 text-center">{t('message_avoid_fraud_errors')}</p>
+                <h2 className="order-1 m-0">{t('online_payment_automatic')}</h2>
+                <Image
+                  src="/images/logo-asaas-2.svg"
+                  alt="Logo Asaas"
+                  width={127}
+                  height={38}
+                  className="ms-md-auto order-0 order-md-2 mx-auto"
+                />
+                <p className="d-md-none order-2 m-0 mt-2 text-center">
+                  {t('message_avoid_fraud_errors')}
+                </p>
               </div>
-              <p className="m-0 mt-2 d-none d-md-flex">{t('message_avoid_fraud_errors')}</p>
-              <Button className="p-0 fw-bold" variant="link" onClick={() => setAsaasTermsModal(true)}>
+              <p className="d-none d-md-flex m-0 mt-2">
+                {t('message_avoid_fraud_errors')}
+              </p>
+              <Button
+                className="fw-bold p-0"
+                variant="link"
+                onClick={() => setAsaasTermsModal(true)}
+              >
                 {t('asaas_terms_use')}
               </Button>
               <div
                 className="me-3 mt-3 rounded p-2 "
-                style={{ color: '#BC1C21', background: '#FEF3F3', border: 'none', boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.1)' }}
+                style={{
+                  color: '#BC1C21',
+                  background: '#FEF3F3',
+                  border: 'none',
+                  boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.1)',
+                }}
               >
-                <div className="d-flex align-items-center gap-2 mb-2">
+                <div className="d-flex align-items-center mb-2 gap-2">
                   <MdOutlineCancel />
                   <strong>{t('attention')}:</strong>
                 </div>
@@ -89,29 +132,44 @@ export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentPro
                   </li>
                   <li>{t('message_open_asaas_email')}</li>
                   <li>
-                    {t('message_sent_sms_token')} {profileState.options.asaas.mobilePhone}
+                    {t('message_sent_sms_token')}{' '}
+                    {profileState.options.asaas.mobilePhone}
                   </li>
                 </ol>
               </div>
               <p className="fw-bold mt-4">{t('account_creation_details')}:</p>
               <ul>
                 <li>
-                  {t('branch')}: {profileState.options.asaas.accountNumber.agency}
+                  {t('branch')}:{' '}
+                  {profileState.options.asaas.accountNumber.agency}
                 </li>
                 <li>
-                  Conta: {profileState.options.asaas.accountNumber.account}-{profileState.options.asaas.accountNumber.accountDigit}
+                  Conta: {profileState.options.asaas.accountNumber.account}-
+                  {profileState.options.asaas.accountNumber.accountDigit}
                 </li>
                 <li>E-mail: {profileState.options.asaas.loginEmail}</li>
                 <li>{t('password')}: ******</li>
               </ul>
-              <Button as="a" href={process.env.ASAAS_DASHBOARD_URL} target="_blank" className="me-auto  my-auto order-4 order-md-2">
+              <Button
+                as="a"
+                href={process.env.ASAAS_DASHBOARD_URL}
+                target="_blank"
+                className="order-md-2  order-4 my-auto me-auto"
+              >
                 {t('acess_asaas_account')}
               </Button>
               <Card.Footer className="mt-4">
                 <AdvanceCard />
               </Card.Footer>
             </Card.Body>
-            <Modal backdrop="static" show={asaasTermsModal} size="lg" scrollable centered onHide={() => setAsaasTermsModal(false)}>
+            <Modal
+              backdrop="static"
+              show={asaasTermsModal}
+              size="lg"
+              scrollable
+              centered
+              onHide={() => setAsaasTermsModal(false)}
+            >
               <Modal.Header closeButton>
                 <h4 className="fw-bold m-0">{t('termis_of_use')}</h4>
               </Modal.Header>
@@ -120,7 +178,10 @@ export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentPro
               </Modal.Body>
               <Modal.Footer className="d-flex justify-content-between">
                 <Button
-                  style={{ backgroundColor: 'var(--bs-secondary)', borderColor: 'var(--bs-secondary)' }}
+                  style={{
+                    backgroundColor: 'var(--bs-secondary)',
+                    borderColor: 'var(--bs-secondary)',
+                  }}
                   type="button"
                   onClick={() => setAsaasTermsModal(false)}
                 >
@@ -132,9 +193,18 @@ export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentPro
         ) : (
           <Accordion.Item eventKey="0">
             <Accordion.Header className="d-flex gap-3">
-              <p className="m-0 overflow-hidden">{t('online_payment_automatic')}</p>
+              <p className="m-0 overflow-hidden">
+                {t('online_payment_automatic')}
+              </p>
               <div className="vr"></div>
-              <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/uo7zxBqTBXE', title: t('online_payment') }]} />
+              <HelpVideos.Trigger
+                urls={[
+                  {
+                    src: 'https://www.youtube.com/embed/uo7zxBqTBXE',
+                    title: t('online_payment'),
+                  },
+                ]}
+              />
             </Accordion.Header>
             <Accordion.Body>
               <BankAccountSettings paymentMethod="bank" />
@@ -143,16 +213,29 @@ export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentPro
         )}
         <Accordion.Item eventKey="1">
           <Accordion.Header className="d-flex gap-3">
-            <p className="m-0 overflow-hidden">{t('payment_on_delivery_card')}</p>
+            <p className="m-0 overflow-hidden">
+              {t('payment_on_delivery_card')}
+            </p>
             <div className="vr"></div>
-            <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/cVnU3b67NY0', title: t('payment_on_delivery') }]} />
+            <HelpVideos.Trigger
+              urls={[
+                {
+                  src: 'https://www.youtube.com/embed/cVnU3b67NY0',
+                  title: t('payment_on_delivery'),
+                },
+              ]}
+            />
           </Accordion.Header>
           <Accordion.Body>
             <CashPaymentSettings paymentMethod="money" />
             {profileState.formsPayment
               ?.filter((f) => f.flags && f.payment !== 'money')
               .map((cardFormPayment) => (
-                <CardPaymentSettings key={cardFormPayment.payment} paymentMethod={cardFormPayment.payment} formPayment={cardFormPayment} />
+                <CardPaymentSettings
+                  key={cardFormPayment.payment}
+                  paymentMethod={cardFormPayment.payment}
+                  formPayment={cardFormPayment}
+                />
               ))}
             {profileState.formsPayment
               ?.filter((f) => f.key && f.payment !== 'money')
@@ -163,11 +246,18 @@ export function ProfileFormsPayment({ isActive = false }: ProfileFormsPaymentPro
                 return true
               })
               .map((onlineFormPayment) => {
-                if (onlineFormPayment.payment === 'pix' && !profileState.options.legacyPix) {
+                if (
+                  onlineFormPayment.payment === 'pix' &&
+                  !profileState.options.legacyPix
+                ) {
                   return null
                 }
                 return (
-                  <OnlinePaymentSettings key={onlineFormPayment.payment} paymentMethod={onlineFormPayment.payment} formPayment={onlineFormPayment} />
+                  <OnlinePaymentSettings
+                    key={onlineFormPayment.payment}
+                    paymentMethod={onlineFormPayment.payment}
+                    formPayment={onlineFormPayment}
+                  />
                 )
               })}
           </Accordion.Body>

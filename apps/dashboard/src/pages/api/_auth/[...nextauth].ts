@@ -78,10 +78,15 @@ export default NextAuth({
         try {
           const { data } = await axios.post(
             `${process.env.WHATSMENU_API}/login`,
-            { email: credentials?.username, password: credentials?.password, ip: credentials?.ip, userAgent: credentials?.userAgent },
+            {
+              email: credentials?.username,
+              password: credentials?.password,
+              ip: credentials?.ip,
+              userAgent: credentials?.userAgent,
+            },
             {
               headers: {
-                'accept': '*/*',
+                accept: '*/*',
                 'Content-Type': 'application/json',
               },
             }

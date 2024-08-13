@@ -1,7 +1,24 @@
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react'
-import { Button, Card, Col, Container, Form, Modal, Row, InputGroup } from 'react-bootstrap'
+import {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
+import {
+  Button,
+  Card,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Row,
+  InputGroup,
+} from 'react-bootstrap'
 import { BsFillPauseCircleFill } from 'react-icons/bs'
-import PizzaProduct, { PizzaImplementationType } from '../../../../types/pizza-product'
+import PizzaProduct, {
+  PizzaImplementationType,
+} from '../../../../types/pizza-product'
 import { encryptEmoji, mask } from '../../../../utils/wm-functions'
 import Category from '../../../../types/category'
 import { useSession } from 'next-auth/react'
@@ -26,10 +43,24 @@ export function PizzaImplementation(props: PizzaImplementationProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
 
-  const { handleShowToast, handleConfirmModal, modalFooterOpened, user, currency } = useContext(AppContext)
+  const {
+    handleShowToast,
+    handleConfirmModal,
+    modalFooterOpened,
+    user,
+    currency,
+  } = useContext(AppContext)
   const { categories, setCategories } = useContext(MenuContext)
 
-  const { show, handleClose, type, implementation, category, setCategory, setImplementation } = props
+  const {
+    show,
+    handleClose,
+    type,
+    implementation,
+    category,
+    setCategory,
+    setImplementation,
+  } = props
   const [name, setName] = useState<string>(implementation.name || '')
   const [price, setPrice] = useState<string | number>(implementation.value || 0)
 
@@ -197,7 +228,7 @@ export function PizzaImplementation(props: PizzaImplementationProps) {
         <Modal.Body className="position-relative">
           <Card className="mt-4">
             <Card.Body>
-              <Container fluid className="px-0 mx-0">
+              <Container fluid className="mx-0 px-0">
                 <Row className="text-dark">
                   <Col sm className="my-auto">
                     <Row>
@@ -225,18 +256,22 @@ export function PizzaImplementation(props: PizzaImplementationProps) {
                           </Form.Control.Feedback>
                         </div>
                         <div className="d-flex justify-content-end">
-                          <p className={name.length >= 55 ? 'text-red-500' : ''}>
+                          <p
+                            className={name.length >= 55 ? 'text-red-500' : ''}
+                          >
                             {name.length}
                             /55 {t('characters')}
                           </p>
                         </div>
                       </Col>
-                      <Col sm className="mb-2 mb-md-0">
+                      <Col sm className="mb-md-0 mb-2">
                         <Form.Label>
                           <b>{t('price')}</b>
                         </Form.Label>
                         <InputGroup className="position-relative">
-                          <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                          <InputGroup.Text>
+                            {currency({ value: 0, symbol: true })}
+                          </InputGroup.Text>
                           <Form.Control
                             value={price}
                             required
@@ -262,12 +297,20 @@ export function PizzaImplementation(props: PizzaImplementationProps) {
                     <Row>
                       <Col sm className="d-flex flex-column">
                         {type !== 'create' && (
-                          <div className="wm-default-border-none text-dark py-5 px-3">
+                          <div className="wm-default-border-none text-dark px-3 py-5">
                             <Row className="align-items-center">
                               <Col sm className="d-flex">
-                                <Button variant="outline-orange" className="flex-grow-1 mb-3" onClick={pauseImplementation}>
+                                <Button
+                                  variant="outline-orange"
+                                  className="flex-grow-1 mb-3"
+                                  onClick={pauseImplementation}
+                                >
                                   <BsFillPauseCircleFill size={20} />
-                                  <span>{!implementation?.status ? t('resume_sales') : t('pause_sales')}</span>
+                                  <span>
+                                    {!implementation?.status
+                                      ? t('resume_sales')
+                                      : t('pause_sales')}
+                                  </span>
                                 </Button>
                               </Col>
                               <Col sm className="text-600 fs-8 mb-3">

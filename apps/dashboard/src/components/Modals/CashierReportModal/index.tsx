@@ -12,7 +12,11 @@ interface CashierReportModalProps {
   onHide: () => void
 }
 
-export const CashierReportModal = ({ show, cashier, onHide }: CashierReportModalProps) => {
+export const CashierReportModal = ({
+  show,
+  cashier,
+  onHide,
+}: CashierReportModalProps) => {
   const { t } = useTranslation()
   const { profile, currency } = useContext(AppContext)
 
@@ -22,7 +26,7 @@ export const CashierReportModal = ({ show, cashier, onHide }: CashierReportModal
         <h4 className="m-0">{t('cash_detail')}</h4>
       </Modal.Header>
       <Modal.Body className="flex">
-        <Table className="text-center flex-grow-1" striped>
+        <Table className="flex-grow-1 text-center" striped>
           <thead>
             <tr>
               <th>{t('payment_method')}</th>
@@ -34,11 +38,19 @@ export const CashierReportModal = ({ show, cashier, onHide }: CashierReportModal
             {profile.formsPayment.map((formPayment, index) => {
               const closedValueSystemTotal =
                 cashier.closedValues_system?.reduce(
-                  (total, closedSystemValue) => (total += closedSystemValue.payment === formPayment.payment ? closedSystemValue.total : 0),
+                  (total, closedSystemValue) =>
+                    (total +=
+                      closedSystemValue.payment === formPayment.payment
+                        ? closedSystemValue.total
+                        : 0),
                   0
                 ) || 0
               const closedValueUserTotal =
-                cashier.closedValues_user?.find((cvs) => cvs.payment === formPayment.label || cvs.payment === formPayment.payment)?.total ?? 0
+                cashier.closedValues_user?.find(
+                  (cvs) =>
+                    cvs.payment === formPayment.label ||
+                    cvs.payment === formPayment.payment
+                )?.total ?? 0
               return (
                 <tr key={index}>
                   <td>{formPayment.label}</td>

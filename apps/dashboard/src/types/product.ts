@@ -117,7 +117,9 @@ export default class Product {
     this.promoteStatus = promoteStatus
     this.promoteStatusTable = promoteStatusTable
     this.image = image
-    this.complements = complements ? complements.map((c) => new Complement(c)) : []
+    this.complements = complements
+      ? complements.map((c) => new Complement(c))
+      : []
     this.disponibility = disponibility
     this.quantity = quantity
     this.category = category
@@ -134,11 +136,21 @@ export default class Product {
   }
 
   public getTotalComplements() {
-    return this.complements.reduce((total, compl) => (total += compl.getTotal()), 0)
+    return this.complements.reduce(
+      (total, compl) => (total += compl.getTotal()),
+      0
+    )
   }
 
   /** API dos produtos, CREATE, UPDATE, DELETE,  Atualiza os status e duplica o produto. */
-  static async API({ type, session, data, product, categories, setCategories }: ProductAPI) {
+  static async API({
+    type,
+    session,
+    data,
+    product,
+    categories,
+    setCategories,
+  }: ProductAPI) {
     try {
       const { category } = product
       const { basicRoute, method } = this.getRouteAPI(type, product.id)
@@ -148,7 +160,7 @@ export default class Product {
           ? await apiRoute(basicRoute, session, method, data)
           : await apiRoute(basicRoute, session, method, data, {
               'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${session?.accessToken}`,
+              Authorization: `Bearer ${session?.accessToken}`,
             })
 
       responseData = new Product(responseData.product || responseData, category)
@@ -158,7 +170,9 @@ export default class Product {
       }
 
       if (responseData.complements) {
-        responseData.complements = responseData.complements.map((compl: ComplementType) => new Complement(compl))
+        responseData.complements = responseData.complements.map(
+          (compl: ComplementType) => new Complement(compl)
+        )
       }
 
       if (category && category.products) {
@@ -180,10 +194,14 @@ export default class Product {
 
             break
           case 'UPDATE':
-            const products = categories?.flatMap((cat) => cat?.products?.flat()).filter((prod) => prod)
+            const products = categories
+              ?.flatMap((cat) => cat?.products?.flat())
+              .filter((prod) => prod)
             if (responseData.complements) {
               responseData.complements.forEach((compl: Complement) => {
-                const allComplements = products?.flatMap((prod) => prod?.getAllComplements()).filter((compl) => compl)
+                const allComplements = products
+                  ?.flatMap((prod) => prod?.getAllComplements())
+                  .filter((compl) => compl)
                 if (allComplements) {
                   compl.isLinked(allComplements as Complement[], true)
                 }
@@ -203,7 +221,9 @@ export default class Product {
             product.value = parseFloat(responseData.value)
             product.valueTable = parseFloat(responseData.valueTable)
             product.promoteValue = parseFloat(responseData.promoteValue)
-            product.promoteValueTable = parseFloat(responseData.promoteValueTable)
+            product.promoteValueTable = parseFloat(
+              responseData.promoteValueTable
+            )
             product.promoteStatus = responseData.promoteStatus
             product.promoteStatusTable = responseData.promoteStatusTable
             product.image = responseData.image
@@ -219,11 +239,17 @@ export default class Product {
       if (type !== 'DELETE' && type !== 'STATUS') {
         if (category && categories && product instanceof Product) {
           if (parseInt(responseData.categoryId) !== Number(category.id)) {
-            category.products = category.products?.filter((prod) => prod.id !== parseInt(responseData.id))
-            const newCategory = categories.find((cat) => cat.id === parseInt(responseData.categoryId))
+            category.products = category.products?.filter(
+              (prod) => prod.id !== parseInt(responseData.id)
+            )
+            const newCategory = categories.find(
+              (cat) => cat.id === parseInt(responseData.categoryId)
+            )
 
             if (newCategory) {
-              const findProduct = newCategory.products?.find((prod) => prod.id === responseData.id)
+              const findProduct = newCategory.products?.find(
+                (prod) => prod.id === responseData.id
+              )
               if (!findProduct) {
                 product.category = newCategory
                 newCategory.products?.push(product)
@@ -283,7 +309,10 @@ export default class Product {
   }
 
   /** Função que auxília na construção da rota para cada metódo de requisição para API dos produtos */
-  static getRouteAPI(type: 'CREATE' | 'UPDATE' | 'DELETE' | 'STATUS' | 'DUPLICATE', id: number | undefined) {
+  static getRouteAPI(
+    type: 'CREATE' | 'UPDATE' | 'DELETE' | 'STATUS' | 'DUPLICATE',
+    id: number | undefined
+  ) {
     let basicRoute = '/dashboard/menu/product'
     let method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' = 'POST'
 

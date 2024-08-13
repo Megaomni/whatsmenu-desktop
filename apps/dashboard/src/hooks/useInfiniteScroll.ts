@@ -6,12 +6,20 @@ interface InfiniteScrollProps {
 
 type useInfiniteScrollData = { isFetching: boolean }
 
-export const useInfiniteScroll = ({ callback }: InfiniteScrollProps): useInfiniteScrollData => {
+export const useInfiniteScroll = ({
+  callback,
+}: InfiniteScrollProps): useInfiniteScrollData => {
   const [isFetching, setIsFetching] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
-      if (document.documentElement.scrollHeight - window.innerHeight - document.documentElement.scrollTop < 5 && !isFetching) {
+      if (
+        document.documentElement.scrollHeight -
+          window.innerHeight -
+          document.documentElement.scrollTop <
+          5 &&
+        !isFetching
+      ) {
         setIsFetching(true)
       }
     }

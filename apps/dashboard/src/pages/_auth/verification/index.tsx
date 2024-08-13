@@ -1,3 +1,3 @@
-export default function AdmRoute(){
-    return <></>
+export default function AdmRoute() {
+  return <></>
 }

@@ -31,7 +31,9 @@ const Update = ({ createdAt, description, upgrades }: IUpdate) => {
   const { t } = useTranslation()
   const { profile } = useContext(AppContext)
 
-  const packageLabel = profile.options.package.label2 ? 'Agendamentos' : 'Encomendas'
+  const packageLabel = profile.options.package.label2
+    ? 'Agendamentos'
+    : 'Encomendas'
 
   const plans = ['all', 'delivery', 'table', 'package']
 
@@ -55,20 +57,34 @@ const Update = ({ createdAt, description, upgrades }: IUpdate) => {
     }
     return (
       <>
-        <h3>{upgrades.some((upgrade) => upgrade.plan === plan) ? title : null}</h3>
+        <h3>
+          {upgrades.some((upgrade) => upgrade.plan === plan) ? title : null}
+        </h3>
         {upgrades
           .filter((upgrade) => upgrade.plan === plan)
           .map((upgrade) => {
             let badge = null
             switch (upgrade.type) {
               case 'new':
-                badge = <span className="badge bg-danger inline fs-7 align-middle">Novo</span>
+                badge = (
+                  <span className="badge bg-danger fs-7 inline align-middle">
+                    Novo
+                  </span>
+                )
                 break
               case 'upgrade':
-                badge = <span className="badge bg-success inline fs-7 align-middle">Melhorias</span>
+                badge = (
+                  <span className="badge bg-success fs-7 inline align-middle">
+                    Melhorias
+                  </span>
+                )
                 break
               case 'fix':
-                badge = <span className="badge bg-warning inline fs-7 align-middle">Correção</span>
+                badge = (
+                  <span className="badge bg-warning fs-7 inline align-middle">
+                    Correção
+                  </span>
+                )
                 break
               default:
                 break
@@ -94,8 +110,11 @@ const Update = ({ createdAt, description, upgrades }: IUpdate) => {
   }
 
   return (
-    <div className="p-4 mb-2 border">
-      <h2>Atualização {DateTime.fromISO(createdAt).toFormat(`${t('date_format')}`)}</h2>
+    <div className="mb-2 border p-4">
+      <h2>
+        Atualização{' '}
+        {DateTime.fromISO(createdAt).toFormat(`${t('date_format')}`)}
+      </h2>
       <p>{description}</p>
       {plans.map((plan) => {
         return <Upgrade key={plan} plan={plan} />
@@ -107,9 +126,20 @@ const Update = ({ createdAt, description, upgrades }: IUpdate) => {
 export default function Updates({ plans, ...props }: AdmClientProps) {
   return (
     <>
-      <Title title="ADM" componentTitle="Atualizações" className="mb-4" child={['Atualizações']} />
+      <Title
+        title="ADM"
+        componentTitle="Atualizações"
+        className="mb-4"
+        child={['Atualizações']}
+      />
       {updates.map((update, index) => (
-        <Update key={index} description={update.description} createdAt={update.createdAt} upgrades={update.upgrades} id={update.id} />
+        <Update
+          key={index}
+          description={update.description}
+          createdAt={update.createdAt}
+          upgrades={update.upgrades}
+          id={update.id}
+        />
       ))}
     </>
   )

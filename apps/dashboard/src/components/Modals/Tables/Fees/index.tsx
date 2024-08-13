@@ -1,5 +1,14 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
-import { Button, Col, Form, Modal, OverlayTrigger, Popover, Row, Table } from 'react-bootstrap'
+import {
+  Button,
+  Col,
+  Form,
+  Modal,
+  OverlayTrigger,
+  Popover,
+  Row,
+  Table,
+} from 'react-bootstrap'
 import { BsArrowRight } from 'react-icons/bs'
 import { RiArrowDownSFill } from 'react-icons/ri'
 import { apiRoute } from '../../../../utils/wm-functions'
@@ -21,7 +30,8 @@ export function Fees(props: FeesProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { handleShowToast, user, currency } = useContext(AppContext)
-  const { command, setCurrentCommandId, table, haveFees, updateTable } = useContext(TableContext)
+  const { command, setCurrentCommandId, table, haveFees, updateTable } =
+    useContext(TableContext)
   const { show, handleClose, handleConfirm, typeModal } = props
   let [fees, setFees] = useState<ProfileFee[]>([])
 
@@ -37,38 +47,48 @@ export function Fees(props: FeesProps) {
   const handleSaveFees = async () => {
     if (typeModal === 'command' && command?.fees.length) {
       try {
-        await apiRoute('/dashboard/command/updateFees', session, 'PATCH', { commandId: command?.id, fees: command?.fees })
+        await apiRoute('/dashboard/command/updateFees', session, 'PATCH', {
+          commandId: command?.id,
+          fees: command?.fees,
+        })
       } catch (error) {
         handleShowToast({ type: 'erro', title: t('order_slip_fees') })
         return console.error(error)
       }
     }
     if (typeModal === 'table' && table) {
-      const commandsFees: ICommandsFees[] = table.activeCommands().reduce((commandFees: ICommandsFees[], activeCommand) => {
-        activeCommand.fees.forEach((fee) => {
-          if (fee.code) {
-            if (fee.type === 'fixed') {
-              commandFees.push({
-                id: activeCommand.id,
-                feeAutomatic: fee.automatic,
-                feeCode: fee.code,
-                feeQuantity: fee.quantity,
-              })
-            } else {
-              commandFees.push({
-                id: activeCommand.id,
-                feeAutomatic: fee.automatic,
-                feeCode: fee.code,
-              })
+      const commandsFees: ICommandsFees[] = table
+        .activeCommands()
+        .reduce((commandFees: ICommandsFees[], activeCommand) => {
+          activeCommand.fees.forEach((fee) => {
+            if (fee.code) {
+              if (fee.type === 'fixed') {
+                commandFees.push({
+                  id: activeCommand.id,
+                  feeAutomatic: fee.automatic,
+                  feeCode: fee.code,
+                  feeQuantity: fee.quantity,
+                })
+              } else {
+                commandFees.push({
+                  id: activeCommand.id,
+                  feeAutomatic: fee.automatic,
+                  feeCode: fee.code,
+                })
+              }
             }
-          }
-        })
-        return commandFees ?? []
-      }, [])
+          })
+          return commandFees ?? []
+        }, [])
 
       if (commandsFees.length) {
         try {
-          const { data } = await apiRoute('/dashboard/command/updateTableFees', session, 'PATCH', { commands: commandsFees })
+          const { data } = await apiRoute(
+            '/dashboard/command/updateTableFees',
+            session,
+            'PATCH',
+            { commands: commandsFees }
+          )
           if (haveFees) {
             handleShowToast({
               type: 'success',
@@ -102,12 +122,16 @@ export function Fees(props: FeesProps) {
         setFees(command.fees)
       }
       if (typeModal === 'table' && table) {
-        const tableFees = table.opened?.getUpdatedFees(true, true).map((fee) => {
-          if (fee.id) {
-            fee.automatic = !!table.opened?.allFeesById(fee.id).some((f) => f.automatic)
-          }
-          return fee
-        })
+        const tableFees = table.opened
+          ?.getUpdatedFees(true, true)
+          .map((fee) => {
+            if (fee.id) {
+              fee.automatic = !!table.opened
+                ?.allFeesById(fee.id)
+                .some((f) => f.automatic)
+            }
+            return fee
+          })
         setFees(tableFees as ProfileFee[])
       }
     }, 10)
@@ -135,7 +159,9 @@ export function Fees(props: FeesProps) {
         <h4>
           <b>
             {typeModal === 'command' ? t('order_slip') : t('table')}:{' '}
-            <span className="text-red-500">{typeModal === 'command' ? command?.name : table?.name}</span>
+            <span className="text-red-500">
+              {typeModal === 'command' ? command?.name : table?.name}
+            </span>
           </b>
         </h4>
         <Table className=" mt-3" responsive striped bordered hover>
@@ -162,7 +188,9 @@ export function Fees(props: FeesProps) {
                             placement="auto"
                             overlay={
                               <Popover id="popover-basic">
-                                <Popover.Header as="h3">{t('order_slips')}</Popover.Header>
+                                <Popover.Header as="h3">
+                                  {t('order_slips')}
+                                </Popover.Header>
                                 <Popover.Body
                                   style={{
                                     maxHeight: '15rem',
@@ -170,62 +198,99 @@ export function Fees(props: FeesProps) {
                                   }}
                                   className="py-2"
                                 >
-                                  {table?.activeCommands()?.map((command, index) => {
-                                    const commandFee: ProfileFee | undefined = command.fees.find((f) => f.id === fee.id)
-                                    return (
-                                      commandFee && (
-                                        <Row key={command.id}>
-                                          <Col sm className="d-flex">
-                                            <span className="m-auto" style={{ whiteSpace: 'break-spaces', wordBreak: 'break-all' }}>
-                                              {command.name}
-                                            </span>
-                                          </Col>
-                                          <Col sm className="d-flex">
-                                            <Form.Control
-                                              value={!commandFee.automatic ? 0 : commandFee.quantity}
-                                              disabled={!commandFee.automatic}
-                                              type="number"
-                                              min={0}
-                                              className={`fee-${fee.code} m-auto`}
-                                              id={`${command.id}`}
-                                              onChange={(e) => {
-                                                commandFee.quantity = Number(e.target.value)
-                                                setCurrentCommandId(command.id)
-                                              }}
-                                            />
-                                          </Col>
-                                          <Col sm className="d-flex">
-                                            <Form.Check
-                                              data-id={command.id}
-                                              checked={commandFee.automatic}
-                                              onChange={(e) => {
-                                                commandFee.automatic = e.target.checked
-                                                if (!e.target.checked) {
-                                                  commandFee.oldQuantity = commandFee.quantity
-                                                  commandFee.quantity = 0
-                                                } else {
-                                                  commandFee.quantity = commandFee.oldQuantity
+                                  {table
+                                    ?.activeCommands()
+                                    ?.map((command, index) => {
+                                      const commandFee: ProfileFee | undefined =
+                                        command.fees.find(
+                                          (f) => f.id === fee.id
+                                        )
+                                      return (
+                                        commandFee && (
+                                          <Row key={command.id}>
+                                            <Col sm className="d-flex">
+                                              <span
+                                                className="m-auto"
+                                                style={{
+                                                  whiteSpace: 'break-spaces',
+                                                  wordBreak: 'break-all',
+                                                }}
+                                              >
+                                                {command.name}
+                                              </span>
+                                            </Col>
+                                            <Col sm className="d-flex">
+                                              <Form.Control
+                                                value={
+                                                  !commandFee.automatic
+                                                    ? 0
+                                                    : commandFee.quantity
                                                 }
-                                                setCurrentCommandId(command.id)
-                                              }}
-                                              className={`fee-check-${fee.code} m-auto`}
-                                            />
-                                          </Col>
-                                          {index + 1 !== table?.activeCommands()?.length && <hr className="my-2" />}
-                                        </Row>
+                                                disabled={!commandFee.automatic}
+                                                type="number"
+                                                min={0}
+                                                className={`fee-${fee.code} m-auto`}
+                                                id={`${command.id}`}
+                                                onChange={(e) => {
+                                                  commandFee.quantity = Number(
+                                                    e.target.value
+                                                  )
+                                                  setCurrentCommandId(
+                                                    command.id
+                                                  )
+                                                }}
+                                              />
+                                            </Col>
+                                            <Col sm className="d-flex">
+                                              <Form.Check
+                                                data-id={command.id}
+                                                checked={commandFee.automatic}
+                                                onChange={(e) => {
+                                                  commandFee.automatic =
+                                                    e.target.checked
+                                                  if (!e.target.checked) {
+                                                    commandFee.oldQuantity =
+                                                      commandFee.quantity
+                                                    commandFee.quantity = 0
+                                                  } else {
+                                                    commandFee.quantity =
+                                                      commandFee.oldQuantity
+                                                  }
+                                                  setCurrentCommandId(
+                                                    command.id
+                                                  )
+                                                }}
+                                                className={`fee-check-${fee.code} m-auto`}
+                                              />
+                                            </Col>
+                                            {index + 1 !==
+                                              table?.activeCommands()
+                                                ?.length && (
+                                              <hr className="my-2" />
+                                            )}
+                                          </Row>
+                                        )
                                       )
-                                    )
-                                  })}
+                                    })}
                                 </Popover.Body>
                               </Popover>
                             }
                           >
-                            <Button variant="" className="p-0 m-auto" style={{ outline: 'none' }}>
+                            <Button
+                              variant=""
+                              className="m-auto p-0"
+                              style={{ outline: 'none' }}
+                            >
                               {table
                                 ?.activeCommands()
                                 ?.flatMap((command) => command.fees)
                                 .reduce((totalQuantity, feeReduce) => {
-                                  if (feeReduce.status && feeReduce.automatic && feeReduce.quantity && feeReduce.code === fee.code) {
+                                  if (
+                                    feeReduce.status &&
+                                    feeReduce.automatic &&
+                                    feeReduce.quantity &&
+                                    feeReduce.code === fee.code
+                                  ) {
                                     totalQuantity += feeReduce.quantity
                                   }
                                   return totalQuantity
@@ -246,8 +311,13 @@ export function Fees(props: FeesProps) {
                             data-quantity-code={`feeQuantity-${fee.code}`}
                             value={fee.quantity?.toString()}
                             onChange={(e) => {
-                              e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value
-                              const haveFee = fees.find((f) => f.code === fee.code)
+                              e.target.value =
+                                Number(e.target.value) < 0
+                                  ? '0'
+                                  : e.target.value
+                              const haveFee = fees.find(
+                                (f) => f.code === fee.code
+                              )
                               if (haveFee) {
                                 haveFee.quantity = Number(e.target.value)
                               }
@@ -269,31 +339,44 @@ export function Fees(props: FeesProps) {
                               ? fee.automatic && fee.status
                                 ? (fee.quantity as number) * fee.value
                                 : 0
-                              : table
+                              : (table
                                   ?.activeCommands()
                                   ?.flatMap((command) => command.fees)
                                   .reduce((totalQuantity, feeReduce) => {
                                     if (feeReduce.code === fee.code) {
-                                      if (feeReduce.quantity && feeReduce.status && feeReduce.automatic) {
-                                        totalQuantity += feeReduce.value * feeReduce.quantity
+                                      if (
+                                        feeReduce.quantity &&
+                                        feeReduce.status &&
+                                        feeReduce.automatic
+                                      ) {
+                                        totalQuantity +=
+                                          feeReduce.value * feeReduce.quantity
                                       }
                                     }
                                     return totalQuantity
-                                  }, 0) ?? 0,
+                                  }, 0) ?? 0),
                         })}
                   </td>
                   <td>
                     <Form.Check
                       checked={
                         typeModal === 'table'
-                          ? table?.activeCommands().some((c) => c.fees.find((f) => f.code === fee.code)?.automatic)
+                          ? table
+                              ?.activeCommands()
+                              .some(
+                                (c) =>
+                                  c.fees.find((f) => f.code === fee.code)
+                                    ?.automatic
+                              )
                           : fee.automatic
                       }
                       id="checkAutomatic"
                       onChange={(e) => {
                         if (typeModal === 'table' && table) {
                           table?.activeCommands().forEach((activeCommand) => {
-                            const haveFee = activeCommand.fees.find((f) => f.code === fee.code)
+                            const haveFee = activeCommand.fees.find(
+                              (f) => f.code === fee.code
+                            )
                             if (haveFee) {
                               haveFee.automatic = e.target.checked
                               if (haveFee.automatic) {

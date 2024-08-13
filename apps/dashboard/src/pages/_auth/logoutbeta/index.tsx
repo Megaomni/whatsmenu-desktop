@@ -1,3 +1,3 @@
-export default function LogoutBeta(){
-    return <></>
+export default function LogoutBeta() {
+  return <></>
 }

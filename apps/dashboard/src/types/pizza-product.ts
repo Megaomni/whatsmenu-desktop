@@ -9,8 +9,8 @@ import Complement, { ComplementType } from './complements'
 export interface PizzaProductType {
   id: number
   amount: number | null
-  amount_alert: number | null;
-  bypass_amount: boolean | null;
+  amount_alert: number | null
+  bypass_amount: boolean | null
   status: boolean | number
   sizes: PizzaSizeType[]
   size?: string
@@ -41,7 +41,7 @@ type PizzaAPI2 = {
 export default class PizzaProduct {
   id: number
   amount: number | null
-  amount_alert: number | null;
+  amount_alert: number | null
   bypass_amount: boolean | null
   status: boolean | number
   sizes: PizzaSizeType[]
@@ -51,7 +51,18 @@ export default class PizzaProduct {
   complements: Complement[]
   private basicPizzaUrl: string = '/dashboard/menu/product/pizza'
 
-  constructor({ id, amount, amount_alert, bypass_amount, status, sizes, size, implementations, flavors, complements }: PizzaProductType) {
+  constructor({
+    id,
+    amount,
+    amount_alert,
+    bypass_amount,
+    status,
+    sizes,
+    size,
+    implementations,
+    flavors,
+    complements,
+  }: PizzaProductType) {
     this.id = id
     this.status = status
     this.sizes = sizes
@@ -61,7 +72,9 @@ export default class PizzaProduct {
     this.bypass_amount = bypass_amount
     this.implementations = implementations
     this.flavors = flavors
-    this.complements = complements ? complements.map((c) => new Complement(c)) : []
+    this.complements = complements
+      ? complements.map((c) => new Complement(c))
+      : []
 
     this.flavors.forEach((flavor) => {
       if (!flavor.name) {
@@ -83,16 +96,32 @@ export default class PizzaProduct {
   }
 
   /** API dos produtos de pizza, CREATE, UPDATE, DELETE, DUPLICATE e STATUS */
-  static async API({ type, property, product, items, itemCode, session, body, categories, setCategories, name }: PizzaAPI2) {
+  static async API({
+    type,
+    property,
+    product,
+    items,
+    itemCode,
+    session,
+    body,
+    categories,
+    setCategories,
+    name,
+  }: PizzaAPI2) {
     try {
-      const { urlAPI, method } = this.getAPIUrl(type, property, product.id, itemCode)
+      const { urlAPI, method } = this.getAPIUrl(
+        type,
+        property,
+        product.id,
+        itemCode
+      )
 
       const { data: pizza }: { data: PizzaProductType } =
         type !== 'CREATE' && type !== 'UPDATE' && property !== 'implementation'
           ? await apiRoute(urlAPI, session, method, body)
           : await apiRoute(urlAPI, session, method, body, {
               'Content-Type': 'multipart/form-data',
-              'Authorization': `Bearer ${session?.accessToken}`,
+              Authorization: `Bearer ${session?.accessToken}`,
             })
 
       switch (property) {
@@ -109,7 +138,9 @@ export default class PizzaProduct {
           product.flavors = this.parseProperty(pizza.flavors)
           break
         case 'complements':
-          product.complements = this.parseProperty(pizza.complements.map((c) => new Complement(c)))
+          product.complements = this.parseProperty(
+            pizza.complements.map((c) => new Complement(c))
+          )
           break
       }
 
@@ -119,11 +150,15 @@ export default class PizzaProduct {
 
       switch (property) {
         case 'complements':
-          return (product[`${property}`] as any[]).find((el) => el.code === itemCode)
+          return (product[`${property}`] as any[]).find(
+            (el) => el.code === itemCode
+          )
         case 'amount':
           return product[`${property}`] as any
         default:
-          return (product[`${property}s`] as any[]).find((el) => el.code === itemCode)
+          return (product[`${property}s`] as any[]).find(
+            (el) => el.code === itemCode
+          )
       }
     } catch (error) {
       throw error
@@ -146,7 +181,7 @@ export default class PizzaProduct {
         break
       case 'UPDATE':
         urlAPI = `${urlAPI}/${id}/upd${property}/${property === 'complements' || !code ? '' : code}`
-        
+
         method = 'PATCH'
         break
       case 'DELETE':
@@ -262,8 +297,8 @@ export interface PizzaImplementationType {
 export interface PizzaFlavorType {
   code: string
   amount?: number
-  amount_alert?: number;
-  bypass_amount?: boolean;
+  amount_alert?: number
+  bypass_amount?: boolean
   name: string
   description: string
   image: string
@@ -292,5 +327,13 @@ export class Flavor {
   //   [key: string]: string;
   // };
 
-  constructor({ code, name, description, image, status, values, valuesTable }: PizzaFlavorType) {}
+  constructor({
+    code,
+    name,
+    description,
+    image,
+    status,
+    values,
+    valuesTable,
+  }: PizzaFlavorType) {}
 }

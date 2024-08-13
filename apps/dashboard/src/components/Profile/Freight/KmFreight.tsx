@@ -14,7 +14,14 @@ interface KmFreightProps {
 export function KmFreight(props: KmFreightProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile, setProfile, handleShowToast, handleConfirmModal, user, currency } = useContext(AppContext)
+  const {
+    profile,
+    setProfile,
+    handleShowToast,
+    handleConfirmModal,
+    user,
+    currency,
+  } = useContext(AppContext)
   let { taxDelivery } = props
 
   const [showSpinner, setShowSpinner] = useState(false)
@@ -28,7 +35,9 @@ export function KmFreight(props: KmFreightProps) {
   })
 
   const handleAddTax = async () => {
-    const taxAlreadyExists = taxDelivery.find((t) => t.distance == newTax.distance)
+    const taxAlreadyExists = taxDelivery.find(
+      (t) => t.distance == newTax.distance
+    )
     setShowSpinner(true)
     if (!newTax.time) {
       newTax.time = 'A consultar'
@@ -57,7 +66,12 @@ export function KmFreight(props: KmFreightProps) {
           time: newTax.time,
           value: newTax.value,
         }
-        const { data } = await apiRoute('/dashboard/profile/taxDelivery', session, 'POST', body)
+        const { data } = await apiRoute(
+          '/dashboard/profile/taxDelivery',
+          session,
+          'POST',
+          body
+        )
         taxDelivery.push(data.tax)
         setNewTax({
           code: hash(),
@@ -107,7 +121,12 @@ export function KmFreight(props: KmFreightProps) {
     }
     setShowSpinner(true)
     try {
-      const { data } = await apiRoute('/dashboard/profile/tax/km/update', session, 'PUT', body)
+      const { data } = await apiRoute(
+        '/dashboard/profile/tax/km/update',
+        session,
+        'PUT',
+        body
+      )
       let updatedTax = taxDelivery.find((t) => t.code === data.code)
       if (updatedTax) {
         updatedTax = data
@@ -130,7 +149,11 @@ export function KmFreight(props: KmFreightProps) {
       actionConfirm: async () => {
         try {
           setShowSpinner(true)
-          await apiRoute(`/dashboard/profile/taxDelivery/${tax.code}/delete`, session, 'DELETE')
+          await apiRoute(
+            `/dashboard/profile/taxDelivery/${tax.code}/delete`,
+            session,
+            'DELETE'
+          )
           taxDelivery = taxDelivery.filter((t) => t.code !== tax.code)
           setProfile({ ...profile, taxDelivery })
           handleShowToast({
@@ -192,7 +215,7 @@ export function KmFreight(props: KmFreightProps) {
         </Col>
         <Col md="2" className="d-flex mb-2">
           <Button
-            className="mt-auto flex-grow-1"
+            className="flex-grow-1 mt-auto"
             onClick={() => {
               handleAddTax()
             }}
@@ -228,14 +251,15 @@ export function KmFreight(props: KmFreightProps) {
                           min={0}
                           defaultValue={tax.distance}
                           onChange={(e) => {
-                            e.target.value = Number(e.target.value) < 0 ? '0' : e.target.value
+                            e.target.value =
+                              Number(e.target.value) < 0 ? '0' : e.target.value
                             tax.distance = Number(e.target.value)
                           }}
                         />
                       </InputGroup>
                     </td>
                     <td>
-                      <InputGroup className="text-nowrap flex-nowrap">
+                      <InputGroup className="flex-nowrap text-nowrap">
                         <InputGroup.Text>Min.</InputGroup.Text>
                         <Form.Control
                           // type="number"
@@ -254,11 +278,17 @@ export function KmFreight(props: KmFreightProps) {
                     </td>
                     <td style={{ minWidth: '9rem' }}>
                       <InputGroup className="text-nowrap">
-                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                        <InputGroup.Text>
+                          {currency({ value: 0, symbol: true })}
+                        </InputGroup.Text>
                         <Form.Control
                           // type="number"
                           min={0}
-                          defaultValue={Number(tax.value ?? undefined) >= 0 ? Number(tax.value).toFixed(2) : undefined}
+                          defaultValue={
+                            Number(tax.value ?? undefined) >= 0
+                              ? Number(tax.value).toFixed(2)
+                              : undefined
+                          }
                           onChange={(e) => {
                             if (Number(e.target.value)) {
                               mask(e, 'currency')
@@ -267,7 +297,9 @@ export function KmFreight(props: KmFreightProps) {
                             }
                             tax.value = e.target.value
                           }}
-                          placeholder={Number(tax.value ?? undefined) ? '' : 'A Consultar'}
+                          placeholder={
+                            Number(tax.value ?? undefined) ? '' : 'A Consultar'
+                          }
                         />
                       </InputGroup>
                     </td>

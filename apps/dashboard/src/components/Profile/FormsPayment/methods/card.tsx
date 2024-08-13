@@ -17,7 +17,7 @@ type CreditForm = ProfileFormPayment & {
   onlineCard: boolean
 }
 
-export interface CardPaymentSettingsProps extends PaymentSettingsProps { }
+export interface CardPaymentSettingsProps extends PaymentSettingsProps {}
 
 const CardPaymentSettings = ({ formPayment }: CardPaymentSettingsProps) => {
   const { t } = useTranslation()
@@ -64,15 +64,26 @@ const CardPaymentSettings = ({ formPayment }: CardPaymentSettingsProps) => {
       ...state,
       ...formPayment,
     }))
-    reset(profileState?.formsPayment?.find((method) => method.payment === formPayment?.payment))
+    reset(
+      profileState?.formsPayment?.find(
+        (method) => method.payment === formPayment?.payment
+      )
+    )
   }, [profileState, formPayment?.payment, getValues])
 
   useEffect(() => {
-    reset(profileState?.formsPayment?.find((method) => method.payment === formPayment?.payment))
+    reset(
+      profileState?.formsPayment?.find(
+        (method) => method.payment === formPayment?.payment
+      )
+    )
   }, [cardSettings])
 
   useEffect(() => {
-    if (showFinPassModal === false && dataToBeUpdated?.payment === formPayment?.payment) {
+    if (
+      showFinPassModal === false &&
+      dataToBeUpdated?.payment === formPayment?.payment
+    ) {
       reset()
     }
   }, [showFinPassModal])
@@ -81,9 +92,11 @@ const CardPaymentSettings = ({ formPayment }: CardPaymentSettingsProps) => {
 
   return (
     <Card className="position-relative">
-      <form onSubmit={handleSubmit((data) => onSubmit(data, toggleSpinner, reset))}>
+      <form
+        onSubmit={handleSubmit((data) => onSubmit(data, toggleSpinner, reset))}
+      >
         <Card.Header className="text-dark d-flex justify-content-between">
-          <h4 className="text-sm mb-0 text-capitalize">
+          <h4 className="text-capitalize mb-0 text-sm">
             <b>{t(cardSettings!.payment as string)}</b>
           </h4>
           <div className="d-flex gap-5">
@@ -104,12 +117,18 @@ const CardPaymentSettings = ({ formPayment }: CardPaymentSettingsProps) => {
         <Card.Body>
           <Row className="mt-3">
             <div className="d-flex gap-4">
-              <Form.Control placeholder={t('card_network')} className="flex-grow-1 w-100" {...register('newFlag')} />
+              <Form.Control
+                placeholder={t('card_network')}
+                className="flex-grow-1 w-100"
+                {...register('newFlag')}
+              />
               <Button
                 variant="success"
                 className="flex-grow-1 my-auto"
                 type="submit"
-                disabled={Object.keys(errors).length || !newFlag?.length ? true : false}
+                disabled={
+                  Object.keys(errors).length || !newFlag?.length ? true : false
+                }
               >
                 {t('add_card_network')}
               </Button>
@@ -124,15 +143,25 @@ const CardPaymentSettings = ({ formPayment }: CardPaymentSettingsProps) => {
             </Col>
 
             <Col md lg="2" className="d-flex">
-              <Button variant="success" className="flex-grow-1 mt-auto mb-3" type="submit" disabled={Object.keys(errors).length ? true : false}>
+              <Button
+                variant="success"
+                className="flex-grow-1 mb-3 mt-auto"
+                type="submit"
+                disabled={Object.keys(errors).length ? true : false}
+              >
                 {t('save')}
               </Button>
             </Col>
           </Row>
           <Row>
-            <Col md className="d-flex gap-3 mt-3">
+            <Col md className="d-flex mt-3 gap-3">
               {cardSettings?.flags?.map((flag) => (
-                <Badge key={flag.code} bg="dark" className="cursor-pointer" onClick={() => deleteFlag(flag.code)}>
+                <Badge
+                  key={flag.code}
+                  bg="dark"
+                  className="cursor-pointer"
+                  onClick={() => deleteFlag(flag.code)}
+                >
                   {flag.name} <IoCloseSharp />
                 </Badge>
               ))}

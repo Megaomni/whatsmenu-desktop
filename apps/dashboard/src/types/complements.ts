@@ -76,7 +76,10 @@ export default class Complement {
    *
    **/
 
-  public isLinked = (complements: Complement[], modifyComplements?: boolean) => {
+  public isLinked = (
+    complements: Complement[],
+    modifyComplements?: boolean
+  ) => {
     const allComplements = complements.filter((comp) => comp.id === this.id)
     if (modifyComplements) {
       allComplements.forEach((compl) => {
@@ -103,7 +106,13 @@ export default class Complement {
 
   static removeProps = (complement: Complement) => {
     //Props Deletadas
-    const { id: deletedId, created_at, updated_at, pivot, ...newComplement } = complement
+    const {
+      id: deletedId,
+      created_at,
+      updated_at,
+      pivot,
+      ...newComplement
+    } = complement
     return newComplement
   }
 

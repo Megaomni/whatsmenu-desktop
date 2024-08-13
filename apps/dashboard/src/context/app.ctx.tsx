@@ -18,8 +18,27 @@ import { DateTime, Interval } from 'luxon'
 import { UserType } from 'next-auth'
 import { signOut, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { Dispatch, ReactNode, Reducer, SetStateAction, createContext, useCallback, useEffect, useReducer, useRef, useState } from 'react'
-import { Alert, Button, Container, Fade, Modal, Navbar, Offcanvas } from 'react-bootstrap'
+import {
+  Dispatch,
+  ReactNode,
+  Reducer,
+  SetStateAction,
+  createContext,
+  useCallback,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from 'react'
+import {
+  Alert,
+  Button,
+  Container,
+  Fade,
+  Modal,
+  Navbar,
+  Offcanvas,
+} from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { FaDownload, FaGooglePlay } from 'react-icons/fa'
 import { IoVolumeMuteSharp } from 'react-icons/io5'
@@ -155,7 +174,11 @@ interface AppContextData {
   wsCommand: CommandType | null
   setShowNewFeatureModal: (value: boolean | ((val: boolean) => boolean)) => void
   profileLocale: ProfileOptions['locale']
-  currency: (payload: { value: number; symbol?: boolean; withoutSymbol?: boolean }) => string
+  currency: (payload: {
+    value: number
+    symbol?: boolean
+    withoutSymbol?: boolean
+  }) => string
 }
 
 type RequestsToPrintType = {
@@ -225,7 +248,9 @@ export function AppProvider({ children }: AppProviderProps) {
   const [navigatorOnline, setNavigatorOnline] = useState<boolean>(true)
   const [showStatusNavigator, setStatusNavigator] = useState<boolean>(false)
   const [profile, setProfile] = useState<Profile>()
-  const [plansCategory, setPlansCategory] = useState<('package' | 'basic' | 'table')[]>([])
+  const [plansCategory, setPlansCategory] = useState<
+    ('package' | 'basic' | 'table')[]
+  >([])
   const [plans, setPlans] = useState<Plan[]>([])
   const [cupons, setCupons] = useState<CupomType[]>([])
   const [showSidebar, setShowSidebar] = useState(true)
@@ -236,7 +261,10 @@ export function AppProvider({ children }: AppProviderProps) {
     show: showConfirmModal,
     onHide: () => setShowConfirmModal(false),
   })
-  const [showNewFeatureModal, setShowNewFeatureModal] = useLocalStorage('@whatsmenu:new-feature-modal', false)
+  const [showNewFeatureModal, setShowNewFeatureModal] = useLocalStorage(
+    '@whatsmenu:new-feature-modal',
+    false
+  )
   const [possibleMobile, setPossibleMobile] = useState<boolean>(true)
   const [invoicePending, setInvoicePending] = useState<{
     invoice: any
@@ -269,11 +297,21 @@ export function AppProvider({ children }: AppProviderProps) {
   const [wsPrint, setWsPrint] = useState<Subscription | null>(null)
   const [prevent, setPrevent] = useState<boolean>(false)
 
-  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>('defaultDomain', null, 'sessionStorage')
+  const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
+    'defaultDomain',
+    null,
+    'sessionStorage'
+  )
 
-  const [printAppDownloaded, setPrintAppDownloaded] = useLocalStorage('@whatsmenu:whatsmenu-print-app-downloaded', false)
-  const [whatsmenuDesktopDownloaded, setWhatsmenuDesktopDownloaded] = useLocalStorage('@whatsmenu:whatsmenu-desktop-downloaded', false)
-  const [profileLocale, setProfileLocale] = useLocalStorage<ProfileOptions['locale']>(
+  const [printAppDownloaded, setPrintAppDownloaded] = useLocalStorage(
+    '@whatsmenu:whatsmenu-print-app-downloaded',
+    false
+  )
+  const [whatsmenuDesktopDownloaded, setWhatsmenuDesktopDownloaded] =
+    useLocalStorage('@whatsmenu:whatsmenu-desktop-downloaded', false)
+  const [profileLocale, setProfileLocale] = useLocalStorage<
+    ProfileOptions['locale']
+  >(
     '@whatsmenu:profile-locale',
     { language: 'pt-BR', currency: 'BRL' },
     'localStorage'
@@ -291,7 +329,8 @@ export function AppProvider({ children }: AppProviderProps) {
   const [showUpdateMessage, setShowUpdateMessage] = useState(true)
   const [showMessageWhatsapp, setShowMessageWhatsapp] = useState(false)
   const [siginError, setSiginError] = useState(false)
-  const [showUpdateSubAccountModal, setShowUpdateSubAccountModal] = useState(false)
+  const [showUpdateSubAccountModal, setShowUpdateSubAccountModal] =
+    useState(false)
 
   const [showAlertMessage, setShowAlertMessage] = useState(true)
 
@@ -472,7 +511,10 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const verifyInventory = async () => {
     if (!profile?.options.inventoryControl) return
-    const { data: lowAndSoldOutItems } = await apiRoute('/dashboard/inventory', session)
+    const { data: lowAndSoldOutItems } = await apiRoute(
+      '/dashboard/inventory',
+      session
+    )
     return setLowInventoryItems(lowAndSoldOutItems)
   }
 
@@ -480,8 +522,18 @@ export function AppProvider({ children }: AppProviderProps) {
     if (!lowInventoryItems) return false
 
     const {
-      low: { products: lowProducts, pizzaProducts: lowPizzaProducts, pizzaFlavors: lowPizzaFlavors, complements: lowComplements },
-      soldOut: { products: soldOutProducts, pizzaProducts: soldOutPizzaProducts, pizzaFlavors: soldOutPizzaFlavors, complements: soldOutComplements },
+      low: {
+        products: lowProducts,
+        pizzaProducts: lowPizzaProducts,
+        pizzaFlavors: lowPizzaFlavors,
+        complements: lowComplements,
+      },
+      soldOut: {
+        products: soldOutProducts,
+        pizzaProducts: soldOutPizzaProducts,
+        pizzaFlavors: soldOutPizzaFlavors,
+        complements: soldOutComplements,
+      },
     } = lowInventoryItems
     return !![
       ...lowProducts,
@@ -535,7 +587,10 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const getUser = useCallback(async () => {
     if (session) {
-      const { data: dataUser } = (await apiRoute(`${process.env.WHATSMENU_API}/dashboard/user/getUser`, session)) as AxiosResponse<UserType>
+      const { data: dataUser } = (await apiRoute(
+        `${process.env.WHATSMENU_API}/dashboard/user/getUser`,
+        session
+      )) as AxiosResponse<UserType>
 
       dispatchUser({
         type: 'update',
@@ -572,7 +627,15 @@ export function AppProvider({ children }: AppProviderProps) {
    * @param {boolean} [opções.withoutSymbol=false] - Se deve excluir o símbolo da moeda. Padrão é false.
    * @return {string} A string formatada da moeda.
    */
-  const currency = ({ value = 0, symbol = false, withoutSymbol = false }: { value: number; symbol?: boolean; withoutSymbol?: boolean }) => {
+  const currency = ({
+    value = 0,
+    symbol = false,
+    withoutSymbol = false,
+  }: {
+    value: number
+    symbol?: boolean
+    withoutSymbol?: boolean
+  }) => {
     if (!profile || !profile.options?.locale) {
       return new Intl.NumberFormat(user.controls?.currency ?? 'pt-BR', {
         style: 'currency',
@@ -656,25 +719,35 @@ export function AppProvider({ children }: AppProviderProps) {
         setUpdateHTML(updateHTML + 1)
       }
 
-      document.querySelector('#body-application')?.addEventListener('touchstart', function (e: any) {
-        if (e.touches && e.touches.length !== 1) {
-          return
-        }
+      document
+        .querySelector('#body-application')
+        ?.addEventListener('touchstart', function (e: any) {
+          if (e.touches && e.touches.length !== 1) {
+            return
+          }
 
-        const scrollY = window.pageYOffset || document.body.scrollTop || document.documentElement.scrollTop
-        setPrevent(scrollY === 0)
-      })
+          const scrollY =
+            window.pageYOffset ||
+            document.body.scrollTop ||
+            document.documentElement.scrollTop
+          setPrevent(scrollY === 0)
+        })
 
-      document.querySelector('#body-application')?.addEventListener('touchmove', function (e: any) {
-        if (prevent) {
-          setPrevent(false)
-          e.preventDefault()
-        }
-      })
+      document
+        .querySelector('#body-application')
+        ?.addEventListener('touchmove', function (e: any) {
+          if (prevent) {
+            setPrevent(false)
+            e.preventDefault()
+          }
+        })
 
       setAudio(audioRef.current)
 
-      const mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && 'ontouchstart' in window
+      const mobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        ) && 'ontouchstart' in window
 
       if (localStorage.getItem('mobile') !== null) {
         setPossibleMobile(false)
@@ -699,7 +772,14 @@ export function AppProvider({ children }: AppProviderProps) {
         const userGateway = user?.controls?.paymentInfo.gateway
         switch (userGateway) {
           case 'pagarme':
-            setGateway(new Gateway(new StrategyPagarme(session, process.env.PAGARME_PUBLIC_KEY as string)))
+            setGateway(
+              new Gateway(
+                new StrategyPagarme(
+                  session,
+                  process.env.PAGARME_PUBLIC_KEY as string
+                )
+              )
+            )
             break
           case 'stripe':
             setGateway(new Gateway(new StrategyStripe(session)))
@@ -710,16 +790,23 @@ export function AppProvider({ children }: AppProviderProps) {
   }, [session, gateway, user])
 
   useEffect(() => {
-    const alreadyInProfile = router.asPath === '/dashboard/profile' || router.asPath === '/dashboard/invoices'
+    const alreadyInProfile =
+      router.asPath === '/dashboard/profile' ||
+      router.asPath === '/dashboard/invoices'
     const acceptedTypes = ['adm', 'manager', 'seller', 'support']
     if (session && !acceptedTypes.includes(user?.controls?.type)) {
       if (
         status === 'authenticated' &&
         profile &&
-        (!profile.id || (plansCategory?.some((p) => p !== 'table') && (!profile.address.street || !profile.taxDelivery.length))) &&
+        (!profile.id ||
+          (plansCategory?.some((p) => p !== 'table') &&
+            (!profile.address.street || !profile.taxDelivery.length))) &&
         !alreadyInProfile
       ) {
-        if (user?.controls?.paymentInfo && !user.controls.paymentInfo?.gateways) {
+        if (
+          user?.controls?.paymentInfo &&
+          !user.controls.paymentInfo?.gateways
+        ) {
           if (!user.controls.paymentInfo?.subscription) {
             router.push('/dashboard/invoices')
           }
@@ -730,11 +817,19 @@ export function AppProvider({ children }: AppProviderProps) {
     }
 
     if (profile) {
-      if (profile.options?.forceLogout && Number(profile.options?.forceLogout) > session?.user?.loginDate) {
+      if (
+        profile.options?.forceLogout &&
+        Number(profile.options?.forceLogout) > session?.user?.loginDate
+      ) {
         signOut()
       }
 
-      if (profile.address && profile.taxDelivery.length && profile.not_security_key && (!user.security_key || user.security_key === '16S7^$kJjWKy')) {
+      if (
+        profile.address &&
+        profile.taxDelivery.length &&
+        profile.not_security_key &&
+        (!user.security_key || user.security_key === '16S7^$kJjWKy')
+      ) {
         router.push('/dashboard/settings/account')
       }
     }
@@ -746,15 +841,23 @@ export function AppProvider({ children }: AppProviderProps) {
       try {
         const initialRequests = await Promise.all([
           api.get('/dashboard/profile'),
-          apiRoute('/dashboard/userPlans', session) as Promise<AxiosResponse<Plan[]>>,
+          apiRoute('/dashboard/userPlans', session) as Promise<
+            AxiosResponse<Plan[]>
+          >,
           apiRoute('/dashboard/invoices/pending', session),
         ])
-        const [{ data: profileFetch }, { data: userPlansFetch }, { data: invoicesFetch }] = initialRequests
+        const [
+          { data: profileFetch },
+          { data: userPlansFetch },
+          { data: invoicesFetch },
+        ] = initialRequests
 
         setProfile(new Profile(profileFetch || {}))
         storeProfile(profileFetch)
         setPlans(userPlansFetch ? userPlansFetch.sort() : [])
-        setPlansCategory(userPlansFetch ? userPlansFetch.map((p) => p.category).sort() : [])
+        setPlansCategory(
+          userPlansFetch ? userPlansFetch.map((p) => p.category).sort() : []
+        )
 
         if (profileFetch) {
           // if (true) {
@@ -805,21 +908,40 @@ export function AppProvider({ children }: AppProviderProps) {
           // }
 
           // if (userPlansFetch.some((p) => p.category === 'table')) {
-          const { data: bartenders } = await apiRoute('/dashboard/bartenders', session)
+          const { data: bartenders } = await apiRoute(
+            '/dashboard/bartenders',
+            session
+          )
 
           if (!defaultDomain) {
             let { data } = await apiRoute('/dashboard/domain', session)
             setDefaultDomain(data || baseUrl)
           }
 
-          setBartenders(bartenders.map((br: BartenderType) => new Bartender({ ...br, password: '' })))
+          setBartenders(
+            bartenders.map(
+              (br: BartenderType) => new Bartender({ ...br, password: '' })
+            )
+          )
 
           // SETANDO PERSIST BARTENDER COMO TRUE PRA USUARIOS MESA ANTERIORES Á ATUALIZAÇÃO DE GARÇONS
-          if (typeof profileFetch.options.table?.persistBartender !== 'boolean') {
+          if (
+            typeof profileFetch.options.table?.persistBartender !== 'boolean'
+          ) {
             const body = { table: { persistBartender: true } }
-            const { data } = await apiRoute('/dashboard/settings/tableConfigUpdate', session, 'PATCH', body)
+            const { data } = await apiRoute(
+              '/dashboard/settings/tableConfigUpdate',
+              session,
+              'PATCH',
+              body
+            )
             setProfile((state) => {
-              return state && { ...state, options: { ...state.options, table: data } }
+              return (
+                state && {
+                  ...state,
+                  options: { ...state.options, table: data },
+                }
+              )
             })
           }
           // }
@@ -862,7 +984,11 @@ export function AppProvider({ children }: AppProviderProps) {
 
   useEffect(() => {
     if (!showUpdateSubAccountModal) {
-      if (profile && profile.options?.asaas && !profile.options?.asaas?.incomeValue) {
+      if (
+        profile &&
+        profile.options?.asaas &&
+        !profile.options?.asaas?.incomeValue
+      ) {
         setShowUpdateSubAccountModal(true)
       }
     }
@@ -879,8 +1005,10 @@ export function AppProvider({ children }: AppProviderProps) {
   }, [profile])
 
   const showInvoiceAlertMessage = user?.controls?.alertInvoiceDayBefore
-    ? Interval.fromDateTimes(DateTime.local(), DateTime.fromISO(invoicePending.invoice?.expiration)).count('days') <=
-      user?.controls?.alertInvoiceDayBefore
+    ? Interval.fromDateTimes(
+        DateTime.local(),
+        DateTime.fromISO(invoicePending.invoice?.expiration)
+      ).count('days') <= user?.controls?.alertInvoiceDayBefore
     : true
 
   return (
@@ -967,7 +1095,10 @@ export function AppProvider({ children }: AppProviderProps) {
               <TablesProvider>
                 <Navbar expand={false} className="mb-3 p-0">
                   <Container fluid>
-                    <Topbar setShowSidebar={setShowSidebar} showSidebar={showSidebar} />
+                    <Topbar
+                      setShowSidebar={setShowSidebar}
+                      showSidebar={showSidebar}
+                    />
 
                     <Navbar.Offcanvas
                       placement="start"
@@ -983,7 +1114,12 @@ export function AppProvider({ children }: AppProviderProps) {
                       }}
                       id="sidebar-offcanvas"
                     >
-                      <Offcanvas.Body className="sidebar" as="aside" bsPrefix="sidebar" id="sidebar">
+                      <Offcanvas.Body
+                        className="sidebar"
+                        as="aside"
+                        bsPrefix="sidebar"
+                        id="sidebar"
+                      >
                         <Sidebar />
                       </Offcanvas.Body>
                     </Navbar.Offcanvas>
@@ -1008,7 +1144,7 @@ export function AppProvider({ children }: AppProviderProps) {
                             href="https://wa.me/5511937036875?text=Olá,%20recebi%20um%20aviso%20em%20meu%20painel%20sobre%20uma%20parcela%20em%20atraso"
                             target="_blank"
                             rel="noreferrer"
-                            className="text-dark fw-bold border border-dark border-top-0 border-start-0 border-end-0 pb-1"
+                            className="text-dark fw-bold border-dark border-top-0 border-start-0 border-end-0 border pb-1"
                           >
                             +55 (11) 93703-6875
                           </a>
@@ -1021,7 +1157,9 @@ export function AppProvider({ children }: AppProviderProps) {
                     />
                   )}
 
-                  {lowStockAlert() ? <InventoryWarning lowInventoryItems={lowInventoryItems} /> : null}
+                  {lowStockAlert() ? (
+                    <InventoryWarning lowInventoryItems={lowInventoryItems} />
+                  ) : null}
 
                   {navigator.userAgent.includes('Windows NT 10') &&
                   parseInt(getBrowserVersion()) > 109 &&
@@ -1030,10 +1168,14 @@ export function AppProvider({ children }: AppProviderProps) {
                   !possibleMobile ? (
                     <>
                       <div className="bd-callout bd-callout-warning bg-warning bg-opacity-25">
-                        <h2 className="mb-3">🎉 {t('message_download_whatsmenu_desktop')}: 🚀</h2>
+                        <h2 className="mb-3">
+                          🎉 {t('message_download_whatsmenu_desktop')}: 🚀
+                        </h2>
                         <div className="d-flex align-itens-center justify-content-between">
                           <div className="d-flex flex-column align-itens-center justify-content-between">
-                            <h6 className="fw-bold">{t('message_less_work')}</h6>
+                            <h6 className="fw-bold">
+                              {t('message_less_work')}
+                            </h6>
                             <ul>
                               <li>🤖 {t('message_virtual_assistant')}</li>
                               <li>💘 {t('message_loyalty_program')}</li>
@@ -1044,7 +1186,7 @@ export function AppProvider({ children }: AppProviderProps) {
                             </ul>
                           </div>
                         </div>
-                        <div className="text-end d-flex justify-content-start gap-3">
+                        <div className="d-flex justify-content-start gap-3 text-end">
                           <Button
                             as="a"
                             className="d-flex align-items-center justify-content-center gap-2 text-center"
@@ -1056,7 +1198,12 @@ export function AppProvider({ children }: AppProviderProps) {
                           </Button>
                           <HelpVideos.Trigger
                             className="btn btn-danger"
-                            urls={[{ src: 'https://www.youtube.com/embed/LxgnljotW6U?si=-K3KfGsOMQWDm05e', title: t('donwload_the_whatsmenu') }]}
+                            urls={[
+                              {
+                                src: 'https://www.youtube.com/embed/LxgnljotW6U?si=-K3KfGsOMQWDm05e',
+                                title: t('donwload_the_whatsmenu'),
+                              },
+                            ]}
                           />
                         </div>
                       </div>
@@ -1065,17 +1212,23 @@ export function AppProvider({ children }: AppProviderProps) {
                   {possibleMobile && !printAppDownloaded ? (
                     <>
                       <div className="bd-callout bd-callout-warning bg-warning bg-opacity-25">
-                        <h6 className="mb-3 fw-bold">🎉 {t('message_download_whatsmenu_printers')}: 🚀</h6>
+                        <h6 className="fw-bold mb-3">
+                          🎉 {t('message_download_whatsmenu_printers')}: 🚀
+                        </h6>
                         <div className="d-flex align-itens-center justify-content-between">
                           <div className="d-flex flex-column align-itens-center justify-content-between">
                             <ul>
-                              <li>📱 {t('message_automatic_printing_mobile')}</li>
-                              <li>🖨️ {t('message_printing_multiple_printers')}</li>
+                              <li>
+                                📱 {t('message_automatic_printing_mobile')}
+                              </li>
+                              <li>
+                                🖨️ {t('message_printing_multiple_printers')}
+                              </li>
                               <li>📝 {t('message_copy_printing')}</li>
                             </ul>
                           </div>
                         </div>
-                        <div className="text-end flex-column d-flex gap-2 justify-content-start">
+                        <div className="flex-column d-flex justify-content-start gap-2 text-end">
                           <Button
                             as="a"
                             target="_blank"
@@ -1110,17 +1263,19 @@ export function AppProvider({ children }: AppProviderProps) {
                     variant="warning"
                     transition={Fade}
                     show={!firsInteract}
-                    className="with-icon position-fixed m-0 w-100"
+                    className="with-icon position-fixed w-100 m-0"
                     style={{ top: '0', maxHeight: '70px', zIndex: 99999 }}
                   >
                     <IoVolumeMuteSharp className="ms-auto" />
-                    <span className="me-auto">{t('message_audio_disabled')}</span>
+                    <span className="me-auto">
+                      {t('message_audio_disabled')}
+                    </span>
                   </Alert>
                 )}
                 {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
                   <Alert
                     variant={`${invoicePending.invoice?.overdue ? 'danger' : 'warning'}`}
-                    className="position-fixed m-0 w-100 text-center"
+                    className="position-fixed w-100 m-0 text-center"
                     style={{ bottom: '0', zIndex: 999 }}
                   >
                     <a
@@ -1129,20 +1284,28 @@ export function AppProvider({ children }: AppProviderProps) {
                       href={
                         invoicePending?.invoice?.requests &&
                         invoicePending?.invoice?.requests[0]?.paghiper &&
-                        invoicePending?.invoice?.paghiper[0]?.create_request?.url_slip
+                        invoicePending?.invoice?.paghiper[0]?.create_request
+                          ?.url_slip
                       }
                       style={{ color: 'inherit' }}
                     >
-                      {!invoicePending.invoice?.overdue ? t('message_monthly_invoice_available') : t('message_menu_locked')}
+                      {!invoicePending.invoice?.overdue
+                        ? t('message_monthly_invoice_available')
+                        : t('message_menu_locked')}
                     </a>
                   </Alert>
                 ) : null}
-                <Footer sideOpen={showSidebar} haveInvoice={invoicePending.invoice} />
+                <Footer
+                  sideOpen={showSidebar}
+                  haveInvoice={invoicePending.invoice}
+                />
                 <>
                   <section className="modals">
                     <HelpVideos.Root
                       show={helpVideoModal.show}
-                      handleClose={() => setHelpVideoModal({ show: false, urls: [] })}
+                      handleClose={() =>
+                        setHelpVideoModal({ show: false, urls: [] })
+                      }
                       urls={helpVideoModal.urls}
                     />
                     <WMToast
@@ -1172,19 +1335,52 @@ export function AppProvider({ children }: AppProviderProps) {
                     <PrinterRequests />
                     <Modal size="xl" centered show={showNewFeatureModal}>
                       <NewFeat
-                        mainVideo={{ title: t('overview_pos_pizza_addons'), id: '9Aq37MSTvJU' }}
+                        mainVideo={{
+                          title: t('overview_pos_pizza_addons'),
+                          id: '9Aq37MSTvJU',
+                        }}
                         videos={[
-                          { title: t('how_to_register_customer_pos'), id: 'kfif91jSOHU' },
-                          { title: t('guide_placing_order_pos'), id: 'HRVEY780QgU' },
-                          { title: t('how_to_update_customer_information_pos'), id: '6jknXq56UEw' },
-                          { title: t('guide_opening_cash_register'), id: 'rzk0y_GKxDI' },
-                          { title: t('guide_closin_cash_register'), id: 'fEQblrE6gb4' },
-                          { title: t('cash_register_closing_reports'), id: 'kbF9kBoLcAQ' },
-                          { title: t('how_place_order_counter_pos'), id: 'uv6lo70w58E' },
-                          { title: t('reordering_customers_orders'), id: '8Cikh-zK4ME' },
-                          { title: t('place_order_pizza_pos'), id: 'jLmVWOjfOqk' },
+                          {
+                            title: t('how_to_register_customer_pos'),
+                            id: 'kfif91jSOHU',
+                          },
+                          {
+                            title: t('guide_placing_order_pos'),
+                            id: 'HRVEY780QgU',
+                          },
+                          {
+                            title: t('how_to_update_customer_information_pos'),
+                            id: '6jknXq56UEw',
+                          },
+                          {
+                            title: t('guide_opening_cash_register'),
+                            id: 'rzk0y_GKxDI',
+                          },
+                          {
+                            title: t('guide_closin_cash_register'),
+                            id: 'fEQblrE6gb4',
+                          },
+                          {
+                            title: t('cash_register_closing_reports'),
+                            id: 'kbF9kBoLcAQ',
+                          },
+                          {
+                            title: t('how_place_order_counter_pos'),
+                            id: 'uv6lo70w58E',
+                          },
+                          {
+                            title: t('reordering_customers_orders'),
+                            id: '8Cikh-zK4ME',
+                          },
+                          {
+                            title: t('place_order_pizza_pos'),
+                            id: 'jLmVWOjfOqk',
+                          },
                           { title: t('how_create_tables'), id: 'tkPI7P9uQJU' },
-                          { title: t('guide_registering_pizza_crusts'), id: 'y0kTLeWEAXU' },
+                          {
+                            title: t('guide_registering_pizza_crusts'),
+                            id: 'y0kTLeWEAXU',
+                          },
                         ]}
                         feature={{
                           name: 'PDV',
@@ -1195,14 +1391,19 @@ export function AppProvider({ children }: AppProviderProps) {
                             t('gain_extra_speed'),
                           ],
                           day: user.controls?.migrationMessage
-                            ? DateTime.fromFormat(user.controls?.migrationMessage, `${t('date_format')}`)
+                            ? DateTime.fromFormat(
+                                user.controls?.migrationMessage,
+                                `${t('date_format')}`
+                              )
                                 .setLocale(`${t('language')}`)
                                 .toFormat(`cccc ${t('date_format_v2')}`)
                             : '',
                         }}
                       />
                       <Modal.Footer>
-                        <Button onClick={() => setShowNewFeatureModal(false)}>{t('close')}</Button>
+                        <Button onClick={() => setShowNewFeatureModal(false)}>
+                          {t('close')}
+                        </Button>
                       </Modal.Footer>
                     </Modal>
                   </section>
@@ -1210,7 +1411,14 @@ export function AppProvider({ children }: AppProviderProps) {
                 <WmFunctions />
               </TablesProvider>
             ) : (
-              <OverlaySpinner show width={150} weight={10} textSpinner={t('please_wait')} className="fs-4" backgroundColor="#fff" />
+              <OverlaySpinner
+                show
+                width={150}
+                weight={10}
+                textSpinner={t('please_wait')}
+                className="fs-4"
+                backgroundColor="#fff"
+              />
             )}
           </CartsProvider>
           {/* <UpdateAccountModal show={showUpdateSubAccountModal} onSuccess={() => setShowUpdateSubAccountModal(false)} /> */}
@@ -1227,13 +1435,18 @@ export function AppProvider({ children }: AppProviderProps) {
         }}
       ></audio>
       {showStatusNavigator && (
-        <div className="position-fixed" style={{ left: '25%', bottom: 0, zIndex: 9999999, width: '50%' }}>
+        <div
+          className="position-fixed"
+          style={{ left: '25%', bottom: 0, zIndex: 9999999, width: '50%' }}
+        >
           <Alert
             variant={!navigatorOnline ? 'danger' : 'success'}
             onClose={() => setStatusNavigator(false)}
             {...{ dismissible: navigatorOnline ? true : false }}
           >
-            <Alert.Heading>{!navigatorOnline ? 'Offline  :(' : 'Online :)'}</Alert.Heading>
+            <Alert.Heading>
+              {!navigatorOnline ? 'Offline  :(' : 'Online :)'}
+            </Alert.Heading>
             {!navigatorOnline ? (
               <p>
                 {t('internet_connection_lost')}
@@ -1261,7 +1474,13 @@ export function AppProvider({ children }: AppProviderProps) {
           }}
         ></div>
       )}
-      <iframe id="iframeWhatsapp" name="iframeWhatsapp" ref={iframeRef} src="" style={{ position: 'absolute', top: -100000, left: -100000 }}></iframe>
+      <iframe
+        id="iframeWhatsapp"
+        name="iframeWhatsapp"
+        ref={iframeRef}
+        src=""
+        style={{ position: 'absolute', top: -100000, left: -100000 }}
+      ></iframe>
       {!door && <div style={{ position: 'fixed', inset: 0 }}></div>}
     </>
   )

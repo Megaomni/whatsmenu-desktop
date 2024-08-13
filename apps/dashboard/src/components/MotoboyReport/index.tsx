@@ -22,7 +22,13 @@ interface MotoboyReportProps {
   resume: { total: number; sumTaxDelivery: number }
 }
 
-export const MotoboyReport = ({ data, isValid, report, setData, ...props }: MotoboyReportProps) => {
+export const MotoboyReport = ({
+  data,
+  isValid,
+  report,
+  setData,
+  ...props
+}: MotoboyReportProps) => {
   const { currency } = useContext(AppContext)
   const { t } = useTranslation()
   const { motoboys, updateMotoboyId } = useContext(CartsContext)
@@ -60,7 +66,12 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
 
       setAlreadyFetched(true)
 
-      const { data: dataFetched } = await apiRoute(`/dashboard/report/motoboys/${initialPage || page}`, session, 'POST', { ...body })
+      const { data: dataFetched } = await apiRoute(
+        `/dashboard/report/motoboys/${initialPage || page}`,
+        session,
+        'POST',
+        { ...body }
+      )
 
       if (dataFetched) {
         setData((prevData: any) => {
@@ -79,7 +90,10 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
               carts: {
                 ...dataFetched.motoboy.carts,
                 data: dataFetched.motoboy.carts.data.filter(
-                  (newCart: CartType) => !prevData.motoboy.carts.data.some((existingCart: CartType) => existingCart.id === newCart.id)
+                  (newCart: CartType) =>
+                    !prevData.motoboy.carts.data.some(
+                      (existingCart: CartType) => existingCart.id === newCart.id
+                    )
                 ),
               },
             },
@@ -91,7 +105,12 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
               ...prevData.motoboy,
               carts: {
                 ...prevData.motoboy.carts,
-                data: alreadyFetched ? [...prevData.motoboy.carts.data, ...newData.motoboy.carts.data] : newData.motoboy.carts.data,
+                data: alreadyFetched
+                  ? [
+                      ...prevData.motoboy.carts.data,
+                      ...newData.motoboy.carts.data,
+                    ]
+                  : newData.motoboy.carts.data,
               },
             },
           }
@@ -115,25 +134,36 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
    */
   const getMotoboysResume = async (): Promise<void> => {
     try {
-      const { data } = await apiRoute(`/dashboard/report/motoboys/report/resume`, session, 'POST', {
-        motoboyId,
-        endDate,
-        startDate,
-        notValidate: isValid,
-      })
+      const { data } = await apiRoute(
+        `/dashboard/report/motoboys/report/resume`,
+        session,
+        'POST',
+        {
+          motoboyId,
+          endDate,
+          startDate,
+          notValidate: isValid,
+        }
+      )
       setResume(data)
     } catch (error) {
       console.error(error)
     }
   }
 
-  const handleButtonClick = async (cartId: number, motoboyId: number, session: any) => {
+  const handleButtonClick = async (
+    cartId: number,
+    motoboyId: number,
+    session: any
+  ) => {
     try {
       setLoading(true)
       setMotoboyId(motoboyId)
       await getMotoboysResume()
 
-      const isExistingCart = data?.motoboy?.carts?.data?.some((existingCart: any) => existingCart.id === cartId)
+      const isExistingCart = data?.motoboy?.carts?.data?.some(
+        (existingCart: any) => existingCart.id === cartId
+      )
       if (!isExistingCart) {
         await fetchData(1)
       }
@@ -159,18 +189,31 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
   useEffect(() => {
     if (data && data.motoboy) {
       fetchData(page)
-      data.motoboy.carts.data = data.motoboy.carts.data.map((c: CartType) => new Cart(c))
+      data.motoboy.carts.data = data.motoboy.carts.data.map(
+        (c: CartType) => new Cart(c)
+      )
     }
   }, [data, page])
 
   return (
     <>
-      <Title title={t('delivery_report')} componentTitle={t('delivery_report')} className="mb-4" />
+      <Title
+        title={t('delivery_report')}
+        componentTitle={t('delivery_report')}
+        className="mb-4"
+      />
       <Card>
         <Card.Header className="d-flex gap-3">
           <h4>{t('search')}</h4>
           <div className="vr"></div>
-          <HelpVideos.Trigger urls={[{ src: 'https://www.youtube.com/embed/DF8j9EV58rI', title: t('delivery_report') }]} />
+          <HelpVideos.Trigger
+            urls={[
+              {
+                src: 'https://www.youtube.com/embed/DF8j9EV58rI',
+                title: t('delivery_report'),
+              },
+            ]}
+          />
         </Card.Header>
         <Card.Body className="d-flex">
           <div className="me-2">
@@ -198,7 +241,10 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
           </div>
           <div className="me-2">
             <label>{t('delivery_person')}</label>
-            <Form.Select value={motoboyId} onChange={(e) => setMotoboyId(parseInt(e.target.value))}>
+            <Form.Select
+              value={motoboyId}
+              onChange={(e) => setMotoboyId(parseInt(e.target.value))}
+            >
               {motoboys.map((motoboy: any) => (
                 <option key={motoboy.id} value={motoboy.id}>
                   {motoboy.name}
@@ -207,7 +253,17 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
             </Form.Select>
           </div>
           <div className="mt-auto">
-            <Button variant="success" type="button" onClick={() => handleButtonClick(data?.motoboy?.carts?.data[0]?.id, motoboyId, session)}>
+            <Button
+              variant="success"
+              type="button"
+              onClick={() =>
+                handleButtonClick(
+                  data?.motoboy?.carts?.data[0]?.id,
+                  motoboyId,
+                  session
+                )
+              }
+            >
               {t('search')}
             </Button>
           </div>
@@ -220,15 +276,21 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
             <Container fluid>
               <Row className="text-center">
                 <Col>
-                  <h1 className="text-danger fs-3 align-middle mb-0">{data?.motoboy?.name}</h1>
+                  <h1 className="text-danger fs-3 mb-0 align-middle">
+                    {data?.motoboy?.name}
+                  </h1>
                   <h6 className="fw-bold">{t('delivery_person')}</h6>
                 </Col>
                 <Col>
-                  <h1 className="text-danger fs-3 align-middle mb-0">{resume?.total}</h1>
+                  <h1 className="text-danger fs-3 mb-0 align-middle">
+                    {resume?.total}
+                  </h1>
                   <h6 className="fw-bold">{t('qty_of_deliveries')}</h6>
                 </Col>
                 <Col>
-                  <h1 className="text-danger fs-3 align-middle mb-0">{currency({ value: resume?.sumTaxDelivery })}</h1>
+                  <h1 className="text-danger fs-3 mb-0 align-middle">
+                    {currency({ value: resume?.sumTaxDelivery })}
+                  </h1>
                   <h6 className="fw-bold">{t('total_delivery_fees')}</h6>
                 </Col>
               </Row>
@@ -240,14 +302,21 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
         {motoboyId !== undefined && (
           <>
             <div id="printThis">
-              <h1 className="fs-3 align-middle text-uppercase mb-3"> {t('delivery_report_r')} </h1>
+              <h1 className="fs-3 text-uppercase mb-3 align-middle">
+                {' '}
+                {t('delivery_report_r')}{' '}
+              </h1>
               <Card>
                 <div id="no-more-tables" className="table-responsive">
                   <Table
                     striped
                     bordered
                     responsive
-                    className={window.innerWidth <= 768 ? 'col-sm-12 table-bordered table-striped table-condensed cf' : 'table responsive'}
+                    className={
+                      window.innerWidth <= 768
+                        ? 'col-sm-12 table-bordered table-striped table-condensed cf'
+                        : 'responsive table'
+                    }
                   >
                     <thead className="">
                       <tr>
@@ -280,15 +349,18 @@ export const MotoboyReport = ({ data, isValid, report, setData, ...props }: Moto
                                 </td>
                                 <td>{cart.client.name}</td>
                                 <td>
-                                  {(cart.type === 'P' ? DateTime.fromISO(cart.packageDate) : DateTime.fromSQL(cart.created_at)).toFormat(
-                                    `${t('date_format')} HH:mm:ss`
-                                  )}
+                                  {(cart.type === 'P'
+                                    ? DateTime.fromISO(cart.packageDate)
+                                    : DateTime.fromSQL(cart.created_at)
+                                  ).toFormat(`${t('date_format')} HH:mm:ss`)}
                                 </td>
                                 <td>
-                                  {t('coin')} {cart?.getTotalValue('total').toFixed(2)}
+                                  {t('coin')}{' '}
+                                  {cart?.getTotalValue('total').toFixed(2)}
                                 </td>
                                 <td>
-                                  {t('coin')} {Number(cart.taxDelivery).toFixed(2)}
+                                  {t('coin')}{' '}
+                                  {Number(cart.taxDelivery).toFixed(2)}
                                 </td>
                               </tr>
                             ))}

@@ -8,7 +8,13 @@ import { DateTime } from 'luxon'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 
-import { groupAllCarts, groupCart, handlePrintApp, hash, textPackage } from '../../../../../utils/wm-functions'
+import {
+  groupAllCarts,
+  groupCart,
+  handlePrintApp,
+  hash,
+  textPackage,
+} from '../../../../../utils/wm-functions'
 import { AppContext } from '../../../../../context/app.ctx'
 import Cart from '../../../../../types/cart'
 import CartItem from '../../../../../types/cart-item'
@@ -22,13 +28,25 @@ type PropsType = {
   onHide: () => void
   setRequestsPersonalized: () => void
 }
-export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filterSelected, setRequestsPersonalized, ...props }: PropsType) {
+export function ResumePackage({
+  carts,
+  onShowPreviousModal,
+  resumeChecked,
+  filterSelected,
+  setRequestsPersonalized,
+  ...props
+}: PropsType) {
   const { t } = useTranslation()
   const { profile, wsPrint } = useContext(AppContext)
-  const [showModalDistribuicao, setShowModalDistribuicao] = useState<boolean>(false)
-  const [groupItems, setGroupItems] = useState<boolean>(profile.options.print.groupItems)
+  const [showModalDistribuicao, setShowModalDistribuicao] =
+    useState<boolean>(false)
+  const [groupItems, setGroupItems] = useState<boolean>(
+    profile.options.print.groupItems
+  )
   const [boldPrinter, setBoldPrinter] = useState<string>('')
-  const [daySelected, setDaySelected] = useState<string>(DateTime.local().toFormat(`${t('date_format')}`))
+  const [daySelected, setDaySelected] = useState<string>(
+    DateTime.local().toFormat(`${t('date_format')}`)
+  )
   //To Printer
   const requestsFiltereds = carts.filter((cart) => {
     if (resumeChecked) {
@@ -111,7 +129,9 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
   })
 
   const resetInputs = (value: boolean) => {
-    const inputs = Array.from(document.querySelectorAll('input[data-type=package]')) as HTMLInputElement[]
+    const inputs = Array.from(
+      document.querySelectorAll('input[data-type=package]')
+    ) as HTMLInputElement[]
 
     inputs.forEach((input) => {
       input.checked = value
@@ -132,7 +152,8 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
     />
   )
 
-  const { cartDelivery, cartDeliveryLocal, cartPizza, cartPizzaLocal } = groupAllCarts(requestsFiltereds)
+  const { cartDelivery, cartDeliveryLocal, cartPizza, cartPizzaLocal } =
+    groupAllCarts(requestsFiltereds)
 
   const $cart = (cartResume: CartItem[] = [], cartPizzaLength: number) => {
     return cartResume?.map((prod, indexProd, arrProd) => {
@@ -141,11 +162,14 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
           className={`fs-7 cart-container fw-${boldPrinter}`}
           key={`cart-${prod.id}-${hash(10)}`}
           style={{
-            borderBottom: indexProd < arrProd.length - 1 || cartPizzaLength ? '1px dashed ' : '',
+            borderBottom:
+              indexProd < arrProd.length - 1 || cartPizzaLength
+                ? '1px dashed '
+                : '',
           }}
         >
           <div className="my-2">
-            <p className="m-0 product-name">
+            <p className="product-name m-0">
               {prod.quantity}X | {prod.name}
             </p>
             {/* <p className="m-0 ">
@@ -153,18 +177,28 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
                 {currency(prod.value)}
                 )
               </p> */}
-            <div className="ps-2 my-1">
+            <div className="my-1 ps-2">
               {prod.details.complements?.map((complement, indexCompl) => {
                 return (
-                  <div className="m-0 p-0" key={`${complement.id}-${complement.created_at}-${indexCompl}`}>
-                    <p className="m-0 fw-bold complement-name">{complement.name}</p>
+                  <div
+                    className="m-0 p-0"
+                    key={`${complement.id}-${complement.created_at}-${indexCompl}`}
+                  >
+                    <p className="fw-bold complement-name m-0">
+                      {complement.name}
+                    </p>
                     {complement.itens?.map((item, indexCompl2) => {
                       return (
-                        <Row key={`${complement.id}-${complement.updated_at}-${indexCompl2}`} className="complement-item">
+                        <Row
+                          key={`${complement.id}-${complement.updated_at}-${indexCompl2}`}
+                          className="complement-item"
+                        >
                           <Col sm="8">
-                            <div className="ps-3 mt-1">
+                            <div className="mt-1 ps-3">
                               <span>
-                                <span className="fw-bold">{item.quantity}X </span>
+                                <span className="fw-bold">
+                                  {item.quantity}X{' '}
+                                </span>
                                 {item.name}
                               </span>
                             </div>
@@ -203,8 +237,8 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
             borderBottom: indexPizza < arrPizza.length - 1 ? '1px dashed' : '',
           }}
         >
-          <div className="py-1 w-100">
-            <p className="m-0 text-uppercase ">
+          <div className="w-100 py-1">
+            <p className="text-uppercase m-0 ">
               {`${pizza.quantity}x | ${pizza.name}
                 }`}
             </p>
@@ -213,10 +247,10 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
                 {`(${currency(pizza.value)})`}
               </p> */}
 
-            <div className="my-1 flavor-name">
+            <div className="flavor-name my-1">
               {pizza.details.flavors?.map((flavor, indexFlavor) => {
                 return (
-                  <p key={`flavors-${flavor.code}`} className="ps-2 m-0">
+                  <p key={`flavors-${flavor.code}`} className="m-0 ps-2">
                     <span className="ps-3">{flavor.name}</span>
                   </p>
                 )
@@ -225,7 +259,10 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
 
             {pizza.details.implementations?.map((implementation, indexImpl) => {
               return (
-                <div key={`implementation-${implementation.code}-${indexImpl}`} className="m-0 my-1 fw-bold fs-8 w-100`">
+                <div
+                  key={`implementation-${implementation.code}-${indexImpl}`}
+                  className="fw-bold fs-8 w-100` m-0 my-1"
+                >
                   <Row className="w-100">
                     <Col sm="12">{implementation.name}</Col>
                     {/* <Col sm="4">
@@ -256,43 +293,71 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
 
   const $deliveryAndLocal = (
     <Card className="card-content position-relative">
-      <Card.Header className="my-0 py-0 d-none d-md-block noPrint">
+      <Card.Header className="d-none d-md-block noPrint my-0 py-0">
         <Row>
-          <Col sm className="text-center border-end py-1">
-            <h5 className={` fs-7 ${!cartDelivery.length && !cartPizza.length ? 'noPrint' : ''}`}>{t('deliver')}</h5>
+          <Col sm className="border-end py-1 text-center">
+            <h5
+              className={` fs-7 ${!cartDelivery.length && !cartPizza.length ? 'noPrint' : ''}`}
+            >
+              {t('deliver')}
+            </h5>
           </Col>
           {/* <div className="vr"></div> */}
-          <Col sm className={`text-center border-start py-1 ${!cartDeliveryLocal.length && !cartPizzaLocal.length ? 'noPrint' : ''}`}>
+          <Col
+            sm
+            className={`border-start py-1 text-center ${!cartDeliveryLocal.length && !cartPizzaLocal.length ? 'noPrint' : ''}`}
+          >
             <h5 className="fs-7">{t('pickup')}</h5>
           </Col>
         </Row>
       </Card.Header>
-      <Card.Body className="my-0 py-0 position-relative">
+      <Card.Body className="position-relative my-0 py-0">
         <Row>
           <Col
             sm
-            className={`text-start border-end col-delivery ${!cartDelivery.length && !cartPizza.length ? 'noPrint' : ''}`}
+            className={`border-end col-delivery text-start ${!cartDelivery.length && !cartPizza.length ? 'noPrint' : ''}`}
             style={{ minHeight: '120px' }}
           >
             <div className="col-delivery-title">
-              <h4 className="fs-7 d-block d-md-none border-bottom p-1 fw-bolder text-center text-dark m-0">{t('deliver')}</h4>
+              <h4 className="fs-7 d-block d-md-none border-bottom fw-bolder text-dark m-0 p-1 text-center">
+                {t('deliver')}
+              </h4>
             </div>
             <div>
-              {$cart(groupCart(cartDelivery, profile.options.print.groupItems), cartPizza.length)}
-              {$cartPizza(groupCart(cartPizza, profile.options.print.groupItems))}
+              {$cart(
+                groupCart(cartDelivery, profile.options.print.groupItems),
+                cartPizza.length
+              )}
+              {$cartPizza(
+                groupCart(cartPizza, profile.options.print.groupItems)
+              )}
 
-              {!cartDelivery.length && !cartPizza.length ? <span className="fw-bold fs-7">{t('no_items_this_date')}</span> : null}
+              {!cartDelivery.length && !cartPizza.length ? (
+                <span className="fw-bold fs-7">{t('no_items_this_date')}</span>
+              ) : null}
             </div>
           </Col>
-          <Col sm className={`text-start border-start col-local ${!cartDeliveryLocal.length && !cartPizzaLocal.length ? 'noPrint' : ''}`}>
+          <Col
+            sm
+            className={`border-start col-local text-start ${!cartDeliveryLocal.length && !cartPizzaLocal.length ? 'noPrint' : ''}`}
+          >
             <div className="col-local-title">
-              <h4 className="fs-7 d-block d-md-none border-bottom p-1 fw-bold text-center text-dark m-0">{t('pickup')}</h4>
+              <h4 className="fs-7 d-block d-md-none border-bottom fw-bold text-dark m-0 p-1 text-center">
+                {t('pickup')}
+              </h4>
             </div>
             <div>
-              {$cart(groupCart(cartDeliveryLocal, profile.options.print.groupItems), cartPizzaLocal.length)}
-              {$cartPizza(groupCart(cartPizzaLocal, profile.options.print.groupItems))}
+              {$cart(
+                groupCart(cartDeliveryLocal, profile.options.print.groupItems),
+                cartPizzaLocal.length
+              )}
+              {$cartPizza(
+                groupCart(cartPizzaLocal, profile.options.print.groupItems)
+              )}
 
-              {!cartDeliveryLocal.length && !cartPizzaLocal.length ? <span className="fw-bold fs-7">{t('no_items_this_date')}</span> : null}
+              {!cartDeliveryLocal.length && !cartPizzaLocal.length ? (
+                <span className="fw-bold fs-7">{t('no_items_this_date')}</span>
+              ) : null}
             </div>
           </Col>
         </Row>
@@ -313,14 +378,25 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
               const dateDay = DateTime.fromJSDate(new Date(date))
               const filtereds = carts.filter((cart) => {
                 return (
-                  DateTime.fromJSDate(new Date(cart.packageDate)).toFormat(`${t('date_format')}`) === dateDay.toFormat(`${t('date_format')}`) &&
+                  DateTime.fromJSDate(new Date(cart.packageDate)).toFormat(
+                    `${t('date_format')}`
+                  ) === dateDay.toFormat(`${t('date_format')}`) &&
                   cart.status !== 'canceled'
                 )
               })
 
-              if (dateDay.toFormat(`${t('date_format')}`) === DateTime.local().toFormat(`${t('date_format')}`) && filtereds.length) {
+              if (
+                dateDay.toFormat(`${t('date_format')}`) ===
+                  DateTime.local().toFormat(`${t('date_format')}`) &&
+                filtereds.length
+              ) {
                 return 'wm-green-day wm-green-day-focused'
-              } else if (parseInt(String(dateDay.diff(DateTime.local(), 'days').days)) === 0 && filtereds.length) {
+              } else if (
+                parseInt(
+                  String(dateDay.diff(DateTime.local(), 'days').days)
+                ) === 0 &&
+                filtereds.length
+              ) {
                 return 'wm-orange-day wm-orange-day-focused'
               } else if (filtereds.length) {
                 return 'wm-normal-day wm-normal-day-focused'
@@ -330,7 +406,9 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
               return ''
             }}
             onClickDay={(e) => {
-              setDaySelected(DateTime.fromJSDate(new Date(e)).toFormat(`${t('date_format')}`))
+              setDaySelected(
+                DateTime.fromJSDate(new Date(e)).toFormat(`${t('date_format')}`)
+              )
             }}
           />
         </Dropdown.Item>
@@ -362,7 +440,10 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
       <Modal {...props} size="lg" centered dialogClassName="modal-to-print">
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            {t('summary_of')} {profile.options.package.label2 ? `${t('your')} ${textPackage(true)}` : `${t('your_a')} ${textPackage(false)}`}
+            {t('summary_of')}{' '}
+            {profile.options.package.label2
+              ? `${t('your')} ${textPackage(true)}`
+              : `${t('your_a')} ${textPackage(false)}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -370,9 +451,12 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
             <Row>
               <Col sm>
                 <Row className="justify-content-between">
-                  <Col md="7" lg="8" className="mb-3 text-nowrap d-flex">
+                  <Col md="7" lg="8" className="d-flex mb-3 text-nowrap">
                     <span className="fw-bold fs-7">
-                      {t('filter_use')}:<span className="ms-2 fw-normal fs-6">{usedFilter(filterSelected)}</span>
+                      {t('filter_use')}:
+                      <span className="fw-normal fs-6 ms-2">
+                        {usedFilter(filterSelected)}
+                      </span>
                     </span>
                   </Col>
                   {/* <Col md="12" lg className="d-flex gap-2 mb-3 justify-content-center">
@@ -411,11 +495,14 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
               <Col className="d-flex justify-content-center align-items-center">
                 {resumeChecked ? (
                   <h4>
-                    {t('summary_of')} {carts.length} {carts.length === 1 ? 'Item Selecionado' : 'Itens Selecionados'}
+                    {t('summary_of')} {carts.length}{' '}
+                    {carts.length === 1
+                      ? 'Item Selecionado'
+                      : 'Itens Selecionados'}
                   </h4>
                 ) : (
                   <div>
-                    <h6 className="p-0 m-0">{t('choose_date_summary')}</h6>
+                    <h6 className="m-0 p-0">{t('choose_date_summary')}</h6>
                     {$calendar}
                   </div>
                 )}
@@ -423,10 +510,11 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
             </Row>
             <Row>
               <Col ref={componentRef}>
-                <Row className="mt-4 fs-7 fw-bold detail-printer">
+                <Row className="fs-7 fw-bold detail-printer mt-4">
                   <Col sm className="text-center">
                     <span>
-                      {t('printing')} - {DateTime.local().toFormat(`${t('date_format')} HH:mm`)}
+                      {t('printing')} -{' '}
+                      {DateTime.local().toFormat(`${t('date_format')} HH:mm`)}
                     </span>
                   </Col>
                   {resumeChecked ? (
@@ -437,7 +525,9 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
                         {carts.map((req, index, arrReq) => (
                           <span key={req.code} className="fs-8">
                             {`wm${req.code}-${req.type}`}
-                            {arrReq.length > 1 && index < arrReq.length - 1 && ', '}
+                            {arrReq.length > 1 &&
+                              index < arrReq.length - 1 &&
+                              ', '}
                           </span>
                         ))}
                       </span>
@@ -450,7 +540,10 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
                     </Col>
                   )}
                 </Row>
-                <Row className="overflow-auto pt-3" style={{ maxHeight: '200px' }}>
+                <Row
+                  className="overflow-auto pt-3"
+                  style={{ maxHeight: '200px' }}
+                >
                   <Col sm>
                     {/* <h4 className="fw-bold text-center">Não há itens para resumir nesta data</h4> */}
                     {$deliveryAndLocal}
@@ -492,14 +585,21 @@ export function ResumePackage({ carts, onShowPreviousModal, resumeChecked, filte
                   cartDeliveryLocal,
                   cartPizza,
                   cartPizzaLocal,
-                  datePrinter: DateTime.local().toFormat(`${t('date_format')} HH:mm`),
+                  datePrinter: DateTime.local().toFormat(
+                    `${t('date_format')} HH:mm`
+                  ),
                   reference: daySelected,
                 })
               } else {
                 handlePrint()
               }
             }}
-            disabled={!cartDelivery.length && !cartPizza.length && !cartDelivery.length && !cartPizzaLocal.length}
+            disabled={
+              !cartDelivery.length &&
+              !cartPizza.length &&
+              !cartDelivery.length &&
+              !cartPizzaLocal.length
+            }
           >
             <span className="align-middle">{t('print')}</span>
           </Button>

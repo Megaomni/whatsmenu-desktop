@@ -1,5 +1,14 @@
 import { ComponentProps, useContext } from 'react'
-import { Button, Col, Container, Form, Modal, Nav, Row, Tab } from 'react-bootstrap'
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  Modal,
+  Nav,
+  Row,
+  Tab,
+} from 'react-bootstrap'
 import { BsYoutube } from 'react-icons/bs'
 import { AppContext } from '../../../context/app.ctx'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +35,10 @@ function HelpVideosRoot({ show, handleClose, urls }: HelpVideosProps) {
               {urls.map((url, index) => (
                 <Nav.Item key={index} className="flex-grow-1 ">
                   {urls.length > 1 ? (
-                    <Nav.Link eventKey={index} className="nav-link m-0 p-3 text-center">
+                    <Nav.Link
+                      eventKey={index}
+                      className="nav-link m-0 p-3 text-center"
+                    >
                       {url.title}
                     </Nav.Link>
                   ) : null}
@@ -72,12 +84,22 @@ interface HelpVideosTriggerProps extends ComponentProps<'div'> {
   urls: UrlsType[]
 }
 
-function HelpVideosTrigger({ urls, className, ...rest }: HelpVideosTriggerProps) {
+function HelpVideosTrigger({
+  urls,
+  className,
+  ...rest
+}: HelpVideosTriggerProps) {
   const { handleHelpVideo } = useContext(AppContext)
 
   return (
     <div className={className ?? 'my-auto'} {...rest}>
-      <Button as="a" variant="danger" href="#" className="px-3 py-2  fs-7 rounded-3 w-100" onClick={() => handleHelpVideo([...urls])}>
+      <Button
+        as="a"
+        variant="danger"
+        href="#"
+        className="fs-7 rounded-3  w-100 px-3 py-2"
+        onClick={() => handleHelpVideo([...urls])}
+      >
         <span>{i18n.t('how_to_make')}?</span>
       </Button>
     </div>

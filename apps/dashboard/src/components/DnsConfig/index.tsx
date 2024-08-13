@@ -25,7 +25,12 @@ export function DnsConfig({ setDnsConfig, domain }: DnsConfigProps) {
 
   const handleAddDnsRecord = async () => {
     try {
-      const { data } = await apiRoute('/dashboard/domains/storeDnsConfig', session, 'POST', { ...newDnsRecord, domainId: domain.id })
+      const { data } = await apiRoute(
+        '/dashboard/domains/storeDnsConfig',
+        session,
+        'POST',
+        { ...newDnsRecord, domainId: domain.id }
+      )
     } catch (error) {
       console.error(error)
       return handleShowToast({ type: 'erro' })
@@ -88,23 +93,40 @@ export function DnsConfig({ setDnsConfig, domain }: DnsConfigProps) {
                 {newDnsRecord.typeDns === 'TXT' && (
                   <Col className="mt-4" sm="12">
                     <Form.Label>{t('content')}</Form.Label>
-                    <Form.Control as="textarea" onChange={(e) => (newDnsRecord.contentDns = e.target.value)} rows={5} className="mb-4" />
+                    <Form.Control
+                      as="textarea"
+                      onChange={(e) =>
+                        (newDnsRecord.contentDns = e.target.value)
+                      }
+                      rows={5}
+                      className="mb-4"
+                    />
                   </Col>
                 )}
                 {newDnsRecord.typeDns === 'MX' && (
                   <>
                     <Col sm>
                       <Form.Label>{t('email_server')}</Form.Label>
-                      <Form.Control value={newDnsRecord.contentDns} type="text" />
+                      <Form.Control
+                        value={newDnsRecord.contentDns}
+                        type="text"
+                      />
                     </Col>
                     <Col sm>
                       <Form.Label>{t('priority')}</Form.Label>
-                      <Form.Control value={newDnsRecord.proprityDns} type="text" />
+                      <Form.Control
+                        value={newDnsRecord.proprityDns}
+                        type="text"
+                      />
                     </Col>
                   </>
                 )}
                 <Col className="d-flex mt-2">
-                  <Button variant="success" className="mt-auto flex-grow-1" onClick={() => handleAddDnsRecord()}>
+                  <Button
+                    variant="success"
+                    className="flex-grow-1 mt-auto"
+                    onClick={() => handleAddDnsRecord()}
+                  >
                     {t('save')}
                   </Button>
                 </Col>

@@ -14,7 +14,9 @@ export interface IWebPrinter {
 }
 
 export default function useWebPrint() {
-  const webPrinters: IWebPrinter[] = localStorage.getItem('@whatsmenu-web-printers-1.0')
+  const webPrinters: IWebPrinter[] = localStorage.getItem(
+    '@whatsmenu-web-printers-1.0'
+  )
     ? JSON.parse(localStorage.getItem('@whatsmenu-web-printers-1.0') as string)
     : []
 
@@ -39,9 +41,13 @@ export default function useWebPrint() {
         return device.gatt.connect()
       })
       //@ts-ignore
-      .then((server) => server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb'))
+      .then((server) =>
+        server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb')
+      )
       //@ts-ignore
-      .then((service) => service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb'))
+      .then((service) =>
+        service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb')
+      )
       //@ts-ignore
       .then((characteristic) => {
         if (data) {
@@ -59,7 +65,10 @@ export default function useWebPrint() {
       const usbPrinter = await navigator.usb.requestDevice({ filters: [{}] })
       //@ts-ignore
 
-      const endpointNumber = usbPrinter.configuration.interfaces[0].alternate.endpoints.find((e: any) => e.direction === 'out').endpointNumber
+      const endpointNumber =
+        usbPrinter.configuration.interfaces[0].alternate.endpoints.find(
+          (e: any) => e.direction === 'out'
+        ).endpointNumber
       await usbPrinter.open()
       await usbPrinter.selectConfiguration(1)
       await usbPrinter.claimInterface(0)
@@ -93,10 +102,15 @@ export default function useWebPrint() {
         })
       }
       for (const usbPrinter of printers) {
-        const webBluetoothPrinter = webPrinters.find((wp) => wp.id === usbPrinter.serialNumber)
+        const webBluetoothPrinter = webPrinters.find(
+          (wp) => wp.id === usbPrinter.serialNumber
+        )
         if (webBluetoothPrinter && webBluetoothPrinter.status) {
           for (const copie of new Array(webBluetoothPrinter.copies)) {
-            const endpointNumber = usbPrinter.configuration.interfaces[0].alternate.endpoints.find((e: any) => e.direction === 'out').endpointNumber
+            const endpointNumber =
+              usbPrinter.configuration.interfaces[0].alternate.endpoints.find(
+                (e: any) => e.direction === 'out'
+              ).endpointNumber
             await usbPrinter.open()
             await usbPrinter.selectConfiguration(1)
             await usbPrinter.claimInterface(0)
@@ -117,7 +131,10 @@ export default function useWebPrint() {
       }
     } catch (error) {
       console.error(error)
-      handleConfirmModal({ title: 'Parear impressora', actionConfirm: () => requestUsb(data) })
+      handleConfirmModal({
+        title: 'Parear impressora',
+        actionConfirm: () => requestUsb(data),
+      })
     }
   }
 
@@ -128,16 +145,25 @@ export default function useWebPrint() {
         //@ts-ignore
         const printers = await navigator.bluetooth.getDevices()
         if (!printers.length) {
-          handleConfirmModal({ title: 'Parear impressora', actionConfirm: () => requestBluetooth(data) })
+          handleConfirmModal({
+            title: 'Parear impressora',
+            actionConfirm: () => requestBluetooth(data),
+          })
         } else {
           for await (const bluetoothPrinter of printers) {
-            const webBluetoothPrinter = webPrinters.find((wp) => wp.id === bluetoothPrinter.id)
+            const webBluetoothPrinter = webPrinters.find(
+              (wp) => wp.id === bluetoothPrinter.id
+            )
             if (webBluetoothPrinter && webBluetoothPrinter.status) {
               for await (const copie of new Array(webBluetoothPrinter.copies)) {
                 //@ts-ignore
                 const server = await bluetoothPrinter.gatt.connect()
-                const service = await server.getPrimaryService('000018f0-0000-1000-8000-00805f9b34fb')
-                const characteristic = await service.getCharacteristic('00002af1-0000-1000-8000-00805f9b34fb')
+                const service = await server.getPrimaryService(
+                  '000018f0-0000-1000-8000-00805f9b34fb'
+                )
+                const characteristic = await service.getCharacteristic(
+                  '00002af1-0000-1000-8000-00805f9b34fb'
+                )
                 //@ts-ignore
                 const dataSplited = [...data.split('\n'), '\n\n']
                 for await (const text of dataSplited) {
@@ -146,7 +172,9 @@ export default function useWebPrint() {
                     .replaceAll(/\u2000/g, ' ')
                     .normalize('NFD')
                     .replace(/[\u0300-\u036f]/g, '')
-                  await characteristic.writeValueWithResponse(new TextEncoder().encode(`${textFormated}\n`))
+                  await characteristic.writeValueWithResponse(
+                    new TextEncoder().encode(`${textFormated}\n`)
+                  )
                 }
               }
             }
@@ -157,7 +185,10 @@ export default function useWebPrint() {
       }
     } catch (error) {
       console.error(error)
-      handleConfirmModal({ title: 'Parear impressora', actionConfirm: () => requestBluetooth(data) })
+      handleConfirmModal({
+        title: 'Parear impressora',
+        actionConfirm: () => requestBluetooth(data),
+      })
     }
   }
 
@@ -170,15 +201,23 @@ export default function useWebPrint() {
 
   const checkBluetooth = (type: 'bluetooth' | 'usb' = 'bluetooth') => {
     //@ts-ignore
-    if (!('bluetooth' in navigator && 'getDevices' in navigator.bluetooth) && type === 'bluetooth') {
+    if (
+      !('bluetooth' in navigator && 'getDevices' in navigator.bluetooth) &&
+      type === 'bluetooth'
+    ) {
       handleConfirmModal({
         title: 'Bluetooth não suportado',
-        message: 'é necessário habilitar Bluetooth para imprimir com drive bluetooth, clique em copiar para copiar e cole o texto na aba nova',
+        message:
+          'é necessário habilitar Bluetooth para imprimir com drive bluetooth, clique em copiar para copiar e cole o texto na aba nova',
         confirmButton: 'Copiar url',
         actionConfirm: () => {
-          handleCopy('chrome://flags#enable-web-bluetooth-new-permissions-backend', handleShowToast, () => {
-            window.open()
-          })
+          handleCopy(
+            'chrome://flags#enable-web-bluetooth-new-permissions-backend',
+            handleShowToast,
+            () => {
+              window.open()
+            }
+          )
         },
       })
       return false
@@ -188,8 +227,18 @@ export default function useWebPrint() {
   }
 
   const browserIsCompatible = () => {
-    return /Chrome|Edge|Opera/i.test(navigator.userAgent) && /(Macintosh|Mac OS X)/i.test(navigator.userAgent);
+    return (
+      /Chrome|Edge|Opera/i.test(navigator.userAgent) &&
+      /(Macintosh|Mac OS X)/i.test(navigator.userAgent)
+    )
   }
 
-  return { requestBluetooth, printBluetooth, requestUsb, printUsb, getPrinters, browserIsCompatible }
+  return {
+    requestBluetooth,
+    printBluetooth,
+    requestUsb,
+    printUsb,
+    getPrinters,
+    browserIsCompatible,
+  }
 }

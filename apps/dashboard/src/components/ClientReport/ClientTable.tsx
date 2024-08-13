@@ -15,7 +15,7 @@ export const ClientTable = ({ clients, onClientClick }: ClientTableProps) => {
     <div className="table-responsive no-more-tables">
       <Table
         style={{ minHeight: '480px' }}
-        className={`${window.innerWidth <= 768 ? 'col-sm-12 table-bordered table-striped table-condensed cf' : 'table responsive table-striped'} m-0`}
+        className={`${window.innerWidth <= 768 ? 'col-sm-12 table-bordered table-striped table-condensed cf' : 'responsive table-striped table'} m-0`}
       >
         <thead className="cf">
           <tr>
@@ -36,8 +36,12 @@ export const ClientTable = ({ clients, onClientClick }: ClientTableProps) => {
         {
           <tbody>
             {clients.map((client: any, index: number) => (
-              <tr key={index} className="fs-7 fs-md-5" onClick={() => onClientClick(client)}>
-                <td className="ps-2 pt-2 text-md-center">
+              <tr
+                key={index}
+                className="fs-7 fs-md-5"
+                onClick={() => onClientClick(client)}
+              >
+                <td className="text-md-center ps-2 pt-2">
                   <span className="fw-bold d-md-none">{t('n_orders')}: </span>
                   <span>{client.controls?.requests?.quantity}</span>
                 </td>
@@ -46,12 +50,24 @@ export const ClientTable = ({ clients, onClientClick }: ClientTableProps) => {
                   <span>{client.name}</span>
                 </td>
                 <td className="ps-2">
-                  <span className="fw-bold d-md-none">{t('total_spent')}: </span>
-                  <span>{currency({ value: client.controls?.requests?.total })}</span>
+                  <span className="fw-bold d-md-none">
+                    {t('total_spent')}:{' '}
+                  </span>
+                  <span>
+                    {currency({ value: client.controls?.requests?.total })}
+                  </span>
                 </td>
-                <td className="ps-2 pb-2">
-                  <span className="fw-bold d-md-none">{t('average_ticket')}: </span>
-                  <span>{currency({ value: client.controls?.requests?.total / client.controls?.requests?.quantity })}</span>
+                <td className="pb-2 ps-2">
+                  <span className="fw-bold d-md-none">
+                    {t('average_ticket')}:{' '}
+                  </span>
+                  <span>
+                    {currency({
+                      value:
+                        client.controls?.requests?.total /
+                        client.controls?.requests?.quantity,
+                    })}
+                  </span>
                 </td>
               </tr>
             ))}

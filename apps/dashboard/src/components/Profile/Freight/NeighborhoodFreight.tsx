@@ -1,12 +1,23 @@
 import { AxiosError } from 'axios'
 import { useSession } from 'next-auth/react'
 import { useContext, useEffect, useState } from 'react'
-import { Button, Col, Container, Form, InputGroup, Row, Table } from 'react-bootstrap'
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  InputGroup,
+  Row,
+  Table,
+} from 'react-bootstrap'
 import { AppContext } from '../../../context/app.ctx'
 import { apiRoute, hash, mask } from '../../../utils/wm-functions'
 import { OverlaySpinner } from '../../OverlaySpinner'
 import { useTranslation } from 'react-i18next'
-import { ProfileTaxDeliveryNeighborhood, ProfileTaxDeliveryNeighborhoodItem } from '../../../types/profile'
+import {
+  ProfileTaxDeliveryNeighborhood,
+  ProfileTaxDeliveryNeighborhoodItem,
+} from '../../../types/profile'
 
 interface NeighborhoodFreightProps {
   taxDelivery: ProfileTaxDeliveryNeighborhood[]
@@ -15,7 +26,14 @@ interface NeighborhoodFreightProps {
 export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { profile, setProfile, handleShowToast, handleConfirmModal, user, currency } = useContext(AppContext)
+  const {
+    profile,
+    setProfile,
+    handleShowToast,
+    handleConfirmModal,
+    user,
+    currency,
+  } = useContext(AppContext)
   let { taxDelivery } = props
 
   const [newTax, setNewTax] = useState<ProfileTaxDeliveryNeighborhood>({
@@ -26,12 +44,13 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
 
   const [showSpinner, setShowSpinner] = useState(false)
 
-  const [newNeighborhood, setNewNeighborhood] = useState<ProfileTaxDeliveryNeighborhoodItem>({
-    code: hash(),
-    name: '',
-    time: '',
-    value: 0,
-  })
+  const [newNeighborhood, setNewNeighborhood] =
+    useState<ProfileTaxDeliveryNeighborhoodItem>({
+      code: hash(),
+      name: '',
+      time: '',
+      value: 0,
+    })
 
   useEffect(() => {
     setNewTax({ ...newTax, city: profile.address.city })
@@ -54,8 +73,11 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
   const handleAddTax = async () => {
     setShowSpinner(true)
     const city = taxDelivery.find((tax) => tax.city === newTax.city)
-    const neighborhoodAlreadyExists = city?.neighborhoods.find((n) => n.name === newNeighborhood.name)
-    newNeighborhood.value = Number(newNeighborhood.value) < 0 ? '0' : newNeighborhood.value
+    const neighborhoodAlreadyExists = city?.neighborhoods.find(
+      (n) => n.name === newNeighborhood.name
+    )
+    newNeighborhood.value =
+      Number(newNeighborhood.value) < 0 ? '0' : newNeighborhood.value
     if (!newNeighborhood.time) {
       newNeighborhood.time = t('to_be_confirmed')
     }
@@ -67,7 +89,11 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
         content: t('neighborhood_cannot_duplicated'),
       })
     }
-    if (city?.city !== '' && newNeighborhood.name !== '' && newNeighborhood.time !== '') {
+    if (
+      city?.city !== '' &&
+      newNeighborhood.name !== '' &&
+      newNeighborhood.time !== ''
+    ) {
       try {
         const body = {
           distance: newNeighborhood.name,
@@ -75,10 +101,20 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
           value: newNeighborhood.value.toString(),
           city: newTax.city,
         }
-        const { data } = await apiRoute('/dashboard/profile/taxDelivery', session, 'POST', body)
-        const haveTaxIndex = taxDelivery.findIndex((t) => t.city === data.tax.city)
+        const { data } = await apiRoute(
+          '/dashboard/profile/taxDelivery',
+          session,
+          'POST',
+          body
+        )
+        const haveTaxIndex = taxDelivery.findIndex(
+          (t) => t.city === data.tax.city
+        )
         if (haveTaxIndex !== -1) {
-          taxDelivery[haveTaxIndex].neighborhoods = [...taxDelivery[haveTaxIndex].neighborhoods, ...data.tax.neighborhoods]
+          taxDelivery[haveTaxIndex].neighborhoods = [
+            ...taxDelivery[haveTaxIndex].neighborhoods,
+            ...data.tax.neighborhoods,
+          ]
           setProfile({ ...profile, taxDelivery })
         } else {
           newTax.neighborhoods = data.tax.neighborhoods
@@ -115,10 +151,16 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
     }
   }
 
-  const handleEditTax = async (tax: ProfileTaxDeliveryNeighborhood, neighborhood: ProfileTaxDeliveryNeighborhoodItem) => {
+  const handleEditTax = async (
+    tax: ProfileTaxDeliveryNeighborhood,
+    neighborhood: ProfileTaxDeliveryNeighborhoodItem
+  ) => {
     setShowSpinner(true)
-    const neighborhoodAlreadyExists = tax.neighborhoods.filter((n) => n.code !== neighborhood.code).find((n) => n.name === neighborhood.name)
-    newNeighborhood.value = Number(neighborhood.value) < 0 ? '0' : neighborhood.value
+    const neighborhoodAlreadyExists = tax.neighborhoods
+      .filter((n) => n.code !== neighborhood.code)
+      .find((n) => n.name === neighborhood.name)
+    newNeighborhood.value =
+      Number(neighborhood.value) < 0 ? '0' : neighborhood.value
     if (!neighborhood.time) {
       neighborhood.time = t('to_be_confirmed')
     }
@@ -132,12 +174,23 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
     }
 
     const body = { tax: tax.code, neighborhood }
-    if (neighborhood.name && neighborhood.time && Number(neighborhood.value) >= 0) {
+    if (
+      neighborhood.name &&
+      neighborhood.time &&
+      Number(neighborhood.value) >= 0
+    ) {
       neighborhood.value = String(neighborhood.value).replace(',', '.')
       try {
-        const { data } = await apiRoute('/dashboard/profile/tax/neighborhood/update', session, 'PUT', body)
+        const { data } = await apiRoute(
+          '/dashboard/profile/tax/neighborhood/update',
+          session,
+          'PUT',
+          body
+        )
 
-        let updatedNeighborhood = tax.neighborhoods.find((n) => n.code === data.code)
+        let updatedNeighborhood = tax.neighborhoods.find(
+          (n) => n.code === data.code
+        )
         updatedNeighborhood = data
         setProfile({ ...profile, taxDelivery })
         handleShowToast({
@@ -155,7 +208,10 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
     setShowSpinner(false)
   }
 
-  const handleRemoveTax = async (tax: ProfileTaxDeliveryNeighborhood, neighborhood: ProfileTaxDeliveryNeighborhoodItem) => {
+  const handleRemoveTax = async (
+    tax: ProfileTaxDeliveryNeighborhood,
+    neighborhood: ProfileTaxDeliveryNeighborhoodItem
+  ) => {
     setNewTax({
       city: tax.city,
       code: hash(),
@@ -165,11 +221,17 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
       actionConfirm: async () => {
         try {
           setShowSpinner(true)
-          await apiRoute(`/dashboard/profile/taxDelivery/${neighborhood.code}/delete`, session, 'DELETE')
+          await apiRoute(
+            `/dashboard/profile/taxDelivery/${neighborhood.code}/delete`,
+            session,
+            'DELETE'
+          )
 
           let updatedTax = taxDelivery.find((t) => t.code === tax.code)
           if (updatedTax) {
-            updatedTax.neighborhoods = updatedTax.neighborhoods.filter((n) => n.code !== neighborhood.code)
+            updatedTax.neighborhoods = updatedTax.neighborhoods.filter(
+              (n) => n.code !== neighborhood.code
+            )
           }
 
           if (!tax.neighborhoods.length) {
@@ -205,13 +267,17 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
           />
         </Col>
         <Col md className="mb-2">
-          <Form.Label className="text-nowrap">{t('neighborhood_name')}</Form.Label>
+          <Form.Label className="text-nowrap">
+            {t('neighborhood_name')}
+          </Form.Label>
           <Form.Control
             type="text"
             value={newNeighborhood.name}
             id="nameInput"
             placeholder={t('neighborhood')}
-            onChange={(e) => setNewNeighborhood({ ...newNeighborhood, name: e.target.value })}
+            onChange={(e) =>
+              setNewNeighborhood({ ...newNeighborhood, name: e.target.value })
+            }
           />
         </Col>
         <Col md className="mb-2">
@@ -244,9 +310,9 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
             placeholder={t('to_be_confirmed')}
           />
         </Col>
-        <Col md="2" className="mb-2 d-flex">
+        <Col md="2" className="d-flex mb-2">
           <Button
-            className="mt-auto w-100 flex-grow-1"
+            className="w-100 flex-grow-1 mt-auto"
             onClick={() => {
               handleAddTax()
             }}
@@ -299,11 +365,19 @@ export function NeighborhoodFreight(props: NeighborhoodFreightProps) {
                     </td>
                     <td style={{ minWidth: '9rem' }}>
                       <InputGroup>
-                        <InputGroup.Text>{currency({ value: 0, symbol: true })}</InputGroup.Text>
+                        <InputGroup.Text>
+                          {currency({ value: 0, symbol: true })}
+                        </InputGroup.Text>
                         <Form.Control
                           // type="number"
                           min={0}
-                          defaultValue={Number(neighborhood.value ?? undefined) >= 0 ? Number(neighborhood.value ?? undefined).toFixed(2) : undefined}
+                          defaultValue={
+                            Number(neighborhood.value ?? undefined) >= 0
+                              ? Number(neighborhood.value ?? undefined).toFixed(
+                                  2
+                                )
+                              : undefined
+                          }
                           onChange={(e) => {
                             mask(e, 'currency')
                             neighborhood.value = e.target.value

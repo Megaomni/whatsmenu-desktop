@@ -4,7 +4,17 @@ import { DateTime } from 'luxon'
 import { UserType } from 'next-auth'
 import { signIn, useSession } from 'next-auth/react'
 import { useContext, useState } from 'react'
-import { Button, Col, Container, Form, FormGroup, InputGroup, Modal, Row, Table } from 'react-bootstrap'
+import {
+  Button,
+  Col,
+  Container,
+  Form,
+  FormGroup,
+  InputGroup,
+  Modal,
+  Row,
+  Table,
+} from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { BsFillArrowLeftCircleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa'
@@ -40,9 +50,18 @@ interface ClientConfigProps {
   systemProducts: SystemProduct[]
 }
 
-export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps) {
+export function ClientConfig({
+  returnList,
+  plans,
+  ...props
+}: ClientConfigProps) {
   const { t } = useTranslation()
-  const { handleShowToast, handleConfirmModal, user: userContext, currency } = useContext(AppContext)
+  const {
+    handleShowToast,
+    handleConfirmModal,
+    user: userContext,
+    currency,
+  } = useContext(AppContext)
   const { data: session } = useSession()
 
   const [user, setUser] = useState(props.user)
@@ -65,12 +84,18 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
   }>()
 
   const [emailInvalid, setEmailInvalid] = useState<boolean>()
-  const [showConfirmationUnlinkAsaas, setShowConfirmationUnlinkAsaas] = useState(false)
-  const [showConfirmationDeleteAddresses, setShowConfirmationDeleteAddresses] = useState(false)
+  const [showConfirmationUnlinkAsaas, setShowConfirmationUnlinkAsaas] =
+    useState(false)
+  const [showConfirmationDeleteAddresses, setShowConfirmationDeleteAddresses] =
+    useState(false)
 
-  const lastPixNegotiation = user?.profile?.options?.asaas?.negotiation?.pix.at(-1)
+  const lastPixNegotiation =
+    user?.profile?.options?.asaas?.negotiation?.pix.at(-1)
   const pixFeeExpirationDayCount = lastPixNegotiation
-    ? DateTime.fromFormat(lastPixNegotiation?.expiration_date!, 'yyyy-MM-dd HH:mm:ss').diffNow('days').days
+    ? DateTime.fromFormat(
+        lastPixNegotiation?.expiration_date!,
+        'yyyy-MM-dd HH:mm:ss'
+      ).diffNow('days').days
     : 0
 
   const pixNegotiationForm = useForm<PixNegotiationSchemaInput>({
@@ -84,7 +109,9 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
   const handleDeleteAdresses = async () => {
     try {
       const profileId = user.profile?.id
-      const { data } = await apiRoute('/adm/deleteAddresses', session, 'POST', { profileId })
+      const { data } = await apiRoute('/adm/deleteAddresses', session, 'POST', {
+        profileId,
+      })
       handleShowToast({
         type: 'success',
         title: t('delete_addresses'),
@@ -102,9 +129,16 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
   }
 
   const handleSetNewAsaasPixFee = async (data: PixNegotiationSchemaInput) => {
-    data.expiration_date = DateTime.local().plus({ days: 90 }).toFormat('yyyy-MM-dd HH:mm:ss')
+    data.expiration_date = DateTime.local()
+      .plus({ days: 90 })
+      .toFormat('yyyy-MM-dd HH:mm:ss')
     try {
-      const { data: pix } = await apiRoute('/dashboard/profile/addNewPixNegotiationAsaas', session, 'POST', data)
+      const { data: pix } = await apiRoute(
+        '/dashboard/profile/addNewPixNegotiationAsaas',
+        session,
+        'POST',
+        data
+      )
       setUser((state) => {
         if (state.profile && state.profile.options?.asaas?.negotiation) {
           state.profile.options?.asaas?.negotiation.pix.push(pix)
@@ -193,7 +227,9 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         return handleShowToast({
           type: 'erro',
           title: i18n.t('something_wrong'),
-          content: (error as AxiosError<Error, any>)?.response?.data.message.includes('slug')
+          content: (
+            error as AxiosError<Error, any>
+          )?.response?.data.message.includes('slug')
             ? (error as AxiosError<Error, any>)?.response?.data.message
             : i18n.t('talk_it_team'),
         })
@@ -238,11 +274,16 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
     }
 
     try {
-      const { data } = await apiRoute('/dashboard/invoices/addon/emmit', session, 'POST', {
-        items: invoiceItems,
-        userId: user.id,
-        installments,
-      })
+      const { data } = await apiRoute(
+        '/dashboard/invoices/addon/emmit',
+        session,
+        'POST',
+        {
+          items: invoiceItems,
+          userId: user.id,
+          installments,
+        }
+      )
       user.invoices?.push(data.response)
       setUser(user)
       setInvoiceItems([])
@@ -268,9 +309,14 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
 
         return
       }
-      const { data } = await apiRoute('/administrator-api/payment/paghiper/manualy-paid', session, 'PUT', {
-        invoice: user.controls.paymentInfo ? invoice : invoice.requests[0],
-      })
+      const { data } = await apiRoute(
+        '/administrator-api/payment/paghiper/manualy-paid',
+        session,
+        'PUT',
+        {
+          invoice: user.controls.paymentInfo ? invoice : invoice.requests[0],
+        }
+      )
 
       invoice.status = 'paid'
       if (user.invoices) {
@@ -281,7 +327,10 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
       }
     } catch (error) {
       console.error(error)
-      return handleShowToast({ type: 'erro', title: i18n.t('invoice_settlement') })
+      return handleShowToast({
+        type: 'erro',
+        title: i18n.t('invoice_settlement'),
+      })
     }
   }
 
@@ -307,7 +356,12 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
 
   const handleAddSupport = async () => {
     try {
-      const { data } = await apiRoute('/adm/user/support/add', session, 'POST', { user: user.id })
+      const { data } = await apiRoute(
+        '/adm/user/support/add',
+        session,
+        'POST',
+        { user: user.id }
+      )
       handleShowToast({ type: 'success', title: i18n.t('assign_support') })
       setUser({ ...user, ...data })
     } catch (error) {
@@ -319,7 +373,9 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
   const handleSwitchUser = async () => {
     sessionStorage.clear()
     try {
-      const { data } = await api.get(`/login/switch/${user.id}?admId=${session?.user?.id}`)
+      const { data } = await api.get(
+        `/login/switch/${user.id}?admId=${session?.user?.id}`
+      )
       signIn('credentials', { switchUser: JSON.stringify(data) })
       handleShowToast({
         type: 'success',
@@ -342,27 +398,32 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
   }
 
   const handleCancelUnlinkAsaas = () => setShowConfirmationUnlinkAsaas(false)
-  const haldleCancelDeleteAddresses = () => setShowConfirmationDeleteAddresses(false)
+  const haldleCancelDeleteAddresses = () =>
+    setShowConfirmationDeleteAddresses(false)
 
-  const handleShowModalConfirmationUnlinkAsaas = () => setShowConfirmationUnlinkAsaas(true)
-  const handleShowModalConfirmationDeleteAddresses = () => setShowConfirmationDeleteAddresses(true)
+  const handleShowModalConfirmationUnlinkAsaas = () =>
+    setShowConfirmationUnlinkAsaas(true)
+  const handleShowModalConfirmationDeleteAddresses = () =>
+    setShowConfirmationDeleteAddresses(true)
   return (
     <>
-      <Container fluid className="mx-0 p-0 text-nowrap">
+      <Container fluid className="mx-0 text-nowrap p-0">
         <Row>
-          <Col className="ps-2 d-flex justify-content-between align-items-baseline">
+          <Col className="d-flex justify-content-between align-items-baseline ps-2">
             <Button onClick={returnList} variant="white" className="ps-0">
               <BsFillArrowLeftCircleFill size={30} />
               <span>{t('back_to_list')}</span>
             </Button>
-            {user?.profile?.options?.asaas && <img src="/images/logo-asaas-2.svg" alt="Logo Asaas" />}
+            {user?.profile?.options?.asaas && (
+              <img src="/images/logo-asaas-2.svg" alt="Logo Asaas" />
+            )}
           </Col>
         </Row>
         <Row>
           <Col className="overflow-auto">
             {user.controls?.serviceStart && (
               <div className="bd-callout bd-callout-success d-inline-block py-2">
-                <div className="d-flex gap-4 text-nowrap align-items-center fs-7">
+                <div className="d-flex align-items-center fs-7 gap-4 text-nowrap">
                   <div>
                     <FaCheck fontSize={32} className="text-green-500" />
                   </div>
@@ -376,7 +437,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
 
             {user.controls?.salePrint && (
               <div className="bd-callout bd-callout-success d-inline-block py-2">
-                <div className="d-flex gap-4 text-nowrap align-items-center fs-7">
+                <div className="d-flex align-items-center fs-7 gap-4 text-nowrap">
                   <div>
                     <FaCheck fontSize={32} className="text-green-500" />
                   </div>
@@ -389,7 +450,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             )}
           </Col>
         </Row>
-        <Row className="mt-5 w-100">
+        <Row className="w-100 mt-5">
           <Col className="d-flex justify-content-between flex-column flex-md-row">
             <span>
               {t('user_data')}: {user.id}
@@ -406,7 +467,10 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             )}
           </Col>
           {!user.support && (
-            <Col md="4" className="d-flex justify-content-end position-relative my-3 my-md-0">
+            <Col
+              md="4"
+              className="d-flex justify-content-end position-relative my-md-0 my-3"
+            >
               <Button
                 variant="warning text-white"
                 className="position-absolute z-index"
@@ -420,13 +484,17 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         </Row>
         <hr />
         <Row className="fs-7 fw-bold">
-          <Col sm="12" md className="mb-2 mb-md-0">
+          <Col sm="12" md className="mb-md-0 mb-2">
             <FormGroup>
               <Form.Label>{t('name')}</Form.Label>
-              <Form.Control placeholder={t('no_name')} value={user.name ?? ''} onChange={(e) => handleChange(e.target.value, 'name')} />
+              <Form.Control
+                placeholder={t('no_name')}
+                value={user.name ?? ''}
+                onChange={(e) => handleChange(e.target.value, 'name')}
+              />
             </FormGroup>
           </Col>
-          <Col sm="12" md className="mb-2 mb-md-0">
+          <Col sm="12" md className="mb-md-0 mb-2">
             <FormGroup>
               <Form.Label>E-mail</Form.Label>
               <div className="position-relative">
@@ -440,7 +508,12 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                     handleChange(e.target.value, 'email')
                   }}
                 />
-                <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
+                <Form.Control.Feedback
+                  tooltip
+                  type="invalid"
+                  style={{ zIndex: 0 }}
+                  className="mt-2"
+                >
                   {t('invalid_email')}
                 </Form.Control.Feedback>
               </div>
@@ -461,15 +534,20 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                     handleChange(e.target.value, 'secretNumber')
                   }}
                 />
-                <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
+                <Form.Control.Feedback
+                  tooltip
+                  type="invalid"
+                  style={{ zIndex: 0 }}
+                  className="mt-2"
+                >
                   {secretNumberInvalid?.type} {t('invalid')}
                 </Form.Control.Feedback>
               </div>
             </FormGroup>
           </Col>
         </Row>
-        <Row className="mt-4 fs-7 fw-bold">
-          <Col sm="12" md className="mb-2 mb-sm-0 ">
+        <Row className="fs-7 fw-bold mt-4">
+          <Col sm="12" md className="mb-sm-0 mb-2 ">
             <FormGroup>
               <Form.Label>WhatsApp</Form.Label>
               <Form.Control
@@ -488,17 +566,28 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
               <Form.Control
                 placeholder={t('no_date')}
                 disabled
-                value={DateTime.fromSQL(user.created_at).toFormat(`${t('date_format')} HH:mm'`) ?? ''}
+                value={
+                  DateTime.fromSQL(user.created_at).toFormat(
+                    `${t('date_format')} HH:mm'`
+                  ) ?? ''
+                }
               />
             </FormGroup>
           </Col>
-          <Col sm="12" md className="mb-2 mb-sm-0 ">
+          <Col sm="12" md className="mb-sm-0 mb-2 ">
             <FormGroup>
               <Form.Label>{t('login_attempts')}</Form.Label>
 
               <Row>
                 <Col>
-                  <Form.Control placeholder="0" className="text-center" disabled readOnly type="text" value={user.controls.attempts} />
+                  <Form.Control
+                    placeholder="0"
+                    className="text-center"
+                    disabled
+                    readOnly
+                    type="text"
+                    value={user.controls.attempts}
+                  />
                 </Col>
                 {/* <Col sm='9'>
                   <Button variant="success" className="form-control"  onClick={() => resetAttempts()}>Resetar</Button>
@@ -507,10 +596,10 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             </FormGroup>
           </Col>
         </Row>
-        <Row className="mt-4 fs-7">
+        <Row className="fs-7 mt-4">
           <Col sm="12" md className="d-flex">
             <Row className="fs-7 fw-bold">
-              <Col className="mb-2 mb-md-0">
+              <Col className="mb-md-0 mb-2">
                 <FormGroup>
                   <Form.Label>{t('due_date')}</Form.Label>
                   <Form.Control
@@ -520,13 +609,14 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                     min={1}
                     max={31}
                     onChange={(e) => {
-                      e.target.value = Number(e.target.value) > 31 ? '31' : e.target.value
+                      e.target.value =
+                        Number(e.target.value) > 31 ? '31' : e.target.value
                       handleChange(e.target.value, 'due')
                     }}
                   />
                 </FormGroup>
               </Col>
-              <Col sm="12" md className="mb-2 mb-md-0">
+              <Col sm="12" md className="mb-md-0 mb-2">
                 <FormGroup>
                   <Form.Label>{t('payment_method')} - Adm</Form.Label>
                   <Form.Select
@@ -546,18 +636,24 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   </Form.Select>
                 </FormGroup>
               </Col>
-              {(userContext?.controls.type === 'adm' || userContext?.controls.type === 'manager') && (
-                <Col sm="12" md className="mb-2 mb-md-0">
+              {(userContext?.controls.type === 'adm' ||
+                userContext?.controls.type === 'manager') && (
+                <Col sm="12" md className="mb-md-0 mb-2">
                   <FormGroup>
                     <Form.Label>{t('password')}</Form.Label>
-                    <Form.Control type="password" placeholder={t('enter_new_password')} onChange={(e) => handleChange(e.target.value, 'password')} />
+                    <Form.Control
+                      type="password"
+                      placeholder={t('enter_new_password')}
+                      onChange={(e) => handleChange(e.target.value, 'password')}
+                    />
                   </FormGroup>
                 </Col>
               )}
             </Row>
           </Col>
-          <Col className="d-flex justify-content-around gap-2 fs-7 fw-bold flex-column flex-md-row  ">
-            {(userContext?.controls.type === 'adm' || userContext?.controls.type === 'manager') && (
+          <Col className="d-flex justify-content-around fs-7 fw-bold flex-column flex-md-row gap-2  ">
+            {(userContext?.controls.type === 'adm' ||
+              userContext?.controls.type === 'manager') && (
               <FormGroup className="d-flex flex-column flex-grow-1">
                 <Form.Label>{t('security_key')}</Form.Label>
                 <Button onClick={handleResetSecurityKey}>{t('reset')}</Button>
@@ -567,25 +663,46 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
               <Form.Label>{t('access_panel')}</Form.Label>
               <Button
                 onClick={handleSwitchUser}
-                disabled={userContext?.controls?.type !== 'adm' && (user?.controls?.type === 'adm' || user?.controls?.type === 'manager')}
-                title={userContext?.controls?.type !== 'adm' && user?.controls?.type === 'adm' ? i18n.t('not_have_permission_adm') : ''}
+                disabled={
+                  userContext?.controls?.type !== 'adm' &&
+                  (user?.controls?.type === 'adm' ||
+                    user?.controls?.type === 'manager')
+                }
+                title={
+                  userContext?.controls?.type !== 'adm' &&
+                  user?.controls?.type === 'adm'
+                    ? i18n.t('not_have_permission_adm')
+                    : ''
+                }
               >
                 {t('acess')}
               </Button>
             </FormGroup>
             <FormGroup className="d-flex flex-column flex-grow-1">
               <Form.Label>{t('clear_addresses')}</Form.Label>
-              <Button onClick={handleShowModalConfirmationDeleteAddresses}>{t('clear')}</Button>
+              <Button onClick={handleShowModalConfirmationDeleteAddresses}>
+                {t('clear')}
+              </Button>
             </FormGroup>
           </Col>
         </Row>
-        <Modal show={showConfirmationDeleteAddresses} onHide={haldleCancelDeleteAddresses} centered>
+        <Modal
+          show={showConfirmationDeleteAddresses}
+          onHide={haldleCancelDeleteAddresses}
+          centered
+        >
           <Modal.Header>
             <h4 className="m-0 p-0">{t('delete_addresses')}</h4>
           </Modal.Header>
-          <Modal.Body className="fs-5 m-0 p-0 p-4">{t('delete_addresses_customer')}</Modal.Body>
+          <Modal.Body className="fs-5 m-0 p-0 p-4">
+            {t('delete_addresses_customer')}
+          </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" className="btn-danger" onClick={haldleCancelDeleteAddresses}>
+            <Button
+              variant="secondary"
+              className="btn-danger"
+              onClick={haldleCancelDeleteAddresses}
+            >
               {t('no')}
             </Button>
             <Button
@@ -599,8 +716,9 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             </Button>
           </Modal.Footer>
         </Modal>
-        {(userContext?.controls?.type === 'adm' || userContext?.controls?.type === 'manager') && (
-          <Row className="mt-4 fs-7 fw-bold">
+        {(userContext?.controls?.type === 'adm' ||
+          userContext?.controls?.type === 'manager') && (
+          <Row className="fs-7 fw-bold mt-4">
             <Col>
               <FormGroup>
                 <Form.Label>{t('user_cancellation')}</Form.Label>
@@ -624,7 +742,8 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             <Col>
               <FormGroup>
                 <Form.Label>
-                  {t('version_next')} <span className="text-uppercase">({t('test')})</span>
+                  {t('version_next')}{' '}
+                  <span className="text-uppercase">({t('test')})</span>
                 </Form.Label>
                 <Form.Switch
                   id="nextVersion"
@@ -646,7 +765,8 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             <Col>
               <FormGroup>
                 <Form.Label>
-                  {t('automatic_printing_browser')} <span className="text-uppercase">({t('test')})</span>
+                  {t('automatic_printing_browser')}{' '}
+                  <span className="text-uppercase">({t('test')})</span>
                 </Form.Label>
                 <Form.Switch
                   id="webPrint"
@@ -688,20 +808,26 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
           />
         </FormGroup>
         <Row>
-          <Col className="d-flex gap-2 justify-content-end">
+          <Col className="d-flex justify-content-end gap-2">
             <Button
-              className="mt-3 flex-grow-1 flex-md-grow-0"
+              className="flex-grow-1 flex-md-grow-0 mt-3"
               variant="success"
               onClick={handleSaveUser}
-              disabled={(secretNumberInvalid && !secretNumberInvalid?.valid) || emailInvalid}
+              disabled={
+                (secretNumberInvalid && !secretNumberInvalid?.valid) ||
+                emailInvalid
+              }
             >
               {t('save')}
             </Button>
           </Col>
         </Row>
-        <Row className="mt-3 mt-md-0">
-          <Col className="text-start position-relative">
-            <span className="position-absolute fw-bold" style={{ bottom: '-18px' }}>
+        <Row className="mt-md-0 mt-3">
+          <Col className="position-relative text-start">
+            <span
+              className="position-absolute fw-bold"
+              style={{ bottom: '-18px' }}
+            >
               {t('profile')} - {user.profile?.id ?? `${t('not_registered')}!`}
             </span>
           </Col>
@@ -710,19 +836,27 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         {user.profile && (
           <>
             <Row>
-              <Col sm="6" className="my-2 my-lg-0">
+              <Col sm="6" className="my-lg-0 my-2">
                 <Form.Label>
                   <b>{t('title')}</b>
                 </Form.Label>
                 <Form.Control defaultValue={user.profile.name} />
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Label>
                   <b>{t('whatsapp')}</b>
                 </Form.Label>
                 <Form.Control
                   value={user.profile.whatsapp}
-                  onChange={(e) => setUser((prevUser) => ({ ...prevUser, profile: { ...(prevUser.profile as Profile), whatsapp: e.target.value } }))}
+                  onChange={(e) =>
+                    setUser((prevUser) => ({
+                      ...prevUser,
+                      profile: {
+                        ...(prevUser.profile as Profile),
+                        whatsapp: e.target.value,
+                      },
+                    }))
+                  }
                 />
               </Col>
               <Col sm>
@@ -731,12 +865,20 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                 </Form.Label>
                 <Form.Control
                   value={user.profile.slug}
-                  onChange={(e) => setUser((prevUser) => ({ ...prevUser, profile: { ...(prevUser.profile as Profile), slug: e.target.value } }))}
+                  onChange={(e) =>
+                    setUser((prevUser) => ({
+                      ...prevUser,
+                      profile: {
+                        ...(prevUser.profile as Profile),
+                        slug: e.target.value,
+                      },
+                    }))
+                  }
                 />
               </Col>
             </Row>
-            <Row className="my-4 mx-2">
-              <Col sm className="my-2 my-lg-0">
+            <Row className="mx-2 my-4">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Perfil"
                   label={t('block_profile')}
@@ -758,7 +900,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   <option value="blocked">Bloqueado</option>
                 </Form.Select> */}
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Valor no Whatsapp?"
                   label={`${t('value_whatsapp')}?`}
@@ -783,7 +925,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   <option value="">Não</option>
                 </Form.Select> */}
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Habilitar frete por KM"
                   label={t('enable_shipping_mi')}
@@ -814,7 +956,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   <option value="">Não</option>
                 </Form.Select> */}
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Duplo envio Whatsapp"
                   label={t('double_sending_whatsapp')}
@@ -835,12 +977,16 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   }}
                 />
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Habilitar Pix Online"
                   label={t('enable_pix_online')}
                   disabled={user.profile.options.legacyPix}
-                  checked={user.profile.options.legacyPix ? false : (user.profile.options.onlinePix ?? false)}
+                  checked={
+                    user.profile.options.legacyPix
+                      ? false
+                      : (user.profile.options.onlinePix ?? false)
+                  }
                   onChange={(e) => {
                     if (user.profile) {
                       setUser({
@@ -857,12 +1003,16 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   }}
                 />
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Habilitar Cartão Online"
                   label={t('enable_online_card')}
                   disabled={user.profile.options.legacyPix}
-                  checked={user.profile.options.legacyPix ? false : (user.profile.options.onlineCard ?? false)}
+                  checked={
+                    user.profile.options.legacyPix
+                      ? false
+                      : (user.profile.options.onlineCard ?? false)
+                  }
                   onChange={(e) => {
                     if (user.profile) {
                       setUser({
@@ -879,7 +1029,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   }}
                 />
               </Col>
-              <Col sm className="my-2 my-lg-0">
+              <Col sm className="my-lg-0 my-2">
                 <Form.Switch
                   id="Pix antigo"
                   label={t('old_pix')}
@@ -901,16 +1051,19 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                 />
               </Col>
             </Row>
-            <Row className="mt-3 mt-md-0">
-              <Col className="text-start position-relative">
-                <span className="position-absolute fw-bold" style={{ bottom: '-18px' }}>
+            <Row className="mt-md-0 mt-3">
+              <Col className="position-relative text-start">
+                <span
+                  className="position-absolute fw-bold"
+                  style={{ bottom: '-18px' }}
+                >
                   {t('internationalization')}
                 </span>
               </Col>
             </Row>
             <hr />
             <Row>
-              <Col sm="6" className="my-2 my-lg-0">
+              <Col sm="6" className="my-lg-0 my-2">
                 <Form.Label>
                   <b>{t('language')}</b>
                 </Form.Label>
@@ -939,7 +1092,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                   <option value="en-US">{t('english_us')}</option>
                 </Form.Select>
               </Col>
-              <Col sm="6" className="my-2 my-lg-0">
+              <Col sm="6" className="my-lg-0 my-2">
                 <Form.Label>
                   <b>{t('currency')}</b>
                 </Form.Label>
@@ -970,7 +1123,10 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
               </Col>
             </Row>
             <Row className="mt-3">
-              <Col sm={12} className="d-flex gap-2 text-end justify-content-end">
+              <Col
+                sm={12}
+                className="d-flex justify-content-end gap-2 text-end"
+              >
                 <Button variant="success" onClick={handleSaveUserProfile}>
                   {t('save')}
                 </Button>
@@ -979,10 +1135,17 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
             {user?.profile?.options?.asaas && (
               <div className="mt-3">
                 <Row xs="12" className="d-flex  gap-3">
-                  <p className="fw-bold border-bottom flex-grow-1 m-0 ">Asaas</p>
-                  <Col sm="6" className=" border-separator pe-4 pb-3">
-                    <form onSubmit={pixNegotiationForm.handleSubmit(handleSetNewAsaasPixFee)} className="d-flex gap-3 align-items-center">
-                      <Form.Label className="m-0 position-relative flex-grow-1">
+                  <p className="fw-bold border-bottom flex-grow-1 m-0 ">
+                    Asaas
+                  </p>
+                  <Col sm="6" className=" border-separator pb-3 pe-4">
+                    <form
+                      onSubmit={pixNegotiationForm.handleSubmit(
+                        handleSetNewAsaasPixFee
+                      )}
+                      className="d-flex align-items-center gap-3"
+                    >
+                      <Form.Label className="position-relative flex-grow-1 m-0">
                         <p>{t('negotiation_fee')}</p>
                         <Form.Control
                           step="0.01"
@@ -999,24 +1162,34 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                         <>
                           {pixFeeExpirationDayCount > 0 ? (
                             <div className="my-auto mb-2">
-                              {t('expires_in')} {Math.round(pixFeeExpirationDayCount)} {t('days')}
+                              {t('expires_in')}{' '}
+                              {Math.round(pixFeeExpirationDayCount)} {t('days')}
                             </div>
                           ) : (
                             <div className="my-auto mb-2">
-                              {t('expired_since')} {Math.abs(Math.round(pixFeeExpirationDayCount))} {t('days')}
+                              {t('expired_since')}{' '}
+                              {Math.abs(Math.round(pixFeeExpirationDayCount))}{' '}
+                              {t('days')}
                             </div>
                           )}
                         </>
                       )}
-                      <Button type="submit" variant="success" className="mt-auto" disabled={pixFeeExpirationDayCount > 0}>
+                      <Button
+                        type="submit"
+                        variant="success"
+                        className="mt-auto"
+                        disabled={pixFeeExpirationDayCount > 0}
+                      >
                         {t('save')}
                       </Button>
                     </form>
                   </Col>
 
-                  <Col xs="1" className="p-0 m-0 ms-3">
+                  <Col xs="1" className="m-0 ms-3 p-0">
                     <p>{t('disconnect_account_asaas')}</p>
-                    <Button onClick={handleShowModalConfirmationUnlinkAsaas}>{t('unlink')}</Button>
+                    <Button onClick={handleShowModalConfirmationUnlinkAsaas}>
+                      {t('unlink')}
+                    </Button>
                   </Col>
                 </Row>
               </div>
@@ -1025,11 +1198,17 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         )}
 
         {/* MODAL DE CONFIRMAÇÃO PARA DESVINCULAR CONTA ASAAS */}
-        <Modal show={showConfirmationUnlinkAsaas} onHide={handleCancelUnlinkAsaas} centered>
+        <Modal
+          show={showConfirmationUnlinkAsaas}
+          onHide={handleCancelUnlinkAsaas}
+          centered
+        >
           <Modal.Header>
             <h4 className="m-0 p-0">{t('account_asaas')}</h4>
           </Modal.Header>
-          <Modal.Body className="fs-5 m-0 p-0 p-4">{t('unlink_asaas_account')}?</Modal.Body>
+          <Modal.Body className="fs-5 m-0 p-0 p-4">
+            {t('unlink_asaas_account')}?
+          </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCancelUnlinkAsaas}>
               {t('no')}
@@ -1060,8 +1239,13 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         <span className="fw-bold">{t('add_ons')}</span>
         <hr />
         {props.systemProducts.map((prod) => {
-          const price = prod.operations.prices.find((price) => price.id === prod.default_price)
-          const value = (price?.currencies[user?.controls?.currency ?? price?.default_currency].unit_amount ?? 0) / 100
+          const price = prod.operations.prices.find(
+            (price) => price.id === prod.default_price
+          )
+          const value =
+            (price?.currencies[
+              user?.controls?.currency ?? price?.default_currency
+            ].unit_amount ?? 0) / 100
           const productItem = invoiceItems.find((item) => item.id === prod.id)
           if (prod.service === 'menu' || prod.service === 'printer') {
             return (
@@ -1108,7 +1292,9 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                         value={productItem?.quantity ?? 1}
                         onChange={(e) => {
                           setInvoiceItems((oldItems) => {
-                            const item = oldItems.find((item) => item.id === prod.id)
+                            const item = oldItems.find(
+                              (item) => item.id === prod.id
+                            )
                             if (item) {
                               item.quantity = Number(e.target.value)
                             }
@@ -1117,7 +1303,11 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                           })
                         }}
                       />
-                      <InputGroup.Text>{currency({ value: value * (productItem?.quantity ?? 1) })}</InputGroup.Text>
+                      <InputGroup.Text>
+                        {currency({
+                          value: value * (productItem?.quantity ?? 1),
+                        })}
+                      </InputGroup.Text>
                     </InputGroup>
                   </Col>
                 )}
@@ -1135,7 +1325,8 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
                     }}
                   >
                     {prod.operations.prices.map((price) => {
-                      const currencyMoney = price.currencies[user?.controls?.currency ?? 'brl']
+                      const currencyMoney =
+                        price.currencies[user?.controls?.currency ?? 'brl']
 
                       return (
                         <option
@@ -1157,7 +1348,13 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         <Row>
           <Col>
             <span>
-              <b>Total</b>: {currency({ value: invoiceItems.reduce((acc, item) => acc + item.value * item.quantity, 0) })}
+              <b>Total</b>:{' '}
+              {currency({
+                value: invoiceItems.reduce(
+                  (acc, item) => acc + item.value * item.quantity,
+                  0
+                ),
+              })}
             </span>
           </Col>
         </Row>
@@ -1247,7 +1444,12 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         </Row> */}
         <Row>
           <Col className="d-flex align-items-end gap-2">
-            <Button className="px-5" variant="success" onClick={handleEmitAddons} disabled={!invoiceItems?.length}>
+            <Button
+              className="px-5"
+              variant="success"
+              onClick={handleEmitAddons}
+              disabled={!invoiceItems?.length}
+            >
               {t('issue')}
             </Button>
             <div>
@@ -1275,7 +1477,7 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
         </Row>
         <span className="fw-bold">{t('invoices')}</span>
         <hr />
-        <Table responsive striped hover className="align-middle text-center">
+        <Table responsive striped hover className="text-center align-middle">
           <thead>
             <tr>
               <th>{t('transaction_id')}</th>
@@ -1288,14 +1490,31 @@ export function ClientConfig({ returnList, plans, ...props }: ClientConfigProps)
           <tbody>
             {user.invoices?.map((invoice: any) => (
               <tr key={invoice.id}>
-                <td>{invoice.requests && invoice.requests[0] && invoice.requests[0].transactionId ? invoice.requests[0].transactionId : '-'}</td>
+                <td>
+                  {invoice.requests &&
+                  invoice.requests[0] &&
+                  invoice.requests[0].transactionId
+                    ? invoice.requests[0].transactionId
+                    : '-'}
+                </td>
                 <td>{currency({ value: invoice.value })}</td>
-                <td>{DateTime.fromISO(invoice.expiration).toFormat(t('date_format'))}</td>
-                <td>{invoice.status === 'pending' || invoice.status === 'canceled' ? t('pending_pay') : t('paid_a')}</td>
+                <td>
+                  {DateTime.fromISO(invoice.expiration).toFormat(
+                    t('date_format')
+                  )}
+                </td>
+                <td>
+                  {invoice.status === 'pending' || invoice.status === 'canceled'
+                    ? t('pending_pay')
+                    : t('paid_a')}
+                </td>
                 <td>
                   <Button
                     variant={`${invoice.status === 'paid' || userContext.controls.type !== 'adm' ? 'outline-' : ''}success`}
-                    disabled={invoice.status === 'paid' || userContext.controls.type !== 'adm'}
+                    disabled={
+                      invoice.status === 'paid' ||
+                      userContext.controls.type !== 'adm'
+                    }
                     onClick={async () => {
                       try {
                         if (!user.controls.paymentInfo) {

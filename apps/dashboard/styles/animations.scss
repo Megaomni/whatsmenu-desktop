@@ -1,10 +1,13 @@
-@import "bootstrap/scss/functions";
-@import "bootstrap/scss/variables";
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/utilities";
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
 
 @keyframes spinner-grow-delay {
-  to { transform: scale(1, 1.5); background-color: var(--green); }
+  to {
+    transform: scale(1, 1.5);
+    background-color: var(--green);
+  }
 }
 // scss-docs-end spinner-border-keyframes
 
@@ -21,7 +24,7 @@
   &::after,
   & > div {
     position: absolute;
-    content: "";
+    content: '';
     width: 1rem;
     height: 1rem;
     vertical-align: $spinner-vertical-align;
@@ -30,7 +33,7 @@
     animation: 0.9s ease-in-out infinite alternate spinner-grow-delay;
     transition: all 1s;
   }
-  
+
   &::before {
     left: -$spinner-width;
     animation-delay: 0s;
@@ -40,7 +43,6 @@
     animation-delay: 0.3s;
   }
 
-  
   &::after {
     right: -$spinner-width;
     animation-delay: 0.6s;

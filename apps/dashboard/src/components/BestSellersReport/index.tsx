@@ -18,7 +18,12 @@ interface BestSellersReportProps {
   setData: any
 }
 
-export const BestSellersReport = ({ isValid, report, data, setData }: BestSellersReportProps) => {
+export const BestSellersReport = ({
+  isValid,
+  report,
+  data,
+  setData,
+}: BestSellersReportProps) => {
   const { t } = useTranslation()
   const today = new Date().toISOString().split('T')[0]
   const [startDate, setStartDate] = useState<string>(today)
@@ -47,14 +52,21 @@ export const BestSellersReport = ({ isValid, report, data, setData }: BestSeller
       }
       if (report === 'bestSellers') {
         body.startDate = startDate
-        body.endDate = DateTime.fromISO(endDate).plus({ days: 1 }).toFormat('yyyy-MM-dd')
+        body.endDate = DateTime.fromISO(endDate)
+          .plus({ days: 1 })
+          .toFormat('yyyy-MM-dd')
       }
 
       if (allowBlock && page >= lastPage) {
         return
       }
 
-      const { data: dataFetched } = await apiRoute(`/dashboard/report/bestSellers/${page}`, session, 'POST', { ...body })
+      const { data: dataFetched } = await apiRoute(
+        `/dashboard/report/bestSellers/${page}`,
+        session,
+        'POST',
+        { ...body }
+      )
 
       if (dataFetched) {
         setData((prevData: any) => {
@@ -63,7 +75,10 @@ export const BestSellersReport = ({ isValid, report, data, setData }: BestSeller
               ...prevData,
               results: {
                 ...prevData.results,
-                data: dataFetched.results?.page === 1 ? dataFetched.results?.data : [...prevData.results?.data, ...dataFetched.results?.data],
+                data:
+                  dataFetched.results?.page === 1
+                    ? dataFetched.results?.data
+                    : [...prevData.results?.data, ...dataFetched.results?.data],
               },
             }
           }
@@ -152,7 +167,14 @@ export const BestSellersReport = ({ isValid, report, data, setData }: BestSeller
         <Card.Header className="d-flex flex-column flex-md-row gap-2">
           <div className="">
             <label htmlFor="datePicker">{t('start_date')}</label>
-            <input type="date" className="form-control" id="startDate" max={endDate} defaultValue={today} onChange={(e) => selectStartDate(e)} />
+            <input
+              type="date"
+              className="form-control"
+              id="startDate"
+              max={endDate}
+              defaultValue={today}
+              onChange={(e) => selectStartDate(e)}
+            />
           </div>
           <div className="">
             <label htmlFor="datePicker">{t('end_date')}</label>
@@ -166,10 +188,20 @@ export const BestSellersReport = ({ isValid, report, data, setData }: BestSeller
               onChange={(e) => selectEndDate(e)}
             />
           </div>
-          <Button className="mt-auto" variant="success" type="submit" onClick={() => handleButtonClick(false)} disabled={loading}>
+          <Button
+            className="mt-auto"
+            variant="success"
+            type="submit"
+            onClick={() => handleButtonClick(false)}
+            disabled={loading}
+          >
             {t('search')}
           </Button>
-          <Button className="mt-auto ms-md-auto" variant="primary" onClick={handlePrint}>
+          <Button
+            className="ms-md-auto mt-auto"
+            variant="primary"
+            onClick={handlePrint}
+          >
             {t('print')}
           </Button>
           {/* <Button variant="success">Exportar para Planilha</Button> */}
@@ -177,13 +209,20 @@ export const BestSellersReport = ({ isValid, report, data, setData }: BestSeller
       </Card>
       <section ref={ref} id="printReport" className="position-relative">
         <>
-          <h1 className="fs-3 align-middle text-uppercase mb-3"> {t('report')} </h1>
+          <h1 className="fs-3 text-uppercase mb-3 align-middle">
+            {' '}
+            {t('report')}{' '}
+          </h1>
           <Card>
             <Card.Body className="no-more-tables">
               <Table
                 bordered
                 striped
-                className={window.innerWidth <= 768 ? 'col-sm-12 table-bordered table-striped table-condensed cf' : 'table responsive'}
+                className={
+                  window.innerWidth <= 768
+                    ? 'col-sm-12 table-bordered table-striped table-condensed cf'
+                    : 'responsive table'
+                }
               >
                 <thead>
                   <tr>
