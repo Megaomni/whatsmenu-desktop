@@ -1,0 +1,24 @@
+@layout('outer/layoutRegister')
+@section('body')
+<section class="login" id="content">
+
+</section>
+@endsection
+
+@section('js')
+<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.validate/1.7/jquery.validate.min.js"></script>
+{{ script('/dist/jquery.validate.js?v=2') }}
+<script type="text/babel" src="/react/user-register.jsx?v=1.2"></script>
+  <script type="text/babel">
+    const sellers = JSON.parse('{{{sellers}}}');
+    const plans = JSON.parse('{{{plans}}}');
+    localStorage.csrf = '{{ csrfToken }}';
+    const values = {
+      start: {{ startValue }},
+      print: {{ printValue }}
+    };
+
+    ReactDOM.render(<RegisterForm sellers={sellers} plans={plans}/>, document.querySelector('#content'))
+
+  </script>
+@endsection

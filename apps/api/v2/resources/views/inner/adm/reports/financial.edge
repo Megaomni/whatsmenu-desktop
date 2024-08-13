@@ -1,0 +1,272 @@
+@layout('inner/layout')
+
+@section('content')
+<div class="">
+  <div class="ui grid">
+      <div class="sixteen wide column centered">
+        <div class="ui segment">
+          <div class="ui text loader loadingBusca">Aguarde</div>
+          <div class="ui header">Clientes</div>
+          {{--  <div class="ui divider"></div>  --}}
+          <div class="ui content">
+            {{--  <a href="#tableList"><b><u>Clique aqui para ver o detalhado!</u></b></a>  --}}
+          </div>
+          <div class="ui divider"></div>
+            <div id="graph-monthly">
+              <div>
+                  <canvas id="canvasRegister" width="1918" height="405" style="width: 1918px; height: 405px;"></canvas>
+              </div>
+          </div>
+        </div>
+        <div class="ui divider"></div>
+        <div id="select"></div>
+        <div id="sumary" class="ui cards">
+        </div>
+      </div>
+  </div>
+</div>
+
+<div class="">
+  <div class="ui grid">
+    <div class="sixteen wide column centered">
+      <h3 id="tableList" class="ucfirst">Lista de clientes</h3>
+      <div class="ui divider"></div>
+      <table class="ui striped table very basic">
+          <thead class="ui sticky hide-for-small-only">
+              <tr class="">
+                <th>#</th>
+                <th>id</th>
+                <th>Nome</th>
+                <th>email</th>
+                <th>cadastro</th>
+                <th>WhatsApp</th>
+              </tr>
+          </thead>
+          <tbody id="listUsers"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+@endsection
+@section('js')
+  <script>
+    $('.loadingBusca').dimmer('show')
+    const ctx = document.getElementById('canvasRegister').getContext('2d');
+    let reports = []
+    const allUsers = []
+    const days = []
+    let months = []
+    const borderColor = [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ];
+
+    let day = luxon.DateTime.local()
+
+    while (day.toFormat('yyyy-MM-dd') !== day.toFormat('yyyy-MM-01')) {
+      days.unshift(day.toFormat('yyyy-MM-dd'))
+      day = day.minus({days: 1})
+    }
+    days.unshift(day.toFormat('yyyy-MM-01'));
+
+    (async ()=> {
+      reports = await $.get('{{route('administrator.api.report.financial')}}')
+
+
+      months = Object.keys(reports.registers)
+      makeChart([...borderColor])
+      loadSelect()
+      loadListUsers()
+      $('.loadingBusca').dimmer('hide')
+    })()
+
+    function makeChart(colors) {
+      const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Cadastros',
+              data: months.map(month => reports.registers[month].length),
+              backgroundColor: months.map(() => colors[3]),
+              borderColor: months.map(() => colors[3]),
+              borderWidth: 5
+            },
+            {
+              label: 'Mensalidades',
+              data: months.map(month => reports.mensalities[month].length),
+              backgroundColor: months.map(() => colors[4]),
+              borderColor: months.map(() => colors[4]),
+              borderWidth: 5
+            },
+            {
+              label: 'Cancelamentos',
+              data: months.map(month => reports.canceleds[month].length),
+              backgroundColor: months.map(() => colors[0]),
+              borderColor: months.map(() => colors[0]),
+              borderWidth: 5
+            }
+          ]
+        },
+        options: {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true
+                }
+              }
+            ]
+          }
+        }
+      })
+    }
+
+  </script>
+  <script type="text/babel">
+    function loadSelect() {
+      ReactDOM.render(<SelectMonths months={[...months].reverse()}/>, document.querySelector('#select'))
+      $('#selectMonth, #selectType').dropdown({
+        onChange: () => loadListUsers()
+      })
+    }
+    function loadListUsers() {
+      const month = document.querySelector('#selectMonth').value
+      const type = document.querySelector('#selectType').value
+      const users = [...reports[type][month]].reverse()
+      ReactDOM.render(<ListUsers users={users}/>, document.querySelector('#listUsers'))
+      // ReactDOM.render(<Sumary month={month}/>, document.querySelector('#sumary'))
+    }
+
+    class ListUsers extends React.Component {
+      render() {
+        return this.props.users.map((u, i) => <ItemUser user={u} key={i} index={i + 1} />)
+      }
+    }
+    class ItemUser extends React.Component {
+      render() {
+        return (
+          <tr>
+            <td>{this.props.index}</td>
+            <td><span className="show-for-small-only"><b>id:</b></span> {this.props.user.id}</td>
+            <td className="word-break-all">{this.props.user.name}</td>
+            <td><span className="show-for-small-only"><b>E-mail:</b></span> {this.props.user.email}</td>
+            <td><span className="show-for-small-only"><b>Cadastro:</b></span> {this.props.user.controls.serviceStart ? 'SIM' : 'NÃO'}</td>
+            <td><span className="show-for-small-only"><b>WhatsApp</b></span> {this.props.user.whatsapp}</td>
+          </tr>
+        )
+      }
+    }
+
+    class Sumary extends React.Component {
+      getFlag(count) {
+        if (count > 300) {
+          return 'Faixa 4'
+        }
+
+        if (count > 199 && count < 300) {
+          return 'Faixa 3'
+        }
+
+        if (count > 99 && count < 200) {
+          return 'Faixa 2'
+        }
+
+        if (count > 79 && count < 100) {
+          return 'Faixa 1'
+        }
+
+        return 'Faixa 0'
+      }
+      render() {
+        const countSellers = [...new Set(this.props.users.map(u => u.sellerId))]
+        return (
+          <React.Fragment>
+                  <div className="card">
+                    <div className="content">
+                      <div className="header">Cadastros</div>
+                      <div className="meta">{this.props.month}</div>
+                      <div className="description">
+                        <div className="ui list">
+                          <div className="item">Delivery com cadastro: {this.props.users.filter(u => u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Delivery sem cadastro: {this.props.users.filter(u => !u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Total: {this.props.users.filter(u => u.sellerId === sid).length}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="content">
+                      <div className="header">Cadastros</div>
+                      <div className="meta">{this.getFlag(this.props.users.filter(u => u.sellerId === sid).length)}</div>
+                      <div className="description">
+                        <div className="ui list">
+                          <div className="item">Delivery com cadastro: {this.props.users.filter(u => u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Delivery sem cadastro: {this.props.users.filter(u => !u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Total: {this.props.users.filter(u => u.sellerId === sid).length}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="content">
+                      <div className="header">Cadastros</div>
+                      <div className="meta">{this.getFlag(this.props.users.filter(u => u.sellerId === sid).length)}</div>
+                      <div className="description">
+                        <div className="ui list">
+                          <div className="item">Delivery com cadastro: {this.props.users.filter(u => u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Delivery sem cadastro: {this.props.users.filter(u => !u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Total: {this.props.users.filter(u => u.sellerId === sid).length}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+            <div className="card">
+              <div className="content">
+                <div className="header">Total Geral</div>
+                <div className="description">
+                  Delivery com cadastro: {this.props.users.filter(u => u.controls.serviceStart).length}<br/>
+                  Delivery sem cadastro: {this.props.users.filter(u => !u.controls.serviceStart).length}<br/>
+                  Total: {this.props.users.length}
+                </div>
+              </div>
+            </div>
+          </React.Fragment>
+        )
+      }
+    }
+
+    class SelectMonths extends React.Component {
+      render() {
+        return (
+          <div className="ui form">
+            <div className="fields">
+              <div className="field">
+                <label>Mês:</label>
+                <select className="ui dropdown" id="selectMonth">
+                  {this.props.months.map((m, i) => <option key={i} value={m}>{m}</option> )}
+                </select>
+              </div>
+              <div className="field">
+                <label>Tipo:</label>
+                <select className="ui dropdown" id="selectType">
+                  <option value="registers">Cadastros</option>
+                  <option value="mensalities">Mensalidades</option>
+                  <option value="canceleds">Cancelamentos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+  </script>
+@endsection

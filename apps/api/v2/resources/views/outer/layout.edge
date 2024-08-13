@@ -1,0 +1,155 @@
+<!doctype html>
+<html class="no-js" lang="pt">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Content-Language" content="pt-br">
+    <title>Whatsmenu - Login</title>
+    <link rel="stylesheet" href="/dist/semantic.min.css" />
+    <link rel="stylesheet" href="/dist/style.css" />
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="msapplication-TileImage" content="/favicon/ms-icon-144x144.png">
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            background: #34aa49;
+        }
+    </style>
+</head>
+@if(success)
+<body onload="renderSuccessMessage()">
+  @!section('body')
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/dist/jquery.mask.min.js"></script>
+    <script src="/dist/semantic.min.js"></script>
+    <script src="/dist/script.js"></script>
+    @!section('js')
+
+      <div class="ui modal message">
+        <div class="header"><span class="ui big green text">Email enviado com sucesso.</span></div>
+        <div class="content">
+          <p><span class="ui large text">Acesse <span class='ui green text'>{{ user.email }}</span> e verifique na "caixa de entrada" ou "spam"<br />a mensagem com o assunto:<br />"Recuperação de Senha | WhatsMenu"</span></p>
+        </div>
+      </div>
+
+      <div class="ui first modal">
+        <div class="header">Recuperação de Senha</div>
+        <div class="content">
+          <p>Digite seu email de cadastro para recuperar sua senha</p>
+          <div class="ui labeled input" style="width: 100%">
+            <div class="ui label">Email</div>
+            <input id="email_recovery" type="email">
+          </div>
+        </div>
+        <div class="actions">
+          <div class="ui button approve green" onclick="recoverPassword()">Enviar</div>
+        </div>
+    </div>
+</body>
+
+@else
+
+<body>
+  @!section('body')
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/dist/jquery.mask.min.js"></script>
+    <script src="/dist/semantic.min.js"></script>
+    <script src="/dist/script.js"></script>
+    @!section('js')
+
+      <div class="ui modal message">
+        <div class="header"><span class="ui big green text">Email enviado com sucesso.</span></div>
+        <div class="content">
+          <p><span class="ui large text">Acesse <span class='ui green text'>{{ user.email }}</span> e verifique na "caixa de entrada" ou "spam"<br />a mensagem com o assunto:<br />"Recuperação de Senha | WhatsMenu"</span></p>
+        </div>
+      </div>
+
+      <div class="ui first modal">
+        <div class="header">Recuperação de Senha</div>
+        <div class="content">
+          <p>Digite seu email de cadastro para recuperar sua senha</p>
+          <div class="ui labeled input" style="width: 100%">
+            <div class="ui label">Email</div>
+            <input id="email_recovery" type="email">
+          </div>
+        </div>
+        <div class="actions">
+          <div class="ui button approve green" onclick="recoverPassword()">Enviar</div>
+        </div>
+    </div>
+
+</body>
+
+@endif
+
+<script>
+
+  function showRecoverPasswordModal() {
+    $('.first.modal').modal('show')
+  }
+
+  async function recoverPassword() {
+    try {
+      const user = await $.ajax({
+        method: 'POST',
+        url: '/recoveryPassword',
+        data: {
+          _csrf: localStorage.csrf,
+          recovery_email: $('#email_recovery').val()
+        }
+      })
+      $('body').modal({
+        title: '<span class="ui big green text">Email enviado com sucesso.</span>',
+        classTitle: 'centered',
+        content: '<span class="ui large text">Acesse <span class="ui green text">' + user.email + '</span>  e verifique na "caixa de entrada" ou "spam"<br />a mensagem com o assunto:<br />"Recuperação de Senha | WhatsMenu"</span>',
+        classContent: 'centered',
+        centered: true,
+        class: 'tiny',
+        closeIcon: true,
+      }).modal('show')
+    } catch (error) {
+      $('body').modal({
+        title: error.responseText ? '<span class="ui big red text">Email inválido</span>' : '<span class="ui big red text">Falha ao enviar o email.</span>',
+        classTitle: 'centered',
+        content: error.responseText ? '<span class="ui big text">' + error.responseText + '</span>' : '<span class="ui big text">Tente novamente.</span>',
+        classContent: 'centered',
+        centered: true,
+        class: 'tiny',
+        closeIcon: true,
+      }).modal('show')
+      console.error(error)
+      throw error
+    }
+  }
+
+  function renderSuccessMessage() {
+    $('body').modal({
+        content: '<span class="ui big green text">SENHA DE ACESSO ALTERADA COM SUCESSO</span>',
+        classContent: 'centered',
+        centered: true,
+        class: '',
+        closeIcon: true,
+      }).modal('show')
+  }
+</script>
+</html>

@@ -1,0 +1,645 @@
+@layout('inner/layout')
+@section('content')
+<div class="">
+  <div class="ui grid">
+      <div class="sixteen wide column centered">
+          <!-- CONTEUDO SEMPRE DENTRO DESSAS TAG ACIMA -->
+          <a class="ui button blue botLEFT hide-for-large">Menu</a>
+          <h1>Perfil</h1>
+
+          <div class="ui pointing secondary menu stackable massive">
+            <a class="item active" data-tab="restaurante">Estabelecimento</a>
+            <a class="item" href="#address" data-tab="endereco">Endereço</a>
+            <a class="item" id="weekTab" data-tab="horario">Horário de funcionamento</a>
+            <a class="item" href="#taxdelivery" id="tabFrete" data-tab="frete">Frete</a>
+            <a class="item" href="#formspayment" id="tabPagamento" data-tab="pagamento">Formas de Pagamento</a>
+          </div>
+
+          <div class="ui bottom attached tab segment active" data-tab="restaurante">
+              @include('inner/profile/partials/restaurant')
+          </div>
+
+          <div class="ui bottom attached tab segment" data-tab="endereco">
+            @if(deliveryAccess() || scheduleAccess())
+              @include('inner/profile/partials/address')
+            @else
+              @include('inner/profile/partials/accessDeny')
+            @endif
+          </div>
+
+          <div class="ui bottom attached tab segment" data-tab="horario">
+            @include('inner/profile/partials/disponibility')
+          </div>
+
+          <div class="ui bottom attached tab segment" data-tab="frete">
+            @if(deliveryAccess() || scheduleAccess())
+              @include('inner/profile/partials/freight')
+            @else
+              @include('inner/profile/partials/accessDeny')
+            @endif
+          </div>
+
+          <div class="ui bottom attached tab segment" data-tab="pagamento">
+            @if(deliveryAccess() || scheduleAccess())
+              @include('inner/profile/partials/formsPayment')
+            @else
+              @include('inner/profile/partials/accessDeny')
+            @endif
+          </div>
+
+      </div>
+  </div>
+</div>
+
+<div id="alterTypeTax" class="ui modal">
+  <div class="header">Redefinir Taxas?</div>
+  <div class="content">
+    <p>Se você alterar a forma de taxa todas as taxas atuais serão apagadas!</p>
+    <p>Deseja realmente alterar a forma de taxa?</p>
+  </div>
+  <div class="actions">
+    <div class="ui deny button green">Cancelar</div>
+    <div class="ui approve button red">Redefinir taxas</div>
+  </div>
+</div>
+
+@endsection
+
+@section('js')
+  <script>
+    localStorage.csrf = '{{csrfToken}}'
+    let taxDeliveries = [];
+
+    (async () => {
+      taxDeliveries = await $.get('profile/taxdeliveries')
+    })();
+
+    // const taxDeliveries = JSON.parse("{{{ stringify2(profile.taxDelivery) }}}");
+
+    $('.adicionar-endereco.modal').modal('attach events', '.btn-adicionar-endereco.button', 'show');
+    $('.adicionar-horario.modal').modal('attach events', '.btn-adicionar-horario.button', 'show');
+
+    const name = document.querySelector('#name')
+    const slug = document.querySelector('#slug')
+    const description = document.querySelector('#description')
+    const counter = document.querySelector('#counter')
+
+    const taxDistance = document.querySelector('#taxDistance')
+    const taxTime = document.querySelector('#taxTime')
+    const taxValue = document.querySelector('#taxValue')
+    const taxAdd = document.querySelector('#taxAdd')
+    const taxTable = document.querySelector('#taxTable tbody')
+
+    const cep = document.querySelector('#cep')
+    const address = document.querySelector('#address')
+    const number = document.querySelector('#number')
+    const neigborhood = document.querySelector('#neigborhood')
+    const city = document.querySelector('#city')
+    const state = document.querySelector('#state')
+
+    const timeZones = document.querySelector('#timeZones')
+    const nowHour = document.querySelector('#nowHour')
+
+    const contentFormTax = document.querySelector('#contentFormTax')
+
+      $('.ui.radio.checkbox.typeDelivery').checkbox({
+        onChange: () => openQuestionChangeTypeTax()
+      })
+
+    $('.ui.toggle.checkbox').checkbox()
+
+    function openQuestionChangeTypeTax() {
+      $('#alterTypeTax').modal({
+        closable: false,
+        onApprove: () => {
+          setTypeTax()
+          console.log(getTypeDeliveryValue())
+        },
+        onDeny: () => {
+          const inputs = document.querySelectorAll('input[name="typeDelivery"]')
+
+          if (getTypeDeliveryValue() === 'km') {
+            inputs[1].checked = true
+          } else {
+            inputs[0].checked = true
+          }
+        },
+        onClose:() => {
+          const inputs = document.querySelectorAll('input[name="typeDelivery"]')
+
+          if (getTypeDeliveryValue() === 'km') {
+            inputs[1].checked = true
+          } else {
+            inputs[0].checked = true
+          }
+        }
+      }).modal('show')
+      return true
+    }
+
+    async function setTypeTax() {
+      try {
+            const system = await $.ajax({
+              method: 'PUT',
+              url: '{{route('profile.taxdelivery.type.update')}}',
+              data: {
+                typeDelivery: getTypeDeliveryValue(),
+                _csrf: '{{ csrfToken }}'
+              }
+            })
+
+            if (system.success) {
+              // taxTable.innerHTML = ''
+              if (getTypeDeliveryValue() === 'km') {
+                contentFormTax.className = contentFormTax.className.replace('five', 'four')
+
+                  document.querySelector('#fieldCity').style.display = 'none'
+                  document.querySelector('#taxDistance').type = 'number'
+                  document.querySelector('#distanceLabel').innerText = 'Distância em km.'
+
+                  if (document.querySelector('#distanceHeader')) {
+                    document.querySelector('#distanceHeader').innerText = 'Distância'
+                  }
+
+              } else {
+                contentFormTax.className = contentFormTax.className.replace('four', 'five')
+
+                  document.querySelector('#fieldCity').style.display = ''
+                  document.querySelector('#taxDistance').type = 'text'
+                  document.querySelector('#distanceLabel').innerText = 'Nome do Bairro'
+
+                  if (document.querySelector('#distanceHeader')) {
+                    document.querySelector('#distanceHeader').innerText = 'Bairro'
+                  }
+
+              }
+              taxDeliveries = []
+              renderTax()
+            }
+
+          } catch (error) {
+            console.error(error)
+          }
+    }
+
+    document.querySelector('#tabFrete').addEventListener('click', () => {
+      document.querySelector('#taxDistance') && document.querySelector('#taxDistance').focus()
+    })
+
+    function getTypeDeliveryValue() {
+      if (document.querySelector('.ui.radio.checkbox.typeDelivery.checked input')) {
+        return document.querySelector('.ui.radio.checkbox.typeDelivery.checked input').value
+      }
+      return '{{ profile.typeDelivery }}'
+    }
+
+    cep && cep.addEventListener('input', async () => {
+      if (cep.value.length === 9) {
+        try {
+          const viacep = await $.get('https://viacep.com.br/ws/'+ cep.value +'/json/')
+          if (viacep.cep) {
+            number.focus()
+            address.value = viacep.logradouro
+            neigborhood.value = viacep.bairro
+            city.value = viacep.localidade
+            state.value = viacep.uf
+          }
+
+        } catch (error) {
+          console.error(error)
+        }
+
+      }
+    })
+
+    description.addEventListener('input', () => {
+      counter.innerHTML = description.value.length
+    })
+
+    description.addEventListener('loaded', () => {
+      counter.innerHTML = description.value.length
+    })
+
+    name.addEventListener('input', () => {
+      name.value = name.value.replace('&', 'e') // .replace("\'", '')
+      // slug.value = name.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f \ ]/g, "")
+    })
+
+    slug.addEventListener('input', () => {
+      slug.value = slug.value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f \ ]/g, "").replace(/[^a-z0-9]/gi,'').replace('&', '').replace("\'", '')
+    })
+
+    if (document.querySelector('.btn-editar-endereco')) {
+      document.querySelector('.btn-editar-endereco').onclick = () => $('.editar-endereco').modal('show')
+    }
+
+    taxAdd && taxAdd.addEventListener('click', async (btn) => {
+      taxAdd.disabled = true
+      taxAdd.name = taxAdd.className.replace('button', 'loading button')
+      try {
+        const newTaxInfo = {
+          distance: taxDistance.value.trim(),
+          time: taxTime.value.trim(),
+          value: taxValue.value ? taxValue.value.trim() : null,
+        }
+
+        if (getTypeDeliveryValue() === 'neighborhood') {
+          newTaxInfo.city = document.querySelector('#taxCity').value.trim()
+        }
+
+        if (getTypeDeliveryValue() === 'neighborhood' && !newTaxInfo.city) {
+
+          WhatsMenu.alert('red', 'Atenção!', 'A cidade é inválida.')
+          document.querySelector('#taxCity').focus()
+          taxAdd.removeAttribute('disabled')
+
+        } else if (!newTaxInfo. distance) {
+
+          WhatsMenu.alert('red', 'Atenção!', 'A distânica é inválida.')
+          taxDistance.focus()
+          taxAdd.removeAttribute('disabled')
+
+        } else if (!newTaxInfo.time) {
+
+          WhatsMenu.alert('red', 'Atenção!', 'O tempo é inválido.')
+          taxTime.focus()
+          taxAdd.removeAttribute('disabled')
+
+        } else {
+
+          const api = await $.post('{{route('profile.taxdelivery.add')}}',{
+            ...newTaxInfo,
+            _csrf: '{{csrfToken}}'
+          })
+
+          if (api.success) {
+            if(getTypeDeliveryValue() == 'neighborhood'){
+
+            if (taxDeliveries.length == 0) {
+              location.href = location.origin + '/dashboard/profile?tab=frete'
+            }
+
+            const city = taxDeliveries.find(t => t.city === api.tax.city)
+
+            if (city) {
+              city.neighborhoods.unshift(api.tax.neighborhoods[0])
+            }
+
+           } else {
+
+            if (taxDeliveries.length == 0) {
+              location.href = location.origin + '/dashboard/profile?tab=frete'
+            }
+
+            taxDeliveries.unshift(api.tax)
+
+          }
+
+            console.log(taxDeliveries);
+            renderTax()
+
+            taxDistance.value = ''
+            taxTime.value = ''
+            taxValue.value = ''
+
+            taxAdd.removeAttribute('disabled')
+            taxAdd.className = taxAdd.className.replace(' loading', '')
+            taxDistance.focus()
+
+          } else {
+            alert('Você não preencheu todos os campos corretamente!')
+            taxAdd.disabled = false
+          }
+
+        }
+
+
+
+      } catch (error) {
+        console.error(error.responseJSON.message)
+        WhatsMenu.alert('red', 'Atenção', error.responseJSON.message)
+        taxAdd.removeAttribute('disabled')
+        // alert(error.message)
+      }
+    })
+
+    taxSetActionDel()
+
+    function taxSetActionDel() {
+      document.querySelectorAll('.taxdel').forEach(btn => {
+        btn.onclick = async () => {
+          try {
+            const api = await $.ajax({
+              method: 'DELETE',
+              url: 'profile/taxDelivery/'+ btn.dataset.code +'/delete',
+              data: {_csrf: '{{csrfToken}}'}
+            })
+
+            if (api.success) {
+              btn.parentElement.parentElement.remove()
+            }
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      })
+    }
+  </script>
+
+<script type="text/babel" src="/react/context/WeekContext.jsx"></script>
+<script type="text/babel" src="/react/components/FormDatesDisponibility.jsx"></script>
+{{--  <script type="text/babel" src="/react/week.jsx?v=1.2"></script>  --}}
+
+<script type="text/babel">
+
+async function showDisponibilityForm() {
+  const week = await $.get('/dashboard/profile/week')
+  ReactDOM.unmountComponentAtNode(document.getElementById('form_date_profile'))
+  ReactDOM.render(
+    <WeekProvider>
+      <FormDatesDisponibility type="profile" title="Adicionar Horário de Funcionamento" week={week} />
+    </WeekProvider> , document.getElementById('form_date_profile'))
+}
+
+showDisponibilityForm()
+
+</script>
+
+  <script>
+    // WEEK
+    let fusos;
+    let diff;
+
+    // const weekTable = document.querySelector('#weekTable')
+    // const weekOpen = document.querySelector('#weekOpen')
+    // const weekClose = document.querySelector('#weekClose')
+
+    // weekOpen.addEventListener('input', (e) => weekClose.min = e.target.value)
+    // weekOpen.addEventListener('change', (e) => weekClose.min = e.target.value)
+    // weekClose.addEventListener('focus', (e) => {
+    //   if (!weekOpen.value) {
+    //     alert('preencha o horário de abertura primeiro!')
+    //     weekOpen.focus()
+    //   }
+    // })
+
+    // document.querySelector('#weekAdd').onclick = async () => {
+    //   const daysOptions = document.querySelectorAll('#weekDaysOptions input[type="checkbox"]:checked')
+    //   const convert = (text) => parseFloat(text.replace(':', '.'))
+
+    //   if (!daysOptions.length) {
+    //     return alert('selecione pelomenos 1 dia da semana!')
+    //   }
+
+    //   if (!weekOpen.value) {
+    //     return alert('Horário de abertura é obrigatório!')
+    //   }
+
+    //   if (!weekClose.value) {
+    //     return alert('Horário de fechamento é obrigatório!')
+    //   }
+
+    //   if (convert(weekOpen.value) > convert(weekClose.value)) {
+    //     return alert('O horário de fechamento não pode ser menor que o horário de abertura!')
+    //     weekClose.value = ''
+    //     weekClose.focus()
+    //   }
+
+    //   const data = {
+    //     days: [],
+    //     open: weekOpen.value,
+    //     close: weekClose.value,
+    //     _csrf: '{{ csrfToken }}'
+    //   }
+
+    //   daysOptions.forEach(day => data.days.push(day.name))
+
+    //   try {
+    //     const api = await $.post('{{ route('profile.week.add') }}', data)
+
+    //     if (api.success) {
+    //       getWeek(api.week)
+    //     }
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // }
+
+    // // addEventDelWeek()
+    // function addEventDelWeek() {
+    //   document.querySelectorAll('.weekdel').forEach(button => {
+    //     button.onclick = () => deleteHour(button.dataset.day, button.dataset.code)
+    //   })
+    // }
+
+    // async function deleteHour(day, code) {
+    //   try {
+    //     const api = await $.ajax({
+    //       method: 'DELETE',
+    //       url: 'profile/week/'+ day +'/remove/'+ code,
+    //       data: {_csrf: '{{ csrfToken }}'}
+    //     })
+
+    //     if (api.success) {
+    //       getWeek(api.week)
+    //     }
+    //   } catch (error) {
+    //     console.error(error)
+    //   }
+    // }
+
+    (async () => {
+      fusos = await $.get('{{ route('api.fusos') }}')
+      setInterval(() => {
+        for (let zone in fusos) {
+          fusos[zone] = luxon.DateTime.fromISO(fusos[zone]).plus({seconds: 1}).toISO()
+        }
+      }, 1000);
+    })();
+
+    let watch = setInterval(() => alterFuso(), 1000)
+
+    timeZones.onchange = async (event) => {
+      clearInterval(watch)
+      watch = setInterval(() => alterFuso(), 1000)
+
+      const api = await $.ajax({
+        url: '{{route('profile.update.fuso')}}',
+        method: 'PATCH',
+        data: {
+          _csrf: '{{ csrfToken }}',
+          fuso: event.target.value
+        }
+      })
+
+      if (!api.success) {
+        alert('Houve um erro ao atualizar!')
+      }
+    }
+
+    function alterFuso() {
+      if (fusos) {
+        nowHour.value = luxon.DateTime.fromISO(fusos[timeZones.value], {zone: timeZones.value}).toFormat('HH:mm:ss')
+      }
+    }
+
+    window.formsPayment = JSON.parse('{{{ stringify(profile.formsPayment) }}}')
+
+    const params = new URLSearchParams(location.search)
+
+    switch (params.get('tab')) {
+      case 'restaurante':
+        $('.menu .item').tab('change tab', 'restaurante');
+        break;
+
+      case 'endereco':
+        $('.menu .item').tab('change tab', 'endereco');
+        break;
+
+      case 'horario':
+        $('.menu .item').tab('change tab', 'horario');
+        break;
+
+
+      case 'frete':
+        $('.menu .item').tab('change tab', 'frete');
+        break;
+
+      case 'pagamento':
+        $('.menu .item').tab('change tab', 'pagamento');
+        break;
+    }
+  </script>
+  {{--  @if(deliveryAccess())  --}}
+    <script type="text/babel" src="/react/profile-foms-payment.jsx"></script>
+    <script type="text/babel" src="/react/profile-freight.jsx"></script>
+  {{--  @endif  --}}
+  <script type="text/babel">
+
+    function renderTax() {
+      setTimeout(() => {
+        ReactDOM.unmountComponentAtNode(document.querySelector('#tTaxDeliveries'))
+        if (getTypeDeliveryValue() === 'km') {
+          ReactDOM.render(<TypeKM tax={taxDeliveries}/>, document.getElementById('tTaxDeliveries'));
+        } else {
+          ReactDOM.render(<TypeNeighborhood tax={taxDeliveries}/>, document.getElementById('tTaxDeliveries'));
+        }
+      }, 1000);
+    }
+
+    if (JSON.parse(WhatsMenu.getCookie('deliveryAccess'))) {
+      renderTax();
+      const closeCheckBox = document.getElementById('checkbox-force-close')
+
+      if (closeCheckBox.checked) {
+        $('#close-date').attr('class', 'field')
+      } else {
+        $('#close-date').attr('class', 'field disabled')
+      }
+
+      $('#close-restaurant')
+      .first().checkbox({
+        onChecked: () => {
+          $('#close-date').attr('class', 'field')
+
+        },
+        onUnchecked: () => {
+          $('#close-date').attr('class', 'field disabled')
+        }
+      })
+
+      const now = luxon.DateTime.local()
+      const dateInput = document.getElementById('input-date-close')
+
+      dateInput.min = now.toString().substring(0,16)
+
+      $('.test.checkbox').checkbox('attach events', '.check.button', 'check');
+
+      $('#print-active')
+      .first().checkbox({
+        onChecked: () => {
+          $('#print-options').attr('class', 'fields')
+        },
+        onUnchecked: () => {
+          $('#print-options').attr('class', 'fields disabled')
+        }
+      })
+
+      $('#save-forceClose').click(async () => {
+        try {
+          await $.ajax({
+            method: 'POST',
+            url: '/dashboard/profile/forceClose',
+            data: {
+              _csrf: localStorage.csrf,
+              options: {
+                forceCloseOn: closeCheckBox.checked,
+                forceClose: dateInput.value
+              }
+            }
+          })
+          WhatsMenu.alert('green', 'Sucesso', closeCheckBox.checked ? 'Loja fechada!' : 'Loja aberta!')
+        } catch (error) {
+          WhatsMenu.alert('red', 'Erro', 'Desculpe não foi possivel fechar a loja! Tente novamente.')
+          console.error(error)
+          throw error
+        }
+      })
+
+    }
+    async function generateUpgradeInvoice() {
+    try {
+      await $.ajax({
+        method: 'POST',
+        url: '/dashboard/invoices/generate/upgrade',
+        data: {
+          _csrf: localStorage.csrf,
+          plan: 'basic'
+        }
+      })
+      WhatsMenu.alert('green', 'Solicitação de adesão efetuada com sucesso', 'Uma nova fatura foi gerada com o valor do pacote solicitado!')
+      window.location.href =  'http://{{AdmUrl()}}/dashboard/invoices/list'
+    } catch (error) {
+      WhatsMenu.alert('red', 'Ops', 'Algo inseperado aconteceu, tente novamente mais tarde.')
+      console.error(error)
+      throw error
+    }
+  }
+
+  (async () => {
+    const user = await $.get('/dashboard/user/getUser')
+    const flexPlans = await $.get('/dashboard/flexPlans')
+
+    let packagePrice = 0
+    let period = ''
+    let basicPlan  = flexPlans[0]
+    switch (user.controls.period) {
+      case 'yearly':
+        period = 'Ano'
+        packagePrice = basicPlan.yearly
+      break;
+      case 'semester':
+        period = 'Semestre'
+        packagePrice = basicPlan.semester
+      break;
+      case 'monthly':
+        period = 'Mês'
+        packagePrice = basicPlan.monthly
+      break
+      default:
+        period = 'Mês'
+        packagePrice = basicPlan.monthly
+      break;
+    }
+
+    const hidden = document.querySelectorAll('.hidden_content')
+    hidden.forEach(element => {
+      element.innerHTML = WhatsMenu.toBRL(packagePrice ) + '/' + period
+    });
+    // hidden.innerHTML = WhatsMenu.toBRL(packagePrice ) + '/' + period
+  })();
+
+  $('.accordion').accordion()
+
+  </script>
+@endsection

@@ -1,0 +1,422 @@
+@layout('inner/layout')
+
+@section('content')
+<div class="">
+  <div class="ui grid" id="rcharts"></div>
+</div>
+
+<div class="">
+  <div class="ui grid">
+    <div class="row">
+      <div class="sixteen wide column centered">
+        <div class="ui divider"></div>
+        <div id="select"></div>
+        <div id="sumary" class="ui cards">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{{--  </div>  --}}
+
+<div class="">
+  <div class="ui grid">
+    <div class="sixteen wide column centered">
+      <h3 id="tableList" class="ucfirst">Lista de clientes</h3>
+      <div class="ui divider"></div>
+      <table class="ui striped table very basic">
+          <thead class="ui sticky hide-for-small-only">
+              <tr class="">
+                <th>#</th>
+                <th>id</th>
+                <th>Nome</th>
+                <th>email</th>
+                <th>cadastro</th>
+                <th>WhatsApp</th>
+                <th>Support</th>
+              </tr>
+          </thead>
+          <tbody id="listUsers"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+@endsection
+@section('js')
+  <script>
+    $('.loadingBusca').dimmer('show')
+    // const ctx = document.getElementById('canvasRegister').getContext('2d');
+    let reports = []
+    let months = []
+    const borderColor = [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+          ];
+
+    function makeChartComplete(canvas, support, colors) {
+
+      console.table(support)
+
+      const myChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Ativos',
+              data: months.map(month => support.report[month].paids.length),
+              backgroundColor: months.map(() => colors[3]),
+              borderColor: months.map(() => colors[3]),
+              borderWidth: 5
+            },
+            {
+              label: 'Ativos com atraso',
+              data: months.map(month => support.report[month].paidLates.length),
+              backgroundColor: months.map(() => colors[4]),
+              borderColor: months.map(() => colors[4]),
+              borderWidth: 5
+            },
+            {
+              label: 'Cancelamentos',
+              data: months.map(month => support.report[month].canceleds.length),
+              backgroundColor: months.map(() => colors[0]),
+              borderColor: months.map(() => colors[0]),
+              borderWidth: 5
+            }
+          ]
+        },
+        options: {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true
+                }
+              }
+            ]
+          }
+        }
+      })
+
+    }
+
+    function makeChart(canvas, support, colors) {
+
+      const myChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: months,
+          datasets: [
+            {
+              label: 'Ativos',
+              data: months.map(month => support[month].paids.length),
+              backgroundColor: months.map(() => colors[3]),
+              borderColor: months.map(() => colors[3]),
+              borderWidth: 5
+            },
+            {
+              label: 'Ativos com atraso',
+              data: months.map(month => support[month].paidLates.length),
+              backgroundColor: months.map(() => colors[4]),
+              borderColor: months.map(() => colors[4]),
+              borderWidth: 5
+            },
+          ]
+        },
+        options: {
+          scales: {
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true
+                }
+              }
+            ]
+          }
+        }
+      })
+
+    }
+
+  </script>
+  <script type="text/babel">
+    (async ()=> {
+      reports = await $.get('{{route('adm.api.report.support')}}')
+      months = Object.keys(reports[0].report)
+      ReactDOM.render(<AllCharts supports={reports} />, document.getElementById('rcharts'))
+
+      $('.loadingBusca').dimmer('hide')
+    })()
+
+    function loadSelect() {
+      ReactDOM.render(<SelectMonths months={[...months].reverse()}/>, document.querySelector('#select'))
+    }
+    function loadListUsers() {
+      const month = document.querySelector('#selectMonth').value
+      const type = document.querySelector('#selectType').value
+      const users = []
+      console.log({month: month, type: type})
+      if ('{{auth.user.type}}' === 'support') {
+        users.push(...reports.find(u => u.id === {{auth.user.id}}).report[month][type])
+      } else {
+        users.push(...reports.flatMap(u => u.report[month][type]))
+      }
+      ReactDOM.render(<ListUsers users={users}/>, document.querySelector('#listUsers'))
+    }
+
+    class AllCharts extends React.Component {
+
+      componentDidMount() {
+
+        reports.forEach(support => {
+          makeChartComplete(document.getElementById(support.id), support, [...borderColor])
+        })
+
+        loadSelect()
+
+      }
+
+      render() {
+        return reports.map((support, i) => <DivCanvas support={support} key={i} />)
+      }
+    }
+
+    class DivCanvas extends React.Component {
+      render() {
+        return (
+          <div className="row">
+            <div className="sixteen wide column centered">
+              <div className="ui segment">
+                <div className="ui text loader loadingBusca">Aguarde</div>
+                <div className="ui header">{this.props.support.name}</div>
+                <div className="ui divider"></div>
+                  <div id="graph-monthly">
+                    <div>
+                      <canvas id={this.props.support.id} width="1918" height="405"></canvas>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+
+    class ListUsers extends React.Component {
+      render() {
+        return this.props.users.map((u, i) => <ItemUser user={u} key={i} index={i + 1} />)
+      }
+    }
+    class ItemUser extends React.Component {
+      render() {
+        return (
+          <tr>
+            <td>{this.props.index}</td>
+            <td><span className="show-for-small-only"><b>id:</b></span> {this.props.user.id}</td>
+            <td className="word-break-all">{this.props.user.name}</td>
+            <td><span className="show-for-small-only"><b>E-mail:</b></span> {this.props.user.email}</td>
+            <td><span className="show-for-small-only"><b>Cadastro:</b></span> {this.props.user.controls.serviceStart ? 'SIM' : 'NÃO'}</td>
+            <td><span className="show-for-small-only"><b>WhatsApp</b></span> {this.props.user.whatsapp}</td>
+            <td><span className="show-for-small-only"><b>WhatsApp</b></span> {reports.find(u => u.id === this.props.user.supportId).name}</td>
+          </tr>
+        )
+      }
+    }
+
+    class Sumary extends React.Component {
+
+      getFlag(users) {
+        const count = users.length
+        const countMount = users.filter(u => u.controls.serviceStart).length
+        const countNormal = users.filter(u => !u.controls.serviceStart).length
+        const countImpressoras = users.filter(u => !u.controls.salePrint).length
+        const countMesas = users.filter(u => u.plans.some(p => p.category === 'table')).length
+        const countEncomendas = users.filter(u => u.plans.some(p => p.category === 'package' && p.type === 'upgrade')).length
+
+        if (count > 300) {
+          return {
+            flag: 'Faixa 5',
+            countMount: countMount,
+            countNormal: countNormal,
+            countTotal: count,
+            countImpressoras: countImpressoras,
+            countMesas: countMesas,
+            countEncomendas: countEncomendas,
+            totalImpressoras: countImpressoras * 5,
+            totalMesas: countMesas * 6,
+            totalEncomendas: countEncomendas,
+            totalMount: countMount * 5 + countMount * 6,
+            totalNormal: countNormal * 6
+          }
+        }
+
+        else if (count > 199 && count < 300) {
+          return {
+            flag: 'Faixa 4',
+            countMount: countMount,
+            countNormal: countNormal,
+            countTotal: count,
+            countImpressoras: countImpressoras,
+            countMesas: countMesas,
+            countEncomendas: countEncomendas,
+            totalImpressoras: countImpressoras * 5,
+            totalMesas: countMesas * 5,
+            totalEncomendas: countEncomendas,
+            totalMount: countMount * 5 + countMount * 5,
+            totalNormal: countNormal * 5
+          }
+        }
+
+        else if (count > 99 && count < 200) {
+          return {
+            flag: 'Faixa 3',
+            countMount: countMount,
+            countNormal: countNormal,
+            countTotal: count,
+            countImpressoras: countImpressoras,
+            countMesas: countMesas,
+            countEncomendas: countEncomendas,
+            totalImpressoras: countImpressoras * 5,
+            totalMesas: countMesas * 4,
+            totalEncomendas: countEncomendas,
+            totalMount: countMount * 5 + countMount * 4,
+            totalNormal: countNormal * 4
+          }
+        }
+
+        else if (count > 79 && count < 100) {
+          return {
+            flag: 'Faixa 2',
+            countMount: countMount,
+            countNormal: countNormal,
+            countTotal: count,
+            countImpressoras: countImpressoras,
+            countMesas: countMesas,
+            countEncomendas: countEncomendas,
+            totalImpressoras: countImpressoras * 5,
+            totalMesas: countMesas * 3,
+            totalEncomendas: countEncomendas,
+            totalMount: countMount * 5 + countMount * 3,
+            totalNormal: countNormal * 3
+          }
+
+        } else {
+
+          return {
+            flag: 'Faixa 1',
+            countMount: countMount,
+            countNormal: countNormal,
+            countImpressoras: countImpressoras,
+            countMesas: countMesas,
+            countEncomendas: countEncomendas,
+            countTotal: count,
+            totalImpressoras: countImpressoras * 5,
+            totalMesas: 0,
+            totalEncomendas: countEncomendas,
+            totalMount: 0,
+            totalNormal: 0
+          }
+
+        }
+
+      }
+
+      render() {
+        const countSellers = [...new Set(this.props.users.map(u => u.sellerId))]
+        return (
+          <React.Fragment>
+                  <div className="card">
+                    <div className="content">
+                      <div className="header">Cadastros</div>
+                      <div className="meta">{this.props.month}</div>
+                      <div className="description">
+                        <div className="ui list">
+                          <div className="item">Cadastros com serviço de cadastro: {this.props.users.filter(u => u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Cadastros sem serviço de cadastro: {this.props.users.filter(u => !u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Total: {this.props.users.filter(u => u.sellerId === sid).length}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="content">
+                      <div className="header">Cadastros</div>
+                      <div className="meta">{this.getFlag(this.props.users.filter(u => u.sellerId === sid).length)}</div>
+                      <div className="description">
+                        <div className="ui list">
+                          <div className="item">Cadastros com serviço de cadastro: {this.props.users.filter(u => u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Cadastros sem serviço de cadastro: {this.props.users.filter(u => !u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Total: {this.props.users.filter(u => u.sellerId === sid).length}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <div className="content">
+                      <div className="header">Cadastros</div>
+                      <div className="meta">{this.getFlag(this.props.users.filter(u => u.sellerId === sid).length)}</div>
+                      <div className="description">
+                        <div className="ui list">
+                          <div className="item">Cadastros com serviço de cadastro: {this.props.users.filter(u => u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Cadastros sem serviço de cadastro: {this.props.users.filter(u => !u.controls.serviceStart && u.sellerId === sid).length}</div>
+                          <div className="item">Total: {this.props.users.filter(u => u.sellerId === sid).length}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+            <div className="card">
+              <div className="content">
+                <div className="header">Total Geral</div>
+                <div className="description">
+                  Cadastros com serviço de cadastro: {this.props.users.filter(u => u.controls.serviceStart).length}<br/>
+                  Cadastros sem serviço de cadastro: {this.props.users.filter(u => !u.controls.serviceStart).length}<br/>
+                  Total: {this.props.users.length}
+                </div>
+              </div>
+            </div>
+          </React.Fragment>
+        )
+      }
+    }
+
+    class SelectMonths extends React.Component {
+
+      componentDidMount() {
+        $('#selectMonth, #selectType').dropdown({
+          onChange: () => loadListUsers()
+        });
+        loadListUsers();
+      }
+
+      render() {
+        return (
+          <div className="ui form">
+            <div className="fields">
+              <div className="field">
+                <label>Mês:</label>
+                <select className="ui dropdown" id="selectMonth">
+                  {this.props.months.map((m, i) => <option key={i} value={m}>{m}</option> )}
+                </select>
+              </div>
+              <div className="field">
+                <label>Tipo:</label>
+                <select className="ui dropdown" id="selectType">
+                  <option value="paids">Ativos</option>
+                  <option value="paidLates">Ativos Atrasados</option>
+                  <option value="canceleds">Cancelamentos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )
+      }
+    }
+  </script>
+@endsection

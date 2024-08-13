@@ -1,0 +1,184 @@
+<div class="ui atualizar-item-padrao modal">
+  <i class="close icon"></i>
+  <div class="header">Atualizar item</div>
+  <div class="scrolling content">
+    <div class="ui inverted dimmer update">
+      <div class="ui text loader">Aguarde</div>
+    </div>
+    <form id="updProduct" method="POST" enctype="multipart/form-data">
+      <div class="ui pointing secondary menu stackable massive">
+          <a id="tabDetails" class="item active" data-tab="detalhes">Detalhes</a>
+          <a id="tabComplements" class="item" data-tab="complementos">Complementos</a>
+          <a id="tabPromotion" class="item" data-tab="promocao">Promoção</a>
+      </div>
+      <div class="ui bottom attached tab segment active" data-tab="detalhes">
+        <div class="ui form">
+          {{ csrfField() }}
+              <div class="ui equal width grid stackable padded middle aligned">
+                  <div class="five wide column center aligned">
+                      <img data-src="{{product.image ? product.image : '/img/no-img.jpg'}}" alt="" class="ui image centered lazy">
+                      <label for="image{{product.id}}" class="add-file">Adicionar imagem</label>
+                      <input type="file" id="image{{product.id}}" class="image" name="image" style="display: none;">
+                  </div>
+                  <div class="column">
+                      <div class="two fields">
+                          <div class="field">
+                              <label for="">Nome</label>
+                              <input type="text" value="{{product.name}}" name="name">
+                              <div class="text-right"><small><b>0/55 caracteres</b></small></div>
+                          </div>
+                          <div class="field">
+                              <label for="cat{{product.id}}">Categoria</label>
+                              <select name="categoryId" id="cat{{product.id}}">
+                                @each(category in categories)
+                              <option value="{{category.id}}" {{category.id === $parent.product.categoryId ? 'selected' : ''}} >{{category.name}}</option>
+                                @endeach
+                              </select>
+                          </div>
+                      </div>
+                      <div class="field">
+                          <label>Descrição</label>
+                      <textarea name="description" rows="2">{{product.description ? product.description : ''}}</textarea>
+                          <div class="text-right"><small><b>{{product.description.length ? product.description.length : '0' }}/250 caracteres</b></small></div>
+                      </div>
+                      <div class="fields">
+                          <div class="field">
+                              <label for="value">Preço</label>
+                          <input type="text" class="value inputCurrency productValue" data-id="{{product.id}}" name="value" value="{{formatCurrency(product.value)}}">
+                          </div>
+                      </div>
+                  </div>
+              </div>
+        </div>
+      </div>
+      <div id="upListComplements{{product.id}}" class="ui bottom attached tab segment" data-tab="complementos">
+          <div class="ui horizontal list">
+              <a class="item" id="upAddCategoryComplement{{product.id}}"><i class="plus icon"></i> Categoria</a>
+              <div class="item"></div>
+              <a class="item updAddRecicleComplement" data-product="{{product.id}}"><i class="sync alternate icon"></i> Usar complementos de outro item</a>
+          </div>
+
+          <div id="upRecicleComplement{{product.id}}">
+          </div>
+          @each(complement in product.complements)
+            <div class="upItemComplement{{$parent.product.id}}" id="compcat{{complement.id}}">
+              <div class="ui segment secondary">
+                  <div class="ui form">
+                      <div class="fields">
+                          <div class="fifteen wide field">
+                            <input type="hidden" name="complements[{{$loop.index}}][id]" value="{{complement.id}}">
+                              <input type="text" value="{{complement.name}}" name="complements[{{$loop.index}}][name]" placeholder="Nome">
+                              <div class="text-right"><small><b>{{complement.name.length}}/25 caracteres</b></small></div>
+                          </div>
+                          <div class="field">
+                            <span class="mt-action-input"><a class="color-red removeComplement" data-product="{{$parent.product.id}}" data-category="{{complement.id}}">Excluir</a></span>
+                          </div>
+                      </div>
+                      <div class="ui two column grid stackable middle aligned">
+                          <div class="column">
+                              <div class="ui form">
+                                  <div class="inline fields">
+                                      <div class="field">
+                                          <label>Qtd. min.</label>
+                                          <input class="small-input" value="{{complement.min}}" name="complements[{{$loop.index}}][min]" type="number">
+                                      </div>
+                                      <div class="field">
+                                          <label>máx.</label>
+                                          <input class="small-input" value="{{complement.max}}" name="complements[{{$loop.index}}][max]" type="number">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="column">
+                            <div class="ui checkbox">
+                                <input type="checkbox" {{complement.required ? 'checked' : ''}} name="complements[{{$loop.index}}][required]">
+                                <label>Complemento Obrigatório</label>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+                <div class="" data-product="{{ $parent.product.id }}" data-id="{{ complement.id }}" id="upComplementItemP{{$parent.product.id}}C{{complement.id}}" data-product="{{$parent.product.id}}">
+                  @each(item in complement.itens)
+                  <div class="ui segment basic complements{{$parent.complement.id}}Itens cplements{{$parent.complement.id}}">
+                      <div class="ui horizontal list">
+                          <div class="item">
+                            <div class="ui form">
+                              <div class="fields">
+                                    {{--  <span><a><i class="ui icon arrows alternate vertical" style="margin-right: 10px; margin-top: 10px"></i></a></span>  --}}
+                                      <div class="field">
+                                      <input type="hidden" value="{{item.code}}" name="complements[{{$parent.$loop.index}}][itens][{{$loop.index}}][code]" placeholder="none">
+                                      <input type="hidden" value="{{item.status}}" name="complements[{{$parent.$loop.index}}][itens][{{$loop.index}}][status]" placeholder="none">
+                                      <input type="text" value="{{item.name}}" name="complements[{{$parent.$loop.index}}][itens][{{$loop.index}}][name]" placeholder="none">
+                                          <div class="text-right"><small><b>{{item.name.length}}/45 caracteres</b></small></div>
+                                      </div>
+                                      <div class="field">
+                                      <input type="text" value="{{item.description}}" name="complements[{{$parent.$loop.index}}][itens][{{$loop.index}}][description]" placeholder="Descrição">
+                                          <div class="text-right"><small><b>0/100 caracteres</b></small></div>
+                                      </div>
+                                      <div class="field">
+                                        <input class="inputCurrency" type="text" value="{{formatCurrency(item.value)}}" name="complements[{{$parent.$loop.index}}][itens][{{$loop.index}}][value]" placeholder="Preço">
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="item">
+                            @if(item.status)
+                              <a class="inative align-elements complementPlayPause" data-complement="{{$parent.complement.id}}" data-code="{{item.code}}"><i class="pause circle outline icon large"></i> Pausar vendas</a>
+                              @else
+                              <a class="active align-elements complementPlayPause" data-complement="{{$parent.complement.id}}" data-code="{{item.code}}"><i class="pause circle outline icon large"></i> Ativar vendas</a>
+                            @endif
+                          </div>
+                          <div class="item"></div>
+                          <div class="item">
+                              <a class="color-red align-elements deleteComplement" data-product="{{$parent.$loop.index}}" data-complement="{{item.code}}">Excluir</a>
+                          </div>
+                      </div>
+                    </div>
+
+                  @endeach
+                </div>
+
+              <div>
+              <a class="font-16 upAddItemComponent" data-product="{{$parent.product.id}}" data-index="{{$loop.index}}" data-item="{{complement.id}}"><i class="plus icon"></i> Adicionar item</a>
+              </div>
+            </div>
+          @endeach
+      </div>
+
+      <div class="ui bottom attached tab segment" data-tab="promocao">
+          <div class="small-space bg-1">
+              <div class="ui equal width grid padded stackable middle aligned">
+                  <div class="eight wide column">
+                      <div class="ui form">
+                          <div class="ui toggle checkbox">
+                              <input type="checkbox" {{product.promoteStatus ? 'checked' : ''}} name="promoteStatus">
+                              <label>
+                                  <h4>Ativar Promoção</h4>
+                                  Use o botão ao lado para habilitar ou desabilitar a promoção.
+                              </label>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="column">
+                      <div class="ui segment">
+                          <p>Valor Original: <b id="productValue{{product.id}}">{{formatCurrency(product.value)}}</b></p>
+                          <div class="ui form">
+                              <div class="inline field">
+                                  <label><b>Valor Promocional</b></label>
+                                  <input class="inputCurrency" type="text" value="{{product.promoteValue ? formatCurrency(product.promoteValue) : ''}}" name="promoteValue">
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </div>
+    </form>
+  </div>
+  <div class="actions">
+    <button style="float:left; background:transparent !important;" class="ui red basic button"><i class="trash alternate icon"></i> Excluir</button>
+    <button class="ui cancel button">Cancelar</button>
+    <button class="ui approve green button submitProductUpd" data-product="{{product.id}}">Salvar</button>
+  </div>
+</div>
