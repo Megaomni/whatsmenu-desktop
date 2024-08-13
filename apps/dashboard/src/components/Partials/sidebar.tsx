@@ -153,6 +153,38 @@ export function Sidebar() {
               </li>
               <li className="nav-item">
                 <Link
+                  href="/dashboard/nfe"
+                  className="with-icon nav-link collapsed"
+                  onClick={(e) => {
+                    verificationStateRouter(e)
+                    window.innerWidth < 1020 && setShowSidebar(false)
+                  }}
+                >
+                
+                  <span>Automação de Notas Ficais</span>
+                  <span className="badge bg-danger ms-3 inline">
+                    {t('new')}
+                  </span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  href="/dashboard/integrations"
+                  className="with-icon nav-link collapsed"
+                  onClick={(e) => {
+                    verificationStateRouter(e)
+                    window.innerWidth < 1020 && setShowSidebar(false)
+                  }}
+                >
+                
+                  <span>Integrações</span>
+                  <span className="badge bg-danger ms-3 inline">
+                    {t('new')}
+                  </span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
                   href="/dashboard/menu"
                   className="with-icon nav-link collapsed"
                   onClick={(e) => {

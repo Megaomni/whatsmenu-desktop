@@ -4,4 +4,3 @@ export NVM_DIR="$HOME/.nvm"
 
 nvm install
 nvm use
-npm install
