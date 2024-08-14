@@ -1147,5 +1147,7 @@
   "check_card_expiration_date": "Check the card's expiration date",
   "check_card_number": "Check the card number",
   "check_security_code": "Check the security code",
-  "check_zip_code": "Check the ZIP code"
+  "check_zip_code": "Check the ZIP code",
+  "unable_register_your_order_try_again": "Unable to register your order. Please try again.",
+  "system_identified_you_are_outside": "The system has identified that you are outside our coverage area. Please try to complete your order again."
 }

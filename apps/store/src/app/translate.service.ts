@@ -510,6 +510,8 @@ export interface TranslateType {
     check_card_number: string
     check_security_code: string
     check_zip_code: string
+    unable_register_your_order_try_again: string
+    system_identified_you_are_outside: string
     fee: string
     select_the_flag_comment: string
     change_less_purchase_comment: string

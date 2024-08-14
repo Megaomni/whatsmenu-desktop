@@ -1134,5 +1134,7 @@
   "check_card_expiration_date": "Verifique a validade do cartão",
   "check_card_number": "Verifique o número do cartão",
   "check_security_code": "Verifique o código de segurança",
-  "check_zip_code": "Verifique o CEP"
+  "check_zip_code": "Verifique o CEP",
+  "unable_register_your_order_try_again": "Não foi possível registrar seu pedido tente novamente",
+  "system_identified_you_are_outside": "O sistema identificou que você está fora da nossa área de cobertura, tente concluir o seu pedido novamente"
 }

@@ -433,7 +433,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
         })
 
         if (!cart || !cart.code || typeof cart.code !== 'string') {
-          throw { error: { message: 'Não foi possível registrar seu pedido tente novamente' } }
+          throw { error: { message: this.translate.text().unable_register_your_order_try_again } }
         }
 
         if (this.cartRequest.type === 'P') {
@@ -464,13 +464,13 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
         }
         this.pendingCart = cart
       } else {
-        throw { error: { message: 'Não foi possível registrar seu pedido tente novamente' } }
+        throw { error: { message: this.translate.text().unable_register_your_order_try_again } }
       }
     } catch (error) {
       if (error.error?.code === '405-2') {
         this.dialogRef.close({ send: false, cupom: this.cupom })
       } else if (error.error?.code === '403-188') {
-        alert('O sistema identificou que você está fora da nossa área de cobertura, tente concluir o seu pedido novamente')
+        alert(this.translate.text().system_identified_you_are_outside)
         location.reload()
       } else if (error.error?.code === '409') {
         error.error.dates.length > 0
