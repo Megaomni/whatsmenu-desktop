@@ -78,6 +78,22 @@ router
       })
       .prefix('cupons')
 
+    //INTEGRATIONS
+    router
+      .group(() => {
+        // GROVENFE
+        router
+          .group(() => {
+            // COMPANIES
+            router.group(() => {}).prefix('companies')
+
+            //FISCAL NOTES
+            router.group(() => {}).prefix('fiscal-notes')
+          })
+          .prefix('grovenfe')
+      })
+      .prefix('integrations')
+
     // VOUCHER
     router
       .group(() => {
