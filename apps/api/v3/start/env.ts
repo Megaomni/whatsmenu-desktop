@@ -42,4 +42,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   BALANCE_READ_CONNECTIONS: Env.schema.string(),
   V2_ENDPOINT: Env.schema.string(),
   DB_HOST_POOLING: Env.schema.string(),
+  GROVE_NFE_ENDPOINT: Env.schema.string(),
+  GROVE_NFE_TOKEN: Env.schema.string(),
 })

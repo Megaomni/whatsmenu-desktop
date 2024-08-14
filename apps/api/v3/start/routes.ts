@@ -20,6 +20,7 @@ import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
+const GroveNfeCompaniesController = () => import('#controllers/grove_nfe_companies_controller')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -85,7 +86,15 @@ router
         router
           .group(() => {
             // COMPANIES
-            router.group(() => {}).prefix('companies')
+            router
+              .group(() => {
+                router.post('/', [GroveNfeCompaniesController, 'create'])
+                router.put('/', [GroveNfeCompaniesController, 'update'])
+                router.get('/:id', [GroveNfeCompaniesController, 'show'])
+                router.delete('/:id', [GroveNfeCompaniesController, 'delete'])
+                router.get('/', [GroveNfeCompaniesController, 'showAllCompanies'])
+              })
+              .prefix('companies')
 
             //FISCAL NOTES
             router.group(() => {}).prefix('fiscal-notes')
