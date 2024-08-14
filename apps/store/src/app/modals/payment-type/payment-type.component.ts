@@ -284,17 +284,17 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
 
   public enableCreditCardOrder() {
     if (this.selectedCard) {
-      if (this.billing.card.cvv.length < 3) return { message: 'Verifique o CVV' }
+      if (this.billing.card.cvv.length < 3) return { message: this.translate.text().check_the_cvv }
       return false
     }
-    if (Object.entries(this.billing.card).some((info) => !info[1])) return { message: 'Verifique os dados do cartão' }
-    if (Object.entries(this.billing.address).some((info) => !info[1])) return { message: 'Verifique o endereço de cobrança' }
+    if (Object.entries(this.billing.card).some((info) => !info[1])) return { message: this.translate.text().check_card_details }
+    if (Object.entries(this.billing.address).some((info) => !info[1])) return { message: this.translate.text().check_billing_address }
     const expDate = DateTime.fromFormat(this.billing.card.exp, 'MMyy')
     const difference = expDate.diff(DateTime.now(), 'milliseconds')
-    if (difference.milliseconds < 0) return { message: 'Verifique a validade do cartão' }
-    if (this.billing.card.number.replace(' ', '').length < 16) return { message: 'Verifique o número do cartão' }
-    if (this.billing.card.cvv.length < 3) return { message: 'Verifique o código de segurança' }
-    if (this.billing.address.zip_code.length < 8) return { message: 'Verifique o CEP' }
+    if (difference.milliseconds < 0) return { message: this.translate.text().check_card_expiration_date }
+    if (this.billing.card.number.replace(' ', '').length < 16) return { message: this.translate.text().check_card_number }
+    if (this.billing.card.cvv.length < 3) return { message: this.translate.text().check_security_code }
+    if (this.billing.address.zip_code.length < 8) return { message: this.translate.text().check_zip_code }
     return false
   }
 
@@ -391,7 +391,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
           throw {
             error: {
               code: '403-D',
-              message: 'A data escolhida é menor que a data atual, favor escolher uma data maior.',
+              message: this.translate.text().chosen_date_earlier_current_date,
               minHour: DateTime.local().toFormat('HH:mm'),
             },
           }
@@ -696,14 +696,14 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     let verifyHour = moment(new Date(this.data.dataPackage)).format('ss') === '01'
 
     if (this.customer.name) {
-      message += `*Meu nome é ${this.customer.name}, contato ${this.customer.whatsapp}*\n\n`
+      message += `*${this.translate.text().my_name_is} ${this.customer.name}, contato ${this.customer.whatsapp}*\n\n`
     }
-    message += `*Código do pedido: wm${this.requestCode}${'-' + this.cartRequest.type}\n\n`
+    message += `*${this.translate.text().order_coder}: wm${this.requestCode}${'-' + this.cartRequest.type}\n\n`
 
     if (this.cartRequest.type === 'P') {
-      message += `*Data de entrega : ${
+      message += `*${this.translate.text().delivery_date} : ${
         verifyHour
-          ? moment(new Date(this.cartRequest.packageDate)).format(this.translate.masks().date_mask_format_m) + '(SEM HORÁRIO)'
+          ? moment(new Date(this.cartRequest.packageDate)).format(this.translate.masks().date_mask_format_m) + `(${this.translate.text().no_time_up})`
           : moment(new Date(this.cartRequest.packageDate)).format(`${this.translate.masks().date_mask_format_m} HH:mm`)
       } *\n\n`
     }
@@ -753,7 +753,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       }
       // item.addons.forEach(addon => message += `   ${addon.name}\n`);
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().observations}:\n${item.obs}*\n`
       }
       if (this.clientData.showTotal) {
         // const val = this.formatCurrency((item.promoteStatus ? item.promoteValue : item.value) * item.quantity);
@@ -765,7 +765,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     this.whatsCartPizza.forEach((item) => {
       if (this.clientData.showTotal) {
         // let val = this.formatCurrency(item.value * item.quantity);
-        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} sabores`
+        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} ${this.translate.text().flavors}`
         let pizza = `${item.quantity}x ${item.size} ${sabor}`
         pizza = `${item.quantity}x ${item.size.trim()} ${sabor}`
         // while (pizza.length < 32) {
@@ -803,14 +803,14 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
           message += `${nameImplementation}`
         })
       } else {
-        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} sabores`
+        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} ${this.translate.text().flavors}`
         message += `*${item.quantity}x ${item.size} ${sabor}*\n`
         // item.addons.forEach(addon => message += `   ${addon.name}\n`);
         item.flavors.forEach((product) => (message += `   *${product.name}*\n`))
         item.implementations.forEach((implementation) => (message += `   *com ${implementation.name.trim()}*\n`))
       }
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().observations}:\n${item.obs}*\n`
       }
 
       if (this.clientData.showTotal) {
@@ -825,24 +825,24 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     if (this.clientData.showTotal) {
       let value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(this.totalCart())
 
-      message += `*Cupom usado: ${this.cupom.code.toUpperCase()}*\n`
+      message += `*${this.translate.text().coupon_used}: ${this.cupom.code.toUpperCase()}*\n`
       if (this.typeDelivery === 'delivery') {
         if (this.taxDeliveryValue > 0) {
           message += `*Subtotal: ${this.formatCurrency(this.cartService.totalCartValue(this.cart, this.cartPizza, this.cartRequest))}*\n`
 
           if (this.cartRequest.formsPayment[0].addon.status) {
             if (this.cartRequest.formsPayment[0].addon.type === 'fee')
-              message += `*Taxa: ${this.addonType()}${this.formatCurrency(this.addonCalcResult())}*\n`
+              message += `*${this.translate.text().fee}: ${this.addonType()}${this.formatCurrency(this.addonCalcResult())}*\n`
           }
           if (this.cartRequest.formsPayment[0].addon.type === 'discount') {
             message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(this.addonCalcResult())}*\n`
           }
 
           if (this.cupom) {
-            message += `*Cupom: ${this.cupom.type !== 'freight' ? this.formatCurrency(this.cupomValue() * -1) : 'Frete Grátis'}*\n`
+            message += `*${this.translate.text().coupon}: ${this.cupom.type !== 'freight' ? this.formatCurrency(this.cupomValue() * -1) : 'Frete Grátis'}*\n`
           }
 
-          message += `*Entrega: ${this.cupom && this.cupom.type === 'freight' ? 'FRETE GRÁTIS' : this.formatCurrency(this.taxDeliveryValue)}*\n`
+          message += `*${this.translate.text().delivery}: ${this.cupom && this.cupom.type === 'freight' ? this.translate.text().fee_shipping_up : this.formatCurrency(this.taxDeliveryValue)}*\n`
           value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
             this.totalCart() - this.cupomValue() + this.taxDeliveryValue + this.addonCalcResult()
           )
@@ -863,10 +863,10 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
           }
 
           if (this.cupom && this.cupom.type !== 'freight') {
-            message += `*Cupom: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
+            message += `*${this.translate.text().coupon}: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
           }
 
-          message += `*Entrega: Grátis*\n`
+          message += `*${this.translate.text().delivery}: ${this.translate.text().free}*\n`
           value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
             this.totalCart() - this.cupomValue() + this.addonCalcResult()
           )
@@ -883,7 +883,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
             message += `*${this.translate.text().coupon}: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
           }
 
-          message += `*Entrega: Consultar*\n`
+          message += `*${this.translate.text().delivery}: ${this.translate.text().consult}*\n`
         }
       } else {
         message += `*Subtotal: ${this.formatCurrency(this.cartService.totalCartValue(this.cart, this.cartPizza, this.cartRequest))}*\n`
@@ -902,7 +902,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
           }*\n`
         }
 
-        message += `*Entrega: Local*\n`
+        message += `*${this.translate.text().delivery}: Local*\n`
         value = this.formatCurrency(this.totalCart() - this.cupomValue() + this.addonCalcResult())
         message += `*Total: ${value}*\n`
       }
@@ -932,7 +932,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
             totalRequest += this.taxDeliveryValue
           }
 
-          message += `*Troco: ${new Intl.NumberFormat(this.profile.locale.language, {
+          message += `*${this.translate.text().change}: ${new Intl.NumberFormat(this.profile.locale.language, {
             style: 'currency',
             currency: this.profile.locale.currency,
           }).format(transshipmentVal ? transshipmentVal - totalRequest : totalRequest)}*\n`
@@ -943,7 +943,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       }
     }
 
-    message += `*Link para status do pedido*\n http://www.whatsmenu.com.br/${this.clientData.slug}/status/${this.requestCode}`
+    message += `*${this.translate.text().link_for_order_status}*\n http://www.whatsmenu.com.br/${this.clientData.slug}/status/${this.requestCode}`
 
     if (this.typeDelivery === 'delivery') {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){

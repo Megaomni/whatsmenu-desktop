@@ -492,6 +492,25 @@ export interface TranslateType {
     the_toppings_comment: string
     mandatory_to_choose: string
     time_closed_comment: string
+    my_name_is: string
+    contact: string
+    order_coder: string
+    no_time_up: string
+    with: string
+    observations: string
+    coupon_used: string
+    fee_shipping_up: string
+    consult: string
+    link_for_order_status: string
+    chosen_date_earlier_current_date: string
+    check_the_cvv: string
+    check_card_details: string
+    check_billing_address: string
+    check_card_expiration_date: string
+    check_card_number: string
+    check_security_code: string
+    check_zip_code: string
+    fee: string
     select_the_flag_comment: string
     change_less_purchase_comment: string
     free_shipping_comment: string

@@ -322,9 +322,11 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
     if (formPayment.addon?.status) {
       const valueFormatted = this.addonCalcResult(formPayment.addon).toFixed(2)
 
-      return (formPayment.addon?.type === 'fee' ? `${ this.translate.text().fee_comment } +${valueFormatted}` : `${ this.translate.text().discount_comment } ${valueFormatted}`).concat(
-        formPayment.addon?.valueType === 'percentage' ? ` (${formPayment.addon?.value}%)` : ''
-      )
+      return (
+        formPayment.addon?.type === 'fee'
+          ? `${this.translate.text().fee_comment} +${valueFormatted}`
+          : `${this.translate.text().discount_comment} ${valueFormatted}`
+      ).concat(formPayment.addon?.valueType === 'percentage' ? ` (${formPayment.addon?.value}%)` : '')
     }
     return ''
   }
@@ -452,15 +454,17 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
     const cupomValue = this.cartService.cupomValue(this.data.cartRequest.cupom, this.data.cartRequest)
 
     if (this.data.customer.name) {
-      message += `*Meu nome é ${this.data.customer.name}, contato ${this.data.customer.whatsapp}*\n\n`
+      message += `*${this.translate.text().my_name_is} ${this.data.customer.name}, ${this.translate.text().contact} ${this.data.customer.whatsapp}*\n\n`
     }
-    message += `*Código do pedido: wm${this.data.cartRequest.code}${'-' + this.data.cartRequest.type}*\n\n`
+    message += `*${this.translate.text().order_coder}: wm${this.data.cartRequest.code}${'-' + this.data.cartRequest.type}*\n\n`
 
     if (this.data.cartRequest.type === 'P') {
       const formattedDate = DateTime.fromFormat(this.data.cartRequest.packageDate.substring(0, 19), 'yyyy-MM-dd HH:mm:ss')
 
-      message += `*Data de entrega: ${
-        verifyHour ? formattedDate.toFormat(this.translate.masks().date_mask) + '(SEM HORÁRIO)' : formattedDate.toFormat(`${ this.translate.masks().date_mask } HH:mm`)
+      message += `*${this.translate.text().delivery_date}: ${
+        verifyHour
+          ? formattedDate.toFormat(this.translate.masks().date_mask) + `(${this.translate.text().no_time_up})`
+          : formattedDate.toFormat(`${this.translate.masks().date_mask} HH:mm`)
       }*\n\n`
     }
 
@@ -491,7 +495,7 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
         })
       }
       if (item.obs) {
-        message += `*${ this.translate.text().obs }:\n${item.obs}*\n`
+        message += `*${this.translate.text().obs}:\n${item.obs}*\n`
       }
       if (this.data.clientData.showTotal) {
         const itemValue = item.details.value || 0
@@ -553,10 +557,10 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
       } else {
         message += `*${item.quantity}x ${item.quantity}x ${item.name}*\n`
         item.details.flavors.forEach((product) => (message += `   *${product.name}*\n`))
-        item.details.implementations.forEach((implementation) => (message += `   *com ${implementation.name.trim()}*\n`))
+        item.details.implementations.forEach((implementation) => (message += `   *${this.translate.text().with} ${implementation.name.trim()}*\n`))
       }
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().obs}:\n${item.obs}*\n`
       }
 
       if (this.data.clientData.showTotal) {
@@ -589,19 +593,20 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
           message += `*Subtotal: ${this.formatCurrency(this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.data.cartRequest))}*\n`
 
           if (this.formPaymentSelected.addon.status) {
-            if (this.formPaymentSelected.addon.type === 'fee') message += `*${ this.translate.text().fee_comment }: ${this.formatCurrency(totalAddon)}*\n`
+            if (this.formPaymentSelected.addon.type === 'fee')
+              message += `*${this.translate.text().fee_comment}: ${this.formatCurrency(totalAddon)}*\n`
           }
           if (this.formPaymentSelected.addon.type === 'discount') {
-            message += `*${ this.translate.text().discount_comment }: ${this.formatCurrency(totalAddon)}*\n`
+            message += `*${this.translate.text().discount_comment}: ${this.formatCurrency(totalAddon)}*\n`
           }
 
           if (this.data.cartRequest.cupomId && this.data.cartRequest.cupom?.type !== 'freight') {
-            message += `*Cupom: ${this.formatCurrency(cupomValue * -1)}*\n`
+            message += `*${this.translate.text().coupon}: ${this.formatCurrency(cupomValue * -1)}*\n`
           }
 
-          message += `*${ this.translate.text().delivery }: ${
+          message += `*${this.translate.text().delivery}: ${
             this.data.cartRequest.cupom?.type === 'freight'
-              ? `${ this.translate.text().free_shipping_comment }` + this.data.cartRequest.taxDelivery
+              ? `${this.translate.text().free_shipping_comment}` + this.data.cartRequest.taxDelivery
               : this.formatCurrency(this.data.cartRequest.taxDelivery)
           }*\n`
           value = new Intl.NumberFormat(this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(
@@ -619,29 +624,31 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
           }
           0
           if (this.formPaymentSelected.addon.type === 'discount') {
-            message += `*${ this.translate.text().discount_comment }:  ${this.formatCurrency(totalAddon)}*\n`
+            message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(totalAddon)}*\n`
           }
 
           if (this.data.cartRequest.cupomId && this.data.cartRequest.cupom?.type !== 'freight') {
             message += `*${this.translate.text().coupon}: ${this.formatCurrency(cupomValue * -1)}*\n`
           }
 
-          message += `*${ this.translate.text().shipping }: ${ this.translate.text().free }*\n`
-          value = new Intl.NumberFormat(this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(totalCart - cupomValue + totalAddon)
+          message += `*${this.translate.text().shipping}: ${this.translate.text().free}*\n`
+          value = new Intl.NumberFormat(this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(
+            totalCart - cupomValue + totalAddon
+          )
           message += `*Total: ${value}*\n`
         }
 
         if (this.data.cartRequest.taxDelivery === null) {
           if (this.formPaymentSelected.addon.type === 'discount') {
-            message += `*${ this.translate.text().discount_comment }:  ${this.formatCurrency(totalAddon)}\*n`
+            message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(totalAddon)}\*n`
           }
           message += `*Subtotal: ${this.formatCurrency(totalCart)}*\n`
 
           if (this.data.cartRequest.cupomId && this.data.cartRequest.cupom?.type !== 'freight') {
-            message += `*${ this.translate.text().coupon }: ${this.formatCurrency(cupomValue * -1)}*\n`
+            message += `*${this.translate.text().coupon}: ${this.formatCurrency(cupomValue * -1)}*\n`
           }
 
-          message += `*${ this.translate.text().shipping }: ${ this.translate.text().consult_comment }*\n`
+          message += `*${this.translate.text().shipping}: ${this.translate.text().consult_comment}*\n`
         }
       } else {
         message += `*Subtotal: ${this.formatCurrency(totalCart)}*\n`
@@ -650,14 +657,14 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
           if (this.formPaymentSelected.addon.type === 'fee') message += `*Taxa: ${this.formatCurrency(totalAddon)}*\n`
         }
         if (this.formPaymentSelected.addon.type === 'discount') {
-          message += `*${ this.translate.text().discount_comment }:  ${this.formatCurrency(totalAddon)}*\n`
+          message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(totalAddon)}*\n`
         }
 
         if (this.data.cartRequest.cupomId && this.data.cartRequest.cupom?.type !== 'freight') {
-          message += `*${this.translate.text().coupon }: ${this.formatCurrency(cupomValue * -1)}*\n`
+          message += `*${this.translate.text().coupon}: ${this.formatCurrency(cupomValue * -1)}*\n`
         }
 
-        message += `*${this.translate.text().shipping }: ${ this.translate.text().location_comment }*\n`
+        message += `*${this.translate.text().shipping}: ${this.translate.text().location_comment}*\n`
         value = this.formatCurrency(totalCart - cupomValue + totalAddon)
         message += `*Total: ${value}*\n`
       }
@@ -668,16 +675,18 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
         ? `${this.formPaymentSelected.label}(${this.formPaymentSelected.flag?.name || 'Online'})`
         : this.formPaymentSelected.label
 
-    message += `\n*${ this.translate.text().payment_in_comment }:      ${formPayment} ${
-      this.data.cartRequest.paymentType === 'online' && this.paymentType === 'online' ? ` - ${ this.translate.text().paid_online_comment }` : ''
+    message += `\n*${this.translate.text().payment_in_comment}:      ${formPayment} ${
+      this.data.cartRequest.paymentType === 'online' && this.paymentType === 'online' ? ` - ${this.translate.text().paid_online_comment}` : ''
     }*\n`
 
     if (this.formPaymentSelected.change && formPayment === 'Dinheiro') {
       const transshipmentVal = parseFloat(this.formPaymentSelected.change.toString().replace(',', '.').trim())
-      const transshipment = new Intl.NumberFormat( this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(transshipmentVal)
+      const transshipment = new Intl.NumberFormat(this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(
+        transshipmentVal
+      )
 
       if (this.formPaymentSelected.change > 0) {
-        message += `*${ this.translate.text().change_for_comment } ${transshipment}*\n`
+        message += `*${this.translate.text().change_for_comment} ${transshipment}*\n`
 
         if (this.data.clientData.showTotal) {
           let totalRequest = totalCart - cupomValue + totalAddon
@@ -686,50 +695,51 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
             totalRequest += this.data.cartRequest.taxDelivery
           }
 
-          message += `*${ this.translate.text().change }: ${new Intl.NumberFormat(this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(
-            transshipmentVal ? transshipmentVal - totalRequest : totalRequest
-          )}*\n`
+          message += `*${this.translate.text().change}: ${new Intl.NumberFormat(this.translate.masks().cell, {
+            style: 'currency',
+            currency: this.translate.currency(),
+          }).format(transshipmentVal ? transshipmentVal - totalRequest : totalRequest)}*\n`
         }
       } else {
-        message += `*${ this.translate.text().i_not_need_transhipment }*\n`
+        message += `*${this.translate.text().i_not_need_transhipment}*\n`
       }
     }
 
-    message += `*${ this.translate.text().track_order }*\n https://www.whatsmenu.com.br/${this.data.clientData.slug}/status/${this.data.cartRequest.code}`
+    message += `*${this.translate.text().track_order}*\n https://www.whatsmenu.com.br/${this.data.clientData.slug}/status/${this.data.cartRequest.code}`
 
     if (this.data.cartRequest.addressId) {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){
       if (this.data.cartRequest.type === 'P') {
-        message += `\n\n*${ this.translate.text().package }*\n\n*${ this.translate.text().delivery_address }*\n\n`
+        message += `\n\n*${this.translate.text().package}*\n\n*${this.translate.text().delivery_address}*\n\n`
       } else {
-        message += `\n\n*${ this.translate.text().delivery_address }*\n\n`
+        message += `\n\n*${this.translate.text().delivery_address}*\n\n`
       }
       // message += `\n\n*Endereço da Entrega*\n\n`;
-      message += `*${ this.translate.text().street }: ${this.data.cartRequest.address.street.trim()}*\n`
-      message += `*${ this.translate.text().number }: ${this.data.cartRequest.address.number}*\n`
+      message += `*${this.translate.text().street}: ${this.data.cartRequest.address.street.trim()}*\n`
+      message += `*${this.translate.text().number}: ${this.data.cartRequest.address.number}*\n`
 
       if (this.data.cartRequest.address.complement) {
-        message += `*${ this.translate.text().address_complement }: ${this.data.cartRequest.address.complement.trim()}*\n`
+        message += `*${this.translate.text().address_complement}: ${this.data.cartRequest.address.complement.trim()}*\n`
       }
 
-      message += `*${ this.translate.text().neighborhood }: ${this.data.cartRequest.address.neighborhood.trim()}*\n`
+      message += `*${this.translate.text().neighborhood}: ${this.data.cartRequest.address.neighborhood.trim()}*\n`
 
       if (this.data.cartRequest.address.reference) {
-        message += `*${ this.translate.text().reference }: ${this.data.cartRequest.address.reference.trim()}*\n`
+        message += `*${this.translate.text().reference}: ${this.data.cartRequest.address.reference.trim()}*\n`
       }
 
-      message += `*${ this.translate.text().city }: ${this.data.cartRequest.address.city.trim()}*\n`
+      message += `*${this.translate.text().city}: ${this.data.cartRequest.address.city.trim()}*\n`
     } else {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){
       if (this.data.cartRequest.type === 'P') {
-        message += `\n\n*${ this.translate.text().package }*\n\n*${ this.translate.text().pickup_the_location }*\n\n`
+        message += `\n\n*${this.translate.text().package}*\n\n*${this.translate.text().pickup_the_location}*\n\n`
       } else {
-        message += `\n\n*${ this.translate.text().pickup_the_location }*\n\n`
+        message += `\n\n*${this.translate.text().pickup_the_location}*\n\n`
       }
     }
 
     message += split
-    message += `*${ this.translate.text().technology }*\n      *www.whatsmenu.com.br*`
+    message += `*${this.translate.text().technology}*\n      *www.whatsmenu.com.br*`
 
     return encodeURI(message)
   }
@@ -977,9 +987,12 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
 
     this.websocket.connect.subscribe(async ({ type, data }: { type: 'connection' | 'request' | 'command' | 'profile'; data: any }) => {
       this.websocket.subscribe('profile', this.pixInvoice.id)
-      setTimeout(() => {
-        this.pixRegeneration = true
-      }, 5 * 1000 * 60)
+      setTimeout(
+        () => {
+          this.pixRegeneration = true
+        },
+        5 * 1000 * 60
+      )
       if (type === 'connection') {
         // const order = await this.api.verifyOrder(this.data.cartRequest.id)
         // if (order.statusPayment === 'paid') {
@@ -1039,7 +1052,7 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
         externalReference: JSON.stringify({
           cartId: this.data.cartRequest.id,
         }),
-        description: `${ this.translate.text().order } ${this.data.clientData.name} - WhatsMenu`,
+        description: `${this.translate.text().order} ${this.data.clientData.name} - WhatsMenu`,
       }
       const order = await this.api.processCard(this.data.clientData.slug, {
         card: this.selectedCard,
