@@ -6,8 +6,9 @@
       style="cursor: pointer"
       (click)="pixQrCodeMode ? cancelPixMode() : close({ goBack: true, cancel: true })"
     ></fa-icon>
-    <h3 class="m-0 fs-5">
-      Forma de Pagamento<span *ngIf="deviceWidth > 600">
+    <h3 class="m-0 fs-5 text-capitalize">
+      {{ translate.text().payment_method
+      }}<span *ngIf="deviceWidth > 600">
         -
         <span style="color: var(--wm-red-300)">{{
           data.cartRequest?.type === 'T' ? context[data.tableType === 'table' ? 'getActiveTable' : 'getActiveCommand']()?.name : data.client?.name
@@ -26,43 +27,43 @@
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="!pixQrCodeMode" class="align-items-center justify-content-between gap-3">
   <div *ngIf="deviceWidth > 600">
-    <p>Atalhos</p>
+    <p class="text-capitalize">{{ translate.text().shortcuts }}</p>
     <p>
       <span class="fw-bold">Enter:</span>
-      Próximos/Confirmar
+      {{ translate.text().next_confirm }}
     </p>
     <p>
       <span class="fw-bold">ESC:</span>
-      Voltar/Cancelar
+      {{ translate.text().return_cancel }}
     </p>
   </div>
   <div class="d-flex justify-content-between justify-content-md-end lign-self-end gap-3">
     <button
-      class="flex-sm-grow-1 btn btn-outline-secondary"
+      class="flex-sm-grow-1 btn btn-outline-secondary text-capitalize"
       style="color: var(--wm-gray-300)"
       [disabled]="disableCancelButton()"
       (click)="close({ cancel: true })"
     >
-      Cancelar
+      {{ translate.text().cancel }}
     </button>
     <button
-      class="flex-sm-grow-1"
+      class="flex-sm-grow-1 text-capitalize"
       *ngIf="!data.tableType"
       class="btn"
       style="background-color: var(--wm-yellow-500)"
       (click)="close({ goBack: true })"
     >
-      Voltar
+      {{ translate.text().return }}
     </button>
     <button
-      class="flex-sm-grow-1 btn"
+      class="flex-sm-grow-1 btn text-capitalize"
       id="confirmPayment"
       style="color: var(--wm-white); background-color: var(--wm-green-500)"
       [disabled]="closeVerify()"
       (click)="close({ cancel: false })"
       id="finishPaymentButton"
     >
-      Prosseguir
+      {{ translate.text().proceed }}
     </button>
   </div>
 </mat-dialog-actions>
@@ -70,18 +71,20 @@
 <ng-template #paymentTemplate>
   <div>
     <div class="fs-5 mb-2 p-3" *ngIf="deviceWidth <= 600">
-      <span class="fw-bold">Nome: </span>
+      <span class="fw-bold text-capitalize">{{ translate.text().name }}: </span>
       <span style="color: var(--wm-red-300)">{{ data.cartRequest?.type === 'T' ? context.getActiveCommand()?.name : data.client?.name }}</span>
     </div>
     <div *ngIf="data.cartRequest?.type !== 'T'" class="d-flex align-items-center justify-content-between fs-5 p-3">
       <div>
-        <span class="fw-bold">Entrega: </span>
+        <span class="fw-bold text-capitalize">{{ translate.text().delivery }}: </span>
         <span>{{ getAddressString() }}</span>
       </div>
-      <button class="btn btn-link" style="color: var(--wm-red-300)" (click)="openAddress()">Alterar</button>
+      <button class="btn btn-link text-capitalize" style="color: var(--wm-red-300)" (click)="openAddress()">
+        {{ translate.text().change_comment }}
+      </button>
     </div>
-    <div *ngIf="data.cartRequest?.type === 'P'" class="d-flex align-items-center justify-content-between fs-5 border-top p-3">
-      <p>DATA DE ENTREGA: {{ getPackageDateString() }}</p>
+    <div *ngIf="data.cartRequest?.type === 'P'" class="d-flex align-items-center justify-content-between fs-5 border-top p-3 text-uppercase">
+      <p>{{ translate.text().delivery_date }}: {{ getPackageDateString() }}</p>
     </div>
   </div>
 
@@ -94,12 +97,12 @@
 
   <div class="border-top py-1">
     <div class="d-flex w-100 text-center my-3">
-      <div class="flex-grow-1 py-2" style="color: var(--wm-black)">
-        <p>Pago</p>
+      <div class="flex-grow-1 py-2 text-capitalize" style="color: var(--wm-black)">
+        <p>{{ translate.text().paid }}</p>
         <p class="fs-1">{{ context.currency(paidValue, true) }}</p>
       </div>
       <div class="border py-2 border-top-0 border-bottom-0 flex-grow-1" style="color: var(--wm-red-300)">
-        <p>Faltam</p>
+        <p class="text-capitalize">{{ translate.text().remaining }}</p>
         <p class="fs-1">{{ context.currency(lackValue, true) }}</p>
       </div>
       <div class="flex-grow-1 py-2" style="color: var(--wm-green-500)">
@@ -107,9 +110,9 @@
         <p class="fs-1">{{ context.currency(total, true) }}</p>
       </div>
     </div>
-    <div class="row m-0 p-3 w-100 text-nowrap" id="formPaymentForm" style="background-color: var(--wm-gray-light-300)">
+    <div class="row m-0 p-3 w-100 text-nowrap text-capitalize" id="formPaymentForm" style="background-color: var(--wm-gray-light-300)">
       <label class="col-6 col-md-3" for="formpayment-value">
-        <p class="my-2" style="font-size: 0.875rem">Valor:</p>
+        <p class="my-2" style="font-size: 0.875rem">{{ translate.text().value }}:</p>
         <input
           maxlength="15"
           inputmode="numeric"
@@ -121,7 +124,7 @@
         />
       </label>
       <label class="col-6 col-md-3" for="formpayment-value">
-        <p class="my-2" style="font-size: 0.875rem">Forma de Pagamento:</p>
+        <p class="my-2 text-capitalize" style="font-size: 0.875rem">{{ translate.text().payment_method }}:</p>
         <select
           type="number"
           class="form-select"
@@ -131,12 +134,12 @@
           (ngModelChange)="getFormPayment($event)"
         >
           <option *ngFor="let formpayment of getFilterPayment(); index as index" [value]="formpayment.payment">
-            {{ index + 1 }} - {{ formpayment.label }}
+            {{ index + 1 }} - {{ translate.text()[formpayment.payment] }}
           </option>
         </select>
       </label>
       <label *ngIf="profileFormPayment.payment === 'money'" class="col-6 col-md-3" for="formpayment-value">
-        <p class="my-2" style="font-size: 0.875rem">Troco para:</p>
+        <p class="my-2 text-capitalize" style="font-size: 0.875rem">{{ translate.text().change_for }}:</p>
         <input
           maxlength="15"
           inputmode="numeric"
@@ -148,7 +151,7 @@
         />
       </label>
       <label *ngIf="profileFormPayment.payment !== 'money'" class="col-6 col-md-3" for="formpayment-flag">
-        <p class="my-2" style="font-size: 0.875rem">Bandeira:</p>
+        <p class="my-2 text-capitalize" style="font-size: 0.875rem">{{ translate.text().card_network }}:</p>
         <select
           class="form-select"
           id="formpayment-flag"
@@ -183,30 +186,36 @@
             context.profile.options.asaas &&
             context.profile.options.onlinePix &&
             profileFormPayment.payment === 'pix'
-              ? 'Gerar Chave Pix'
-              : '+ Adicionar'
+              ? translate.text().generate_pix_key
+              : translate.text().add_comment
           }}
         </button>
       </div>
     </div>
   </div>
 
-  <div *ngIf="demandAddonValue && addonValue" class="w-100 p-4 text-center text-success fw-bold">
-    {{ profileFormPayment.addon?.type === 'discount' ? 'Desconto' : 'Taxa' }} {{ profileFormPayment.label }} {{ addonValue | currency }}
+  <div *ngIf="demandAddonValue && addonValue" class="w-100 p-4 text-center text-success fw-bold text-capitalize">
+    {{ profileFormPayment.addon?.type === 'discount' ? translate.text().discount_comment : translate.text().fee_comment }}
+    {{ translate.text()[profileFormPayment.payment] }} {{ addonValue | currency }}
   </div>
 
   <div class="py-2 px-4">
-    <app-cashback *ngIf="data.cartRequest.type !== 'T' && context.profile.options.voucher[0].status && data.client.vouchers.length"[value]="cashbackValueAvaliable()" class="my-2" [(formsPayment)]="formsPayment" />
+    <app-cashback
+      *ngIf="data.cartRequest.type !== 'T' && context.profile.options.voucher[0].status && data.client.vouchers.length"
+      [value]="cashbackValueAvaliable()"
+      class="my-2"
+      [(formsPayment)]="formsPayment"
+    />
   </div>
 
   <table class="table table-hover table-bordered mb-4 text-center text-nowrap">
     <thead style="border-bottom: 2px solid var(--wm-gray-600); font-size: 1rem">
       <tr>
-        <th>Tipo</th>
-        <th>Bandeira</th>
-        <th>Valor</th>
-        <th>Taxa/Desconto</th>
-        <th>Remover</th>
+        <th class="text-capitalize">{{ translate.text().type }}</th>
+        <th class="text-capitalize">{{ translate.text().card_network }}</th>
+        <th class="text-capitalize">{{ translate.text().value }}</th>
+        <th class="text-capitalize">{{ translate.text().fee_discount }}</th>
+        <th class="text-capitalize">{{ translate.text().remove }}</th>
       </tr>
     </thead>
     <tbody style="font-size: 1rem; vertical-align: middle">
@@ -216,7 +225,9 @@
         ></ng-container>
       </ng-container>
       <ng-container *ngIf="data.tableType === 'table'">
-        <ng-container *ngTemplateOutlet="formPaymentTr; context: { formsPaymentData: context.getActiveTable()?.opened.formsPayment, noExclude: true }"></ng-container>
+        <ng-container
+          *ngTemplateOutlet="formPaymentTr; context: { formsPaymentData: context.getActiveTable()?.opened.formsPayment, noExclude: true }"
+        ></ng-container>
       </ng-container>
       <ng-container *ngTemplateOutlet="formPaymentTr; context: { formsPaymentData: formsPayment, noExlude: true }"></ng-container>
     </tbody>
@@ -225,19 +236,24 @@
 
 <ng-template #formPaymentTr let-formsPaymentData="formsPaymentData" let-noExclude="noExclude">
   <tr *ngFor="let formPayment of formsPaymentData; index as index">
-    <td>{{ formPayment.label }}</td>
+    <td>{{ translate.text()[formPayment.payment] }}</td>
     <td>{{ formPayment.flag ? formPayment.flag.name : '-' }}</td>
     <td>
       <div class="d-flex align-items-center justify-content-center flex-column flex-md-row">
         <p>{{ formPaymentListValue(formPayment) | currency }}</p>
-        <p *ngIf="formPayment.change">
-          <span *ngIf="deviceWidth > 600">&nbsp;-&nbsp;</span>Troco:
+        <p class="text-capitalize" *ngIf="formPayment.change">
+          <span *ngIf="deviceWidth > 600">&nbsp;-&nbsp;</span>{{ translate.text().change }}:
           {{ formPayment.change - (demandAddonValue && addonValue ? formPayment.value + addonValue : formPayment.value) | currency }}
         </p>
       </div>
     </td>
     <td>
-      {{ formPayment.addon?.status ? (profileFormPayment.addon?.type === 'discount' ? 'Desconto -' : 'Taxa') + cartService.formPaymentAddonCalcResult(formPayment, data.cartRequest.total).toFixed(2) : '-' }}
+      {{
+        formPayment.addon?.status
+          ? (profileFormPayment.addon?.type === 'discount' ? translate.text().discont + ' -' : 'Taxa') +
+            cartService.formPaymentAddonCalcResult(formPayment, data.cartRequest.total).toFixed(2)
+          : '-'
+      }}
     </td>
     <td class="fw-bold" style="color: var(--wm-red-300); cursor: pointer" (click)="removePayment(index)">
       <ng-container *ngIf="!noExclude && !formPayment.paid"> X </ng-container>
@@ -250,13 +266,13 @@
     <ng-container *ngIf="!pixInvoice.qrCode">
       <div class="d-flex flex-column align-items-center gap-3">
         <img src="/assets/pix.svg" alt="pix logo" style="width: 42px; aspect-ratio: 1/1" />
-        <p class="fs-4 fw-semibold text-black">Como pagar no PIX!</p>
+        <p class="fs-4 fw-semibold text-black">{{ translate.text().how_pay_pix }}!</p>
       </div>
       <ul class="text-black fw-semibold p-0 d-flex flex-column gap-2">
         <ng-container *ngFor="let step of pixSteps; let index = index">
           <li class="d-flex gap-3 align-items-center">
-            <span class="fw-semibold text-nowrap text-black badge p-1 my-auto" style="background-color: var(--wm-blue-200)"
-              >{{ index + 1 }}º Passo</span
+            <span class="fw-semibold text-nowrap text-black badge p-1 my-auto text-capitalize" style="background-color: var(--wm-blue-200)"
+              >{{ index + 1 }}º {{ translate.text().step }}</span
             >
             <p class="fw-semibold flex-grow-1">{{ step }}</p>
           </li>
@@ -264,17 +280,17 @@
       </ul>
 
       <div class="mt-4">
-        <label for="pix-cpf-input" class="mb-1 fw-semibold form-label">Digite seu CPF </label>
+        <label for="pix-cpf-input" class="mb-1 fw-semibold form-label text-capitalize">{{ translate.text().enter_cpf }} </label>
         <input
           type="text"
           inputmode="numeric"
           class="form-control mb-2"
-          placeholder="000.000.000-00"
+          [placeholder]="translate.text().ssn_model_comment"
           id="pix-cpf-input"
-          mask="000.000.000-00"
+          [mask]="translate.text().ssn_model_comment"
           [(ngModel)]="pixSecretNumber"
         />
-        <p style="color: var(--wm-gray-550); font-size: 0.75rem">Insira um CPF Válido</p>
+        <p style="color: var(--wm-gray-550); font-size: 0.75rem">{{ translate.text().enter_a_valid_cpf }}</p>
       </div>
       <div class="d-flex flex-column gap-2 mt-auto">
         <button
@@ -284,36 +300,38 @@
           (click)="generatePix({ regenerate: false })"
           #generatePixButton
         >
-          Gerar Chave Pix
+          {{ translate.text().generate_pix_key }}
         </button>
-        <button class="btn btn-link text-danger p-3 w-100 fw-bold" (click)="cancelPixMode()">Cancelar</button>
+        <button class="btn btn-link text-danger p-3 w-100 fw-bold text-capitalize" (click)="cancelPixMode()">{{ translate.text().cancel }}</button>
       </div>
     </ng-container>
     <ng-container *ngIf="pixInvoice.qrCode">
       <!-- <div class="alert alert-danger mb-2" role="alert">Pagamento ainda pendente. Por favor tente novamente.</div> -->
 
       <div *ngIf="!pixRegeneration" class="d-flex align-items-center flex-column">
-        <p class="fs-5 fw-semibold">Pedido Aguardando Pagamento</p>
+        <p class="fs-5 fw-semibold text-capitalize">{{ translate.text().order_pending_payment }}</p>
         <div *ngIf="'!pixRegeneration'">
-          <p style="width: 140px; font-size: 12px" class="text-center text-black fw-semibold lh-1 mt-5">O tempo para pagamento acaba em:</p>
+          <p style="width: 140px; font-size: 12px" class="text-center text-black fw-semibold lh-1 mt-5 text-capitalize">
+            {{ translate.text().payment_deadline }}:
+          </p>
           <app-countdown [minutes]="5" [radius]="45" />
         </div>
         <img src="data:image/jpeg;base64, {{ pixInvoice.qrCode }}" alt="QR Code Pix" style="width: 125px; aspect-ratio: 1/1" />
 
-        <label for="pixCopyPaste" class="form-label" style="color: var(--wm-gray-550)">Pix Copia e Cola</label>
+        <label for="pixCopyPaste" class="form-label text-capitalize" style="color: var(--wm-gray-550)">{{ translate.text().pix_copy_paste }}</label>
         <div class="input-group mb-3">
           <input class="form-control" id="pixCopyPaste" [(ngModel)]="pixInvoice.copyPaste" readonly />
         </div>
         <button
           id="copy-paste"
-          class="btn btn-primary"
+          class="btn btn-primary text-capitalize"
           type="button"
           #t="ngbTooltip"
           triggers="manual"
           [ngbTooltip]="'Chave PIX copiada!'"
           (click)="copyToClipboardOnline()"
         >
-          Copiar Código
+          {{ translate.text().copy_code }}
           <fa-icon [icon]="faPaste" />
         </button>
       </div>
@@ -323,18 +341,22 @@
 
     <div *ngIf="pixRegeneration" class="h-100 d-flex flex-column justify-content-center align-items-center">
       <fa-icon [icon]="faRotate" role="button" (click)="generatePix({ regenerate: true })" size="4x" class="text-center"></fa-icon>
-      <p class="text-center mt-4">Sua chave PIX expirou. Clique no botão para gerar uma nova.</p>
+      <p class="text-center mt-4">{{ translate.text().pix_key_expired }}</p>
     </div>
 
-    <p *ngIf="!pixRegeneration && pixInvoice.qrCode" class="text-center text-black fw-semibold mx-5" style="font-size: 0.875rem">
-      Caso a confirmação demorar muito, clique no botão abaixo
+    <p *ngIf="!pixRegeneration && pixInvoice.qrCode" class="text-center text-black fw-semibold mx-5 text-capitalize" style="font-size: 0.875rem">
+      {{ translate.text().confirmation_is_taking_too_long }}
     </p>
 
     <div class="d-flex flex-column gap-2 mt-auto" *ngIf="pixInvoice.qrCode">
-      <button class="btn p-3 w-100 fw-bold" style="color: var(--wm-white); background-color: var(--wm-green-500)" (click)="verifyPix()">
-        Verificar pagamento do Pix
+      <button
+        class="btn p-3 w-100 fw-bold text-capitalize"
+        style="color: var(--wm-white); background-color: var(--wm-green-500)"
+        (click)="verifyPix()"
+      >
+        {{ translate.text().verify_pix_payment }}
       </button>
-      <button class="btn btn-link text-danger p-3 w-100 fw-bold" (click)="cancelPixMode()">Cancelar</button>
+      <button class="btn btn-link text-danger p-3 w-100 fw-bold text-capitalize" (click)="cancelPixMode()">{{ translate.text().cancel }}</button>
     </div>
   </div>
 </ng-template>

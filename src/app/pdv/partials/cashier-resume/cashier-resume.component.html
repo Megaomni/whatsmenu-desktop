@@ -1,54 +1,58 @@
 <div class="cashier-resume-container">
   <div class="m-0 p-0" id="print-resume">
-    <div class="p-3" style="background-color: var(--wm-gray-light-300);">
-      <p class="fw-bold mb-3" style="font-size: 1.125rem;">Resumo</p>
-      <div class="d-flex justify-content-between" style="font-size: 1rem;">
-        <span class="fw-bold fs">Saldo Inicial:</span>
-        <span class="fw-bold fs pe-2">{{ context.currency(cashier?.initialValue || 0, true) }}</span>
+    <div class="p-3" style="background-color: var(--wm-gray-light-300)">
+      <p class="fw-bold mb-3 text-capitalize" style="font-size: 1.125rem">{{ translate.text().summary }}</p>
+      <div class="d-flex justify-content-between" style="font-size: 1rem">
+        <span class="fw-bold fs text-capitalize">{{ translate.text().initial_balance_n }}:</span>
+        <span class="fw-bold fs">{{ context.currency(cashier?.initialValue || 0, true) }}</span>
       </div>
     </div>
-    <div class="p-0 w-100" style="overflow-y: auto; max-height: calc(100vh - 200px);">
+    <div class="p-0 w-100" style="overflow-y: auto; max-height: calc(100vh - 200px)">
       <div class="p-3">
-        <p class="fw-bold mb-3" style="font-size: 1.125rem; color: var(--wm-green-500);">(+) Entradas</p>
-        <div *ngFor="let formPayment of incomesSummary()" class="d-flex justify-content-between py-1"
-          style="font-size: 1rem; border-bottom: 1px solid var(--wm-gray-600);">
-          <span>{{ formPayment.label }} &#160;</span>
+        <p class="fw-bold mb-3 text-capitalize" style="font-size: 1.125rem; color: var(--wm-green-500)">(+) {{ translate.text().income }}</p>
+        <div
+          *ngFor="let formPayment of incomesSummary()"
+          class="d-flex justify-content-between py-1"
+          style="font-size: 1rem; border-bottom: 1px solid var(--wm-gray-600)"
+        >
+          <span>{{ translate.text()[formPayment.payment] }} &#160;</span>
           <span class="pe-2">{{ context.currency(formPayment.value, true) }}</span>
         </div>
       </div>
-      <div class="p-3" style="background-color: var(--wm-gray-light-300);">
-        <p class="fw-bold mb-3" style="font-size: 1.125rem; color: var(--wm-red-350);">(-) Saídas</p>
-        <ng-container *ngFor="let transaction of outcomesSummary()" >
-          <div *ngIf="transaction.type === 'outcome'" class="d-flex justify-content-between py-1"
-            style="font-size: 1rem; border-bottom: 1px solid var(--wm-gray-600);">
+      <div class="p-3" style="background-color: var(--wm-gray-light-300)">
+        <p class="fw-bold mb-3" style="font-size: 1.125rem; color: var(--wm-red-350)">(-) {{ translate.text().cash_outflows }}</p>
+        <ng-container *ngFor="let transaction of outcomesSummary()">
+          <div
+            *ngIf="transaction.type === 'outcome'"
+            class="d-flex justify-content-between py-1"
+            style="font-size: 1rem; border-bottom: 1px solid var(--wm-gray-600)"
+          >
             <span>{{ transaction.finalityLabel }} &#160;</span>
             <span class="pe-2">{{ context.currency(transaction.value, true) }}</span>
           </div>
         </ng-container>
-        <div class="d-flex fw-bold justify-content-between py-1 mt-2"
-          style="font-size: 1.125rem; color: var(--wm-red-350);">
-          <span>Total Saídas &#160;</span>
+        <div class="d-flex fw-bold justify-content-between py-1 mt-2" style="font-size: 1.125rem; color: var(--wm-red-350)">
+          <span class="text-capitalize">Total {{ translate.text().cash_outflows }} &#160;</span>
           <span>{{ context.currency(outcomeTotal, true) }}</span>
         </div>
       </div>
       <div class="p-3">
         <div class="d-flex align-items-center justify-content-between mb-3">
-          <p class="fw-bold" style="font-size: 1.125rem;">(=) Saldo Caixa</p>
-          <span class="fw-bold" style="font-size: 0.625rem;">(Entrada + Saída)</span>
+          <p class="fw-bold text-capitalize" style="font-size: 1.125rem">(=) {{ translate.text().cashier_balance }}</p>
+          <span class="fw-bold text-capitalize" style="font-size: 0.625rem"
+            >({{ translate.text().income }} + {{ translate.text().cash_outflow }})</span
+          >
         </div>
-        <div class="d-flex justify-content-between py-1"
-          style="font-size: 1rem; border-bottom: 1px solid var(--wm-gray-600);">
-          <span>SALDO DINHEIRO &#160;</span>
+        <div class="d-flex justify-content-between py-1" style="font-size: 1rem; border-bottom: 1px solid var(--wm-gray-600)">
+          <span class="text-uppercase">{{ translate.text().cash_balance }}</span>
           <span class="pe-2">{{ context.currency(moneyTotal, true) }}</span>
         </div>
-        <div *ngIf="total() > 0" class="d-flex fw-bold justify-content-between py-1 mt-2"
-          style="font-size: 1.125rem; color: var(--wm-green-500);">
-          <span>SALDO FINAL &#160;</span>
+        <div *ngIf="total() > 0" class="d-flex fw-bold justify-content-between py-1 mt-2" style="font-size: 1.125rem; color: var(--wm-green-500)">
+          <span class="text-uppercase">{{ translate.text().final_balance }} &#160;</span>
           <span class="pe-2">{{ context.currency(total(), true) }}</span>
         </div>
-        <div *ngIf="total() < 0" class="d-flex fw-bold justify-content-between py-1 mt-2"
-          style="font-size: 1.125rem; color: var(--wm-red-350);">
-          <span>SALDO FINAL</span>
+        <div *ngIf="total() < 0" class="d-flex fw-bold justify-content-between py-1 mt-2" style="font-size: 1.125rem; color: var(--wm-red-350)">
+          <span class="text-uppercase">{{ translate.text().final_balance }}</span>
           <span>{{ context.currency(total(), true) }}</span>
         </div>
       </div>
@@ -56,13 +60,11 @@
       <p>&#160;</p>
       <p>&#160;</p>
     </div>
-
   </div>
-  <div class="summary-footer p-3"
-    style="border-top: 1px solid var(--wm-gray-600); background-color: var(--wm-gray-light-300);">
+  <div class="summary-footer p-3" style="border-top: 1px solid var(--wm-gray-600); background-color: var(--wm-gray-light-300)">
     <button class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2" [disabled]="cashier?.closed_at" (click)="openClose()">
       <fa-icon [icon]="faLock"></fa-icon>
-      <span>Fechar Caixa</span>
+      <span class="text-capitalize">{{ translate.text().close_cash_register }}</span>
     </button>
   </div>
 </div>

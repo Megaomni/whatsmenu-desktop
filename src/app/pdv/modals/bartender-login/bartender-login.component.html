@@ -1,11 +1,11 @@
 <div mat-dialog-title class="d-flex justify-content-between">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close({})"></fa-icon>
-    <h3 class="m-0 fs-5">Usuário</h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().user }}</h3>
   </div>
 </div>
 <mat-dialog-content class="content d-flex flex-column align-items-center justify-content-center">
-  <p class="text-center fs-5 my-4">Mesa {{ context.getActiveTable()?.name }}</p>
+  <p class="text-center fs-5 my-4">{{ translate.text().table }} {{ context.getActiveTable()?.name }}</p>
   <form (submit)="authBartender()" class="d-grid d-md-flex flex-column gap-3 align-items-center">
     <select class="form-select" name="bartenderId" [(ngModel)]="bartenderId">
       <option *ngFor="let bartender of context.profile?.bartenders" [value]="bartender.id">{{ bartender.name }}</option>

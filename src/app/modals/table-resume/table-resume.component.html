@@ -1,9 +1,9 @@
 <div mat-dialog-title class="d-flex align-items-center gap-2">
   <fa-icon mat-dialog-close [icon]="faArrowLeft" style="cursor: pointer; color: var(--red)"></fa-icon>
-  <div class="d-flex align-items-center gap-4 w-100">
-    <mat-label>Resumo</mat-label>
+  <div class="d-flex align-items-center gap-4 w-100 text-capitalize">
+    <mat-label>{{ translate.text().summary }}</mat-label>
     <mat-select [value]="table.id">
-      <mat-option [value]="table.id" (click)="changeResume('table')"> Mesa - {{ table.name }} </mat-option>
+      <mat-option [value]="table.id" (click)="changeResume('table')"> {{ translate.text().table }} - {{ table.name }} </mat-option>
       <mat-option *ngFor="let command of commands" [value]="command.id" (click)="changeResume('command', command.id)">
         Comanda - {{ command.name }}
       </mat-option>
@@ -12,7 +12,7 @@
 </div>
 
 <mat-dialog-content *ngIf="!cart?.length && !cartPizza?.length">
-  <h3 class="p-4" [ngStyle]="{ 'text-align': 'center' }">{{ resume === 'command' ? 'Comanda' : 'Mesa' }} sem pedidos no momento!</h3>
+  <h3 class="p-4 text-capitalize" [ngStyle]="{ 'text-align': 'center' }">{{ resume === 'command' ? 'Comanda' : 'Mesa' }} {{ translate.text().no_orders_moment }}!</h3>
 </mat-dialog-content>
 
 <mat-dialog-content *ngIf="cart?.length || cartPizza?.length" class="content" style="max-height: 35rem">
@@ -149,7 +149,7 @@
   <ng-container *ngIf="resume === 'table'">
     <hr />
     <div>
-      <p><b>Comandas</b></p>
+      <p><b>{{ translate.text().order_slip }}s</b></p>
       <span *ngFor="let command of allCommands">
         <div *ngIf="command.carts.length" class="d-flex align-items-center justify-content-between">
           <div [ngClass]="command.status === 0 ? 'cell-4' : 'cell-8'">
@@ -168,7 +168,7 @@
     <!-- TAXAS MESA -->
     <hr />
     <div>
-      <p><b>Taxas</b></p>
+      <p><b class="text-capitalize">{{ translate.text().fees }}</b></p>
       <span *ngFor="let fee of table.fees">
         <div class="d-flex align-items-center justify-content-between">
           <div class="cell-8">
@@ -186,7 +186,7 @@
     <!-- TAXAS COMANDA -->
     <hr />
     <div>
-      <p><b>Taxas</b></p>
+      <p clas="text-capitalize"><b>{{ translate.text().fees }}</b></p>
       <span *ngFor="let fee of command.fees">
         <div *ngIf="fee.status && fee.automatic" class="d-flex align-items-center justify-content-between">
           <div>

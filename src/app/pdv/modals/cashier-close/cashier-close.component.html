@@ -1,36 +1,44 @@
 <ng-container *ngIf="context.profile.options.pdv.cashierManagement">
-  <div mat-dialog-title class="d-flex align-items-center justify-content-between"
-    style="margin: -1.5rem -1.5rem 0;">
+  <div mat-dialog-title class="d-flex align-items-center justify-content-between" style="margin: -1.5rem -1.5rem 0">
     <div class="d-flex align-items-center gap-3">
-      <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close()"></fa-icon>
-      <h3 class="m-0 fs-5">Fechamento de Caixa</h3>
+      <fa-icon [icon]="faArrowLeft" style="cursor: pointer" (click)="close()"></fa-icon>
+      <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().register_closing }}</h3>
     </div>
   </div>
   <mat-dialog-content>
-    <form (submit)="closeCashier($event)" id="closeCashierForm"
-      class="d-flex flex-column align-items-center justify-content-center gap-3 my-4" style="overflow-y: auto;">
-      <fa-icon [icon]="faLock" style="font-size: 5rem;"></fa-icon>
-      <p class="fs-3 fw-bold">Confirmar o fechamento de caixa?</p>
-      <p class="fs-5 text-center">Ao realizar o fechamento, insira os seguintes valores na gaveta do seu caixa:</p>
+    <form
+      (submit)="closeCashier($event)"
+      id="closeCashierForm"
+      class="d-flex flex-column align-items-center justify-content-center gap-3 my-4"
+      style="overflow-y: auto"
+    >
+      <fa-icon [icon]="faLock" style="font-size: 5rem"></fa-icon>
+      <p class="fs-3 fw-bold text-capitalize">{{ translate.text().confirm_register_closing }}?</p>
+      <p class="fs-5 text-center text-capitalize">{{ translate.text().closing_insert_following }}:</p>
       <div class="row w-100 my-2">
         <ng-container *ngFor="let formPayment of closedValues; index as index">
-          <div *ngIf="!formPayment.flag" class="my-1 col-6" 
-          [ngStyle]="{ order: index }"
-          >
+          <div *ngIf="!formPayment.flag" class="my-1 col-6" [ngStyle]="{ order: index }">
             <div>
-              <label class="mb-2 fw-bold" style="font-size: 1.125rem;">{{ formPayment.label }}</label>
-              <input class="form-control" type="number" required [(ngModel)]="formPayment.value" [name]="formPayment.payment">
+              <label class="mb-2 fw-bold" style="font-size: 1.125rem">{{ translate.text()[formPayment.payment] }}</label>
+              <input class="form-control" type="number" required [(ngModel)]="formPayment.value" [name]="formPayment.payment" />
             </div>
           </div>
           <div *ngIf="formPayment.flag && !closedValues[index - 1].flag" class="col-12" [ngStyle]="{ order: index }"></div>
-          <div class="my-1 col-6" *ngIf="formPayment.flag" 
-          [ngClass]="!(closedValues[index - 1] && closedValues[index - 1].payment !== formPayment.payment) || index === 0 ? 'd-flex' : '' "
-          [ngStyle]="{ order: index }"
+          <div
+            class="my-1 col-6"
+            *ngIf="formPayment.flag"
+            [ngClass]="!(closedValues[index - 1] && closedValues[index - 1].payment !== formPayment.payment) || index === 0 ? 'd-flex' : ''"
+            [ngStyle]="{ order: index }"
           >
-            <label *ngIf="(closedValues[index - 1] && closedValues[index - 1].payment !== formPayment.payment) || index === 0" class="mb-2 fw-bold" style="font-size: 1.125rem;">{{ formPayment.label }}</label>
+            <label
+              *ngIf="(closedValues[index - 1] && closedValues[index - 1].payment !== formPayment.payment) || index === 0"
+              class="mb-2 fw-bold"
+              style="font-size: 1.125rem"
+              >{{ translate.text()[formPayment.payment] }}</label
+            >
             <div class="mt-auto">
-              <label class="my-1" style="font-size: 1.125rem;">{{ formPayment.flag }}</label>
-              <input class="form-control" type="number" required [(ngModel)]="formPayment.value" [name]="formPayment.payment">
+              <label class="my-1" style="font-size: 1.125rem">{{ formPayment.flag }}</label>
+              <input class="form-control" type="number" required [(ngModel)]="formPayment.value" [name]="formPayment.payment" />
             </div>
           </div>
         </ng-container>
@@ -38,9 +46,16 @@
     </form>
   </mat-dialog-content>
   <mat-dialog-actions class="justify-content-end gap-2">
-    <button type="button" class="btn btn-secondary" (click)="close()">Cancelar</button>
-    <button type="submit" id="closeCashier" form="closeCashierForm" class="btn"
-      style="color: var(--wm-white); background-color: var(--wm-green-500);">Finalizar</button>
+    <button type="button" class="btn btn-secondary text-capitalize" (click)="close()">{{ translate.text().cancel }}</button>
+    <button
+      type="submit"
+      id="closeCashier"
+      form="closeCashierForm"
+      class="btn text-capitalize"
+      style="color: var(--wm-white); background-color: var(--wm-green-500)"
+    >
+      {{ translate.text().complete }}
+    </button>
   </mat-dialog-actions>
 </ng-container>
 <ng-container *ngIf="!context.profile.options.pdv.cashierManagement">

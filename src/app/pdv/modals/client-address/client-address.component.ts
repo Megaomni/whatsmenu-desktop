@@ -6,6 +6,7 @@ import { AddressComponent } from 'src/app/address/address.component'
 import { ApiService } from 'src/app/services/api/api.service'
 import { ContextService } from 'src/app/services/context/context.service'
 import { ToastService } from 'src/app/services/ngb-toast/toast.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-client-address',
@@ -26,7 +27,8 @@ export class ClientAddressComponent {
     @Inject(MatDialogRef) private dialogRef,
     public api: ApiService,
     public context: ContextService,
-    public toastService: ToastService
+    public toastService: ToastService,
+    public translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

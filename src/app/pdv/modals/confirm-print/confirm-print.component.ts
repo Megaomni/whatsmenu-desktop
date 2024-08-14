@@ -4,6 +4,7 @@ import { ToastService } from 'ng-metro4';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ContextService } from 'src/app/services/context/context.service';
 import { PrintService } from 'src/app/services/print/print.service';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-confirm-print',
@@ -17,7 +18,8 @@ export class ConfirmPrintComponent {
     public api: ApiService,
     public context: ContextService,
     public toastService: ToastService,
-    public printService: PrintService
+    public printService: PrintService,
+    public translate: TranslateService,
   ) { }
 
   public close() {

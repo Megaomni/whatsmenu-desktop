@@ -19,6 +19,7 @@ import { ClientStoreComponent } from '../client-store/client-store.component'
 import { CartTypeComponent } from '../cart-type/cart-type.component'
 import { ProfileOptionsType } from 'src/app/client-type'
 import { ProfileType } from '../../../profile-type'
+import { TranslateService } from 'src/app/translate.service'
 
 interface CartResumeComponentData {
   packageHours: { [key: string]: Array<{ time: string; quantity: number }[]> }
@@ -62,6 +63,7 @@ export class CartResumeComponent implements OnInit, AfterViewChecked {
     @Inject(MAT_DIALOG_DATA) public data: CartResumeComponentData,
     @Inject(MatDialogRef) private dialogRef,
     public context: ContextService,
+    public translate: TranslateService,
     public cartService: CartService,
     public api: ApiService,
     public toastService: ToastService,
@@ -108,16 +110,20 @@ export class CartResumeComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (this.data.cartRequest?.type === 'P' && this.packageCalendar) {
-      this.data.cartRequest.packageDate = DateTime.fromFormat(`${this.packageCalendar} ${this.packageHour}`, 'dd-MM-yyyy HH:mm').toFormat(
-        'yyyy-MM-dd HH:mm:ss'
-      )
+      this.data.cartRequest.packageDate = DateTime.fromFormat(
+        `${this.packageCalendar} ${this.packageHour}`,
+        `${this.translate.masks().date_mask} HH:mm`
+      ).toFormat('yyyy-MM-dd HH:mm:ss')
     }
   }
 
   public close(data: { toPayment?: boolean; focusSearch?: boolean; finishCartRequest?: boolean }): void {
     this.data.cartRequest.cupomId = data.toPayment ? this.data.cartRequest.cupomId : null
     if (data.toPayment && !this.data.cart.length && !this.data.cartPizza.length) {
-      return this.toastService.show(`Carrinho Vazio!`, { classname: 'bg-warning text-black text-center pos middle-center', delay: 3000 })
+      return this.toastService.show(`${this.translate.text().cart_empty}!`, {
+        classname: 'bg-warning text-black text-center pos middle-center',
+        delay: 3000,
+      })
     }
     this.dialogRef.close({
       ...data,
@@ -246,7 +252,7 @@ export class CartResumeComponent implements OnInit, AfterViewChecked {
       if (this.cartService.cupomValue(cupom, this.data.cartRequest) < this.data.cartRequest.total) {
         this.cupom = cupom
       } else {
-        return this.toastService.show('O desconto no cupom é maior do que o valor total!', {
+        return this.toastService.show(`${this.translate.text().discount_coupon_greater_total}`, {
           classname: 'bg-danger text-white text-center pos middle-center',
           delay: 3000,
         })
@@ -255,7 +261,7 @@ export class CartResumeComponent implements OnInit, AfterViewChecked {
       if (this.data.cartRequest.total >= cupom.minValue) {
         this.cupom = cupom
       } else {
-        return this.toastService.show(`Esse cupom só pode ser usado em vendas a partir de ${this.context.currency(cupom.minValue)}`, {
+        return this.toastService.show(`${this.translate.text().coupon_only_used_purchases} ${this.context.currency(cupom.minValue)}`, {
           classname: 'bg-warning text-black text-center pos middle-center',
           delay: 3000,
         })

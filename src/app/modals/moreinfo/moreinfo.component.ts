@@ -1,6 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-moreinfo',
@@ -8,7 +9,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   styleUrls: ['./moreinfo.component.scss', '../../home/home.component.scss']
 })
 export class MoreinfoComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data, private matDialog: MatDialogRef<any>) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data, public translate: TranslateService, private matDialog: MatDialogRef<any>) {
   }
  
   close(){

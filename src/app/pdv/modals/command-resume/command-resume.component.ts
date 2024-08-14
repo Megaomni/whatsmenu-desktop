@@ -6,6 +6,7 @@ import { CartType } from 'src/app/cart-type';
 import { ApiService } from 'src/app/services/api/api.service';
 import { CartService } from 'src/app/services/cart/cart.service';
 import { ContextService } from 'src/app/services/context/context.service';
+import { TranslateService } from 'src/app/translate.service';
 import Command from 'src/classes/command';
 import Table from 'src/classes/table';
 
@@ -28,6 +29,7 @@ export class CommandResumeComponent implements OnInit {
     public context: ContextService,
     public cartService: CartService,
     public api: ApiService,
+    public translate: TranslateService,
   ) { }
 
   async ngOnInit(): Promise<void> {

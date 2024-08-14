@@ -1,12 +1,12 @@
 <div mat-dialog-title class="d-flex align-items-center justify-content-between" style="margin: -1.5rem -1.5rem 0;">
   <div class="d-flex align-items-center gap-3">
     <!-- <fa-icon *ngIf="!context.activeBartender" [icon]="faArrowLeft" style="cursor: pointer;" (click)="close($event)"></fa-icon> -->
-    <h3 class="m-1 fs-5">Usuário</h3>
+    <h3 class="m-1 fs-5 text-capitalize">{{ translate.text().user }}</h3>
   </div>
 </div>
 <mat-dialog-content class="d-flex flex-column align-items-center justify-content-center">
   <form *ngIf="bartenderId" (submit)="close($event)" class="my-4">
-    <p class="text-center fs-5 mb-3">Login Caixa</p>
+    <p class="text-center fs-5 mb-3 text-capitalize">{{ translate.text().register_login }}</p>
     <div class="d-grid d-md-flex flex-column align-items-center">
       <div class="d-flex flex-column flex-md-row justify-content-center gap-3 ">
         <select class="form-select" [(ngModel)]="bartenderId" name="bartenderId">
@@ -14,7 +14,7 @@
             <option *ngIf="bartender.controls.type !== 'default'" [value]="bartender.id">{{ bartender.name }}</option>
           </ng-container>
         </select>
-        <input class="form-control" type="password" autoComplete="off" placeholder="Senha" required
+        <input class="form-control" type="password" autoComplete="off" [placeholder]="translate.text().password" required
           [(ngModel)]="password" name="password">
       </div>
       <button class="btn btn-primary mt-2" type="submit">Ok</button>

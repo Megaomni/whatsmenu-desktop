@@ -1,7 +1,7 @@
 <div mat-dialog-title class="d-flex align-items-center justify-content-between">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close()"></fa-icon>
-    <h3 class="m-0 fs-5">Comanda: {{ context.getActiveCommand()?.name }} </h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().order_slip}}: {{ context.getActiveCommand()?.name }} </h3>
   </div>
 </div>
 <mat-dialog-content class="d-flex flex-column align-items-center justify-content-start">
@@ -9,7 +9,7 @@
     <p style="font-size: 1.125rem;">Total</p>
     <p style="font-size: 2rem; color: var(--wm-red-300);">{{ context.getActiveCommand()?.getTotalValue() | currency }}
     </p>
-    <button class="btn btn-primary" (click)="close(context.getActiveCommand())">Fazer Pagamento</button>
+    <button class="btn btn-primary text-capitalize" (click)="close(context.getActiveCommand())">{{ translate.text().make_payment}}</button>
   </div>
   <div class="overflow-auto w-100 h-100 pb-3 px-2">
     <div *ngIf="command">
@@ -17,18 +17,18 @@
       
       <details class="cart-accordion">
         <summary [ngClass]="cart.status === 'canceled' ? 'text-bg-danger' : ''">
-          <p class="m-0">Pedido: wm{{ cart.code }}-{{ cart.type }}</p>
+          <p class="m-0 text-capitalize">{{ translate.text().order }}: wm{{ cart.code }}-{{ cart.type }}</p>
           <fa-icon class="header-icon" [icon]="faChevronDown"></fa-icon>
         </summary>
         <div class="accordion-content">
           <table class="table" [ngClass]="cart.status === 'canceled' ? 'table-danger' : ''">
             <thead>
               <tr>
-                <th>Produto</th>
-                <th>Qtd.</th>
-                <th>Complementos</th>
+                <th class="text-capitalize">{{ translate.text().products }}</th>
+                <th class="text-capitalize">{{ translate.text().qty }}</th>
+                <th class="text-capitalize">{{ translate.text().add_ons }}</th>
                 <th>Obs.</th>
-                <th>Valor</th>
+                <th class="text-capitalize">{{ translate.text().value }}</th>
                 <th>Total</th>
               </tr>
             </thead>
@@ -57,11 +57,11 @@
           </table>
         </div>
         <div class="d-flex align-items-center justify-content-between" style="color: var(--wm-red-300);">
-          <button *ngIf="cart.status !== 'canceled'" class="btn btn-link" style="color: var(--wm-red-300)"
-            (click)="changeCartStatus(cart, 'canceled')">Cancelar Pedido</button>
-          <button *ngIf="cart.status === 'canceled'" class="btn btn-outline-danger"
-          (click)="changeCartStatus(cart, null)">Descancelar Pedido</button>
-          <p class="m-0" [ngStyle]="{ 'text-decoration': cart.status === 'canceled' ? 'line-through': '' }">Valor Total do Pedido: {{ cart.total | currency }}</p>
+          <button *ngIf="cart.status !== 'canceled'" class="btn btn-link text-capitalize" style="color: var(--wm-red-300)"
+            (click)="changeCartStatus(cart, 'canceled')">{{ translate.text().cancel_order }}</button>
+          <button *ngIf="cart.status === 'canceled'" class="btn btn-outline-danger text-capitalize"
+          (click)="changeCartStatus(cart, null)">{{ translate.text().uncancel_order }}</button>
+          <p class="m-0 text-capitalize" [ngStyle]="{ 'text-decoration': cart.status === 'canceled' ? 'line-through': '' }">{{ translate.text().order_amount}}: {{ cart.total | currency }}</p>
         </div>
       </details>
     </ng-container>
@@ -71,7 +71,7 @@
 
 <ng-template #complementAccordion let-complements="complements">
   <app-accordion [margin]="0" [shadow]="'none'" [border]="'none'" >
-    <p class="m-0">Qtd. {{ complements.length }} - {{cartService.sumComplements(complements) | currency }}</p>
+    <p class="m-0 text-capitalize">{{ translate.text().qty }}. {{ complements.length }} - {{cartService.sumComplements(complements) | currency }}</p>
     <ul>
       <li *ngFor="let complement of complements">
         <b>

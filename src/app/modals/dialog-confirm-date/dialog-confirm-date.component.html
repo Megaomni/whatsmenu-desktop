@@ -3,58 +3,57 @@
     <!-- <button class="dialog-close" [mat-dialog-close]="false" title="Fechar">
             <fa-icon [icon]="faArrowLeft"></fa-icon>
         </button> -->
-    {{ clientData.options.package.label2 === 'false' || !clientData.options.package.label2 ? 'Encomendas' : 'Agendamento' }}
+    {{ clientData.options.package.label2 === 'false' || !clientData.options.package.label2 ? translate.text().package_s : translate.text().scheduling }}
   </h1>
   <mat-dialog-content>
     <div class="my-3 px-3 w-100">
-      <p class="fs-5 fw-bold mb-3">Selecione uma data para entrega</p>
+      <p class="fs-5 fw-bold mb-3 text-capitalize">{{ translate.text().select_delivery_date}}</p>
       <app-calendar [dataObject]="dataToPackageCalendar" (changePackageCalendar)="updatePackageCalendar($event)"></app-calendar>
     </div>
 
     <div *ngIf="clientData.options.package.active && hoursOptionsLength" class="package-time" [ngStyle]="{ padding: '10px 0' }">
-      <p *ngIf="timeZoneDiff">
-        Indentificamos que seu fuso horário é diferente do fuso horário do estabelecimento, ao lado do horário estará o seu respectivo horário de
-        recebimento.
+      <p *ngIf="timeZoneDiff" class="text-capitalize">
+        {{ translate.text().time_zone_is_different }}.
       </p>
-      <p *ngIf="weekProfileOpen.length > 1">Escolha um horário de entrega entre os periodos</p>
+      <p *ngIf="weekProfileOpen.length > 1" class="text-capitalize">{{ translate.text().delivery_time_between }}
       <div *ngIf="weekProfileOpen.length === 1" [ngStyle]="{ padding: '10px 0' }">
-        <p>Escolha um horário de entrega para sua encomenda</p>
+        <p class="text-capitalize">{{ translate.text().delivery_time_for_order }}</p>
       </div>
     </div>
 
     <div class="dialog-profile-obs" [ngStyle]="{ 'text-align': 'center' }" *ngIf="messageDuplicate || notVacancies">
-      <h3>Observações do estabelecimento</h3>
+      <h3 class="text-capitalize">{{ translate.text().establishment_notes }}</h3>
       <div>
-        <p *ngIf="notVacancies">
-          Não temos mais vagas disponíveis para encomendas, entre em contato com nosso estabelecimento.
-          <button class="button-link" (click)="sendWhatsapp()">Fale com estabelecimento</button>
+        <p *ngIf="notVacancies" class="text-capitalize">
+          {{ translate.text().no_more_avaible_slots_for_orders }}
+          <button class="button-link text-capitalize" (click)="sendWhatsapp()">{{ translate.text().contact_establishment }}</button>
         </p>
-        <p *ngIf="messageDuplicate && !notVacancies">
-          Não temos mais vagas para encomendas no dia {{ dataDuplicate }}. Por favor, selecione outra data.
+        <p *ngIf="messageDuplicate && !notVacancies" class="text-capitalize">
+          {{ translate.text().no_slots_avaible_for_orders_on_that_day }} {{ dataDuplicate }}. {{ translate.text().please_select_another_date }}
         </p>
       </div>
     </div>
 
     <div class="dialog-profile-obs" [ngStyle]="{ 'text-align': 'center' }" *ngIf="errorType">
-      <h3>Observações do estabelecimento</h3>
+      <h3 class="text-capitalize">{{ translate.text().establishment_notes }}</h3>
       <div *ngIf="errorType === 418">
         <p>
-          {{ 'Infelizmente o horário ' + dateChoiced.toFormat('dd/MM/yyyy HH:mm') + ' está indisponível. Por favor escolher outro horário.' }}
+          {{ 'Infelizmente o horário ' + dateChoiced.toFormat( translate.masks().date_mask + 'HH:mm') + ' está indisponível. Por favor escolher outro horário.' }}
         </p>
       </div>
       <div *ngIf="errorType === 409">
         <p>
-          {{ 'Infelizmente a data ' + dateChoiced.toFormat('dd/MM/yyyy HH:mm') + ' está indisponível. Por favor escolher outra data.' }}
+          {{ 'Infelizmente a data ' + dateChoiced.toFormat(translate.masks().date_mask + 'HH:mm') + ' está indisponível. Por favor escolher outra data.' }}
         </p>
       </div>
       <div *ngIf="errorType === '403-D'">
-        <p>{{ 'A data escolhida é anterior à atual. Por gentileza, escolha outro horário.' }}</p>
+        <p class="text-capitalize">{{ translate.text().selected_date_is_earlier }}</p>
       </div>
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="bg-5 d-flex justify-content-end" style="margin-top: auto !important;" >
-    <button class="btn bg-theme float-right d-flex gap-2" [disabled]="!packageCalendar || !packageHour" (click)="!notVacancies && applyTime()">
-      Continuar
+    <button class="btn bg-theme float-right d-flex gap-2 text-capitalize" [disabled]="!packageCalendar || !packageHour" (click)="!notVacancies && applyTime()">
+      {{ translate.text().continue }}
     </button>
     <div>
       <!-- <button *ngIf="localStorageDate" class="button primary default rounded button_finish"
