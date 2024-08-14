@@ -50,9 +50,6 @@
     "App": "./app"
   },
   "devDependencies": {
-    "@whatsmenu/eslint-config": "workspace:*",
-    "@whatsmenu/prettier": "workspace:*",
-    "@whatsmenu/typescript-config": "workspace:*",
     "@faker-js/faker": "^8.4.0",
     "eslint-plugin-jsdoc": "^46.8.2",
     "nyc": "^15.1.0",
