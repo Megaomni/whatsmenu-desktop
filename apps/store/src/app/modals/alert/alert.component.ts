@@ -4,6 +4,7 @@ import { ClientType } from './../../client-type';
 import { ApiService } from '../../services/api/api.service';
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-alert',
@@ -13,7 +14,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dial
 
 export class AlertComponent implements OnInit {
 
-  title = 'Atenção!';
+  title = `${ this.translate.text().attention }`;
   message: string;
   textButton = 'OK';
   secondTextButton: string;
@@ -21,6 +22,7 @@ export class AlertComponent implements OnInit {
   clientData: ClientType;
   noReload = false;
   constructor(
+    public translate: TranslateService,
     private dialogRef: MatDialogRef<any>,
     public api: ApiService,
     @Inject(MAT_DIALOG_DATA) public data,

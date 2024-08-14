@@ -377,7 +377,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
     if (this.clientData) {
       document.body.style.setProperty('--bg-theme', this.context.Luminosity(this.clientData.color, this.viewContentAlternate === 'P').background)
       document.body.style.setProperty('--text-theme', this.context.Luminosity(this.clientData.color).color)
-      this.context.packageLabel = this.clientData.options.package.label2 ? 'Agendamento' : 'Encomenda'
+      this.context.packageLabel = this.clientData.options.package.label2 ? this.translate.text().scheduling : this.translate.text().package
       if (!this.context.isMobile && !this.table) {
         this.clientData.options.store.catalogMode?.delivery
           ? document.body.style.setProperty('--modal-content-h', '90vh')
@@ -807,7 +807,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
       if (result.targetModal === 'cart') {
         const alert = this.matDialog.open(AlertComponent, {
           data: {
-            title: 'Atenção!',
+            title: `${this.translate.text().attention}!`,
             message: result.message,
             textButton: 'Ok',
           },

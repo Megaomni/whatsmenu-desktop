@@ -2,9 +2,9 @@
   <div class="flex-grow d-flex align-items-center gap-3 px-1">
     <i class="bi bi-cash-coin text-success fs-2"></i>
     <div>
-      <p class="m-0 fw-bold">Utilizar Saldo CashBack</p>
-      <p class="m-0">
-        Saldo: <span class="text-success">{{ value | currency }}</span>
+      <p class="m-0 fw-bold text-capitalize">{{ translate.text().use_cashback }}</p>
+      <p class="m-0 text-capitalize">
+        {{ translate.text().balance }}: <span class="text-success">{{ value | currency }}</span>
       </p>
     </div>
   </div>

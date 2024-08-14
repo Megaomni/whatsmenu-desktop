@@ -10,6 +10,7 @@ import { PizzaFlavorType, PizzaProductType } from 'src/app/pizza-product-type'
 import { CartItem, CartRequestType } from 'src/app/cart-request-type'
 import { AlertComponent } from '../alert/alert.component'
 import { ComplementType } from 'src/app/product-type'
+import { TranslateService } from 'src/app/translate.service'
 import { TableType } from 'src/app/table-type'
 declare const fbq: any
 
@@ -61,6 +62,7 @@ export class PizzaComponent implements OnInit, AfterContentChecked {
 
   constructor(
     public dialogRef: MatDialogRef<any>,
+    public translate: TranslateService,
     public api: ApiService,
     public cartService: CartService,
     public contextService: ContextService,
@@ -183,21 +185,21 @@ export class PizzaComponent implements OnInit, AfterContentChecked {
     if (this.confirmPizzaButton) {
       if (this.contextService.profile.options.inventoryControl && !this.data.pizza.bypass_amount && this.data.pizza.amount < this.pizza.quantity) {
         this.confirmPizzaButton.nativeElement.disabled = true
-        return 'Quantidade indisponível'
+        return this.translate.text().quantity_unavaible
       }
       switch (this.step) {
         case 'flavors':
           if (!this.pizza.details.flavors[this.nav?.activeId - 1]) {
             this.confirmPizzaButton.nativeElement.disabled = true
-            return 'Escolha um Sabor'
+            return this.translate.text().choose_flavor_comment
           }
           if (this.data.flavorsCount > this.nav?.activeId) {
             this.confirmPizzaButton.nativeElement.disabled = false
-            return 'Próximo Sabor'
+            return this.translate.text().next_flavor_comment
           }
         default:
           this.confirmPizzaButton.nativeElement.disabled = false
-          return 'Próximo'
+          return this.translate.text().next
       }
     }
   }
@@ -206,17 +208,20 @@ export class PizzaComponent implements OnInit, AfterContentChecked {
     let messages = ''
     switch (messageType) {
       case 'required':
-        messages = '<h2>Complete os complementos:</h2><ul style="list-style: none;">'
+        messages = `<h2>${this.translate.text().complete_toppings_comment}:</h2><ul style="list-style: none;">`
         complements.forEach((c) => (messages += `<li><b>${c.name}:</b> mínimo ${c.min} ${c.min === 1 ? 'item' : 'itens'}</li>`))
         break
       case 'soldOut':
-        messages = '<h2>Complementos sem estoque:</h2><ul style="list-style: none;">'
+        messages = `<h2>${this.translate.text().out_stock_toppings_comment}:</h2><ul style="list-style: none;">`
         complements.forEach(
           (c) =>
             (messages += `<li><b>${c.name}:</b> <ul class="px-2">${c.itens
               .filter((item) => !item.bypass_amount && item.amount < item.quantity)
               .map(
-                (item) => `<li class="d-flex justify-content-between"><span>${item.name}:</span><span>Em estoque: ${item.amount}</span> </li>`
+                (item) =>
+                  `<li class="d-flex justify-content-between"><span>${item.name}:</span><span>${this.translate.text().in_stock_comment}: ${
+                    item.amount
+                  }</span> </li>`
               )}</ul> </li>`)
         )
         break
@@ -325,7 +330,7 @@ export class PizzaComponent implements OnInit, AfterContentChecked {
     if (this.contextService.profile.options.tracking && this.contextService.profile.options.tracking.pixel) {
       fbq('track', 'AddToCart', {
         content_name: `Pizza ${this.data.sizeName} ${this.data.flavorsCount} ${
-          this.data.flavorsCount === 1 ? 'Sabor' : 'Sabores'
+          this.data.flavorsCount === 1 ? this.translate.text().flavor_comment : this.translate.text().flavors_comment
         } (${this.pizza.details.flavors.map((flavor) => flavor.name)})`,
         content_category: this.contextService.profile.categories.find((c) => c.id === this.data.pizza.categoryId).name,
         content_ids: [this.pizza.pizzaId],

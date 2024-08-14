@@ -67,18 +67,20 @@
             <fa-icon [icon]="faArrowLeft" (click)="closeTable()" class="px-4" style="font-size: 1.25rem; font-weight: bold; cursor: pointer">
             </fa-icon>
             <p style="color: var(--primary); background: white; margin: auto 0; padding-left: 0; font-size: 1rem; font-weight: bold">
-              Mesa: {{ table.name }}
+              {{ translate.text().table }}: {{ table.name }}
             </p>
           </div>
           <div class="d-flex" style="gap: 0.25rem; padding: 0.75rem 0.75rem 0">
-            <button (click)="tabView = 'order'" class="button-tab" [ngClass]="tabView === 'order' ? 'active' : ''">Pedido</button>
+            <button (click)="tabView = 'order'" class="button-tab" [ngClass]="tabView === 'order' ? 'active' : ''">
+              {{ translate.text().order }}
+            </button>
             <button
               (click)="tabView = 'resume'"
-              class="button-tab"
+              class="button-tab text-capitalize"
               [ngClass]="tabView === 'resume' ? 'active' : ''"
               [disabled]="!table?.haveRequests()"
             >
-              Resumo
+              {{ translate.text().summary }}
             </button>
           </div>
         </div>
@@ -106,7 +108,7 @@
                   id="newCommandInputKeyboard"
                   autofocus
                   class="text-center"
-                  placeholder="Nova Comanda"
+                  [placeholder]="translate.text().new_order"
                   matInput
                   name="newCommand"
                   [(ngModel)]="newCommand"
@@ -142,7 +144,7 @@
                 class="primary-button clear-cart"
                 [ngStyle]="{ fontSize: tablesColumns <= 4 ? '0.75rem' : '1.25rem' }"
               >
-                Cancelar
+                {{ translate.text().cancel }}
               </button>
               <button
                 *ngIf="newCommandInput || isEmptyCommand()"
@@ -151,7 +153,7 @@
                 class="primary-button request-cart"
                 [ngStyle]="{ fontSize: tablesColumns <= 4 ? '0.75rem' : '1.25rem' }"
               >
-                Salvar
+                {{ translate.text().save }}
               </button>
             </div>
             <fa-icon
@@ -183,7 +185,9 @@
                       <div class="w-100">
                         <input
                           type="search"
-                          [placeholder]="tagFilterSearch === 'default' ? 'Buscar por nome' : 'Buscar por sabor'"
+                          [placeholder]="
+                            tagFilterSearch === 'default' ? translate.text().search_name_comment : translate.text().search_flavor_comment
+                          "
                           data-role="input"
                           data-clear-button="true"
                           id="bartenderSearchInput"
@@ -209,7 +213,7 @@
                       style="border: 1px solid gainsboro; background-color: white; color: gray; border-radius: 6px"
                     >
                       <select [value]="tagFilterSearch" [(ngModel)]="tagFilterSearch" style="font-size: 1rem">
-                        <option [value]="'default'">Padrão</option>
+                        <option [value]="'default'">{{ translate.text().standard }}</option>
                         <option [value]="'pizza'">Pizzas</option>
                       </select>
                       <mat-icon>keyboard_arrow_down</mat-icon>
@@ -234,8 +238,8 @@
                   padding: 1rem;
                 "
               >
-                <p>Nenhuma categoria disponível para pedidos do tipo mesa no momento.</p>
-                <p>Verifique no painel de administrador se as categorias estão ativas e disponíveis para pedidos de tipo mesa.</p>
+                <p>{{ translate.text().no_categories_available_at_moment }}</p>
+                <p>{{ translate.text().check_admin_panel_categories_active }}</p>
               </div>
               <div style="overflow-y: hidden" class="no-scroll-bar">
                 <div
@@ -294,7 +298,7 @@
                       <mat-panel-description
                         style="justify-content: space-between; gap: 0.5rem; padding: 0.625rem 0; font-size: 1.5rem; color: var(--red)"
                       >
-                        <div>{{ cart.length + cartPizza.length }} {{ cart.length + cartPizza.length > 1 ? 'Itens' : 'Item' }}</div>
+                        <div>{{ cart.length + cartPizza.length }} {{ cart.length + cartPizza.length > 1 ? translate.text().items : 'Item' }}</div>
                         <div>
                           <div class="mif-shopping-basket mif-2x"></div>
                           <!-- <span style="line-height: 130%;">{{ currency(cartService.totalCartValue(cart, cartPizza))}}</span> -->
@@ -302,7 +306,7 @@
                       </mat-panel-description>
                     </mat-expansion-panel-header>
                     <div style="max-height: 40vh; overflow-y: scroll" class="no-scroll-bar">
-                      <h2 *ngIf="!cart.length && !cartPizza.length" class="text-normal text-center">Carrinho Vazio</h2>
+                      <h2 *ngIf="!cart.length && !cartPizza.length" class="text-normal text-center">{{ translate.text().cart_empty }}</h2>
                       <div *ngIf="cart.length || cartPizza.length" style="flex-grow: 1" class="no-scroll-bar">
                         <ul>
                           <li *ngFor="let pizza of cartPizza; index as index; trackBy: trackBy" style="margin-block: 0.5rem">
@@ -395,7 +399,9 @@
                                 <div [ngClass]="complement.min > 0 ? 'minQuantity' : ''" class="d-flex flex-justify-between flex-align-center">
                                   <span>{{ complement.name }}</span>
                                 </div>
-                                <p *ngIf="complement.min > 0" class="text-small p-0 m-0">Quantidade mínima: {{ complement.min }}</p>
+                                <p *ngIf="complement.min > 0" class="text-small p-0 m-0">
+                                  {{ translate.text().minimum_quantity }}: {{ complement.min }}
+                                </p>
                               </h4>
                               <ul class="px-0">
                                 <li *ngFor="let item of complement.itens; index as index; trackBy: trackBy" class="d-flex flex-justify-between">
@@ -410,14 +416,16 @@
                       </div>
                     </div>
                     <mat-action-row class="d-flex flex-justify-between" style="padding: 1rem">
-                      <button mat-button class="primary-button clear-cart" (click)="this.cart = []; this.cartPizza = []">Limpar</button>
+                      <button mat-button class="primary-button clear-cart text-capitalize" (click)="this.cart = []; this.cartPizza = []">
+                        {{ translate.text().clear }}
+                      </button>
                       <button
                         mat-button
-                        class="primary-button request-cart"
+                        class="primary-button request-cart text-capitalize"
                         (click)="sendRequestToADM()"
                         [disabled]="!this.cart.length && !this.cartPizza.length"
                       >
-                        Pedir
+                        {{ translate.text().order_buy }}
                       </button>
                     </mat-action-row>
                   </mat-expansion-panel>
@@ -440,7 +448,8 @@
                   <p class="d-flex flex-justify-between w-100" style="font-size: 1.125rem; color: var(--legend-color)">
                     <span style="flex-basis: 100%">WM{{ request.code }}-T</span>
                     <span style="flex-basis: 100%; color: gray; text-align: end"
-                      >Pedido por {{ request.bartenderId ? getBartender(request.bartenderId).name : 'Cliente' }} <br />
+                      >{{ translate.text().order_by }} {{ request.bartenderId ? getBartender(request.bartenderId).name : translate.text().client }}
+                      <br />
                       <span style="font-size: 0.85rem">{{ diffTime(request.created_at) }}</span></span
                     >
                   </p>
@@ -467,7 +476,7 @@
                       style="background-color: var(--red); margin-bottom: 0.75rem; font-size: 0.75rem"
                       (click)="cancelRequest(request.id, command.id)"
                     >
-                      Cancelar Pedido
+                      {{ translate.text().cancel_order }}
                     </button>
                   </div>
                 </div>

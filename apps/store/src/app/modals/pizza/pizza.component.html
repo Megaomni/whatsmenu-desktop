@@ -3,9 +3,16 @@
     <button class="button-icon">
       <fa-icon [icon]="faArrowLeft" (click)="previousStep()"></fa-icon>
     </button>
-    Escolha {{ step === 'flavors' ? 'os Sabores' : step === 'implementations' ? 'as Bordas' : 'os Complementos' }}
+    {{ translate.text().choose }}
+    {{
+      step === 'flavors'
+        ? translate.text().the_flavors_comment
+        : step === 'implementations'
+        ? translate.text().the_crust_comment
+        : translate.text().the_toppings_comment
+    }}
   </div>
-  <mat-dialog-content class="flex-fill" style=" overflow-y: auto">
+  <mat-dialog-content class="flex-fill" style="overflow-y: auto">
     <section class="tabsProducts">
       <div class="col-md-12">
         <div class="hr-nav-1">
@@ -14,7 +21,13 @@
               <div style="overflow: auto; position: sticky; top: 0; z-index: 99999" class="bg-white">
                 <div class="input-group p-2" style="overflow: auto; position: sticky; top: 0; z-index: 99999">
                   <span class="input-group-text bg-1 border border-opacity-10" id="basic-addon1"><fa-icon [icon]="faSearch"></fa-icon></span>
-                  <input type="text" class="form-control" placeholder="Buscar sabores" [(ngModel)]="filter" (change)="(filterFlavors)" />
+                  <input
+                    type="text"
+                    class="form-control"
+                    [placeholder]="translate.text().search_flavor_comment"
+                    [(ngModel)]="filter"
+                    (change)="(filterFlavors)"
+                  />
                 </div>
                 <ul ngbNav #nav="ngbNav" class="nav-container no-scroll-bar flex-nowrap pb-0 bg-white" id="flavor-navbar">
                   <li
@@ -40,12 +53,23 @@
                               <div id="title">
                                 <div class="d-flex align-items-center">
                                   <div>
-                                    <h5 class="mb-0 ms-2" style="scroll-margin-top: 120px" id="pizzaAnchor{{ currentFlavorIndex + 1 }}">
-                                      {{ 'Escolha o ' + (pizza.details.flavors.length > 1 ? currentFlavorIndex + 1 + 'º Sabor' : 'seu sabor') }}
+                                    <h5
+                                      class="mb-0 ms-2 text-capitalize"
+                                      style="scroll-margin-top: 120px"
+                                      id="pizzaAnchor{{ currentFlavorIndex + 1 }}"
+                                    >
+                                      {{
+                                        translate.text().choose_the_o +
+                                          (pizza.details.flavors.length > 1
+                                            ? currentFlavorIndex + 1 + translate.text().flavor
+                                            : translate.text().your_flavor)
+                                      }}
                                     </h5>
                                   </div>
                                   <div class="ms-auto py-2 me-2 col-auto">
-                                    <span class="badge text-bg-danger"><span class="small">OBRIGATÓRIO</span></span>
+                                    <span class="badge text-bg-danger"
+                                      ><span class="small text-uppercase">{{ translate.text().obrigatory }}</span></span
+                                    >
                                   </div>
                                 </div>
                               </div>
@@ -92,7 +116,7 @@
                                         *ngIf="!cartService.checkInventoryDisponibility({ item: filteredFlavor })"
                                         style="color: var(--red)"
                                         class="fw-500"
-                                        >INDISPONÍVEL</span
+                                        >{{ translate.text().unavilable }}</span
                                       >
                                     </div>
                                   </label>
@@ -116,7 +140,7 @@
                   class="border-0 px-1"
                   *ngIf="!contextService.profile.options.pizza.multipleBorders"
                 >
-                  <a ngbNavLink class="nav-item px-1">Borda Única</a>
+                  <a ngbNavLink class="text-capitalize nav-item px-1">{{ translate.text().single_crust }}</a>
                   <ng-template ngbNavContent>
                     <ng-container *ngTemplateOutlet="implementationsList; context: { implementations: pizza.details.implementations }"></ng-container>
                   </ng-template>
@@ -156,7 +180,7 @@
                   id="singleComplement"
                   class="border-0 px-1"
                 >
-                  <a ngbNavLink class="nav-item px-1">Complementos</a>
+                  <a ngbNavLink class="text-capitalize nav-item px-1">{{ translate.text().add_ons }}</a>
                   <ng-template ngbNavContent>
                     <ng-container *ngTemplateOutlet="complementsList; context: { complements: pizza.details.complements }"></ng-container>
                   </ng-template>
@@ -193,10 +217,11 @@
     </section>
   </mat-dialog-content>
 
-  <mat-dialog-actions class="bg-5"  
-  *ngIf="!data.table ? !contextService.profile.options.store.catalogMode?.delivery : !contextService.profile.options.store.catalogMode?.table"
+  <mat-dialog-actions
+    class="bg-5"
+    *ngIf="!data.table ? !contextService.profile.options.store.catalogMode?.delivery : !contextService.profile.options.store.catalogMode?.table"
   >
-    <label for="">Observações</label>
+    <label class="text-capitalize" for="">{{ translate.text().obs }}</label>
     <textarea
       [(ngModel)]="pizza.obs"
       class="form-control"
@@ -236,23 +261,30 @@
                 <h5 class="mb-0 ms-2">
                   {{
                     data.flavorsCount === 1
-                      ? 'Escolha a borda'
+                      ? translate.text().choose_crust_comment
                       : contextService.profile.options.pizza.multipleBorders
-                      ? 'Escolha a ' + (currentFlavorIndex + 1) + 'ª Borda'
-                      : 'Escolha a Borda Única'
+                      ? translate.text().choose_the + (currentFlavorIndex + 1) + translate.text().crust
+                      : translate.text().choose_single_crust
                   }}
                 </h5>
               </div>
               <div class="ms-auto py-2 me-2 col-auto">
-                <span class="badge text-bg-danger"><span class="small">OBRIGATÓRIO</span></span>
+                <span class="badge text-bg-danger"
+                  ><span class="text-uppercase small">{{ translate.text().obrigatory }}</span></span
+                >
               </div>
             </div>
           </div>
           <ul class="list-group list-group-flush">
-            <li *ngIf="!contextService.profile.options.pizza.hideBorderNone"  class="d-flex flex-justify-start pt-6 mb-6 list-group-item" [ngStyle]="{ position: 'relative' }" class="list-group-item">
+            <li
+              *ngIf="!contextService.profile.options.pizza.hideBorderNone"
+              class="d-flex flex-justify-start pt-6 mb-6 list-group-item"
+              [ngStyle]="{ position: 'relative' }"
+              class="list-group-item"
+            >
               <label class="d-flex align-items-center">
                 <div>
-                  <p class="optionTitle mb-0">Borda sem Recheio</p>
+                  <p class="text-capitalize optionTitle mb-0">{{ translate.text().crust_without_filling }}</p>
                   <p class="small mt-n1 mb-0 fst-italic lh-sm color-text"></p>
                   <div class="text-danger small mt-n1 fw-500">
                     <b>+{{ 0 | currency }}</b>
@@ -290,8 +322,8 @@
                     <span
                       *ngIf="!cartService.checkInventoryDisponibility({ item: implementation, typeCheck: 'greater' })"
                       style="color: var(--red)"
-                      class="fw-500"
-                      >INDISPONÍVEL</span
+                      class="fw-500 text-uppercase"
+                      >{{ translate.text().unavilable }}</span
                     >
                     <div *ngIf="implementation.status" class="form-check me-3">
                       <input
@@ -327,9 +359,15 @@
                   </div>
                   <div class="ms-auto py-2 me-2 col-auto">
                     <div [ngSwitch]="complement.required">
-                      <span class="badge text-bg-danger" *ngSwitchCase="1"><span class="small">OBRIGATÓRIO</span></span>
-                      <span class="badge text-bg-success" *ngSwitchCase="0"><span class="small">OPCIONAL</span></span>
-                      <span class="badge text-bg-success" *ngSwitchDefault=""><span class="small">OPCIONAL</span></span>
+                      <span class="badge text-bg-danger" *ngSwitchCase="1"
+                        ><span class="small text-uppercase">{{ translate.text().obrigatory }}</span></span
+                      >
+                      <span class="badge text-bg-success" *ngSwitchCase="0"
+                        ><span class="small text-uppercase">{{ translate.text().optional }}</span></span
+                      >
+                      <span class="badge text-bg-success" *ngSwitchDefault=""
+                        ><span class="small text-uppercase">{{ translate.text().optional }}</span></span
+                      >
                     </div>
                   </div>
                 </div>
@@ -350,8 +388,11 @@
                       </div>
                     </div>
                     <div class="ms-auto py-2 col-auto ps-0">
-                      <span *ngIf="!cartService.checkInventoryDisponibility({ item, typeCheck: 'greater' })" style="color: var(--red)" class="fw-500"
-                        >INDISPONÍVEL</span
+                      <span
+                        *ngIf="!cartService.checkInventoryDisponibility({ item, typeCheck: 'greater' })"
+                        style="color: var(--red)"
+                        class="text-uppercase fw-500"
+                        >{{ translate.text().unavilable }}</span
                       >
                       <div *ngIf="item.status" class="quantityFooter">
                         <div class="complement d-flex">

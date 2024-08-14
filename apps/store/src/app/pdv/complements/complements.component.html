@@ -3,12 +3,12 @@
     <div [ngClass]="" class="d-flex justify-content-between align-items-center">
       <h4 class="info-complementName">{{ complement.name }}</h4>
       <small [ngStyle]="{ visibility: complement.required ? 'visible' : 'hidden' }">
-        <span class="badge bg-danger p-2 rounded">Obrigatório</span>
+        <span class="badge bg-danger p-2 rounded text-capitalize">{{ translate.text().obrigatory }}</span>
       </small>
     </div>
   </h4>
-  <p class="my-2">Quantidade mínima: {{ complement.min }}</p>
-  <p class="my-2">Quantidade máxima: {{ complement.max }}</p>
+  <p class="my-2 text-capitalize">{{ translate.text().minimum_quantity }}: {{ complement.min }}</p>
+  <p class="my-2 text-capitalize">{{ translate.text().maximum_quantity }}: {{ complement.max }}</p>
   <ul class="complementList mt-3">
     <ng-container *ngFor="let item of complement.itens; index as index; trackBy: trackBy">
       <li class="itemComplement">
@@ -39,7 +39,7 @@
             >
             </fa-icon>
           </span>
-          <span *ngIf="!item.status" style="color: var(--red)">INDISPONÍVEL</span>
+          <span *ngIf="!item.status" style="color: var(--red) text-uppercase">{{ translate.text().unavilable }}</span>
         </div>
       </li>
     </ng-container>
