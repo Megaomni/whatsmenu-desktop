@@ -1,5 +1,4 @@
 import React from 'react'
-
 import {
   Row,
   Col,
@@ -13,21 +12,21 @@ import { useTranslation } from 'react-i18next'
 import { t } from 'i18next'
 import Image from 'next/image'
 import Link from 'next/link'
+
 export default function Integrations() {
   return (
     <Container>
       <Card>
         <CardHeader>
           <h2 className="fs-5 fw-semibold text-start text-black">
-            {' '}
-            Integrações{' '}
+            {t('integrations')}
           </h2>
         </CardHeader>
         <CardBody className="color-white w-100 h-75 flex-shrink-0 p-4">
           <Row>
             <Col md className="d-flex gap-3">
               <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
-                Pagamentos Online
+                {t('online_payment_s')}
               </h4>
               <div
                 className="vr mt-4"
@@ -39,11 +38,8 @@ export default function Integrations() {
           <Row>
             <Col>
               <p className="fs-6 lh-base mt-2 text-black">
-                Evite golpes, erros e atrasos tendo que verificar comprovantes
-                no app do banco, o pedido chega no painel e o pagamento com
-                segurança direto na sua conta.
+                {t('online_payment_description')}
               </p>
-
               <Row className="mt-4">
                 <Col md={3} className="text-center">
                   <Link href="/dashboard/profile#forms-payment">
@@ -61,11 +57,11 @@ export default function Integrations() {
                       </Card.Body>
                     </div>
                     <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
-                      Crédito Online
+                      {t('credit_online')}
                     </Card.Text>
                   </Link>
                 </Col>
-                <Col md={3} className="text-center">
+                {/* <Col md={3} className="text-center">
                   <div
                     className="d-flex justify-content-center align-items-center w-100 h-50 mt-2 border border-2 border-opacity-50"
                     style={{ borderRadius: '15px' }}
@@ -82,7 +78,7 @@ export default function Integrations() {
                   <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
                     PIX automatizado no seu banco favorito
                   </Card.Text>
-                </Col>
+                </Col> */}
               </Row>
             </Col>
           </Row>
@@ -93,7 +89,7 @@ export default function Integrations() {
         <Row>
           <Col className="d-flex gap-3">
             <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
-              Emissor de NFe e NFCe
+              {t('fiscal_note_issuer')}
             </h4>
             <div
               className="vr mt-4 "
@@ -105,9 +101,7 @@ export default function Integrations() {
         <Row>
           <Col className="mt-3">
             <p className="fs-6 lh-base text-black">
-              Chega de perder tempo lançando notas fiscais na mão, Defina
-              automações e configure limites de acordo com o seu enquadramento
-              CNPJ.
+              {t('fiscal_note_issuer_description')}
             </p>
             <Row className="mt-4">
               <Col md={3} className="text-center">
@@ -125,7 +119,7 @@ export default function Integrations() {
                   </Card.Body>
                 </div>
                 <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
-                  Emissão e Gestão Automática de Notas Fiscais
+                  {t('grove_nfe_description')}
                 </Card.Text>
               </Col>
             </Row>

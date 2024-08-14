@@ -1102,5 +1102,13 @@
   "password_recovery_token": "Token de recuperação de senha expirado ou ínvalido",
   "use_printer": "Usar Impressora",
   "enable_stock_control": "Habilitar Controle de Estoque",
-  "layout_options": "Opções de Layout"
+  "layout_options": "Opções de Layout",
+  "integrations": "Integrações",
+  "online_payment_s": "Pagamentos Online",
+  "online_payment_description": "Evite golpes, erros e atrasos tendo que verificar comprovantes no app do banco, o pedido chega no painel e o pagamento com segurança direto na sua conta.",
+  "credit_online": "Crédito Online",
+  "fiscal_note_issuer": "Emissor de NFe e NFCe",
+  "fiscal_note_issuer_description": "Chega de perder tempo lançando notas fiscais na mão, Defina automações e configure limites de acordo com o seu enquadramento CNPJ.",
+  "grove_nfe_description": "Emissão e Gestão Automática de Notas Fiscais",
+  "automation_of_nfe": "Automação de Notas Ficais"
 }

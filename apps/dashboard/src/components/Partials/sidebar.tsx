@@ -160,8 +160,7 @@ export function Sidebar() {
                     window.innerWidth < 1020 && setShowSidebar(false)
                   }}
                 >
-                
-                  <span>Automação de Notas Ficais</span>
+                  <span>{t('automation_of_nfe')}</span>
                   <span className="badge bg-danger ms-3 inline">
                     {t('new')}
                   </span>
@@ -176,8 +175,7 @@ export function Sidebar() {
                     window.innerWidth < 1020 && setShowSidebar(false)
                   }}
                 >
-                
-                  <span>Integrações</span>
+                  <span>{t('integrations')}</span>
                   <span className="badge bg-danger ms-3 inline">
                     {t('new')}
                   </span>
