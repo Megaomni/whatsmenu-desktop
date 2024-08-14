@@ -59,6 +59,7 @@ import { CartService } from '../services/cart/cart.service'
 import { ComponentService } from '../services/components/component.service'
 import { ContextService } from '../services/context/context.service'
 import { TranslateService } from '../translate.service'
+import { I18n } from '../services/ngb-datepicker/ngb-datepicker.service'
 
 declare const fbq: any
 
@@ -1931,7 +1932,14 @@ export class HomeComponent implements OnInit, AfterViewChecked {
   }
 
   public formatPhone(phone: string): string {
-    return `(${phone.substring(2, 4)}) ${phone.substring(4, 9)}-${phone.substring(9, 15)}`
+    switch (this.translate.language()) {
+      case 'pt-BR': {
+        return `(${phone.substring(2, 4)}) ${phone.substring(4, 9)}-${phone.substring(9, 15)}`
+      }
+      case 'en-US': {
+        return `(${phone.substring(0, 3)}) ${phone.substring(3, 6)}-${phone.substring(6, 10)}`
+      }
+    }
   }
 
   public clearSearchFilter() {

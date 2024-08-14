@@ -69,7 +69,7 @@ export function ProfileOpeningHours() {
       await apiRoute('/dashboard/profile/fuso', session, 'PATCH', body)
       handleShowToast({
         type: 'success',
-        content: `Fuso horário alterado com sucesso`,
+        content: `${t('time_zone_successfully_changed')}`,
         title: 'Fuso horário',
       })
     } catch (error) {
