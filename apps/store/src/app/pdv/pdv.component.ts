@@ -19,7 +19,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap'
 import { formatDistanceToNow } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { DateTime } from 'luxon'
 import Command from 'src/classes/command'
 import Table, { TableOpened } from 'src/classes/table'
@@ -53,6 +52,7 @@ import { ProfileOptionsType } from '../profile-type'
 import { Observable } from 'rxjs'
 import { CustomerType } from '../customer-type'
 import { TranslateService } from '../translate.service'
+import { enUS, ptBR } from 'date-fns/locale'
 // import { encodeTextURL } from '../../utils/wm-functions'
 
 @Component({
@@ -1143,10 +1143,23 @@ export class PdvComponent implements OnInit, AfterViewChecked {
     return item.id
   }
 
+  // Mapeamento das linguagens para as locales do date-fns
+  localeMap = {
+    'en-US': enUS,
+    'pt-BR': ptBR,
+  }
+
+  // Função para obter a locale com base na linguagem do usuário
+  getCurrentLocale = () => {
+    const userLocale = this.context.profile?.options.locale?.language
+    return this.localeMap[userLocale] || enUS
+  }
+
   /** Retorna a diferença de tempo da data passada */
   public diffTime(time: string): string {
+    const locale = this.getCurrentLocale()
     return formatDistanceToNow(new Date(time), {
-      locale: ptBR,
+      locale: locale,
       addSuffix: true,
     })
   }

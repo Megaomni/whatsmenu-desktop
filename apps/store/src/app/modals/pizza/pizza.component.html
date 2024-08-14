@@ -8,8 +8,8 @@
       step === 'flavors'
         ? translate.text().the_flavors_comment
         : step === 'implementations'
-        ? translate.text().the_crust_comment
-        : translate.text().the_toppings_comment
+          ? translate.text().the_crust_comment
+          : translate.text().the_toppings_comment
     }}
   </div>
   <mat-dialog-content class="flex-fill" style="overflow-y: auto">
@@ -42,7 +42,11 @@
                       {{
                         pizza.details.flavors[currentFlavorIndex]?.name
                           ? pizza.details.flavors[currentFlavorIndex]?.name
-                          : 'Escolha o ' + (pizza.details.flavors.length > 1 ? currentFlavorIndex + 1 + 'º Sabor' : 'seu sabor')
+                          : translate.text().choose_the_o +
+                            ' ' +
+                            (pizza.details.flavors.length > 1
+                              ? currentFlavorIndex + 1 + 'º ' + translate.text().flavor
+                              : translate.text().your_flavor)
                       }}
                     </a>
                     <ng-template ngbNavContent>
@@ -60,8 +64,9 @@
                                     >
                                       {{
                                         translate.text().choose_the_o +
+                                          ' ' +
                                           (pizza.details.flavors.length > 1
-                                            ? currentFlavorIndex + 1 + translate.text().flavor
+                                            ? currentFlavorIndex + 1 + 'º ' + translate.text().flavor
                                             : translate.text().your_flavor)
                                       }}
                                     </h5>
@@ -263,8 +268,8 @@
                     data.flavorsCount === 1
                       ? translate.text().choose_crust_comment
                       : contextService.profile.options.pizza.multipleBorders
-                      ? translate.text().choose_the + (currentFlavorIndex + 1) + translate.text().crust
-                      : translate.text().choose_single_crust
+                        ? translate.text().choose_the + (currentFlavorIndex + 1) + translate.text().crust
+                        : translate.text().choose_single_crust
                   }}
                 </h5>
               </div>

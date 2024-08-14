@@ -14,7 +14,7 @@
             <p class="small mb-2 text-capitalize">{{ translate.text().order_will_be_delivered }}:</p>
             <p class="fs-4 fw-bold mb-0 mt-n3">{{ this.customer.name }}</p>
             <p class="small mt-n3 text-black">
-              <span>{{ this.customer.whatsapp | mask : translate.masks().cell }}</span>
+              <span>{{ this.customer.whatsapp | mask: translate.masks().cell }}</span>
             </p>
           </div>
           <div>
@@ -44,6 +44,7 @@
                         <span class="badge text-bg-success ms-2" *ngIf="cupom && cupom.type === 'freight'"
                           ><span class="small text-uppercase">{{ translate.text().free }}</span></span
                         >
+                        {{ translate.text().delivery }}
                       </div>
                       <span class="optionDescr" *ngIf="taxDeliveryValue > 0"
                         ><span class="text-captalize">{{ translate.text().delivery }}:</span>
