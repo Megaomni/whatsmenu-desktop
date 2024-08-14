@@ -1,0 +1,1 @@
+../../../config/scripts/adonis-legacy/dev.sh

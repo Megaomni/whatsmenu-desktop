@@ -1,4 +1,13 @@
 #!/bin/bash
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm install
+nvm use
+
+npm install -g @angular/cli@15.2.1
+
+ng build -c='production'
 
 # Define o diretório de origem e de destino
 diretorio_origem="./dist/whatsmenu"
