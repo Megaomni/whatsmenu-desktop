@@ -115,6 +115,8 @@ const nextConfig = {
     WS_SOCKET_API: process.env.WS_SOCKET_API,
     PAGARME_PUBLIC_KEY: process.env.NEXT_PUBLIC_PAGARME_KEY,
     ASAAS_DASHBOARD_URL: process.env.ASAAS_DASHBOARD_URL,
+    GROVE_NFE_URL: process.env.GROVE_NFE_ENDPOINT,
+    GROVE_NFE_TOKEN: process.env.GROVE_NFE_TOKEN,
   },
   i18n,
   // webpack5: true,
