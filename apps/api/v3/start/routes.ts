@@ -20,9 +20,6 @@ import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
-const GroveNfeInvoicesController = () => import('#controllers/grove_nfe_invoices_controller')
-const GroveNfeFiscalNotesController = () => import('#controllers/grove_nfe_fiscal_notes_controller')
-const GroveNfeCompaniesController = () => import('#controllers/grove_nfe_companies_controller')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -80,45 +77,6 @@ router
         router.delete('/:id', [CuponsController, 'delete'])
       })
       .prefix('cupons')
-
-    //INTEGRATIONS
-    router
-      .group(() => {
-        // GROVENFE
-        router
-          .group(() => {
-            // COMPANIES
-            router
-              .group(() => {
-                router.post('/', [GroveNfeCompaniesController, 'create'])
-                router.put('/', [GroveNfeCompaniesController, 'update'])
-                router.get('/:id', [GroveNfeCompaniesController, 'show'])
-                router.delete('/:id', [GroveNfeCompaniesController, 'delete'])
-                router.get('/', [GroveNfeCompaniesController, 'showAllCompanies'])
-              })
-              .prefix('companies')
-
-            //FISCAL NOTES
-            router
-              .group(() => {
-                router.post('/create/:company_id', [GroveNfeFiscalNotesController, 'create'])
-                router.get('/:id', [GroveNfeFiscalNotesController, 'show'])
-                router.delete('/:id', [GroveNfeFiscalNotesController, 'cancel'])
-                router.post('/disenable/:id', [GroveNfeFiscalNotesController, 'disenableNFCe'])
-                router.post('email/:id', [GroveNfeFiscalNotesController, 'SendCopyForEmail'])
-                router.get('/showAll/:comapny_id', [GroveNfeFiscalNotesController, 'showAll'])
-              })
-              .prefix('fiscal-notes')
-
-            // INVOICES
-            router.group(() => {
-              router.get('/list/:company_id', [GroveNfeInvoicesController, 'list'])
-              router.get('/:id', [GroveNfeInvoicesController, 'show'])
-            })
-          })
-          .prefix('grovenfe')
-      })
-      .prefix('integrations')
 
     // VOUCHER
     router
