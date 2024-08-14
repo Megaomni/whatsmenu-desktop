@@ -4,14 +4,14 @@
 const Schema = use('Schema')
 
 class PizzaProductsSchema extends Schema {
-  up () {
+  up() {
     this.table('pizza_products', (table) => {
       // alter table
       table.json('disponibility').after('implementations')
     })
   }
 
-  down () {
+  down() {
     this.table('pizza_products', (table) => {
       // reverse alternations
       table.dropColumn('disponibility')

@@ -1,6 +1,6 @@
 'use strict'
 
-const { BIG5_BIN } = require("mysql/lib/protocol/constants/charsets")
+const { BIG5_BIN } = require('mysql/lib/protocol/constants/charsets')
 
 const SystemRequest = use('App/Models/SystemRequest')
 
@@ -22,15 +22,17 @@ class InvoiceController {
       console.log('Starting: ', { controller: 'InvoiceController', linha: 18, metodo: 'index' })
       const user = await auth.getUser()
 
-      const invoices = await user.invoices().with('requests', request => {
-        request.whereIn('status', ['reserved', 'paid', 'completed'])
-      })
+      const invoices = await user
+        .invoices()
+        .with('requests', (request) => {
+          request.whereIn('status', ['reserved', 'paid', 'completed'])
+        })
         .whereIn('type', ['first', 'monthly'])
         .orderBy('id', 'desc')
         .fetch()
 
-
-      let invoicesAddons = await user.invoices()
+      let invoicesAddons = await user
+        .invoices()
         .with('requests')
         .where({
           type: 'addon',
@@ -54,9 +56,7 @@ class InvoiceController {
       //   })
       // }
 
-      invoicesAddons = (invoicesAddons.rows.length) ? invoicesAddons.toJSON() : null
-
-
+      invoicesAddons = invoicesAddons.rows.length ? invoicesAddons.toJSON() : null
 
       // View.global('translateStatus', (status) => {
       //   let translate
@@ -99,17 +99,22 @@ class InvoiceController {
       // const lastMensality = await user.requests().where('type', 'M').last()
       return response.json({
         dayDue: user.due < 10 ? `0${user.due}` : user.due,
-        due: invoices.rows.length > 0 && allInvoices[0].expiration ? moment(allInvoices[0].expiration).format('DD/MM/YYYY') : user.due < 10 ? `0${user.due}` : user.due + moment().format('/MM/YYYY'), //moment(d).add(7, 'days').format('DD/MM/YYYY'),
+        due:
+          invoices.rows.length > 0 && allInvoices[0].expiration
+            ? moment(allInvoices[0].expiration).format('DD/MM/YYYY')
+            : user.due < 10
+              ? `0${user.due}`
+              : user.due + moment().format('/MM/YYYY'), //moment(d).add(7, 'days').format('DD/MM/YYYY'),
 
-        invoices: allInvoices.filter(a => ["completed", "paid", "reserved"].includes(a.status)),
+        invoices: allInvoices.filter((a) => ['completed', 'paid', 'reserved'].includes(a.status)),
         // invoiceOpened: systemRequests.rows[0] && (systemRequests.rows[0].status != 'paid' && systemRequests.rows[0].status != 'completed' && systemRequests.rows[0].status != 'reserved') ? systemRequests.rows[0].toJSON() : null
-        invoiceOpened: invoices.rows.length > 0 && allInvoices[0] && (allInvoices[0].status !== 'paid') ? [allInvoices[0]] : [],
-        invoicesAddons
+        invoiceOpened: invoices.rows.length > 0 && allInvoices[0] && allInvoices[0].status !== 'paid' ? [allInvoices[0]] : [],
+        invoicesAddons,
       })
     } catch (error) {
       console.error({
         date: moment().format(),
-        error: error
+        error: error,
       })
     }
   }
@@ -120,12 +125,15 @@ class InvoiceController {
       const paghiper = await axios.post('https://api.paghiper.com/transaction/cancel/', {
         apiKey: Env.get('PAGHIPER_APIKEY'),
         token: Env.get('PAGHIPER_TOKEN'),
-        status: "canceled",
-        transaction_id: transaction
+        status: 'canceled',
+        transaction_id: transaction,
       })
 
       let invoice
-      if (paghiper.data.cancellation_request.result === 'success' || paghiper.data.cancellation_request.response_message.includes('status atual do pedido é canceled')) {
+      if (
+        paghiper.data.cancellation_request.result === 'success' ||
+        paghiper.data.cancellation_request.response_message.includes('status atual do pedido é canceled')
+      ) {
         invoice = await SystemRequest.findBy('transactionId', transaction)
         const getDateLimit = () => {
           let limit = moment().add(3, 'day')
@@ -133,14 +141,14 @@ class InvoiceController {
           switch (limit.format('dddd')) {
             case 'Saturday':
               limit = limit.add(2, 'days').format('YYYY-MM-DD')
-              break;
+              break
             case 'Sunday':
               limit = limit.add(1, 'days').format('YYYY-MM-DD')
-              break;
+              break
 
             default:
               limit = limit.format('YYYY-MM-DD')
-              break;
+              break
           }
 
           return limit
@@ -152,7 +160,7 @@ class InvoiceController {
       return {
         success: true,
         paghiper: paghiper.data,
-        invoice: invoice ? invoice.toJSON() : null
+        invoice: invoice ? invoice.toJSON() : null,
       }
     } catch (error) {
       throw error
@@ -165,18 +173,21 @@ class InvoiceController {
       const user = await UserR.find(auth.user.id)
       const all = {
         invoice: await this.getLastInvoiceObject({ response: response, auth: auth }),
-        addons: await user.invoices().with('requests').where({
-          type: 'addon',
-          status: 'pending',
-        }).fetch(),
+        addons: await user
+          .invoices()
+          .with('requests')
+          .where({
+            type: 'addon',
+            status: 'pending',
+          })
+          .fetch(),
       }
       return response.json(all)
-
     } catch (error) {
       console.error({
         date: moment().format(),
         user: auth.user.id,
-        error: error
+        error: error,
       })
       response.status(500)
       response.send(error)
@@ -193,7 +204,7 @@ class InvoiceController {
       }
 
       if (user.controls.disableInvoice && user.controls.paymentInfo) {
-        const invoice = await user.invoices().whereIn("type", ["first", "monthly"]).where("status", "pending").last()
+        const invoice = await user.invoices().whereIn('type', ['first', 'monthly']).where('status', 'pending').last()
         return invoice
       }
 
@@ -246,7 +257,7 @@ class InvoiceController {
       console.error({
         date: moment().format(),
         user: auth.user.id,
-        error: error
+        error: error,
       })
       throw error
     }
@@ -265,7 +276,7 @@ class InvoiceController {
           if (monthly) {
             const invoices = await user.requests().where('created_at', '>=', monthly.created_at).fetch()
 
-            const paid = invoices.rows.find(i => i.status === 'paid' || i.status === 'reserved' || i.status === 'completed')
+            const paid = invoices.rows.find((i) => i.status === 'paid' || i.status === 'reserved' || i.status === 'completed')
             if (invoices.rows.length > 0 && paid && paid.id !== invoices.rows[invoices.rows.length - 1].id) {
               problems.push(user.id)
             }
@@ -292,7 +303,7 @@ class InvoiceController {
       }
       for (const invoices of systemRequests) {
         let firstInvoice = invoices.shift()
-        let user = firstInvoice && await User.find(firstInvoice.userId)
+        let user = firstInvoice && (await User.find(firstInvoice.userId))
         let userJSON = user && user.toJSON()
         if (firstInvoice) {
           let newInvoiceFirst = await Invoice.create({
@@ -300,8 +311,8 @@ class InvoiceController {
             status: firstInvoice.status === 'paid' || firstInvoice.status === 'completed' || firstInvoice.status === 'reserved' ? 'paid' : 'canceled',
             type: 'first',
             expiration: firstInvoice.expiration,
-            value: userJSON.controls.serviceStart ? 199.80 : 49.90,
-            itens: {}
+            value: userJSON.controls.serviceStart ? 199.8 : 49.9,
+            itens: {},
           })
 
           let system_request = await SystemRequest.find(firstInvoice.id)
@@ -316,8 +327,8 @@ class InvoiceController {
                   status: 'pending',
                   type: 'monthly',
                   expiration: invoice.expiration,
-                  value: 49.90,
-                  itens: {}
+                  value: 49.9,
+                  itens: {},
                 })
 
                 system_request = await SystemRequest.find(invoice.id)
@@ -347,7 +358,9 @@ class InvoiceController {
         let defineFirst = firstInvoice && firstInvoice.status === 'canceled' ? true : false
         for (const element of userInvoices.rows) {
           let requests = await user.requests().where('userId', user.id).where('expiration', element.expiration).fetch()
-          let status = requests.toJSON().find((invoice) => invoice.status === 'paid' || invoice.status === 'completed' || invoice.status === 'reserved')
+          let status = requests
+            .toJSON()
+            .find((invoice) => invoice.status === 'paid' || invoice.status === 'completed' || invoice.status === 'reserved')
           if (defineFirst) {
             element.type = 'first'
             if (element.status === 'paid') defineFirst = false
@@ -371,7 +384,6 @@ class InvoiceController {
           let newInvoice = await Invoice.find(element.id)
           newInvoice.merge({ status: element.status, type: element.type })
           await newInvoice.save()
-
         }
       }
 
@@ -390,41 +402,46 @@ class InvoiceController {
       const invoice = await user.invoices().where('expiration', 'like', moment().format('YYYY-MM-%')).first()
       const flexPlan = await FlexPlan.findBy('category', plan)
       const today = moment()
-      let price;
+      let price
 
       let value = 0
 
-      const product = await SystemProduct.query().where("plan_id", flexPlan.id).andWhere("operations", "LIKE", user.controls.period ? user.controls.period : "monthly").first();
-      price = product.operations.prices.find(pr => pr.id === product.default_price);
+      const product = await SystemProduct.query()
+        .where('plan_id', flexPlan.id)
+        .andWhere('operations', 'LIKE', user.controls.period ? user.controls.period : 'monthly')
+        .first()
+      price = product.operations.prices.find((pr) => pr.id === product.default_price)
 
       if (!user.controls.period || user.controls.period === 'monthly') {
-        console.log('345 - teste');
+        console.log('345 - teste')
 
         let due = moment(moment().format(`YYYY-MM-${user.due < 10 ? `0${user.due}` : user.due}T00:00:00`))
 
         if (invoice) {
-          console.log('350 - teste');
-          due = moment(moment().add(1, 'month').format(`YYYY-MM-${user.due < 10 ? `0${user.due}` : user.due}T00:00:00`))
+          console.log('350 - teste')
+          due = moment(
+            moment()
+              .add(1, 'month')
+              .format(`YYYY-MM-${user.due < 10 ? `0${user.due}` : user.due}T00:00:00`)
+          )
         }
 
         const diff = today.diff(due, 'day')
 
         if (product) {
-          value = ((price.currency_options[user.controls.currency].unit_amount / 100) / 30) * (diff <= 7 ? 0 : diff)
+          value = (price.currency_options[user.controls.currency].unit_amount / 100 / 30) * (diff <= 7 ? 0 : diff)
         } else {
           value = (flexPlan.monthly.value / 30) * (diff <= 7 ? 0 : diff)
         }
       } else {
-
         const due = moment(moment(user.controls.nextInvoice))
         const diff = today.diff(due, 'day')
 
         if (product) {
-          value = ((price.currency_options[user.controls.currency].unit_amount / 100) / 30) * (diff <= 7 ? 0 : diff)
+          value = (price.currency_options[user.controls.currency].unit_amount / 100 / 30) * (diff <= 7 ? 0 : diff)
         } else {
           value = (flexPlan[user.controls.period].value / 30) * (diff <= 7 ? 0 : diff)
         }
-
       }
 
       const newinvoice = await Invoice.create({
@@ -433,17 +450,17 @@ class InvoiceController {
         type: 'upgrade',
         expiration: moment().add(1, 'days').format('YYYY-MM-DD'),
         value: value,
-        itens: [{ id: flexPlan.id, name: product.name, value: price.currency_options[user.controls.currency].unit_amount / 100 }]
+        itens: [{ id: flexPlan.id, name: product.name, value: price.currency_options[user.controls.currency].unit_amount / 100 }],
       })
 
-      console.log(`374 - teste aqui 1: ${value}`);
+      console.log(`374 - teste aqui 1: ${value}`)
       if (value > 0) {
         await PaymentController.createPaghiperToInvoice(newinvoice.id)
       } else {
-        console.log(`378 - ${JSON.stringify(newinvoice.itens)}`);
+        console.log(`378 - ${JSON.stringify(newinvoice.itens)}`)
         await UserPlan.create({
           userId: user.id,
-          flexPlanId: newinvoice.itens[0].id
+          flexPlanId: newinvoice.itens[0].id,
         })
       }
 
@@ -456,7 +473,6 @@ class InvoiceController {
         .last()
 
       return response.json(retInvoice)
-
     } catch (error) {
       console.error(error)
       throw error
@@ -474,7 +490,7 @@ class InvoiceController {
   async generateAddonInvoice({ request, response }) {
     try {
       const data = request.except(['_csrf'])
-      const user = await User.find(data.userId);
+      const user = await User.find(data.userId)
       // data.itens.forEach(i => {
       //   i.value = parseFloat(i.value.replace(',', '.'))
       //   i.quantity = parseInt(i.quantity)
@@ -487,22 +503,21 @@ class InvoiceController {
         installments: data.installments,
         expiration: moment().add(3, 'days').format('YYYY-MM-DD'),
         itens: data.items,
-        value: data.items.reduce((acc, b) => acc + (b.value * b.quantity), 0)
-      });
+        value: data.items.reduce((acc, b) => acc + b.value * b.quantity, 0),
+      })
 
       if (!user.controls.disableInvoice) {
         const request_invoice = await PaymentController.createPaghiperToInvoice(invoice.id)
 
-        invoice.requests = [request_invoice];
+        invoice.requests = [request_invoice]
       }
 
       return response.json({
         success: true,
-        response: invoice
+        response: invoice,
       })
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }

@@ -4,14 +4,14 @@
 const Schema = use('Schema')
 
 class ProfileSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       // alter table
       table.integer('command').defaultTo(0).after('request')
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       // reverse alternations
       table.dropColumn('command')

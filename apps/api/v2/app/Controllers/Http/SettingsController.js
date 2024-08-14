@@ -1,11 +1,10 @@
 'use strict'
 
-const { updateLocale } = require("moment")
+const { updateLocale } = require('moment')
 
 const User = use('App/Models/User')
-const UserPlan = use("App/Models/UserPlan")
+const UserPlan = use('App/Models/UserPlan')
 const moment = require('moment')
-
 
 class SettingsController {
   async index({ response, view, auth }) {
@@ -18,7 +17,7 @@ class SettingsController {
     return response.send(
       view.render('inner.settings.index', {
         profile: prof,
-        systemRequest: sysreq ? sysreq.toJSON() : null
+        systemRequest: sysreq ? sysreq.toJSON() : null,
       })
     )
   }
@@ -68,7 +67,6 @@ class SettingsController {
       if (data.disableDelivery) update.options.delivery.disableDelivery = JSON.parse(data.disableDelivery)
 
       if (data.package) {
-
         if (!data.package.maxPackage) {
           data.package.maxPackage = 30
         }
@@ -85,20 +83,17 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
       console.error(error)
     }
-
-
   }
 
   async generalBasicSettings({ request, response, auth }) {
     try {
       console.log('Starting: ', { controller: 'SettingsController', linha: 98, metodo: 'generalBasicSettings' })
-      const data = request.except(['_csrf']);
-      const user = await auth.getUser();
-      const profile = await user.profile().fetch();
+      const data = request.except(['_csrf'])
+      const user = await auth.getUser()
+      const profile = await user.profile().fetch()
 
       if (data.options) {
         if (!data.options.package.maxPackage) {
@@ -114,8 +109,8 @@ class SettingsController {
         profile.options.package = data.options.package
       }
 
-      profile.merge(data);
-      await profile.save();
+      profile.merge(data)
+      await profile.save()
 
       return response.json(profile)
     } catch (e) {
@@ -134,7 +129,7 @@ class SettingsController {
 
       update.options = profile.options
 
-      if (data.options.placeholders.productObs) update.options.placeholders.productObs = data.options.placeholders.productObs  // .split('\r').join('\\r').split('\n').join('\\n')
+      if (data.options.placeholders.productObs) update.options.placeholders.productObs = data.options.placeholders.productObs // .split('\r').join('\\r').split('\n').join('\\n')
       if (data.options.placeholders.pizzaObs) update.options.placeholders.pizzaObs = data.options.placeholders.pizzaObs // .split('\r').join('\\r').split('\n').join('\\n')
       if (data.options.placeholders.statusProduction) update.options.placeholders.statusProduction = data.options.placeholders.statusProduction // .split('\r').join('\\r').split('\n').join('\\n')
       if (data.options.placeholders.statusSend) update.options.placeholders.statusSend = data.options.placeholders.statusSend // .split('\r').join('\\r').split('\n').join('\\n')
@@ -143,9 +138,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -168,9 +162,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -188,9 +181,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -200,7 +192,7 @@ class SettingsController {
       const data = request.except(['_csrf'])
       const user = await auth.getUser()
       const profile = await user.profile().fetch()
-      console.log(data);
+      console.log(data)
 
       const update = {}
       update.options = profile.options
@@ -209,9 +201,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
@@ -229,9 +220,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -255,9 +245,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -281,9 +270,8 @@ class SettingsController {
       profile.merge(update)
       await profile.save()
       return response.json(profile)
-
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -300,13 +288,11 @@ class SettingsController {
       await profile.save()
 
       return response.json(profile.options.table)
-
-    } catch(error) {
+    } catch (error) {
       console.error(error)
       throw error
     }
   }
-
 }
 
 module.exports = SettingsController

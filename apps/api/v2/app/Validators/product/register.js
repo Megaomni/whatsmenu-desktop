@@ -1,7 +1,7 @@
 'use strict'
 
 class productRegister {
-  get rules () {
+  get rules() {
     return {
       // validation rules
     }

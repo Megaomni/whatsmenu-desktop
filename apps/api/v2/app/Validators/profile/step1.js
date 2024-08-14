@@ -1,7 +1,7 @@
 'use strict'
 
 class profileStep1 {
-  get rules () {
+  get rules() {
     return {
       name: 'required',
       slug: 'required|unique:profiles,slug',
@@ -10,7 +10,7 @@ class profileStep1 {
     }
   }
 
-  get messages () {
+  get messages() {
     return {
       'name.required': 'O Nome não é válido!',
       'slug.required': 'O endereço não é válido!',

@@ -19,9 +19,8 @@ class FinancialPassword {
     if (isSame) {
       await next()
     } else {
-      return response.status(403).json({message:'Senha financeira inválida'})
+      return response.status(403).json({ message: 'Senha financeira inválida' })
     }
-
   }
 }
 

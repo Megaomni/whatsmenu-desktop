@@ -15,10 +15,10 @@ const Factory = use('Factory')
 const Profile = use('App/Models/Profile')
 const Cashier = use('App/Models/Cashier')
 const Database = use('Database')
-const { DateTime } = require("luxon")
+const { DateTime } = require('luxon')
 
 class FixClosedValuesSystemSeeder {
-  async run () {
+  async run() {
     let page = 1
     let cashiers = {}
     try {
@@ -40,14 +40,13 @@ class FixClosedValuesSystemSeeder {
               ) AS paymentSummary WHERE created_at BETWEEN ${DateTime.fromJSDate(cashier.created_at).toFormat('"yyyy-MM-dd HH:mm:ss"')} AND ${DateTime.fromJSDate(cashier.closed_at).toFormat('"yyyy-MM-dd HH:mm:ss"')} AND profileId = ${profile.id} GROUP BY total, payment, flag, created_at, profileId;
             `)
             const formsPayment = profile.formsPayment
-            formsPayment.forEach(formPayment => {
-              const notIncludes = closedValues_system[0].some(value => value.formPayment === formPayment.label)
+            formsPayment.forEach((formPayment) => {
+              const notIncludes = closedValues_system[0].some((value) => value.formPayment === formPayment.label)
               if (!notIncludes) {
                 const newCloseValue = { payment: formPayment.label, total: 0 }
                 if (formPayment.flags && formPayment.flags.length) {
-                  formPayment.flags.forEach(flag => {
+                  formPayment.flags.forEach((flag) => {
                     closedValues_system[0].push({ ...newCloseValue, flag: flag.name })
-    
                   })
                 } else {
                   closedValues_system[0].push({ ...newCloseValue, flag: null })
@@ -61,7 +60,7 @@ class FixClosedValuesSystemSeeder {
         page++
       } while (page <= cashiers.pages.lastPage)
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }

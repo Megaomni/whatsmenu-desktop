@@ -21,9 +21,15 @@ class Auth {
     // call next to advance the request
     try {
       await auth.check()
-      const user = await User.find(auth.user.id);
+      const user = await User.find(auth.user.id)
       if (user.controls.forceSecurity) {
-        return response.status(403).json({ message: `Sua senha não é alterada há alguns meses, por motivo de segurança, crie uma nova senha clicando no link enviado para o email ${user.email}`, title: "Sua senha do painel expirou", code: '403-F' })
+        return response
+          .status(403)
+          .json({
+            message: `Sua senha não é alterada há alguns meses, por motivo de segurança, crie uma nova senha clicando no link enviado para o email ${user.email}`,
+            title: 'Sua senha do painel expirou',
+            code: '403-F',
+          })
       }
       if (user.controls.attempts < 5) {
         const profile = await user.profile().fetch()
@@ -33,7 +39,7 @@ class Auth {
         }
         await next()
       } else {
-        return response.status(403).json({ message: "Limite de tentativas de login excedido!", code: '403-B' })
+        return response.status(403).json({ message: 'Limite de tentativas de login excedido!', code: '403-B' })
       }
     } catch (error) {
       if (Env.get('NODE_ENV') === 'development') {

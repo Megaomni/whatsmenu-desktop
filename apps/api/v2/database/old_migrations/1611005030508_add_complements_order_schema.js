@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddComplementsOrderSchema extends Schema {
-  up () {
+  up() {
     this.table('complements', (table) => {
       table.integer('order').after('name').notNullable().defaultTo(0)
     })
   }
 
-  down () {
+  down() {
     this.table('complements', (table) => {
       table.dropColumn('order')
     })

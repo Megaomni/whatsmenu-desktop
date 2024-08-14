@@ -5,8 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "dev": "ng serve",
-    "build:prod": "ng build -c='production'",
-    "build:prod-auto": "npm run build:prod && chmod +x automate_build.sh && ./automate_build.sh",
+    "build": "chmod +x build.sh && ./build.sh",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

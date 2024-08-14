@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddInvliceIdSchema extends Schema {
-  up () {
+  up() {
     this.table('system_requests', (table) => {
       table.integer('invoiceId').unsigned().references('id').inTable('invoices').after('id')
     })
   }
 
-  down () {
+  down() {
     this.table('system_requests', (table) => {
       table.dropForeign('invoiceId')
       table.dropColumn('invoiceId')

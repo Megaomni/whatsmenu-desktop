@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class FlexPlanSchema extends Schema {
-  up () {
+  up() {
     this.create('flex_plans', (table) => {
       table.increments()
       table.string('name')
@@ -18,7 +18,7 @@ class FlexPlanSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.drop('flex_plans')
   }
 }

@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddTypeDeliveryProfileSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       table.enum('typeDelivery', ['km', 'neighborhood']).notNullable().defaultTo('km').after('whatsapp')
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       table.dropColumn('typeDelivery')
     })

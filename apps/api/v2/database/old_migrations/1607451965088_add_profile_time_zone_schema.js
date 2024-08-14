@@ -4,13 +4,13 @@
 const Schema = use('Schema')
 
 class AddProfileTimeZoneSchema extends Schema {
-  up () {
+  up() {
     this.table('profiles', (table) => {
       table.string('timeZone', 255).notNullable().defaultTo('America/Buenos_Aires').after('week')
     })
   }
 
-  down () {
+  down() {
     this.table('profiles', (table) => {
       // reverse alternations
       table.dropColumn('timeZone')

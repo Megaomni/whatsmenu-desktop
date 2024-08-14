@@ -14,7 +14,7 @@ class Invoice {
    * @param {Auth} ctx.auth
    * @param {Function} next
    */
-  async handle ({ request, response, auth }, next) {
+  async handle({ request, response, auth }, next) {
     try {
       const user = await auth.getUser()
       let sr = await user.requests().last()
@@ -32,7 +32,14 @@ class Invoice {
       }
 
       View.global('getLastInvoice', () => {
-        if (!user.controls.disableInvoice && sr && sr.userId === user.id && (sr.status !== 'paid' && sr.status !== 'completed' && sr.status !== 'reserved')) {
+        if (
+          !user.controls.disableInvoice &&
+          sr &&
+          sr.userId === user.id &&
+          sr.status !== 'paid' &&
+          sr.status !== 'completed' &&
+          sr.status !== 'reserved'
+        ) {
           if (Array.isArray(sr.paghiper)) {
             sr.paghiper = sr.paghiper[0]
           }
@@ -42,7 +49,6 @@ class Invoice {
           }
 
           return sr
-
         }
 
         return null
@@ -51,7 +57,7 @@ class Invoice {
       console.error({
         date: moment().format(),
         user: auth.user.id,
-        error: error
+        error: error,
       })
       response.status(500)
       response.send(error)

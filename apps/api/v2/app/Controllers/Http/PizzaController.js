@@ -19,7 +19,6 @@ const child_process = use('child_process')
 const moment = use('moment')
 
 class PizzaController {
-
   async updateImplementations({ request, params, auth, response }) {
     try {
       console.log('Starting: ', { controller: 'PizzaController', linha: 21, metodo: 'updateImplementations' })
@@ -34,12 +33,11 @@ class PizzaController {
         await pizza.save()
 
         response.redirect('back')
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
@@ -63,14 +61,14 @@ class PizzaController {
           name: data.name,
           flavors: [],
           covers: [],
-          status: true
+          status: true,
         }
 
         if (JSON.parse(data['1'])) {
           size.flavors.push(1)
         }
         if (JSON.parse(data['2'])) {
-          size.flavors.push(2);
+          size.flavors.push(2)
         }
         if (JSON.parse(data['3'])) {
           size.flavors.push(3)
@@ -80,36 +78,34 @@ class PizzaController {
         }
 
         if (!JSON.parse(data['1']) && !JSON.parse(data['2']) && !JSON.parse(data['3']) && !JSON.parse(data['4'])) {
-          size.flavors.push(1);
+          size.flavors.push(1)
         }
 
         const image1 = request.file('image1', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
         const image2 = request.file('image2', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
         const image3 = request.file('image3', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
         const image4 = request.file('image4', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
 
         const images = [image1, image2, image3, image4]
 
         // return response.json(size)
-        const exist = pizza.sizes.find(size => size.name.toLowerCase() === data.name.toLowerCase())
-
+        const exist = pizza.sizes.find((size) => size.name.toLowerCase() === data.name.toLowerCase())
 
         if (!exist) {
-
           for (let i = 0; i < images.length; i++) {
-            await this.uploadCover(images[i], size, profile, i);
+            await this.uploadCover(images[i], size, profile, i)
 
             if (!images[i]) {
               size.covers[i] = `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/${i + 1}.jpg`
@@ -117,32 +113,31 @@ class PizzaController {
           }
 
           pizza.sizes.push(size)
-          pizza.flavors.forEach(flavor => {
-            flavor.values[size.name] = 0;
-            flavor.valuesTable[size.name] = 0;
-          });
+          pizza.flavors.forEach((flavor) => {
+            flavor.values[size.name] = 0
+            flavor.valuesTable[size.name] = 0
+          })
 
-          await pizza.save();
+          await pizza.save()
         } else {
           return response.status(418).json({
-            message: "This pizza size already exists."
+            message: 'This pizza size already exists.',
           })
         }
 
         return response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
       console.error({
         date: moment().format(),
         data: request.all(),
-        error: error
+        error: error,
       })
 
       throw error
@@ -161,10 +156,10 @@ class PizzaController {
         const data = request.except(['_csrf', '_method'])
         console.log(data)
         // return response.json(data)
-        const size = pizza.sizes.find(size => size.code === params.code)
+        const size = pizza.sizes.find((size) => size.code === params.code)
 
         if (size.name !== data.name) {
-          pizza.flavors.forEach(flavor => {
+          pizza.flavors.forEach((flavor) => {
             let vals = JSON.stringify(flavor.values)
             vals = vals.replace(size.name, data.name)
             flavor.values = JSON.parse(vals)
@@ -202,48 +197,46 @@ class PizzaController {
           if (!size.covers[index]) {
             size.covers[index] = `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/${index + 1}.jpg`
           }
-        });
+        })
 
         // return response.json(size)
 
         const image1 = request.file('image1', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
         const image2 = request.file('image2', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
         const image3 = request.file('image3', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
         const image4 = request.file('image4', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
 
         const images = [image1, image2, image3, image4]
 
         for (let i = 0; i < images.length; i++) {
-          await this.uploadCover(images[i], size, profile, i);
+          await this.uploadCover(images[i], size, profile, i)
         }
 
         await pizza.save()
 
         return response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
-
     } catch (error) {
       console.error(error)
-      throw error;
+      throw error
     }
   }
 
@@ -251,7 +244,7 @@ class PizzaController {
     if (image) {
       // return console.log(image)
       await image.move(Helpers.tmpPath(`uploads/${profile.slug}`), {
-        overwrite: true
+        overwrite: true,
       })
 
       // const imageJ = await Jimp.read(fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)))
@@ -261,11 +254,14 @@ class PizzaController {
 
       // await imageJ.writeAsync(Helpers.tmpPath(`uploads/${profile.slug}/t${image.clientName}`))
 
-      await Drive.put(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${size.code}/${image.clientName.replace(/\W/g, '')}`,
-        fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)), {
-        ContentType: image.headers['content-type'],
-        ACL: 'public-read'
-      })
+      await Drive.put(
+        `${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${size.code}/${image.clientName.replace(/\W/g, '')}`,
+        fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)),
+        {
+          ContentType: image.headers['content-type'],
+          ACL: 'public-read',
+        }
+      )
 
       const img = Drive.getUrl(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${size.code}/${image.clientName.replace(/\W/g, '')}`)
 
@@ -391,25 +387,25 @@ class PizzaController {
           code: Encryption.encrypt(data.name).substring(0, 6),
           name: data.name,
           value: data.value.replace(',', '.'),
-          status: true
+          status: true,
         }
 
         // return response.json(implementation)
-        const exist = pizza.implementations.find(implementation => implementation.name.toLowerCase().split(' ').join('') === data.name.toLowerCase().split(' ').join(''))
+        const exist = pizza.implementations.find(
+          (implementation) => implementation.name.toLowerCase().split(' ').join('') === data.name.toLowerCase().split(' ').join('')
+        )
 
         if (!exist) {
           pizza.implementations.push(implementation)
           await pizza.save()
         }
 
-
         return response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
@@ -429,21 +425,20 @@ class PizzaController {
       if (parseInt(profile.id) === parseInt(category.profileId)) {
         const data = request.except(['_csrf', '_method'])
         // return response.json(data)
-        const implementation = pizza.implementations.find(implementation => implementation.code === params.code)
+        const implementation = pizza.implementations.find((implementation) => implementation.code === params.code)
 
         implementation.name = data.name
-        implementation.value = Number(data.value) || 0;
+        implementation.value = Number(data.value) || 0
 
         // return response.json(implementation)
         await pizza.save()
 
         response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
@@ -469,7 +464,7 @@ class PizzaController {
           txt = txt.split(')').join('\\)')
           txt = txt.split(',').join('\\,')
           txt = txt.split(';').join('\\;')
-          txt = txt.split("'").join('\\\'')
+          txt = txt.split("'").join("\\'")
           txt = txt.split('"').join('\\"')
           return txt
         }
@@ -495,12 +490,12 @@ class PizzaController {
 
         const image = request.file('image', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
 
         if (image) {
           await image.move(Helpers.tmpPath(`uploads/${profile.slug}`), {
-            overwrite: true
+            overwrite: true,
           })
 
           // const imageJ = await Jimp.read(fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)))
@@ -510,15 +505,17 @@ class PizzaController {
 
           // await imageJ.writeAsync(Helpers.tmpPath(`uploads/${profile.slug}/t${image.clientName}`))
 
-          await Drive.put(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${code}/${image.clientName.replace(/\ /g, '-')}`,
-            fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)), {
-            ContentType: image.headers['content-type'],
-            ACL: 'public-read'
-          })
+          await Drive.put(
+            `${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${code}/${image.clientName.replace(/\ /g, '-')}`,
+            fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)),
+            {
+              ContentType: image.headers['content-type'],
+              ACL: 'public-read',
+            }
+          )
 
           img = Drive.getUrl(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${code}/${image.clientName.replace(/\ /g, '-')}`)
           child_process.execSync(`rm -fr ${Helpers.tmpPath(`uploads/${profile.slug}`)}`)
-
 
           // await Drive.put(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${code}/${image.clientName.replace(/\ /g, '-')}`,
           // fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)), {
@@ -540,7 +537,7 @@ class PizzaController {
         }
 
         // return response.json(flavor)
-        const exist = pizza.flavors.find(flavor => flavor.name.toLowerCase().split(' ').join('') === data.name.toLowerCase().split(' ').join(''))
+        const exist = pizza.flavors.find((flavor) => flavor.name.toLowerCase().split(' ').join('') === data.name.toLowerCase().split(' ').join(''))
 
         if (!exist) {
           pizza.flavors.push(flavor)
@@ -548,17 +545,16 @@ class PizzaController {
         }
 
         return response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
-      console.error(error);
-      return response.json(error);
+      console.error(error)
+      return response.json(error)
     }
   }
 
@@ -573,20 +569,19 @@ class PizzaController {
       const flavors = []
 
       if (category.profileId === profile.id) {
-        order.forEach(code => flavors.push(pizza.flavors.find(f => f.code == code)))
+        order.forEach((code) => flavors.push(pizza.flavors.find((f) => f.code == code)))
 
         pizza.flavors = flavors
         await pizza.save()
 
         return response.json({
-          success: true
+          success: true,
         })
       } else {
         return response.json({
-          message: "Esta categoria pertence a outro usuário."
+          message: 'Esta categoria pertence a outro usuário.',
         })
       }
-
     } catch (error) {
       console.error(error)
       throw error
@@ -599,25 +594,24 @@ class PizzaController {
       const { categoryId, order } = request.all()
       const user = await auth.getUser()
       const profile = await user.profile().fetch()
-      const category = await Category.find(categoryId);
+      const category = await Category.find(categoryId)
       const pizza = await category.product().fetch()
       const sizes = []
 
       if (category.profileId === profile.id) {
-        order.forEach(code => sizes.push(pizza.sizes.find(s => s.code == code)))
+        order.forEach((code) => sizes.push(pizza.sizes.find((s) => s.code == code)))
 
         pizza.sizes = sizes
         await pizza.save()
 
         return response.json({
-          success: true
+          success: true,
         })
       } else {
         return response.json({
-          message: "Está categoria pertece a outro usuário"
+          message: 'Está categoria pertece a outro usuário',
         })
       }
-
     } catch (error) {
       console.error(error)
       throw error
@@ -635,20 +629,19 @@ class PizzaController {
       const implementations = []
 
       if (category.profileId === profile.id) {
-        order.forEach(code => implementations.push(pizza.implementations.find(i => i.code == code)))
+        order.forEach((code) => implementations.push(pizza.implementations.find((i) => i.code == code)))
 
         pizza.implementations = implementations
         await pizza.save()
 
         return response.json({
-          success: true
+          success: true,
         })
       } else {
         return response.json({
-          message: "Esta categoria pertence a outro usuário."
+          message: 'Esta categoria pertence a outro usuário.',
         })
       }
-
     } catch (error) {
       console.error(error)
       throw error
@@ -673,13 +666,13 @@ class PizzaController {
           txt = txt.split(')').join('\\)')
           txt = txt.split(',').join('\\,')
           txt = txt.split(';').join('\\;')
-          txt = txt.split("'").join('\\\'')
+          txt = txt.split("'").join("\\'")
           txt = txt.split('"').join('\\"')
           txt = txt.split('+').join('-')
           return txt
         }
 
-        const flavor = pizza.flavors.find(flavor => flavor.code == params.code)
+        const flavor = pizza.flavors.find((flavor) => flavor.code == params.code)
         let img = null
         const data = request.except(['_csrf', '_method'])
         // data.values = JSON.parse(data.values);
@@ -702,13 +695,13 @@ class PizzaController {
 
         const image = request.file('image', {
           types: ['image'],
-          size: '8mb'
+          size: '8mb',
         })
 
         if (image) {
           image.clientName = normalizeFileName(image.clientName)
           await image.move(Helpers.tmpPath(`uploads/${normalizeFileName(profile.slug)}`), {
-            overwrite: true
+            overwrite: true,
           })
           // const imageJ = await Jimp.read(fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)))
 
@@ -718,12 +711,17 @@ class PizzaController {
 
           // await imageJ.writeAsync(Helpers.tmpPath(`uploads/${profile.slug}/t${image.clientName}`))
 
-          await Drive.put(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`,
-            fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)), {
-            ContentType: image.headers['content-type'],
-            ACL: 'public-read'
-          })
-          img = Drive.getUrl(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`)
+          await Drive.put(
+            `${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`,
+            fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)),
+            {
+              ContentType: image.headers['content-type'],
+              ACL: 'public-read',
+            }
+          )
+          img = Drive.getUrl(
+            `${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`
+          )
           child_process.execSync(`rm -fr ${Helpers.tmpPath(`uploads/${profile.slug}`)}`)
 
           // await Drive.delete(flavor.imabvmyyge)
@@ -736,7 +734,7 @@ class PizzaController {
         flavor.amount_alert = Number(data.amount_alert)
         flavor.values = JSON.parse(data.values) || {}
         flavor.valuesTable = JSON.parse(data.valuesTable) || {}
-        flavor.bypass_amount =  !!data.bypass_amount
+        flavor.bypass_amount = !!data.bypass_amount
 
         if (img) {
           flavor.image = img
@@ -746,12 +744,11 @@ class PizzaController {
         await pizza.save()
 
         return response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
@@ -769,7 +766,6 @@ class PizzaController {
       const category = await pizza.category().fetch()
       const data = request.except(['_csrf', '_method'])
 
-
       if (profile.id === category.profileId) {
         pizza.amount = data.amount
         pizza.amount_alert = data.amount_alert
@@ -779,7 +775,7 @@ class PizzaController {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
@@ -793,8 +789,8 @@ class PizzaController {
       console.log('Starting: ', { controller: 'PizzaController', linha: 545, metodo: 'updFlavor' })
       const user = await User.find(auth.user.id)
       const profile = await user.profile().fetch()
-      const data = request.except(["_csrf"]);
-      const pizza = await PizzaProduct.find(data.pizzaId);
+      const data = request.except(['_csrf'])
+      const pizza = await PizzaProduct.find(data.pizzaId)
       const category = await pizza.category().fetch()
 
       console.log(data)
@@ -808,26 +804,25 @@ class PizzaController {
         txt = txt.split(')').join('\\)')
         txt = txt.split(',').join('\\,')
         txt = txt.split(';').join('\\;')
-        txt = txt.split("'").join('\\\'')
+        txt = txt.split("'").join("\\'")
         txt = txt.split('"').join('\\"')
         txt = txt.split('+').join('-')
         return txt
       }
 
-      if (typeof data.flavors === "string") {
-        data.flavors = JSON.parse(data.flavors);
+      if (typeof data.flavors === 'string') {
+        data.flavors = JSON.parse(data.flavors)
       }
 
       if (profile.id === category.profileId) {
-
         for (let flavor of pizza.flavors) {
-          const newFlavor = data.flavors.find(flv => flv.code === flavor.code);
+          const newFlavor = data.flavors.find((flv) => flv.code === flavor.code)
 
           if (newFlavor) {
             for (const [key, value] of Object.entries(newFlavor)) {
-              if (key === "values" || key === "valuesTable") {
+              if (key === 'values' || key === 'valuesTable') {
                 for (const [sizeKey, sizeValue] of Object.entries(newFlavor[key])) {
-                  flavor[key][sizeKey] = Number(sizeValue) || 0;
+                  flavor[key][sizeKey] = Number(sizeValue) || 0
                 }
               } else {
                 flavor[key] = newFlavor[key]
@@ -840,21 +835,26 @@ class PizzaController {
 
             const image = request.file(`image_${flavor.code}`, {
               types: ['image'],
-              size: '8mb'
+              size: '8mb',
             })
 
             if (image) {
               image.clientName = normalizeFileName(image.clientName)
               await image.move(Helpers.tmpPath(`uploads/${normalizeFileName(profile.slug)}`), {
-                overwrite: true
+                overwrite: true,
               })
 
-              await Drive.put(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`,
-                fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)), {
-                ContentType: image.headers['content-type'],
-                ACL: 'public-read'
-              })
-              const img = Drive.getUrl(`${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`)
+              await Drive.put(
+                `${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`,
+                fs.readFileSync(Helpers.tmpPath(`uploads/${profile.slug}/${image.clientName}`)),
+                {
+                  ContentType: image.headers['content-type'],
+                  ACL: 'public-read',
+                }
+              )
+              const img = Drive.getUrl(
+                `${Env.get('NODE_ENV')}/${profile.slug}/pizza-products/${pizza.id}/${flavor.code}/${image.clientName.replace(/\W/g, '').split(' ').join('-')}}`
+              )
               child_process.execSync(`rm -fr ${Helpers.tmpPath(`uploads/${profile.slug}`)}`)
 
               if (img) {
@@ -863,19 +863,17 @@ class PizzaController {
               // await Drive.delete(flavor.imabvmyyge)
             }
 
-
-            flavor.description = WmProvider.encryptEmoji(flavor.description);
+            flavor.description = WmProvider.encryptEmoji(flavor.description)
           }
-        };
+        }
 
         await pizza.save()
         return response.json(pizza)
-
       } else {
         response.status(403)
         response.json({
           erro: 403,
-          message: 'This product not belongs to your user'
+          message: 'This product not belongs to your user',
         })
       }
     } catch (error) {
@@ -895,7 +893,7 @@ class PizzaController {
       if (profile.id === category.profileId) {
         // const data = request.except(['_csrf'])
 
-        const size = pizza.sizes.find(size => size.code === params.code)
+        const size = pizza.sizes.find((size) => size.code === params.code)
         size.status = !size.status
         await pizza.save()
         response.json(pizza)
@@ -903,7 +901,7 @@ class PizzaController {
         response.status(403)
         reponse.json({
           error: 403,
-          message: 'This product not belongs to your user!'
+          message: 'This product not belongs to your user!',
         })
       }
     } catch (error) {
@@ -921,15 +919,15 @@ class PizzaController {
       const category = await pizza.category().fetch()
 
       if (profile.id === category.profileId) {
-        const flavor = pizza.flavors.find(flavor => flavor.code === params.code);
+        const flavor = pizza.flavors.find((flavor) => flavor.code === params.code)
         flavor.status = !flavor.status
-        await pizza.save();
-        response.json(pizza);
+        await pizza.save()
+        response.json(pizza)
       } else {
         response.status(403)
         reponse.json({
           error: 403,
-          message: 'This product not belongs to your user!'
+          message: 'This product not belongs to your user!',
         })
       }
     } catch (error) {
@@ -949,7 +947,7 @@ class PizzaController {
       if (profile.id === category.profileId) {
         // const data = request.except(['_csrf'])
 
-        const implementation = pizza.implementations.find(implementation => implementation.code === params.code)
+        const implementation = pizza.implementations.find((implementation) => implementation.code === params.code)
         implementation.status = !implementation.status
         await pizza.save()
         return response.json(pizza)
@@ -957,7 +955,7 @@ class PizzaController {
         response.status(403)
         return response.json({
           error: 403,
-          message: 'This product not belongs to your user!'
+          message: 'This product not belongs to your user!',
         })
       }
     } catch (error) {
@@ -975,7 +973,7 @@ class PizzaController {
       const category = await pizza.category().fetch()
 
       if (profile.id === category.profileId) {
-        let sizeIndex = null;
+        let sizeIndex = null
 
         const size = pizza.sizes.find((size, index) => {
           if (size.code === params.code) {
@@ -984,7 +982,7 @@ class PizzaController {
           }
         })
 
-        pizza.flavors.forEach(flavor => {
+        pizza.flavors.forEach((flavor) => {
           delete flavor.values[size.name]
           delete flavor.valuesTable[size.name]
         })
@@ -1012,7 +1010,7 @@ class PizzaController {
       const category = await pizza.category().fetch()
 
       if (profile.id === category.profileId) {
-        const implementation = pizza.implementations.findIndex(implementation => implementation.code === params.code)
+        const implementation = pizza.implementations.findIndex((implementation) => implementation.code === params.code)
 
         pizza.implementations.splice(implementation, 1)
 
@@ -1035,7 +1033,7 @@ class PizzaController {
       const category = await pizza.category().fetch()
 
       if (profile.id === category.profileId) {
-        const flavor = pizza.flavors.findIndex(flavor => flavor.code === params.code)
+        const flavor = pizza.flavors.findIndex((flavor) => flavor.code === params.code)
 
         pizza.flavors.splice(flavor, 1)
 
@@ -1053,14 +1051,14 @@ class PizzaController {
     try {
       console.log('Starting: ', { controller: 'PizzaController', linha: 805, metodo: 'updateJSON' })
       const pizzas = await PizzaProduct.all()
-      pizzas.rows.forEach(pizza => {
-        pizza.sizes.forEach(size => {
+      pizzas.rows.forEach((pizza) => {
+        pizza.sizes.forEach((size) => {
           if (!size.covers) {
             size.covers = [
               `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/1.jpg`,
               `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/2.jpg`,
               `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/3.jpg`,
-              `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/4.jpg`
+              `${Env.get('SCHEME', 'https')}://${Env.get('DOMAIN', 'localhost')}/pizzas/4.jpg`,
             ]
           }
         })
@@ -1068,10 +1066,9 @@ class PizzaController {
       })
       response.json(pizzas)
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
-
   }
 
   async flavorsReorder({ auth, request, response }) {
@@ -1100,13 +1097,13 @@ class PizzaController {
       return response.json({
         success: false,
         error: 403 - 664,
-        message: 'this pizza not available to your user!'
+        message: 'this pizza not available to your user!',
       })
     } catch (error) {
       console.error({
         date: moment().format(),
         data: request.all(),
-        error: error
+        error: error,
       })
       throw error
     }
@@ -1116,41 +1113,39 @@ class PizzaController {
     try {
       console.log('Starting: ', { controller: 'PizzaController', linha: 870, metodo: 'duplicateAllProduct' })
       const pizza = await PizzaProduct.findBy('categoryId', categoryId)
-      const original = oldProduct;
+      const original = oldProduct
 
       pizza.status = original.status
       pizza.sizes = original.sizes
       pizza.flavors = original.flavors
       pizza.implementations = original.implementations
 
-      pizza.sizes.forEach(size => {
+      pizza.sizes.forEach((size) => {
         size.code = Encryption.encrypt(size.name).substring(0, 6)
       })
 
-      pizza.flavors.forEach(flavor => {
+      pizza.flavors.forEach((flavor) => {
         flavor.code = Encryption.encrypt(flavor.name).substring(0, 6)
       })
 
-      pizza.implementations.forEach(implementation => {
+      pizza.implementations.forEach((implementation) => {
         implementation.code = Encryption.encrypt(implementation.name).substring(0, 6)
       })
 
       await pizza.save()
 
       return pizza
-
     } catch (error) {
       console.error({
         date: moment().format(),
-        error: error
+        error: error,
       })
-      throw error;
+      throw error
     }
   }
 
   async updateAllFlavors({ response }) {
     try {
-
       console.log('Starting: ', { controller: 'PizzaController', linha: 907, metodo: 'updateAllFlavors' })
       let page = 1
       let pizza = {}
@@ -1160,71 +1155,71 @@ class PizzaController {
           // elRow.sizes = JSON.parse(elRow.sizes)
           //ATUALIZA DISPONIBILITY
           elRow.disponibility = {
-            "week": [
+            week: [
               {
-                "id": "1",
-                "name": "monday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '1',
+                name: 'monday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
+                active: true,
               },
               {
-                "id": "2",
-                "name": "tuesday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '2',
+                name: 'tuesday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
+                active: true,
               },
               {
-                "id": "3",
-                "name": "wednesday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '3',
+                name: 'wednesday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
+                active: true,
               },
               {
-                "id": "4",
-                "name": "thrusday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '4',
+                name: 'thrusday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
+                active: true,
               },
               {
-                "id": "5",
-                "name": "friday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '5',
+                name: 'friday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
+                active: true,
               },
               {
-                "id": "6",
-                "name": "saturday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '6',
+                name: 'saturday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
+                active: true,
               },
               {
-                "id": "7",
-                "name": "sunday",
-                "time": {
-                  "to": "23:59",
-                  "from": "00:00"
+                id: '7',
+                name: 'sunday',
+                time: {
+                  to: '23:59',
+                  from: '00:00',
                 },
-                "active": true
-              }
-            ]
+                active: true,
+              },
+            ],
             // "store": {
             //   "delivery": true,
             //   "table": true,
@@ -1233,15 +1228,15 @@ class PizzaController {
           }
 
           //ATUALIZA FLAVORS
-          elRow.flavors.forEach(flavors => {
+          elRow.flavors.forEach((flavors) => {
             if (flavors.values !== undefined) {
               flavors.valuesTable = flavors.values
             }
             flavors.disponibility = {}
             flavors.disponibility.store = {
-              "delivery": true,
-              "table": true,
-              "package": false,
+              delivery: true,
+              table: true,
+              package: false,
             }
             // flavors.disponibility.week = [
             //   {
@@ -1315,7 +1310,6 @@ class PizzaController {
       } while (page <= pizza.pages.lastPage)
 
       return response.send('sucesso')
-
     } catch (error) {
       console.error(error)
       throw error
@@ -1323,11 +1317,11 @@ class PizzaController {
   }
 
   async updateComplements({ params, request, response }) {
-    const data = request.except(['_csrf']);
+    const data = request.except(['_csrf'])
 
     let { pizzaId } = params
 
-    let {removeComplements, recicle, complements} = data
+    let { removeComplements, recicle, complements } = data
 
     pizzaId = Number(pizzaId)
     removeComplements = JSON.parse(removeComplements)
@@ -1335,23 +1329,23 @@ class PizzaController {
     complements = JSON.parse(complements)
 
     try {
-      const complementsRecicleds = [];
+      const complementsRecicleds = []
       const pizza = await PizzaProduct.find(pizzaId)
 
       if (removeComplements) {
         for (let complId of removeComplements) {
-          const complToDelete = await Complement.find(complId);
+          const complToDelete = await Complement.find(complId)
 
           if (complToDelete) {
             let relation = await PizzaComplement.query().where({ complementId: complToDelete.id }).fetch()
-            
-            const productRelation = relation.rows.find(r => r.pizzaId === pizzaId)
-            
+
+            const productRelation = relation.rows.find((r) => r.pizzaId === pizzaId)
+
             if (productRelation) {
               await productRelation.delete()
             }
 
-            if (!relation.rows.filter(r => r.pizzaId !== pizzaId).length) {
+            if (!relation.rows.filter((r) => r.pizzaId !== pizzaId).length) {
               await complToDelete.delete()
             }
           }
@@ -1361,10 +1355,10 @@ class PizzaController {
       if (recicle) {
         for (let complement of recicle) {
           complement.id = Number(complement.id)
-          let oldComplement = (await Complement.find(complement.id))
+          let oldComplement = await Complement.find(complement.id)
 
           if (oldComplement) {
-            oldComplement = oldComplement.toJSON();
+            oldComplement = oldComplement.toJSON()
             if (!complement.link) {
               delete oldComplement.id
               delete oldComplement.created_at
@@ -1378,7 +1372,7 @@ class PizzaController {
                 const rcPivot = await PizzaComplement.create({ pizzaId, complementId: newComplement.id })
                 newComplement.pivot = rcPivot
               }
-              complementsRecicleds.push(newComplement);
+              complementsRecicleds.push(newComplement)
             } else {
               const relation = await PizzaComplement.query().where({ pizzaId, complementId: complement.id }).first()
 
@@ -1393,11 +1387,11 @@ class PizzaController {
       }
 
       if (complements) {
-        const newComplements = [];
+        const newComplements = []
 
-        let comp;
+        let comp
         for (let complement of complements) {
-          comp = complement.pivot ? await Complement.find(complement.id) : new Complement();
+          comp = complement.pivot ? await Complement.find(complement.id) : new Complement()
 
           if (comp && complement) {
             comp.name = complement.name
@@ -1405,29 +1399,29 @@ class PizzaController {
             comp.min = complement.min
             comp.max = complement.max
             comp.required = complement.required ? true : false
-            comp.itens = complement.itens;
+            comp.itens = complement.itens
             comp.itens.forEach((item) => {
               if (item.code) {
-                item.value = Number(item.value) || 0;
+                item.value = Number(item.value) || 0
               } else {
-                item.code = Encryption.encrypt(item.name).substring(0, 6);
+                item.code = Encryption.encrypt(item.name).substring(0, 6)
               }
 
-              item.status = JSON.parse(item.status);
+              item.status = JSON.parse(item.status)
             })
-          };
+          }
 
-          await comp.save();
+          await comp.save()
 
           if (!complement.pivot) {
             const pivot = await PizzaComplement.create({
               pizzaId,
-              complementId: comp.id
-            });
+              complementId: comp.id,
+            })
 
-            comp.pivot = pivot;
+            comp.pivot = pivot
           } else {
-            comp.pivot = complement.pivot;
+            comp.pivot = complement.pivot
           }
 
           newComplements.push(comp)
@@ -1438,11 +1432,10 @@ class PizzaController {
 
       return response.json(pizza)
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
-
 }
 
 module.exports = PizzaController

@@ -4,17 +4,17 @@
 const Schema = use('Schema')
 
 class UserPlansSchema extends Schema {
-  up () {
+  up() {
     this.table('user_plans', (table) => {
-      table.integer('systemProductId').after("flexPlanId");  
-      table.string('priceId').after('systemProductId');
+      table.integer('systemProductId').after('flexPlanId')
+      table.string('priceId').after('systemProductId')
     })
   }
 
-  down () {
+  down() {
     this.table('user_plans', (table) => {
-      table.dropColumn('systemProductId');  
-      table.dropColumn('priceId');
+      table.dropColumn('systemProductId')
+      table.dropColumn('priceId')
     })
   }
 }

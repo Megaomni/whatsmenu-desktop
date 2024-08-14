@@ -4,16 +4,15 @@
 const Schema = use('Schema')
 
 class InvoicesSchema extends Schema {
-  up () {
+  up() {
     this.table('invoices', (table) => {
-      table.string("invoice_code").after("userId");
-
+      table.string('invoice_code').after('userId')
     })
   }
 
-  down () {
+  down() {
     this.table('invoices', (table) => {
-      table.dropColumn("invoice_code");
+      table.dropColumn('invoice_code')
     })
   }
 }

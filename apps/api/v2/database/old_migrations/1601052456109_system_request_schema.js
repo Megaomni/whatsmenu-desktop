@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class SystemRequestSchema extends Schema {
-  up () {
+  up() {
     this.create('system_requests', (table) => {
       table.increments()
       table.string('transactionId', 250).nullable()
@@ -17,7 +17,7 @@ class SystemRequestSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.drop('system_requests')
   }
 }

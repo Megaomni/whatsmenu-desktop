@@ -9,16 +9,16 @@ class CategoriesSchema extends Schema {
   async up() {
     let alterTable = false
 
-    await this.table('categories', table => {
+    await this.table('categories', (table) => {
       table.renameColumn('disponibility', 'disponibility3')
       table.json('disponibility2').after('type')
     })
 
-    await this.schedule(async trx => {
-      let page = 1;
+    await this.schedule(async (trx) => {
+      let page = 1
       let categories = {}
 
-      let i = 1;
+      let i = 1
 
       do {
         categories = await Categories.query().paginate(page, 1000)
@@ -32,13 +32,13 @@ class CategoriesSchema extends Schema {
           }
 
           if (typeof disponibility === 'string') {
-            alterTable = true;
+            alterTable = true
             const dispStore = {
               store: {
                 delivery: true,
                 table: true,
-                package: true
-              }
+                package: true,
+              },
             }
 
             switch (disponibility) {
@@ -46,39 +46,38 @@ class CategoriesSchema extends Schema {
                 dispStore.store.delivery = true
                 dispStore.store.table = true
                 dispStore.store.package = true
-                break;
+                break
               case 'full':
                 dispStore.store.delivery = true
                 dispStore.store.table = true
                 dispStore.store.package = true
-                break;
+                break
               case 'delivery':
                 dispStore.store.delivery = true
                 dispStore.store.table = false
                 dispStore.store.package = false
-                break;
+                break
               case 'table':
                 dispStore.store.delivery = false
                 dispStore.store.table = true
                 dispStore.store.package = false
-                break;
+                break
             }
             elRow.disponibility2 = JSON.stringify(dispStore)
             elRow.save()
           }
-
         })
 
         page++
       } while (page <= categories.pages.lastPage)
 
       if (alterTable) {
-        this.table('categories', table => {
+        this.table('categories', (table) => {
           table.dropColumn('disponibility3')
           table.renameColumn('disponibility2', 'disponibility')
         })
       } else {
-        this.table('categories', table => {
+        this.table('categories', (table) => {
           table.dropColumn('disponibility2')
           table.renameColumn('disponibility3', 'disponibility')
         })
@@ -87,14 +86,13 @@ class CategoriesSchema extends Schema {
   }
 
   async down() {
-
-    await this.table('categories', async table => {
+    await this.table('categories', async (table) => {
       table.renameColumn('disponibility', 'disponibility3')
       table.enum('disponibility2', ['all', 'delivery', 'table']).after('type').defaultTo('all').notNullable()
     })
 
-    await this.schedule(async trx => {
-      let page = 1;
+    await this.schedule(async (trx) => {
+      let page = 1
       let categories = {}
 
       do {
@@ -115,16 +113,13 @@ class CategoriesSchema extends Schema {
 
         page++
       } while (page <= categories.pages.lastPage)
-
     })
 
-    this.table('categories', table => {
+    this.table('categories', (table) => {
       table.dropColumn('disponibility3')
       table.renameColumn('disponibility2', 'disponibility')
     })
-
   }
-
 }
 
 module.exports = CategoriesSchema

@@ -28,13 +28,13 @@ class MenuController {
 
     for (let category of categoriesDefault) {
       switch (profile.options.order) {
-        case "alphabetic":
+        case 'alphabetic':
           category.products = (await Product.query().where('categoryId', category.id).orderBy('name').fetch()).toJSON()
-          break;
+          break
 
         default:
           category.products = (await Product.query().where('categoryId', category.id).orderBy('order').orderBy('id').fetch()).toJSON()
-          break;
+          break
       }
 
       for (let product of category.products) {
@@ -44,10 +44,13 @@ class MenuController {
 
         allComplements.push(...product.complements)
       }
-
     }
 
-    allComplements = (await Complement.query().whereIn('id', [... new Set(allComplements.map(com => com.id))]).fetch()).toJSON()
+    allComplements = (
+      await Complement.query()
+        .whereIn('id', [...new Set(allComplements.map((com) => com.id))])
+        .fetch()
+    ).toJSON()
 
     for (let compleItem of allComplements) {
       const relation = await ProductComplement.query().where('complementId', compleItem.id).first()
@@ -81,20 +84,23 @@ class MenuController {
 
       let productOrderBy = ''
       switch (profile.options.order) {
-        case "alphabetic":
+        case 'alphabetic':
           productOrderBy = 'name'
-          break;
+          break
 
         default:
           productOrderBy = 'order'
-          break;
+          break
       }
 
       const categories = (
-        await profile.categories()
-        .with('products', (product) => product.with('complements', (complements) => complements.orderBy('order')).orderBy(productOrderBy))
-        .with('product', (pizzaProduct) => pizzaProduct.with('complements', (complements) => complements.orderBy('order')))
-        .orderBy('order').fetch()).toJSON()
+        await profile
+          .categories()
+          .with('products', (product) => product.with('complements', (complements) => complements.orderBy('order')).orderBy(productOrderBy))
+          .with('product', (pizzaProduct) => pizzaProduct.with('complements', (complements) => complements.orderBy('order')))
+          .orderBy('order')
+          .fetch()
+      ).toJSON()
       const categoriesDefault = categories.filter((category) => category.type === 'default')
       const categoriesPizza = categories.filter((category) => category.type === 'pizza')
 
@@ -105,7 +111,7 @@ class MenuController {
         // allComplements: allComplements
       })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }

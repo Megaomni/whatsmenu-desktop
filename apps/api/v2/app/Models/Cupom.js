@@ -4,15 +4,15 @@
 const Model = use('Model')
 
 class Cupom extends Model {
-  static get table () {
+  static get table() {
     return 'cupons'
   }
 
   static boot() {
-    super.boot();
+    super.boot()
 
     this.addHook('beforeSave', (cupom) => {
-      cupom.code = cupom.code.toUpperCase();
+      cupom.code = cupom.code.toUpperCase()
     })
   }
 

@@ -1,6 +1,6 @@
 'use strict'
 
-const { default: axios } = require("axios")
+const { default: axios } = require('axios')
 
 const Profile = use('App/Models/Profile')
 const Client = use('App/Models/Client')
@@ -16,11 +16,11 @@ class ClientAddressController {
 
       const address = await ClientAddress.create({
         clientId,
-        ...addressData
+        ...addressData,
       })
       return response.status(201).json({ address })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -38,7 +38,7 @@ class ClientAddressController {
 
       return response.status(200).json({ address })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -56,7 +56,7 @@ class ClientAddressController {
 
       return response.status(200).json({ message: 'Endereço deletado com sucesso.', success: true })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -90,11 +90,11 @@ class ClientAddressController {
 
         const { data } = await axios.post('https://api2.whatsmenu.com.br/api/v2/calc/distance', {
           origin,
-          destination
+          destination,
         })
 
         if (!profile.taxDelivery.some((tax) => tax.distance >= data.distance / 1000)) {
-          console.error(JSON.stringify(data));
+          console.error(JSON.stringify(data))
           throw new Error('Endereço fora da área de cobertura')
         }
 

@@ -9,24 +9,27 @@ const Utility = use('Utility')
 const axios = require('axios')
 
 const headers = {
-  "headers": {
+  headers: {
     'x-auth-key': Env.get('CLOUD_FLARE_API_KEY'),
-    'x-auth-email': Env.get('CLOUD_FLARE_API_USERNAME')
-  }
+    'x-auth-email': Env.get('CLOUD_FLARE_API_USERNAME'),
+  },
 }
 
 class DomainController {
-
   async addRegisterDNS(key, type, name, content, priority = 10, proxied = true) {
     try {
       console.log('Starting: ', { controller: 'DomainController', linha: 22, metodo: 'addRegisterDNS' })
-      await axios.post(`https://api.cloudflare.com/client/v4/zones/${key}/dns_records`, {
-        "type": type,
-        "name": name.replace(/(^[^\.]*)(\.)/, '').trim(),
-        "content": content,
-        "priority": priority,
-        "proxied": proxied,
-      }, headers)
+      await axios.post(
+        `https://api.cloudflare.com/client/v4/zones/${key}/dns_records`,
+        {
+          type: type,
+          name: name.replace(/(^[^\.]*)(\.)/, '').trim(),
+          content: content,
+          priority: priority,
+          proxied: proxied,
+        },
+        headers
+      )
     } catch (error) {
       console.error(error)
       throw error.response.data
@@ -51,7 +54,7 @@ class DomainController {
       view.render('inner.domains.index', {
         profile: prof,
         domains: domains,
-        systemRequest: sysreq ? sysreq.toJSON() : null
+        systemRequest: sysreq ? sysreq.toJSON() : null,
       })
     )
   }
@@ -65,33 +68,48 @@ class DomainController {
 
       data.profileId = profile.id
 
-      const cloudFlareAPI = await axios.post('https://api.cloudflare.com/client/v4/zones', {
-        "name": data.name,
-        "account": {
-          "id": Env.get('CLOUD_FLARE_API_ACCOUNT_ID')
+      const cloudFlareAPI = await axios.post(
+        'https://api.cloudflare.com/client/v4/zones',
+        {
+          name: data.name,
+          account: {
+            id: Env.get('CLOUD_FLARE_API_ACCOUNT_ID'),
+          },
+          jump_start: true,
+          type: 'full',
         },
-        "jump_start": true,
-        "type": "full"
-      }, headers)
+        headers
+      )
 
       data.key = cloudFlareAPI.data.result.id
 
-      domains.toJSON().length == 0 ? data.default = 1 : data.default = 0
+      domains.toJSON().length == 0 ? (data.default = 1) : (data.default = 0)
 
       await Domain.create(data)
 
-      await axios.patch(`https://api.cloudflare.com/client/v4/zones/${data.key}/settings/always_use_https`, {
-        "value": "on"
-      }, headers)
-      await axios.patch(`https://api.cloudflare.com/client/v4/zones/${data.key}/settings/automatic_https_rewrites`, {
-        "value": "on"
-      }, headers)
-      await axios.patch(`https://api.cloudflare.com/client/v4/zones/${data.key}/settings/ssl`, {
-        "value": "full"
-      }, headers)
+      await axios.patch(
+        `https://api.cloudflare.com/client/v4/zones/${data.key}/settings/always_use_https`,
+        {
+          value: 'on',
+        },
+        headers
+      )
+      await axios.patch(
+        `https://api.cloudflare.com/client/v4/zones/${data.key}/settings/automatic_https_rewrites`,
+        {
+          value: 'on',
+        },
+        headers
+      )
+      await axios.patch(
+        `https://api.cloudflare.com/client/v4/zones/${data.key}/settings/ssl`,
+        {
+          value: 'full',
+        },
+        headers
+      )
 
       const domainsResponse = await profile.domains().fetch()
-
 
       const regex = /.+(\..+)$/gm
       let domainArr
@@ -104,7 +122,6 @@ class DomainController {
           const domainsUpdated = await profile.domains().fetch()
           return response.json(domainsUpdated)
         }
-
       }
 
       await this.addRegisterDNS(data.key, 'A', '@', Env.get('WHATSMENU_IP'))
@@ -114,10 +131,9 @@ class DomainController {
 
       return response.json(domainsUpdated)
     } catch (error) {
-      console.error(error.response.data);
+      console.error(error.response.data)
       return response.json(error.response.data)
     }
-
   }
 
   async storeDnsConfig({ auth, request, response }) {
@@ -132,11 +148,11 @@ class DomainController {
 
       let proxied = true
 
-      if (data.typeDns === "TXT" || data.typeDns === "MX") {
+      if (data.typeDns === 'TXT' || data.typeDns === 'MX') {
         proxied = false
       }
 
-      const filteredDomain = domainsJSON.find(domain => domain.id == data.domainId)
+      const filteredDomain = domainsJSON.find((domain) => domain.id == data.domainId)
       await this.addRegisterDNS(filteredDomain.key, data.typeDns, data.nameDns, data.contentDns, data.priority, proxied)
 
       return response.json(domains)
@@ -193,7 +209,7 @@ class DomainController {
 
       if (profile) {
         const domains = await profile.domains().fetch()
-        const defaultDomain = domains.toJSON().find(domain => domain.default)
+        const defaultDomain = domains.toJSON().find((domain) => domain.default)
 
         if (defaultDomain) {
           return response.json(defaultDomain.name)
@@ -202,7 +218,7 @@ class DomainController {
 
       return response.json(null)
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
@@ -217,12 +233,12 @@ class DomainController {
 
       const domainsJSON = domains.toJSON()
 
-      const haveDomain = domainsJSON.find(domain => domain.id === data.domainId)
+      const haveDomain = domainsJSON.find((domain) => domain.id === data.domainId)
       if (haveDomain && haveDomain.key) {
         const domainDNS = await axios.get(`https://api.cloudflare.com/client/v4/zones/${haveDomain.key}/dns_records`, headers)
-        const dns = domainDNS.data.result.map(dr => {
-          if (dr.type === "A") {
-            dr.content = "127.0.0.1"
+        const dns = domainDNS.data.result.map((dr) => {
+          if (dr.type === 'A') {
+            dr.content = '127.0.0.1'
           }
           return dr
         })
@@ -244,7 +260,7 @@ class DomainController {
       const data = request.except(['_csrf'])
       const domainsJSON = domains.toJSON()
 
-      const filteredDomain = domainsJSON.find(domain => domain.id == data.domainId)
+      const filteredDomain = domainsJSON.find((domain) => domain.id == data.domainId)
 
       await axios.delete(`https://api.cloudflare.com/client/v4/zones/${filteredDomain.key}`, headers)
 
@@ -252,7 +268,7 @@ class DomainController {
 
       await domain.delete()
 
-      return response.json({ message: "success" })
+      return response.json({ message: 'success' })
     } catch (error) {
       console.error(error.response.data)
       throw error.response.data
@@ -266,7 +282,7 @@ class DomainController {
 
       await axios.delete(`https://api.cloudflare.com/client/v4/zones/${data.zone_id}/dns_records/${data.id}`, headers)
 
-      return response.json({ message: "success" })
+      return response.json({ message: 'success' })
     } catch (error) {
       console.error(error.response.data)
       throw error.response.data

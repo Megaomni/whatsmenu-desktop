@@ -4,7 +4,7 @@
 const Model = use('Model')
 
 class Seller extends Model {
-  users () {
+  users() {
     return this.hasMany('App/Models/User', 'id', 'sellerId')
   }
 }

@@ -1,251 +1,247 @@
-"use strict"
+'use strict'
 
 class Gateway {
-    // gateway
+  // gateway
 
-    constructor(gatewayStrategy) {
-        this.gateway = gatewayStrategy
+  constructor(gatewayStrategy) {
+    this.gateway = gatewayStrategy
+  }
+
+  setSecret(secret) {
+    if (this.gateway.setSecret) {
+      return this.gateway.setSecret(secret)
     }
 
-    setSecret(secret) {
-        if (this.gateway.setSecret) {
-            return this.gateway.setSecret(secret)
-        }
+    throw {
+      message: 'This gateway does not have an method setSecret',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method setSecret"
-        }
+  async retrieveLoginToken() {
+    if (this.gateway.retrieveLoginToken) {
+      return await this.gateway.retrieveLoginToken()
     }
 
-    async retrieveLoginToken() {
-        if (this.gateway.retrieveLoginToken) {
-            return await this.gateway.retrieveLoginToken()
-        }
+    throw {
+      message: 'This gateway does not have an method createPixOrder',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method createPixOrder"
-        }
+  async createCardOrder(data) {
+    if (this.gateway.createCardOrder) {
+      return await this.gateway.createCardOrder(data)
     }
 
-    async createCardOrder(data) {
-        if (this.gateway.createCardOrder) {
-            return await this.gateway.createCardOrder(data)
-        }
+    throw {
+      message: 'This gateway does not have an method createCardOrder',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method createCardOrder"
-        }
+  async createPixOrder(data) {
+    if (this.gateway.createPixOrder) {
+      return await this.gateway.createPixOrder(data)
     }
 
-    async createPixOrder(data) {
-        if (this.gateway.createPixOrder) {
-            return await this.gateway.createPixOrder(data)
-        }
+    throw {
+      message: 'This gateway does not have an method createPixOrder',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method createPixOrder"
-        }
+  async createPixOrderSplit(data) {
+    if (this.gateway.createPixOrderSplit) {
+      return await this.gateway.createPixOrderSplit(data)
     }
 
-    async createPixOrderSplit(data) {
-        if (this.gateway.createPixOrderSplit) {
-            return await this.gateway.createPixOrderSplit(data)
-        }
+    throw {
+      message: 'This gateway does not have an method createPixOrderSplit',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method createPixOrderSplit"
-        }
+  async retrieveOrder(data) {
+    if (this.gateway.retrieveOrder) {
+      return await this.gateway.retrieveOrder(data)
     }
 
-    async retrieveOrder(data) {
-        if (this.gateway.retrieveOrder) {
-            return await this.gateway.retrieveOrder(data)
-        }
+    throw {
+      message: 'This gateway does not have an method retrieveOrder',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method retrieveOrder"
-        }
+  async createRecipient(data) {
+    if (this.gateway.createRecipient) {
+      return await this.gateway.createRecipient(data)
     }
 
-    async createRecipient(data) {
-        if (this.gateway.createRecipient){
-            return await this.gateway.createRecipient(data)
-        }
-
-        throw {
-            message: "This gateway does not have an method createRecipient"
-        }
+    throw {
+      message: 'This gateway does not have an method createRecipient',
     }
-    
+  }
 
-    async updateRecipient(data, recipientId) {
-        if (this.gateway.updateRecipient){
-            return await this.gateway.updateRecipient(data, recipientId)
-        }
-
-        throw {
-            message: "This gateway does not have an method updateRecipient"
-        }
+  async updateRecipient(data, recipientId) {
+    if (this.gateway.updateRecipient) {
+      return await this.gateway.updateRecipient(data, recipientId)
     }
 
-    async getRecipient(data) {
-        if (this.gateway.getRecipient){
-            return await this.gateway.getRecipient(data)
-        }
+    throw {
+      message: 'This gateway does not have an method updateRecipient',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method getRecipient"
-        }
+  async getRecipient(data) {
+    if (this.gateway.getRecipient) {
+      return await this.gateway.getRecipient(data)
     }
 
-    async addSubscriptionDiscount(data, subscriptionId) {
-        if (this.gateway.addSubscriptionDiscount) {
-            return await this.gateway.addSubscriptionDiscount(data, subscriptionId)
-        }
+    throw {
+      message: 'This gateway does not have an method getRecipient',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method addSubscriptionDiscount"
-        }
+  async addSubscriptionDiscount(data, subscriptionId) {
+    if (this.gateway.addSubscriptionDiscount) {
+      return await this.gateway.addSubscriptionDiscount(data, subscriptionId)
     }
 
-    async addSubscriptionIncrement(data, subscriptionId) {
-        if (this.gateway.addSubscriptionIncrement) {
-            return await this.gateway.addSubscriptionIncrement(data, subscriptionId)
-        }
+    throw {
+      message: 'This gateway does not have an method addSubscriptionDiscount',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method addSubscriptionIncrement"
-        }
+  async addSubscriptionIncrement(data, subscriptionId) {
+    if (this.gateway.addSubscriptionIncrement) {
+      return await this.gateway.addSubscriptionIncrement(data, subscriptionId)
     }
 
-    async addSubscriptionItem(data, subscriptionId) {
-        if (this.gateway.addSubscriptionItem) {
-            return await this.gateway.addSubscriptionItem(data, subscriptionId)
-        }
+    throw {
+      message: 'This gateway does not have an method addSubscriptionIncrement',
+    }
+  }
 
-        throw {
-            message: "This gateway does not have an method addSubscriptionItem"
-        }
+  async addSubscriptionItem(data, subscriptionId) {
+    if (this.gateway.addSubscriptionItem) {
+      return await this.gateway.addSubscriptionItem(data, subscriptionId)
     }
 
-    async changeChargeCard(chargeId, cardId) {
-        return await this.gateway.changeChargeCard(chargeId, cardId)
+    throw {
+      message: 'This gateway does not have an method addSubscriptionItem',
+    }
+  }
+
+  async changeChargeCard(chargeId, cardId) {
+    return await this.gateway.changeChargeCard(chargeId, cardId)
+  }
+
+  async changeSubscriptionCard(subscriptionId, cardId) {
+    return await this.gateway.changeSubscriptionCard(subscriptionId, cardId)
+  }
+
+  async createCard(data) {
+    return await this.gateway.createCard(data)
+  }
+
+  async createCardToken(data) {
+    return await this.gateway.createCardToken(data)
+  }
+
+  async createCardOrder(data) {
+    if (this.gateway.createCardOrder) {
+      return await this.gateway.createCardOrder(data)
     }
 
-    async changeSubscriptionCard(subscriptionId, cardId) {
-        return await this.gateway.changeSubscriptionCard(subscriptionId, cardId)
+    throw {
+      message: 'This gateway does not have an method retrievePixOrder',
     }
+  }
 
-    async createCard(data) {
-        return await this.gateway.createCard(data)
-    }
+  async createCheckoutOrPurchaseCard(data) {
+    return await this.gateway.createCheckoutOrPurchaseCard(data)
+  }
 
-    async createCardToken(data) {
-        return await this.gateway.createCardToken(data)
-    }
+  async createCustomer(userData) {
+    return await this.gateway.createCustomer(userData)
+  }
 
-   async createCardOrder(data){
-        if (this.gateway.createCardOrder){
-            return await this.gateway.createCardOrder(data)
+  async createSubscription(data, billing_type) {
+    return await this.gateway.createSubscription(data, billing_type)
+  }
 
-        }
+  async cancelSubscription(subscriptionId, data) {
+    return await this.gateway.cancelSubscription(subscriptionId, data)
+  }
 
-        throw {
-            message: "This gateway does not have an method retrievePixOrder"
-        }
-    }
+  async deleteCard(data) {
+    return await this.gateway.deleteCard(data)
+  }
 
-    async createCheckoutOrPurchaseCard(data) {
-        return await this.gateway.createCheckoutOrPurchaseCard(data)
-    }
+  async getSubscription(subscription_id) {
+    return await this.gateway.getSubscription(subscription_id)
+  }
 
-    async createCustomer(userData) {
-        return await this.gateway.createCustomer(userData)
-    }
+  async deleteSubscriptionItem(itemId, subscriptionId, cancel_pending_invoices) {
+    return await this.gateway.deleteSubscriptionItem(itemId, subscriptionId, cancel_pending_invoices)
+  }
 
-    async createSubscription(data, billing_type) {
-        return await this.gateway.createSubscription(data, billing_type)
-    }
+  async updateChargeOrSubscriptionCard(data) {
+    return await this.gateway.updateChargeOrSubscriptionCard(data)
+  }
 
-    async cancelSubscription(subscriptionId, data) {
-        return await this.gateway.cancelSubscription(subscriptionId, data)
-    }
+  //WEBHOOKS
 
-    async deleteCard(data) {
-        return await this.gateway.deleteCard(data)
-    }
+  async webhookCardCreated(event) {
+    return await this.gateway.webhookCardCreated(event)
+  }
 
-    async getSubscription(subscription_id) {
-        return await this.gateway.getSubscription(subscription_id)
-    }
+  async webhookDeletedCard(event) {
+    return await this.gateway.webhookDeletedCard(event)
+  }
 
-    async deleteSubscriptionItem(itemId, subscriptionId, cancel_pending_invoices) {
-        return await this.gateway.deleteSubscriptionItem(itemId, subscriptionId, cancel_pending_invoices)
-    }
+  async webhookExpiredCard(event) {
+    return await this.gateway.webhookExpiredCard(event)
+  }
 
-    async updateChargeOrSubscriptionCard(data) {
-        return await this.gateway.updateChargeOrSubscriptionCard(data)
-    }
+  async webhookUpdatedCard(event) {
+    return await this.gateway.webhookUpdatedCard(event)
+  }
 
-    //WEBHOOKS
+  async webhookChargePaid(event) {
+    return await this.gateway.webhookChargePaid(event)
+  }
 
+  async webhookChargePaymentFailed(event) {
+    this.gateway.webhookChargePaymentFailed(event)
+  }
 
+  async webhookInvoiceCanceled(event) {
+    return await this.gateway.webhookInvoiceCanceled(event)
+  }
 
-    async webhookCardCreated(event) {
-        return await this.gateway.webhookCardCreated(event)
-    }
+  async webhookInvoiceCreated(event) {
+    return await this.gateway.webhookInvoiceCreated(event)
+  }
 
-    async webhookDeletedCard(event) {
-        return await this.gateway.webhookDeletedCard(event)
-    }
+  async webhookInvoicePaid(event) {
+    return await this.gateway.webhookInvoicePaid(event)
+  }
 
-    async webhookExpiredCard(event) {
-        return await this.gateway.webhookExpiredCard(event)
-    }
+  async webhookFailedInvoicePayment(event) {
+    return await this.gateway.webhookFailedInvoicePayment(event)
+  }
 
-    async webhookUpdatedCard(event) {
-        return await this.gateway.webhookUpdatedCard(event)
-    }
+  async webhookOrderPaid(event) {
+    return await this.gateway.webhookOrderPaid(event)
+  }
 
-    async webhookChargePaid(event) {
-        return await this.gateway.webhookChargePaid(event)
-    }
+  async webhookUpdatedInvoice(event) {
+    return await this.gateway.webhookUpdatedInvoice(data)
+  }
 
-    async webhookChargePaymentFailed(event) {
-        this.gateway.webhookChargePaymentFailed(event)
-    }
+  async webhookSubscriptionCreated(event) {
+    return await this.gateway.webhookSubscriptionCreated(event)
+  }
 
-    async webhookInvoiceCanceled(event) {
-        return await this.gateway.webhookInvoiceCanceled(event)
-    }
-
-    async webhookInvoiceCreated(event) {
-        return await this.gateway.webhookInvoiceCreated(event)
-    }
-
-    async webhookInvoicePaid(event) {
-        return await this.gateway.webhookInvoicePaid(event)
-    }
-
-    async webhookFailedInvoicePayment(event) {
-        return await this.gateway.webhookFailedInvoicePayment(event)
-    }
-
-    async webhookOrderPaid(event) {
-        return await this.gateway.webhookOrderPaid(event)
-    }
-
-    async webhookUpdatedInvoice(event) {
-        return await this.gateway.webhookUpdatedInvoice(data)
-    }
-
-    async webhookSubscriptionCreated(event) {
-        return await this.gateway.webhookSubscriptionCreated(event)
-    }
-
-    async webhookSubscriptionCanceled(event) {
-        return await this.gateway.webhookSubscriptionCanceled(event)
-    }
+  async webhookSubscriptionCanceled(event) {
+    return await this.gateway.webhookSubscriptionCanceled(event)
+  }
 }
 
 module.exports = Gateway

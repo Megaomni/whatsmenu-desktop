@@ -6,7 +6,7 @@ const Database = use('Database')
 const Command = use('App/Models/Command')
 
 class CommandSchema extends Schema {
-  up () {
+  up() {
     this.table('commands', (table) => {
       table.integer('tableOpenedId').unsigned().references('id').inTable('table_openeds').after('id')
     })
@@ -20,7 +20,16 @@ class CommandSchema extends Schema {
 
         for (let command of commands.rows) {
           if (command.code === 1) {
-            await trx.insert({tableId: command.tableId, status: 0, fees: JSON.stringify(command.fees), formsPayment: JSON.stringify(command.formsPayment), created_at: command.created_at, updated_at: command.updated_at}).into('table_openeds')
+            await trx
+              .insert({
+                tableId: command.tableId,
+                status: 0,
+                fees: JSON.stringify(command.fees),
+                formsPayment: JSON.stringify(command.formsPayment),
+                created_at: command.created_at,
+                updated_at: command.updated_at,
+              })
+              .into('table_openeds')
             index++
             command.tableOpenedId = index
             command.save()
@@ -34,7 +43,7 @@ class CommandSchema extends Schema {
         await trx.commit()
       } catch (error) {
         await trx.rollback()
-        console.error(error);
+        console.error(error)
       }
     })
 
@@ -44,7 +53,7 @@ class CommandSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('commands', (table) => {
       table.integer('tableId').unsigned().references('id').inTable('tables').after('id')
     })
@@ -54,13 +63,12 @@ class CommandSchema extends Schema {
       const tables = await Database.select('*').from('table_openeds')
 
       for (let command of commands.rows) {
-        const table = tables.find(t => t.id === command.tableOpenedId)
+        const table = tables.find((t) => t.id === command.tableOpenedId)
         if (table) {
           command.tableId = table.tableId
           command.save()
         }
-    }
-
+      }
     })
 
     this.table('commands', (table) => {

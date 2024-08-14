@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class RequestSchema extends Schema {
-  up () {
+  up() {
     this.create('requests', (table) => {
       table.increments()
       table.integer('profileId').notNullable().unsigned().references('id').inTable('profiles')
@@ -26,7 +26,7 @@ class RequestSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.drop('requests')
   }
 }

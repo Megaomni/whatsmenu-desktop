@@ -4,15 +4,15 @@
 const Schema = use('Schema')
 
 class AddCupomRequestSchema extends Schema {
-  up () {
+  up() {
     this.table('requests', (table) => {
       table.integer('cupomId').nullable().unsigned().references('id').inTable('cupons').after('profileId')
     })
   }
 
-  down () {
+  down() {
     this.table('requests', (table) => {
-      table.dropForeign('cupomId', 'requests_cupomid_foreign');
+      table.dropForeign('cupomId', 'requests_cupomid_foreign')
       table.dropColumn('cupomId')
     })
   }

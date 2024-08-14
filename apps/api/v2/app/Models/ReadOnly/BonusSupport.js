@@ -19,7 +19,6 @@ class BonusSupport extends Model {
   incvoice() {
     return this.hasOne('App/Models/ReadOnly/SystemRequest', 'id', 'systemRequestId')
   }
-
 }
 
 module.exports = BonusSupport

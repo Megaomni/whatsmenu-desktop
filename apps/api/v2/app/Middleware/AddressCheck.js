@@ -2,7 +2,6 @@
 const ClientAddress = use('App/Models/ClientAddress')
 
 class AddressCheck {
-
   async handle({ params, response }, next) {
     // call next to advance the request
     try {
@@ -13,7 +12,7 @@ class AddressCheck {
         return response.status(404).json({ message: 'Endereço não encontrado' })
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
     await next()
   }

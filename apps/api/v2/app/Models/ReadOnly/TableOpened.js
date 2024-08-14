@@ -30,20 +30,20 @@ class TableOpened extends Model {
       for (let tableOpened of tableOpeneds) {
         tableOpened.fees = JSON.parse(tableOpened.fees)
         tableOpened.formsPayment = JSON.parse(tableOpened.formsPayment)
-        tableOpened.formsPayment.forEach(formPayment => {
+        tableOpened.formsPayment.forEach((formPayment) => {
           formPayment.value = Number(formPayment.value)
-            formPayment.change = formPayment.change && Number(formPayment.change)
-        });
+          formPayment.change = formPayment.change && Number(formPayment.change)
+        })
       }
     })
 
     this.addHook('afterFind', (tableOpened) => {
       tableOpened.fees = JSON.parse(tableOpened.fees)
       tableOpened.formsPayment = JSON.parse(tableOpened.formsPayment)
-      tableOpened.formsPayment.forEach(formPayment => {
+      tableOpened.formsPayment.forEach((formPayment) => {
         formPayment.value = Number(formPayment.value)
         formPayment.change = formPayment.change && Number(formPayment.change)
-      });
+      })
     })
   }
 

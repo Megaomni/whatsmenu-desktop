@@ -12,7 +12,6 @@ class Fee extends Model {
       fee.status = JSON.parse(fee.status)
       fee.value = JSON.parse(fee.value)
     })
-
   }
 }
 

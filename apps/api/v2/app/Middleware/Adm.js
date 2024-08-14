@@ -17,11 +17,11 @@ class Adm {
       const user = await auth.getUser()
       if (!user.controls.type) {
         return response.status(403).json({
-          errorMessage: "Acesso proíbido para este usuário"
-        });
+          errorMessage: 'Acesso proíbido para este usuário',
+        })
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
     await next()
   }

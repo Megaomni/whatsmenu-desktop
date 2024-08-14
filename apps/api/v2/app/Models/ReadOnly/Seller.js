@@ -8,7 +8,7 @@ class Seller extends Model {
     return 'mysql_r'
   }
 
-  users () {
+  users() {
     return this.hasMany('App/Models/ReadOnly/User', 'id', 'sellerId')
   }
 }

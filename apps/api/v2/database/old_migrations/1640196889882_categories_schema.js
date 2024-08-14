@@ -4,14 +4,14 @@
 const Schema = use('Schema')
 
 class CategoriesSchema extends Schema {
-  up () {
+  up() {
     this.table('categories', (table) => {
       // alter table
       table.enum('disponibility', ['all', 'delivery', 'table']).after('type').defaultTo('all').notNullable()
     })
   }
 
-  down () {
+  down() {
     this.table('categories', (table) => {
       // reverse alternations
       table.dropColumn('disponibility')

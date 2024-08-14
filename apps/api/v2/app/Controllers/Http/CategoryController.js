@@ -60,9 +60,9 @@ class CategoryController {
         if (haveInvalid) {
           return response.status(403).json({ message: 'Horário(s) inválido(s)', data: options.week })
         }
-        category.name = name;
-        category.disponibility = disponibility;
-        category.options.week = options.week;
+        category.name = name
+        category.disponibility = disponibility
+        category.options.week = options.week
 
         if (category.type === 'pizza' && product) {
           pizza = await PizzaProduct.find(product.id)

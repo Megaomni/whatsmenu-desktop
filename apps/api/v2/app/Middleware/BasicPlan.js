@@ -2,11 +2,11 @@
 
 const View = use('Adonis/Src/View')
 
-const UserPlan = use("App/Models/UserPlan")
-const FlexPlan = use("App/Models/FlexPlan")
+const UserPlan = use('App/Models/UserPlan')
+const FlexPlan = use('App/Models/FlexPlan')
 
 class DeliveryPlan {
-  async handle ({ response, auth }, next) {
+  async handle({ response, auth }, next) {
     const user = await auth.getUser()
 
     const user_plans = await user.plans().where('category', 'basic').fetch()
@@ -18,7 +18,7 @@ class DeliveryPlan {
       response.plainCookie('deliveryAccess', true)
     } else {
       View.global('deliveryAccess', () => {
-      return false
+        return false
       })
       response.plainCookie('deliveryAccess', false)
     }

@@ -4,21 +4,24 @@ on:
   push:
     branches:
       - beta
+    paths:
+      - "apps/api/v2/**"
+      - ".github/workflows/deploy-api2.yml"
 
   pull_request:
     types: [closed]
     branches:
       - main
-
     paths:
-      - "apps/api/v2"
+      - "apps/api/v2/**"
+      - ".github/workflows/deploy-api2.yml"
 
 env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
   package:
-    if: github.ref_name == 'beta' || github.event.pull_request.merged == true && contains(github.event.pull_request.changed_files, 'apps/api/v2/')
+    if: github.ref_name == 'beta' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     outputs:
@@ -46,7 +49,7 @@ jobs:
 
       - name: Package application
         run: |
-          sudo tar -czf deploy.tar.gz ./apps/api/v2
+          sudo tar -czf deploy.tar.gz -C ./apps/api/v2 .
       
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -86,15 +89,13 @@ jobs:
           ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
             cd ${{ env.PROJECT_PATH }}
             ls -la
-            find /public_html ! -name 'deploy.tar.gz' -type f -exec rm -f {} +
-            find /public_html ! -name 'deploy.tar.gz' -type d -exec rm -rf {} +
+            find ./public_html ! -name 'deploy.tar.gz' -type f -exec rm -f {} +
             cd public_html
             tar -xzf deploy.tar.gz
-            mv apps/api/v2/* .
-            rm -rf apps
             rm deploy.tar.gz
-            scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
-            pm2 start server.js
+            scp ${{ secrets.EC2_ENV_HOST }}:${{ env.ENV_PATH }} .env
+            npm install
+            pm2 start ${{ env.BRANCH == 'beta' && 'ecosystem_beta.config.cjs' || 'ecosystem.config.cjs' }}
           EOF
 
           rm private_key.pem

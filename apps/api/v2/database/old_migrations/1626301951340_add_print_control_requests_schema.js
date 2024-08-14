@@ -4,7 +4,7 @@
 const Schema = use('Schema')
 
 class AddPrintControlRequestsSchema extends Schema {
-  up () {
+  up() {
     this.table('requests', (table) => {
       table.boolean('print').defaultTo(false).index('request_print').after('total')
       table.integer('tentatives').defaultTo(0).index('request_tentatives').after('print')
@@ -12,7 +12,7 @@ class AddPrintControlRequestsSchema extends Schema {
     })
   }
 
-  down () {
+  down() {
     this.table('requests', (table) => {
       table.dropIndex(['print', 'tentatives'], 'requests_print_tentatives')
       table.dropIndex('print', 'request_print')

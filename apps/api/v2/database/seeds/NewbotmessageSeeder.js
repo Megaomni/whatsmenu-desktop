@@ -15,7 +15,7 @@ const Profile = use('App/Models/Profile')
 const Logger = use('Logger')
 
 class NewbotmessageSeeder {
-  async run () {
+  async run() {
     try {
       const profiles = await Profile.all()
       for (const profile of profiles.rows) {
@@ -39,12 +39,12 @@ Até mais`,
           try {
             await profile.save()
           } catch (error) {
-            console.error(profile.slug, error);            
+            console.error(profile.slug, error)
           }
         }
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 }

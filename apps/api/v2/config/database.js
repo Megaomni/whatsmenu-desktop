@@ -32,10 +32,10 @@ module.exports = {
   sqlite: {
     client: 'sqlite3',
     connection: {
-      filename: Helpers.databasePath(`${Env.get('DB_DATABASE', 'development')}.sqlite`)
+      filename: Helpers.databasePath(`${Env.get('DB_DATABASE', 'development')}.sqlite`),
     },
     useNullAsDefault: true,
-    debug: Env.get('DB_DEBUG', false)
+    debug: Env.get('DB_DEBUG', false),
   },
 
   /*
@@ -55,9 +55,9 @@ module.exports = {
       port: Env.get('DB_PORT', ''),
       user: Env.get('DB_USER', 'root'),
       password: Env.get('DB_PASSWORD', ''),
-      database: Env.get('DB_DATABASE', 'adonis')
+      database: Env.get('DB_DATABASE', 'adonis'),
     },
-    debug: Env.get('DB_DEBUG', false)
+    debug: Env.get('DB_DEBUG', false),
   },
   mysql_r: {
     client: 'mysql',
@@ -66,9 +66,9 @@ module.exports = {
       port: Env.get('DB_PORT', ''),
       user: Env.get('DB_USER', 'root'),
       password: Env.get('DB_PASSWORD', ''),
-      database: Env.get('DB_DATABASE', 'adonis')
+      database: Env.get('DB_DATABASE', 'adonis'),
     },
-    debug: Env.get('DB_DEBUG', false)
+    debug: Env.get('DB_DEBUG', false),
   },
   mysql2: {
     client: 'mysql',
@@ -77,9 +77,9 @@ module.exports = {
       port: Env.get('DB_PORT2', ''),
       user: Env.get('DB_USER2', 'root'),
       password: Env.get('DB_PASSWORD2', ''),
-      database: Env.get('DB_DATABASE2', 'adonis')
+      database: Env.get('DB_DATABASE2', 'adonis'),
     },
-    debug: Env.get('DB_DEBUG', false)
+    debug: Env.get('DB_DEBUG', false),
   },
 
   /*
@@ -99,8 +99,8 @@ module.exports = {
       port: Env.get('DB_PORT', ''),
       user: Env.get('DB_USER', 'root'),
       password: Env.get('DB_PASSWORD', ''),
-      database: Env.get('DB_DATABASE', 'adonis')
+      database: Env.get('DB_DATABASE', 'adonis'),
     },
-    debug: Env.get('DB_DEBUG', false)
-  }
+    debug: Env.get('DB_DEBUG', false),
+  },
 }

@@ -4,14 +4,14 @@
 const Schema = use('Schema')
 
 class AddCashierIdOpenedSchema extends Schema {
-  up () {
+  up() {
     this.table('table_openeds', (table) => {
       table.integer('cashierId').nullable().unsigned().references('id').inTable('cashiers').after('tableId')
       // alter table
     })
   }
 
-  down () {
+  down() {
     this.table('table_openeds', (table) => {
       table.dropForeign('cashierId', 'table_openeds_cashierid_foreign')
       table.dropColumn('cashierId')

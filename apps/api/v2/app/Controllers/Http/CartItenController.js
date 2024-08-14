@@ -7,10 +7,12 @@ class CartItenController {
   async delete({ params, response }) {
     try {
       const { cartId, itemId } = params
-      const item = await CartIten.query().where({
-        cartId,
-        id: itemId
-      }).first()
+      const item = await CartIten.query()
+        .where({
+          cartId,
+          id: itemId,
+        })
+        .first()
 
       if (!item) {
         return response.status(404).json({ message: 'Item não encontrado' })
@@ -22,23 +24,25 @@ class CartItenController {
 
       item.deleted_at = moment().format('YYYY-MM-DD HH:mm:ss')
       await item.save()
-      
+
       return response.status(202).json({ message: 'Item deletedo com sucesso.' })
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
 
-  async edit({ params, request,response }) {
+  async edit({ params, request, response }) {
     const data = request.except(['_csrf', '_method'])
 
     try {
       const { cartId, itemId } = params
-      const item = await CartIten.query().where({
-        cartId,
-        id: itemId
-      }).first()
+      const item = await CartIten.query()
+        .where({
+          cartId,
+          id: itemId,
+        })
+        .first()
 
       if (!item) {
         return response.status(404).json({ message: 'Item não encontrado' })
@@ -52,11 +56,10 @@ class CartItenController {
 
       return response.json(item)
     } catch (error) {
-      console.error(error);
+      console.error(error)
       throw error
     }
   }
-
 }
 
 module.exports = CartItenController
