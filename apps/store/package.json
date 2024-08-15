@@ -2,9 +2,10 @@
   "name": "store",
   "version": "0.0.0",
   "scripts": {
+    "postinstall": "chmod +x ./install.sh && ./install.sh",
     "ng": "ng",
     "start": "ng serve",
-    "dev": "ng serve",
+    "dev": "chmod +x ./dev.sh && ./dev.sh",
     "build": "chmod +x build.sh && ./build.sh",
     "test": "ng test",
     "lint": "ng lint",

@@ -50,7 +50,6 @@ jobs:
       - name: Package application
         run: |
           sudo tar -czf deploy.tar.gz -C ./apps/api/v2 .
-      
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:

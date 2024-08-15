@@ -1,27 +1,27 @@
-name: Deploy API 3 to EC2
+name: Deploy Store to EC2
 
 on:
   push:
     branches:
       - beta
     paths:
-      - "apps/api/v3/**"
-      - ".github/workflows/deploy-api3.yml"
+      - "apps/store/**"
+      - ".github/workflows/deploy-store.yml"
 
   pull_request:
     types: [closed]
     branches:
       - main
     paths:
-      - "apps/api/v3/**"
-      - ".github/workflows/deploy-api3.yml"
+      - "apps/store/**"
+      - ".github/workflows/deploy-store.yml"
 
 env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
-  build:
-    if: github.ref_name == 'beta' || github.event.pull_request.merged
+  package:
+    if: github.ref_name == 'beta' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     outputs:
@@ -39,23 +39,23 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: "20"
-
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Install NVM
+        run: |
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 20
+          nvm use 20
 
       - name: Install dependencies
-        run: pnpm --filter api-v3 install
+        run: pnpm --filter site install
 
-      - name: Build the API
-        run: pnpm build --filter="api-v3"
+      - name: Build application
+        run: pnpm build --filter="store"
 
       - name: Package application
         run: |
-          tar -czf deploy.tar.gz -C apps/api/v3 build
+          sudo tar -czf deploy.tar.gz -C ./apps/site .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -64,11 +64,11 @@ jobs:
           path: deploy.tar.gz
 
   deploy:
-    needs: build
+    needs: package
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ec2_host: ${{ fromJson(needs.build.outputs.ec2_deploy_hosts) }}
+        ec2_host: ${{ fromJson(needs.package.outputs.ec2_deploy_hosts) }}
 
     steps:
       - name: Download artifact
@@ -78,10 +78,10 @@ jobs:
 
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
-          EC2_USER: ${{ vars.EC2_USER_2 }}
+          EC2_USER: ${{ vars.EC2_USER_1 }}
           EC2_KEY: ${{ secrets.EC2_KEY }}
-          PROJECT_PATH: ${{ env.BRANCH == 'beta' && vars.API3_BETA_PATH || vars.API3_PROD_PATH }}
-          ENV_PATH: ${{ env.BRANCH == 'beta' && vars.API3_BETA_ENV_HOST || vars.API3_PROD_ENV_HOST }}
+          PROJECT_PATH: ${{ env.BRANCH == 'beta' && vars.API2_BETA_PATH || vars.API2_PROD_PATH }}
+          ENV_PATH: ${{ env.BRANCH == 'beta' && vars.API2_BETA_ENV_HOST || vars.API2_PROD_ENV_HOST }}
         run: |
           echo "$EC2_KEY" > private_key.pem
           chmod 600 private_key.pem
@@ -93,16 +93,15 @@ jobs:
           scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH/public_html
 
           ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
-            cd ${{ env.PROJECT_PATH }}/public_html
-            rm -rf build
+            cd ${{ env.PROJECT_PATH }}
+            ls -la
+            find ./public_html ! -name 'deploy.tar.gz' -type f -exec rm -f {} +
+            cd public_html
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
-            export PATH=$PATH:/home/ubuntu/.nvm/versions/node/v20.14.0/bin:/home/ubuntu/.local/share/pnpm
-            pnpm install
-            scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
-            cd build
-            ln -s ../.env .env
-            pm2 start ${{ env.BRANCH == 'beta' && '../ecosystem_beta.config.cjs' || '../ecosystem.config.cjs' }}
+            scp ${{ secrets.EC2_ENV_HOST }}:${{ env.ENV_PATH }} .env
+            npm install
+            pm2 start ${{ env.BRANCH == 'beta' && 'ecosystem_beta.config.cjs' || 'ecosystem.config.cjs' }}
           EOF
 
           rm private_key.pem

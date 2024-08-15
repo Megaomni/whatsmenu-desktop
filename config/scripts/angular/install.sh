@@ -4,4 +4,5 @@ export NVM_DIR="$HOME/.nvm"
 
 nvm install
 nvm use
-npm install
+npm i -g @angular/cli@15.2.1
+npm install --ignore-scripts --force

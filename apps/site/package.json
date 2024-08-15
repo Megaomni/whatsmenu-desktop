@@ -5,6 +5,8 @@
   "description": "The fullstack application boilerplate for Adonisjs",
   "main": "index.js",
   "scripts": {
+    "postinstall": "chmod +x ./install.sh && ./install.sh",
+    "dev": "chmod +x ./dev.sh && ./dev.sh",
     "start": "node server.js",
     "test": "node ace test",
     "update-store": "rm -fr public/profile/* && cp -r ~/Documents/angular/whatsmenu-front-v2/dist/whatsmenu/* public/profile"
@@ -31,6 +33,7 @@
     "aws-sdk": "^2.1409.0",
     "axios": "^0.27.2",
     "googleapis": "^122.0.0",
+    "moment": "^2.30.1",
     "mysql": "^2.18.1"
   },
   "autoload": {
