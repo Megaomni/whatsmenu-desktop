@@ -161,10 +161,10 @@ export class CartComponent implements OnInit {
           } else {
             this.matDialog.open(AlertComponent, {
               data: {
-                message: `Esse cupom só pode ser usado em compras a partir de ${formatCurrency(cupom.minValue, 'en-us', 'R$ ').replace(
+                message: `${ this.translate.alert().coupon_used_starting_from } ${formatCurrency(cupom.minValue, 'en-us', 'R$ ').replace(
                   '.',
                   ','
-                )}<br/>Este valor total não inclui a taxa de entrega.`,
+                )}<br/>${ this.translate.alert().amount_not_include_delivery_fee }`,
                 noReload: false,
               },
             })
@@ -176,7 +176,7 @@ export class CartComponent implements OnInit {
           if ((error.status = 404)) {
             alert(error.error.message)
           } else {
-            alert('Falha ao validar cupom, verifique sua conexão!')
+            alert(`${ this.translate.alert().failed_validate_coupon }`)
           }
 
           console.error(error)
@@ -315,10 +315,10 @@ export class CartComponent implements OnInit {
   public totalCartVerify(minValue) {
     if (minValue > 0) {
       if (this.totalCart().value < minValue) {
-        const minvalLocal = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(minValue)
+        const minvalLocal = new Intl.NumberFormat(this.translate.masks().cell, { style: 'currency', currency: this.translate.currency() }).format(minValue)
         this.matDialog.open(AlertComponent, {
           data: {
-            message: `Seu pedido não atingiu o valor mínimo de ${minvalLocal}`,
+            message: `${ this.translate.alert().not_minimum_value } ${minvalLocal}`,
             noReload: true,
           },
         })
@@ -361,7 +361,7 @@ export class CartComponent implements OnInit {
       if ((!this.isOpen() || request.closed) && this.viewContentAlternate !== 'P' && !this.table) {
         // Verifica se o a loja esta fechada na hora de fechar o pedido
         this.toastService
-          .create(!request.closed ? 'LOJA FECHADA!' : 'FECHADO PARA DELIVERY', {
+          .create(!request.closed ? this.translate.alert().store_closed : this.translate.alert().closed_delivery, {
             additional: { distance: 300, showTop: true },
             cls: 'alert',
             timeout: 1500,
@@ -392,10 +392,10 @@ export class CartComponent implements OnInit {
           this.matDialog.open(AlertComponent, {
             minWidth: '100vw',
             data: {
-              message: 'A comanda anterior já foi finalizada, você ainda esta no restaurante ou deseja fazer um novo pedido para entrega?',
-              textButton: 'Estou na mesa',
+              message: this.translate.alert().order_already_been_completed,
+              textButton: this.translate.alert().at_the_table,
               goToAnotherCommand: true,
-              secondTextButton: 'Entregar pedido',
+              secondTextButton: this.translate.alert().deliver_order,
               clientData: this.clientData,
               table: true,
             },
@@ -409,7 +409,7 @@ export class CartComponent implements OnInit {
             closeOnNavigation: true,
             data: {
               title: 'Ops!',
-              message: 'Esta comanda não pertence a esta mesa',
+              message: this.translate.alert().not_belong_this_table,
             },
           })
           this.api.deleteCookie('table')
@@ -426,10 +426,10 @@ export class CartComponent implements OnInit {
         this.matDialog.open(AlertComponent, {
           minWidth: '100vw',
           data: {
-            message: 'A comanda anterior já foi finalizada, você ainda esta no restaurante ou deseja fazer um novo pedido para entrega?',
-            textButton: 'Estou na mesa',
+            message: this.translate.alert().order_already_been_completed,
+            textButton: this.translate.alert().at_the_table,
             goToAnotherCommand: true,
-            secondTextButton: 'Entregar pedido',
+            secondTextButton: this.translate.alert().deliver_order,
             clientData: this.clientData,
             table: true,
           },
@@ -440,8 +440,8 @@ export class CartComponent implements OnInit {
         this.matDialog.open(AlertComponent, {
           closeOnNavigation: true,
           data: {
-            title: 'Desculpe está mesa se encontra desativada!',
-            message: `<strong>No momento, essa mesa não está disponível para novos pedidos.</strong><br>`,
+            title: this.translate.alert().table_desactived,
+            message: `<strong>${ this.translate.alert().table_not_avaible_new_orders}</strong><br>`,
           },
         })
         this.api.deleteCookie('table')
@@ -500,8 +500,8 @@ export class CartComponent implements OnInit {
       this.matDialog.open(AlertComponent, {
         closeOnNavigation: true,
         data: {
-          title: 'Desculpe está mesa se encotra desativada!',
-          message: `<strong>No momento, está mesa não está disponivel para novos pedidos</strong><br>`,
+          title: this.translate.alert().table_desactived,
+          message: `<strong>${ this.translate.alert().moment_table_not_avaible }</strong><br>`,
         },
       })
       this.api.deleteCookie('table')

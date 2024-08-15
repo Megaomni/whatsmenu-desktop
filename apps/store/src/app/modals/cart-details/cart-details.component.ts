@@ -164,19 +164,19 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
     if (actives.length === 1) {
       switch (actives[0].payment) {
         case 'money':
-          this.delivery.formPayment = 'Dinheiro'
+          this.delivery.formPayment = this.translate.text().money
           break
 
         case 'card':
-          this.delivery.formPayment = 'Cartao'
+          this.delivery.formPayment = this.translate.text().card
           break
 
         case 'Debit':
-          this.delivery.formPayment = 'Debito'
+          this.delivery.formPayment = this.translate.text().debit
           break
 
         case 'Credit':
-          this.delivery.formPayment = 'Credito'
+          this.delivery.formPayment = this.translate.text().credit
           break
 
         case 'pix':
@@ -281,7 +281,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
   // }
 
   private wsNotConnected() {
-    alert('A página precisa ser recarregada!')
+    alert(this.translate.alert().reloaded_page_message)
     location.reload()
   }
 
@@ -332,18 +332,18 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
       this.cartService.cupomValue(this.cupom, this.cartRequest)
     if (
       !this.notNeedTransshipment &&
-      this.cartRequest.formsPayment[0].label === 'Dinheiro' &&
+      this.cartRequest.formsPayment[0].label === this.translate.text().money &&
       (!this.change || this.change < this.convertToNumber(val))
     ) {
-      return 'Revise o valor do troco!'
+      return this.translate.alert().review_change_amount
     }
 
     if (!this.cartService.dayDisponiblity({ profile: this.clientData, cartRequest: this.cartRequest })) {
-      return 'Horário Encerrado!'
+      return this.translate.text().time_closed_comment
     }
 
     if (!navigator.onLine) {
-      return 'Sem Internet!'
+      return this.translate.alert().no_internet_connection
     }
 
     return this.cartRequest.formsPayment[0].payment === 'pix' ? this.translate.text().finish_payment_pix : this.translate.text().go_to_payment
@@ -380,9 +380,9 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
       this.delivery.city = address.localidade
 
       if (address.erro) {
-        this.delivery.street = 'CEP não encontrado'
-        this.delivery.neighborhood = 'CEP não encontrado'
-        this.delivery.city = 'CEP não encontrado'
+        this.delivery.street = this.translate.text().zip_code_not_found
+        this.delivery.neighborhood = this.translate.text().zip_code_not_found
+        this.delivery.city = this.translate.text().zip_code_not_found
       }
     }
   }
@@ -414,7 +414,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
     if (typeof val === 'string') {
       value = parseFloat(val.replace(',', '.').replace('R$', '').split(' ').join(''))
     }
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+    return new Intl.NumberFormat(this.translate.language(), { style: 'currency', currency: this.translate.currency() }).format(value)
   }
 
   // public saveAddress() {
@@ -473,7 +473,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
               closeOnNavigation: true,
               data: {
                 title: 'Aviso',
-                message: `<strong>Endereço fora da área de cobertura</strong><br>`,
+                message: `<strong>${this.translate.text().covered_address}</strong><br>`,
                 noReload: true,
               },
             })
@@ -723,7 +723,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
   public currency(value: number) {
     return (value ? value : 0).toLocaleString('pt-BR', {
       style: 'currency',
-      currency: 'BRL',
+      currency: this.translate.currency(),
     })
   }
 
@@ -754,9 +754,9 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
           } else {
             this.matDialog.open(AlertComponent, {
               data: {
-                message: `Esse cupom só pode ser usado em compras a partir de ${this.formatCurrency(
-                  cupom.minValue
-                )}<br/>Este valor total não inclui a taxa de entrega.`,
+                message: `${this.translate.alert().coupon_used_starting_from} ${this.formatCurrency(cupom.minValue)}<br/>${
+                  this.translate.alert().amount_not_include_delivery_fee
+                }`,
                 noReload: false,
               },
             })
@@ -768,7 +768,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
           if ((error.status = 404)) {
             alert(error.error.message)
           } else {
-            alert('Falha ao validar cupom, verifique sua conexão!')
+            alert(this.translate.alert().failed_validate_coupon)
           }
           console.error(error)
         })

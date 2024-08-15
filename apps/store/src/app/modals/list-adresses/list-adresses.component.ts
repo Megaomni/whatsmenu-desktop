@@ -7,6 +7,7 @@ import { CustomerType } from 'src/app/customer-type'
 import { ProfileType } from 'src/app/profile-type'
 import { ApiService } from 'src/app/services/api/api.service'
 import { Observable } from 'rxjs'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-list-adresses',
@@ -32,7 +33,7 @@ export class ListAdressesComponent implements OnInit {
   delete = faXmark
   verticalEllipsis = faEllipsisV
 
-  constructor(public dialogRef: MatDialogRef<any>, @Inject(MAT_DIALOG_DATA) public data, private api: ApiService, private matDialog: MatDialog) {}
+  constructor(public translate: TranslateService, public dialogRef: MatDialogRef<any>, @Inject(MAT_DIALOG_DATA) public data, private api: ApiService, private matDialog: MatDialog) {}
 
   ngOnInit(): void {
     this.checkIfMobile()

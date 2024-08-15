@@ -5,6 +5,7 @@ import { AddressType } from 'src/app/address-type';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ContextService } from 'src/app/services/context/context.service';
 import { ToastService } from 'src/app/services/ngb-toast/toast.service';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-client-store',
@@ -32,6 +33,7 @@ export class ClientStoreComponent implements OnInit, AfterViewChecked {
     public context: ContextService,
     public api: ApiService,
     public toastService: ToastService,
+    public translate: TranslateService,
   ) { }
 
   ngOnInit(): void {
@@ -146,7 +148,7 @@ export class ClientStoreComponent implements OnInit, AfterViewChecked {
 
   public async clientAPI(event: any, action: 'create' | 'update'): Promise<void> {
     event.preventDefault()
-    if(!this.name || !this.whatsapp) return this.toastService.show('Nome e telefone são obrigatórios', { classname: 'bg-danger text-light text-center pos middle-center', delay: 3000 })
+    if(!this.name || !this.whatsapp) return this.toastService.show(this.translate.alert().name_and_phone_required, { classname: 'bg-danger text-light text-center pos middle-center', delay: 3000 })
     this.loading = true
     const button = document.querySelector('button[type="submit"]') as HTMLButtonElement
     if (button) {

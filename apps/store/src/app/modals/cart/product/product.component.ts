@@ -377,8 +377,8 @@ export class ProductComponent implements OnInit {
     const testMin = this.cart.complements.filter((c) => c.required && c.min > c.itens.reduce((a, b) => a + b.quantity, 0))
 
     if (testMin.length > 0) {
-      let messages = '<h2>Itens obrigatórios:</h2><ul style="list-style: none;">'
-      testMin.forEach((c) => (messages += `<li><b>${c.name}:</b> mínimo ${c.min} ${c.min === 1 ? 'item' : 'itens'}</li>`))
+      let messages = `<h2 class="text-capitalize">${ this.translate.text().mandatory_items }:</h2><ul style="list-style: none;">`
+      testMin.forEach((c) => (messages += `<li class="text-capitalize"><b>${c.name}:</b> ${ this.translate.text().minimum } ${c.min} ${c.min === 1 ? 'item' : 'itens'}</li>`))
       messages += '</ul>'
       const completeAlert = this.matDialog.open(AlertComponent, {
         data: {

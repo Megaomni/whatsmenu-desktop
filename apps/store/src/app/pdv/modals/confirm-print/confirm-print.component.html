@@ -1,7 +1,9 @@
 <mat-dialog-content class="d-flex flex-column align-items-center justify-content-center text-center pb-3">
-    <h4 class="p-2 fw-bold fs-4">Realizar impressão da {{ data.type === 'table' ? 'mesa' : 'comanda' }}?</h4>
+  <h4 class="p-2 fw-bold fs-4 text-capitalize">
+    {{ translate.text().print_the }} {{ data.type === 'table' ? translate.text().table : translate.text().order_slip }}?
+  </h4>
 </mat-dialog-content>
 <mat-dialog-actions class="d-flex align-items-center justify-content-center p-2 gap-2">
-    <button class="btn btn-danger" (click)="close()">Cancelar</button>
-    <button class="btn btn-success" (click)="data.type === 'table' ? printTable() : printCommand(data.commandId)">Imprimir</button>
+  <button class="btn btn-danger" (click)="close()">{{ translate.text().cancel }}</button>
+  <button class="btn btn-success" (click)="data.type === 'table' ? printTable() : printCommand(data.commandId)">{{ translate.text().print }}</button>
 </mat-dialog-actions>

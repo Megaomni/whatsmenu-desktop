@@ -1,4 +1,3 @@
-
 import { ElectronService } from './../../../electron.service'
 import { PrintService } from './../../../services/print/print.service'
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
@@ -22,6 +21,7 @@ import { ApiService } from 'src/app/services/api/api.service'
 import { ContextService } from 'src/app/services/context/context.service'
 import { ToastService } from 'src/app/services/ngb-toast/toast.service'
 import { CashierTransactionsComponent } from '../cashier-transactions/cashier-transactions.component'
+import { TranslateService } from 'src/app/translate.service'
 
 interface CashierListType extends TransactionType {
   code?: string
@@ -57,11 +57,10 @@ export class CashierComponent implements OnInit {
     private matDialog: MatDialog,
     public api: ApiService,
     public context: ContextService,
-
     public toastService: ToastService,
+    public translate: TranslateService,
     public printService: PrintService,
     public electronService: ElectronService
-
   ) {}
 
   ngOnInit(): void {
@@ -97,10 +96,10 @@ export class CashierComponent implements OnInit {
             let obs = ''
             switch (cart.type) {
               case 'D':
-                obs = `Pedido ${cart.addressId ? 'Delivery' : 'Balcão'}`
+                obs = `${this.translate.text().order} ${cart.addressId ? 'Delivery' : this.translate.text().counter}`
                 break
               case 'P':
-                obs = `Pedido ${this.context.packageLabel}`
+                obs = `${this.translate.text().order} ${this.context.packageLabel}`
                 break
               default:
                 obs = ''
@@ -135,7 +134,7 @@ export class CashierComponent implements OnInit {
         ...openeds,
         {
           type: 'income',
-          obs: 'Saldo Inicial',
+          obs: this.translate.text().initial_balance_n,
           value: this.context.activeCashier.initialValue,
           created_at: this.context.activeCashier.created_at,
           finality: '',
@@ -151,9 +150,9 @@ export class CashierComponent implements OnInit {
       cashierList.forEach((transaction) => {
         transaction.formatedDate = transaction.formatedDate
           ? transaction.formatedDate
-          : DateTime.fromSQL(transaction.created_at).toFormat("dd/MM HH'h'mm")
+          : DateTime.fromSQL(transaction.created_at).toFormat(`${this.translate.masks().date_mask_two} HH'h'mm`)
         if (transaction.finality) {
-          transaction.finalityLabel = transaction.finality === 'deposit' ? 'Depósito' : 'Pagamento'
+          transaction.finalityLabel = transaction.finality === 'deposit' ? this.translate.text().deposit : this.translate.text().payment
         }
 
         if (transaction.formsPayment) {
@@ -172,7 +171,9 @@ export class CashierComponent implements OnInit {
   }
 
   public formatDate(date?: string): string {
-    return date ? DateTime.fromSQL(date).toFormat("dd/MM/yyyy : HH'h'mm") : DateTime.local().toFormat("dd/MM/yyyy : HH'h'mm")
+    return date
+      ? DateTime.fromSQL(date).toFormat(`${this.translate.masks().date_mask} : HH'h'mm`)
+      : DateTime.local().toFormat(`${this.translate.masks().date_mask} : HH'h'mm`)
   }
 
   public haveOpenedCashier(): boolean {

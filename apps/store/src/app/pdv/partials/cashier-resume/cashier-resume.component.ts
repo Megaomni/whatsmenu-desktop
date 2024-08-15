@@ -5,6 +5,7 @@ import { CashierType } from 'src/app/cashier-type'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 import { ContextService } from 'src/app/services/context/context.service'
 import { CashierCloseComponent } from '../../modals/cashier-close/cashier-close.component'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-cashier-resume',
@@ -19,7 +20,7 @@ export class CashierResumeComponent implements OnInit {
   moneyTotal: number
 
   faLock = faLock
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any, private matDialog: MatDialog, public context: ContextService) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public translate: TranslateService, private matDialog: MatDialog, public context: ContextService) {}
 
   ngOnInit(): void {}
 

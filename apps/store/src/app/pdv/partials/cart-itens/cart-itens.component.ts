@@ -5,6 +5,7 @@ import { CartItem } from 'src/app/cart-request-type'
 import { CartType } from 'src/app/cart-type'
 import { CartService } from 'src/app/services/cart/cart.service'
 import { ContextService } from 'src/app/services/context/context.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-cart-itens',
@@ -24,7 +25,7 @@ export class CartItensComponent implements OnInit {
   faPlusCircle = faPlusCircle
   faTimesCircle = faTimesCircle
 
-  constructor(public context: ContextService, public cartService: CartService) {}
+  constructor(public context: ContextService, public translate: TranslateService, public cartService: CartService) {}
 
   ngOnInit(): void {
     if (this.repeatCart) {

@@ -6,6 +6,7 @@ import { DeliveryType } from '../delivery-type'
 import { ProfileType } from '../profile-type'
 import { ApiService } from '../services/api/api.service'
 import { AlertComponent } from './../modals/alert/alert.component'
+import { TranslateService } from '../translate.service'
 
 export type AddressComponentData = {
   clientData: ProfileType
@@ -50,7 +51,8 @@ export class AddressComponent implements OnInit {
     private matDialog: MatDialog,
     public dialogRef: MatDialogRef<any>,
     @Inject(MAT_DIALOG_DATA)
-    public data: AddressComponentData
+    public data: AddressComponentData,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -61,7 +63,7 @@ export class AddressComponent implements OnInit {
     }
     this.address.uf = this.data.clientData.address.state
     this.addressRevalidation = this.data.addressRevalidation
-    if (this.data.clientData.typeDelivery !== 'km') {
+    if (this.data.clientData.typeDelivery !== this.translate.masks().mi) {
       this.geoActived = false
       const city = this.data.clientData.taxDelivery.find((t) => t.city.toLowerCase() === this.data.clientData.address.city.toLowerCase())
       if (city) {
@@ -70,7 +72,7 @@ export class AddressComponent implements OnInit {
       this.loadNeighborhoods()
     }
 
-    if (this.data.clientData.typeDelivery === 'km') {
+    if (this.data.clientData.typeDelivery === this.translate.masks().mi) {
       this.getGeoLocation()
     }
   }
@@ -128,11 +130,11 @@ export class AddressComponent implements OnInit {
       const address: any = await this.api.getInfoByZipCode(this.address.zipcode)
 
       this.address.city = address.localidade
-      if (this.data.clientData.typeDelivery !== 'km') {
+      if (this.data.clientData.typeDelivery !== this.translate.masks().mi) {
         this.loadNeighborhoods()
       }
       this.address.street = address.logradouro
-      if (this.data.clientData.typeDelivery === 'km') {
+      if (this.data.clientData.typeDelivery === this.translate.masks().mi) {
         this.address.neighborhood = address.bairro
       } else {
         const tax = this.neighborhoods.find((t) => t.name.toString().toLowerCase() === address.bairro.toLowerCase())
@@ -144,10 +146,10 @@ export class AddressComponent implements OnInit {
       }
 
       if (address.erro) {
-        this.address.street = 'CEP não encontrado'
-        if (this.data.clientData.typeDelivery === 'km') {
-          this.address.neighborhood = 'CEP não encontrado'
-          this.address.city = 'CEP não encontrado'
+        this.address.street = this.translate.text().zip_code_not_found
+        if (this.data.clientData.typeDelivery === this.translate.masks().mi) {
+          this.address.neighborhood = this.translate.text().zip_code_not_found
+          this.address.city = this.translate.text().zip_code_not_found
         } else {
           this.address.neighborhood = undefined
           this.address.city = undefined
@@ -191,8 +193,8 @@ export class AddressComponent implements OnInit {
         this.matDialog.open(AlertComponent, {
           closeOnNavigation: true,
           data: {
-            title: 'Aviso',
-            message: `<strong>Endereço fora da área de cobertura</strong><br>`,
+            title: this.translate.text().notice,
+            message: `<strong>${this.translate.text().covered_address}</strong><br>`,
             noReload: true,
           },
         })
@@ -207,22 +209,24 @@ export class AddressComponent implements OnInit {
 
   public validation(): string {
     if (!this.address.city) {
-      return this.data.clientData.typeDelivery === 'km' ? 'Digite a cidade' : 'Selecione a Cidade'
+      return this.data.clientData.typeDelivery === this.translate.masks().mi ? this.translate.text().enter_city : this.translate.text().select_city
     }
 
     if (!this.address.neighborhood) {
-      return this.data.clientData.typeDelivery === 'km' ? 'Digite o bairro' : 'Selecione um bairro'
+      return this.data.clientData.typeDelivery === this.translate.masks().mi
+        ? this.translate.text().enter_neighborhood
+        : this.translate.text().select_neighborhood
     }
 
     if (!this.address.street) {
-      return 'Digite o nome da rua'
+      return this.translate.text().enter_street_name
     }
 
     if (!this.address.number && parseInt(String(this.address.number), 10) !== 0 && !this.sn) {
       return 'Digite número do endereço'
     }
 
-    return 'Entregar neste endereço'
+    return this.translate.text().deliver_this_address
   }
 
   public changeSN() {
@@ -271,7 +275,7 @@ export class AddressComponent implements OnInit {
       this.geoActived = false
       this.matDialog.open(AlertComponent, {
         data: {
-          message: 'Não é possível ler a sua localização, verifique se a localização não está bloqueada.',
+          message: this.translate.alert().unable_to_read,
         },
       })
     }

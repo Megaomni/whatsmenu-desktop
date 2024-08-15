@@ -1,5 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-item-required',
@@ -11,7 +12,7 @@ export class ItemRequiredComponent implements OnInit {
   itens: string[] = [];
   bartenderStyle = false
 
-  constructor(private dialogRef: MatDialogRef<any>, @Inject(MAT_DIALOG_DATA) private data: any) { }
+  constructor(private dialogRef: MatDialogRef<any>, public translate: TranslateService,  @Inject(MAT_DIALOG_DATA) private data: any) { }
 
   ngOnInit(): void {
     this.itens = this.data.itens;

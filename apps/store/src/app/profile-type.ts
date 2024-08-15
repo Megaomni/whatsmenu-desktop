@@ -151,9 +151,9 @@ export interface ProfileOptionsType {
   store: {
     productModal: {
       infoPosition: 'last' | 'first'
-    },
+    }
     catalogMode: {
-      table: boolean,
+      table: boolean
       delivery: boolean
     }
   }
@@ -165,6 +165,11 @@ export interface ProfileOptionsType {
     status: boolean
     createdAt: string
   }>
+
+  locale: {
+    currency: string
+    language: string
+  }
 }
 
 interface RecipientData {

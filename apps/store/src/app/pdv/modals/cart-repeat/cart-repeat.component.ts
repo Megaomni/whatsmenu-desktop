@@ -6,6 +6,7 @@ import { CartPizza } from 'src/app/cart-pizza';
 import { CartItem, CartRequestType } from 'src/app/cart-request-type';
 import { CartType } from 'src/app/cart-type';
 import { RequestType } from 'src/app/request-type';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-cart-repeat',
@@ -22,6 +23,7 @@ export class CartRepeatComponent implements OnInit {
   constructor(
     @Inject(MatDialogRef) private dialogRef,
     @Inject(MAT_DIALOG_DATA) public data: { cart: any, cartPizza: any, client: any, request: RequestType },
+    public translate: TranslateService,
     ) { }
 
   ngOnInit(): void {
@@ -42,6 +44,6 @@ export class CartRepeatComponent implements OnInit {
 
   /** Retorna a diferença do tempo com a data fornecida */
   public requestDate(date: string): string {
-    return DateTime.fromSQL(date).toFormat('dd/MM/yyyy')
+    return DateTime.fromSQL(date).toFormat(this.translate.masks().date_mask)
   }
 }

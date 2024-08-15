@@ -113,15 +113,15 @@
             [autoClose]="true"
             *ngIf="!context.profile.options.pizza.multipleBorders"
           >
-            <span class="fw-bold">Borda</span>
+            <span class="fw-bold text-capitalize">{{ translate.text().crust }}</span>
             <div class="d-flex align-items-center justify-content-between gap-2 border rounded py-1 px-2" id="dropdownBasic1" ngbDropdownToggle>
               {{ pizza.implementations?.length ? pizza.implementations[0].name : 'Nenhum' }}
             </div>
             <div ngbDropdownMenu class="w-100" aria-labelledby="dropdownBasic1">
               <div class="d-flex flex-column" style="max-height: 10rem; overflow-y: auto">
-                <button ngbDropdownItem class="p-1" (click)="pizza.implementations = []">
+                <button class="text-capitalize" ngbDropdownItem class="p-1" (click)="pizza.implementations = []">
                   <!-- *ngIf="cartService.sizeIsAllowed(size, pizza)"  -->
-                  Nenhum
+                  {{ translate.text().none }}
                 </button>
                 <ng-container *ngFor="let implementation of pizzaProduct.implementations">
                   <button ngbDropdownItem class="p-1" (click)="pizza.implementations = [implementation]">
@@ -204,12 +204,12 @@
                 >
                   <fa-icon [icon]="faTimesCircle" style="color: var(--red); font-size: 1.25rem" (click)="removeFlavor(index)"> </fa-icon>
                 </span>
-                <a ngbNavLink href="#">Sabor {{ index + 1 }} </a>
+                <a class="text-capitalize" ngbNavLink href="#">{{ translate.text().flavor }} {{ index + 1 }} </a>
                 <ng-template ngbNavContent>
                   <div class="p-2 border border-top-0">
                     <div class="d-flex">
                       <div class="d-flex align-items-center gap-3 flex-grow-1">
-                        <label for="" class="fw-bold">Sabor {{ index + 1 }}</label>
+                        <label for="" class="text-capitalize fw-bold">{{ translate.text().flavor }} {{ index + 1 }}</label>
                         <!-- <div *ngIf="index === 0" class="p-2" style="flex-basis: 33.4%;">{{ newFlavor.name }}</div> -->
                         <div ngbDropdown #flavorsDropdown="ngbDropdown" class="cursor-pointer border rounded py-1 px-2" [autoClose]="true">
                           <div class="d-flex align-items-center gap-2" id="dropdownBasic1" ngbDropdownToggle>
@@ -233,7 +233,7 @@
                         [autoClose]="true"
                         class="d-flex align-items-center gap-3 cursor-pointer flex-grow-1"
                       >
-                        <span class="fw-bold">Borda</span>
+                        <span class="fw-bold text-capitalize">{{ translate.text().crust }}</span>
                         <div class="d-flex align-items-center justify-content-between border rounded py-1 px-2" id="dropdownBasic1" ngbDropdownToggle>
                           {{ newFlavor.implementations?.length ? newFlavor.implementations[0].name : 'Nenhum' }}
                         </div>
@@ -268,11 +268,11 @@
             </ng-container>
             <button
               *ngIf="pizza.flavors.length < cartService.getSizeByCode(pizza)?.flavors[cartService.getSizeByCode(pizza)?.flavors.length - 1]"
-              class="btn btn-link text-decoration-none px-3 py-2 rounded-0 rounded-top"
+              class="btn btn-link text-decoration-none px-3 py-2 rounded-0 rounded-top text-capitalize"
               style="width: auto; font-size: 0.875rem; padding: 0 0.5rem"
               (click)="addNewFlavor()"
             >
-              Adicionar sabor
+              {{ translate.text().add_flavor }}
             </button>
           </nav>
           <div [ngbNavOutlet]="nav"></div>
@@ -293,7 +293,7 @@
         #obsInput
         (focus)="openKeyboard()"
         autofocus="false"
-        placeholder="Observações"
+        [placeholder]="translate.text().obs"
         (blur)="closeKeyboard()"
         class="form-control"
       ></textarea>
@@ -346,7 +346,7 @@
             : close()
         "
       >
-        {{ 'Adicionar ' }}
+        {{ translate.text().add }}
         {{ cartService.itemValueWithComplements({ item: product, valueType: data.valueType, type: 'product', multiplyByQuantity: true }) | currency }}
       </button>
       <button
@@ -364,7 +364,7 @@
         {{
           !cartService.verifyCartFlavorAvailability(cart, pizza, 'greater')?.availability
             ? cartService.verifyCartFlavorAvailability(cart, pizza, 'greater')?.buttonMessage
-            : 'Adicionar '
+            : translate.text().add
         }}{{ cartService.itemValueWithComplements({ item: pizza, valueType: data.valueType, type: 'pizza', multiplyByQuantity: true }) | currency }}
       </button>
     </div>

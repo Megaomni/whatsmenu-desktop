@@ -431,7 +431,7 @@ export function ResumePackage({
       case 'shipping_delivery':
         return t('delivery')
       case 'shipping_local':
-        return 'Entrega Local'
+        return t('local_delivery')
     }
   }
 

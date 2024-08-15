@@ -1,9 +1,9 @@
 <div class="fees-container text-center">
   <header>
-    <div>Taxa</div>
-    <div>Qtd.</div>
-    <div>Valor</div>
-    <div>Cobrar</div>
+    <div class="text-capitalize">{{ translate.text().fees }}</div>
+    <div class="text-capitalize">{{ translate.text().qty }}.</div>
+    <div class="text-capitalize">{{ translate.text().value }}</div>
+    <div class="text-capitalize">{{ translate.text().charge }}</div>
   </header>
   <ng-container *ngFor="let fee of fees">
     <div style="border-top: 1px solid var(--wm-gray-300);" *ngIf="fee.status">
