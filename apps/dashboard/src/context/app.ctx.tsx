@@ -508,7 +508,7 @@ export function AppProvider({ children }: AppProviderProps) {
     setToast(toastProps)
     setShowToast(true)
   }
-  //
+
   const verifyInventory = async () => {
     if (!profile?.options.inventoryControl) return
     const { data: lowAndSoldOutItems } = await apiRoute(
