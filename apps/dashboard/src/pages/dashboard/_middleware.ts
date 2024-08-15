@@ -15,9 +15,9 @@ export default withAuth(
       //@ts-ignore
       const cookieValue = getCookie('stripe.success.checkout', { req, res })
       if (cookieValue && req.url.includes(cookieValue as string)) {
-        //@ts-ignore
         return NextResponse.redirect(
           new URL('/dashboard/profile', req.url)
+          //@ts-ignore
         ).cookie('stripe.success.checkout', '')
       } else if (
         session &&
