@@ -63,7 +63,7 @@
                 <fa-icon [icon]="verticalEllipsis" class="color-theme"></fa-icon>
               </div>
             </div>
-            <span class="text-black"><strong>Sabores</strong></span>
+            <span class="text-black text-capitalize"><strong>{{ translate.text().flavors }}</strong></span>
             <div *ngFor="let flavor of item.flavors; let flavorIndex = index" class="ms-2">
               <div class="row">
                 <div class="col-8 ps-0">
@@ -90,7 +90,7 @@
               </div>
 
               <div *ngIf="context.profile.options.pizza.multipleBorders && flavor.implementations.length">
-                <div class="text-black-50 ms-2"><strong>Borda</strong></div>
+                <div class="text-black-50 ms-2"><strong>{{ translate.text().crust }}</strong></div>
                 <div class="row ms-2" *ngFor="let implementation of flavor.implementations">
                   <ng-container *ngIf="implementation">
                     <div class="text-black-50 col-8">{{ implementation.name }}</div>
@@ -110,7 +110,7 @@
               </div>
             </div>
             <div *ngIf="!this.clientData.options.pizza.multipleComplements">
-              <div class="text-black"><strong>Complementos Gerais</strong></div>
+              <div class="text-black text-capitalize"><strong>{{ translate.text().general_toppings }}</strong></div>
               <div *ngFor="let complement of item.details.complements">
                 <div class="row ms-2" *ngFor="let itemComplement of complement.itens">
                   <div class="col-8" *ngIf="itemComplement.quantity">
@@ -124,7 +124,7 @@
               </div>
             </div>
             <div *ngIf="item.details.implementations.length && !this.clientData.options.pizza.multipleBorders">
-              <div class="text-black ms-2"><strong>Borda Única</strong></div>
+              <div class="text-black ms-2"><strong>{{ translate.text().single_crust }}</strong></div>
               <div class="row ms-2">
                 <div class="col-8">
                   <span class="text-black-50">{{ item.details.implementations[0]?.name }} </span>
@@ -156,7 +156,7 @@
             </div>
             <div class="row">
               <div class="col-8">
-                <input matInput class="form-control" [(ngModel)]="cupomCode" placeholder="{{ translate.text().code_of_cupom }}" />
+                <input matInput class="form-control text-capitalize" [(ngModel)]="cupomCode" placeholder="{{ translate.text().code_of_cupom }}" />
               </div>
               <div class="col-4">
                 <button class="btn btn-secondary form-control text-capitalize" (click)="verifyCupom()">{{ translate.text().verify }}</button>
@@ -230,11 +230,11 @@
           <button
             *ngIf="table && tableCookie"
             id="btn-table"
-            class="btn btn-success"
+            class="btn btn-success text-capitalize"
             [disabled]="(!enableSend && totalCart().quantity === 0) || (!isOpen() && !table) || cartRequest.type !== 'T'"
             (click)="close()"
           >
-            Pedir na mesa
+            {{ translate.text().order_the_table }}
           </button>
         </div>
       </div>

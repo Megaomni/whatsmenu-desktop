@@ -2,6 +2,7 @@ import { AfterViewChecked, Component, EventEmitter, Input, OnInit, Output } from
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { FeeType } from 'src/app/fee-type';
 import { ContextService } from 'src/app/services/context/context.service';
+import { TranslateService } from 'src/app/translate.service';
 import Command from 'src/classes/command';
 
 @Component({
@@ -17,6 +18,7 @@ export class FeesTableComponent implements OnInit {
   faChevronDown = faChevronDown
 
   constructor(
+    public translate: TranslateService,
     public context: ContextService
   ) { }
 

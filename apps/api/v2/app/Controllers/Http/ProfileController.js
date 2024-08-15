@@ -210,6 +210,15 @@ class ProfileController {
       console.error('FAVICON: ', error)
     }
 
+    if (!data.options) {
+      data.options = {}
+    }
+
+    data.options.locale = {
+      language: user.controls.language,
+      currency: String(user.controls.currency).toUpperCase(),
+    }
+
     try {
       const profile = await Profile.create(data)
       await Bartender.create({

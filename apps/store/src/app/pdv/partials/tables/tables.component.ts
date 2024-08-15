@@ -5,6 +5,7 @@ import { ContextService } from 'src/app/services/context/context.service'
 import { ToastService } from 'src/app/services/ngb-toast/toast.service'
 import Table from 'src/classes/table'
 import { BartenderLoginComponent } from '../../modals/bartender-login/bartender-login.component'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-tables',
@@ -14,7 +15,7 @@ import { BartenderLoginComponent } from '../../modals/bartender-login/bartender-
 export class TablesComponent implements OnInit {
   @Input() pageType: 'pdv' | 'bartender'
   @Output() activeTab = new EventEmitter<'counter' | 'table' | 'tables'>()
-  constructor(public context: ContextService, public api: ApiService, public toastService: ToastService, private matDialog: MatDialog) {}
+  constructor(public context: ContextService, public translate: TranslateService, public api: ApiService, public toastService: ToastService, private matDialog: MatDialog) {}
 
   ngOnInit(): void {}
 

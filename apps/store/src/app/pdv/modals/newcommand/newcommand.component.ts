@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-newcommand',
@@ -14,6 +15,7 @@ export class NewcommandComponent implements OnInit {
 
   constructor(
     @Inject(MatDialogRef) private dialogRef,
+    public translate: TranslateService,
     ) { }
 
   ngOnInit(): void {

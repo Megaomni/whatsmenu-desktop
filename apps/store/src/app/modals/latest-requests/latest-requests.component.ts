@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Component, Inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
 import { ApiService } from 'src/app/services/api/api.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-latest-requests',
@@ -9,7 +10,7 @@ import { ApiService } from 'src/app/services/api/api.service'
   styleUrls: ['./latest-requests.component.scss'],
 })
 export class LatestRequestsComponent {
-  constructor(public dialogRef: MatDialogRef<any>, @Inject(MAT_DIALOG_DATA) public data) {}
+  constructor(public translate: TranslateService, public dialogRef: MatDialogRef<any>, @Inject(MAT_DIALOG_DATA) public data) {}
 
   customerReverse() {
     return this.data.customer.last_requests.slice().reverse()
@@ -39,8 +40,8 @@ export class LatestRequestsComponent {
     }
     const valueTotal = request.total - valorCupom < 0 ? 0 : request.total - valorCupom
 
-    if(request.formsPayment.length > 0) {
-      if (request.formsPayment[0].addon.status ) {
+    if (request.formsPayment.length > 0) {
+      if (request.formsPayment[0].addon.status) {
         let addonValue = request.formsPayment[0].addon.value
         if (request.formsPayment[0].addon.type === 'fee') {
           if (request.formsPayment[0].addon.valueType === 'percentage') {
@@ -48,7 +49,7 @@ export class LatestRequestsComponent {
           }
           total = valueTotal + addonValue + request.taxDelivery - valorFrete
         }
-  
+
         if (request.formsPayment[0].addon.type === 'discount') {
           if (request.formsPayment[0].addon.valueType === 'percentage') {
             addonValue = request.total * (addonValue / 100)

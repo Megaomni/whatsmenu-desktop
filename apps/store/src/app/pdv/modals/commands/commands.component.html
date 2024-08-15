@@ -1,7 +1,7 @@
 <div mat-dialog-title class="d-flex align-items-center justify-content-between">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer" (click)="close({})"></fa-icon>
-    <h3 class="m-0 fs-5">Comandas</h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().order_slip_s}}</h3>
   </div>
 </div>
 
@@ -10,8 +10,8 @@
     <thead>
       <tr>
         <th></th>
-        <th>Cód.</th>
-        <th>Nome</th>
+        <th class="text-capitalize">{{ translate.text().code }}</th>
+        <th class="text-capitalize">{{ translate.text().name }}</th>
         <th>Total</th>
         <th></th>
       </tr>
@@ -26,7 +26,7 @@
           <td (click)="openCommandResume(command)" style="word-break: break-word">{{ command.name }}</td>
           <td (click)="openCommandResume(command)">{{ command.getTotalValue('commandFee') | currency }}</td>
           <td class="col-1 text-end">
-            <button class="btn btn-link" style="color: var(--wm-red-300)" (click)="$event.stopPropagation(); closeCommand(command)">Encerrar</button>
+            <button class="btn btn-link text-capitalize" style="color: var(--wm-red-300)" (click)="$event.stopPropagation(); closeCommand(command)">{{ translate.text().close }}</button>
           </td>
         </tr>
       </ng-container>

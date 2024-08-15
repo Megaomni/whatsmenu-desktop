@@ -2,31 +2,31 @@
   style="margin: -1.5rem -1.5rem 0;">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close()"></fa-icon>
-    <h3 class="m-0 fs-5">Adicionar {{ data.type === "income" ? 'Entrada' : 'Saída' }}</h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().add }} {{ data.type === "income" ? 'Entrada' : 'Saída' }}</h3>
   </div>
 </div>
 <mat-dialog-content>
   <form id="addTransactionForm" (submit)="addTransaction($event)" class="d-flex align-items-md-center mx-0 w-100 h-100">
     <div class="d-flex gap-2 flex-column mt-2 container">
       <div *ngIf="data.type === 'outcome'" class="row align-items-center gap-2">
-        <label class="col col-md-5" for="formPayment">Finalidade</label>
+        <label class="col col-md-5 text-capitalize" for="formPayment">{{ translate.text().purpose }}</label>
         <div class="col col-md-4">
           <select class="form-select" id="formPayment" [(ngModel)]="finality" name="finality">
-            <option value="deposit">Depósito</option>
-            <option value="payment">Pagamento</option>
+            <option class="text-capitalize" value="deposit">{{ translate.text().deposit }}</option>
+            <option class="text-capitalize" value="payment">{{ translate.text().payment }}</option>
           </select>
         </div>
       </div>
       <div class="row align-items-center gap-2">
-        <label class="col col-md-5" for="value">Valor</label>
+        <label class="col col-md-5 text-capitalize" for="value">{{ translate.text().value }}</label>
         <div class="col col-md-4">
           <input class="form-control" type="number" id="value" placeholder="0,00" [(ngModel)]="value" name="value">
         </div>
       </div>
       <div class="row align-items-center gap-2">
-        <label class="col col-md-5" for="obs">Observação</label>
+        <label class="col col-md-5 text-capitalize" for="obs">{{ translate.text().obs }}</label>
         <div class="col col-md">
-          <input class="form-control" type="text" id="obs" placeholder="Observações" [(ngModel)]="obs" name="obs">
+          <input class="form-control" type="text" id="obs" [placeholder]="translate.text().obs" [(ngModel)]="obs" name="obs">
         </div>
       </div>
     </div>

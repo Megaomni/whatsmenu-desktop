@@ -4,6 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { faArrowAltCircleDown, faArrowAltCircleRight } from '@fortawesome/free-regular-svg-icons';
 import { faArrowLeft, faArrowsAlt } from '@fortawesome/free-solid-svg-icons';
 import { ContextService } from 'src/app/services/context/context.service';
+import { TranslateService } from 'src/app/translate.service';
 import Command from 'src/classes/command';
 import Table, { TableOpened } from 'src/classes/table';
 
@@ -28,6 +29,7 @@ export class SwitchTableComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     @Inject(MatDialogRef) private dialogRef,
     public context: ContextService,
+    public translate: TranslateService,
   ) { }
 
   ngOnInit(): void {

@@ -38,6 +38,9 @@ import { AlertComponent } from '../alert/alert.component'
 import { CardCheckoutType } from 'src/app/card-checkout-type'
 import * as moment from 'moment'
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog'
+import { TranslateService } from 'src/app/translate.service'
+import { profile } from 'src/test/utils/profile'
+import { ProfileOptionsType } from 'src/app/profile-type'
 
 export declare const fbq: any
 
@@ -47,6 +50,7 @@ export declare const fbq: any
   styleUrls: ['./payment-type.component.scss'],
 })
 export class PaymentTypeComponent implements OnInit, AfterViewChecked {
+  profile: ProfileOptionsType
   pixRegeneration: boolean
   orderId: number
   isAvailable: boolean
@@ -126,6 +130,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
     public dialogRef: MatDialogRef<any>,
+    public translate: TranslateService,
     private api: ApiService,
     private matDialog: MatDialog,
     public cartService: CartService,
@@ -252,9 +257,9 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       this.cartRequest.formsPayment[0]['addon'] &&
       this.cartRequest.formsPayment[0]['addon']['type'] === 'fee'
     ) {
-      return 'Taxa: +'
+      return `${this.translate.text().fee_comment}: +`
     } else {
-      return 'Desconto: '
+      return this.translate.text().discount_comment
     }
   }
 
@@ -279,17 +284,17 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
 
   public enableCreditCardOrder() {
     if (this.selectedCard) {
-      if (this.billing.card.cvv.length < 3) return { message: 'Verifique o CVV' }
+      if (this.billing.card.cvv.length < 3) return { message: this.translate.text().check_the_cvv }
       return false
     }
-    if (Object.entries(this.billing.card).some((info) => !info[1])) return { message: 'Verifique os dados do cartão' }
-    if (Object.entries(this.billing.address).some((info) => !info[1])) return { message: 'Verifique o endereço de cobrança' }
+    if (Object.entries(this.billing.card).some((info) => !info[1])) return { message: this.translate.text().check_card_details }
+    if (Object.entries(this.billing.address).some((info) => !info[1])) return { message: this.translate.text().check_billing_address }
     const expDate = DateTime.fromFormat(this.billing.card.exp, 'MMyy')
     const difference = expDate.diff(DateTime.now(), 'milliseconds')
-    if (difference.milliseconds < 0) return { message: 'Verifique a validade do cartão' }
-    if (this.billing.card.number.replace(' ', '').length < 16) return { message: 'Verifique o número do cartão' }
-    if (this.billing.card.cvv.length < 3) return { message: 'Verifique o código de segurança' }
-    if (this.billing.address.zip_code.length < 8) return { message: 'Verifique o CEP' }
+    if (difference.milliseconds < 0) return { message: this.translate.text().check_card_expiration_date }
+    if (this.billing.card.number.replace(' ', '').length < 16) return { message: this.translate.text().check_card_number }
+    if (this.billing.card.cvv.length < 3) return { message: this.translate.text().check_security_code }
+    if (this.billing.address.zip_code.length < 8) return { message: this.translate.text().check_zip_code }
     return false
   }
 
@@ -344,6 +349,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     }
     return this.cartRequest.type
   }
+
   public async sendRequestToADM() {
     // this.channel = this.socket.subscribe('request');
     try {
@@ -385,7 +391,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
           throw {
             error: {
               code: '403-D',
-              message: 'A data escolhida é menor que a data atual, favor escolher uma data maior.',
+              message: this.translate.text().chosen_date_earlier_current_date,
               minHour: DateTime.local().toFormat('HH:mm'),
             },
           }
@@ -427,7 +433,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
         })
 
         if (!cart || !cart.code || typeof cart.code !== 'string') {
-          throw { error: { message: 'Não foi possível registrar seu pedido tente novamente' } }
+          throw { error: { message: this.translate.text().unable_register_your_order_try_again } }
         }
 
         if (this.cartRequest.type === 'P') {
@@ -458,13 +464,13 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
         }
         this.pendingCart = cart
       } else {
-        throw { error: { message: 'Não foi possível registrar seu pedido tente novamente' } }
+        throw { error: { message: this.translate.text().unable_register_your_order_try_again } }
       }
     } catch (error) {
       if (error.error?.code === '405-2') {
         this.dialogRef.close({ send: false, cupom: this.cupom })
       } else if (error.error?.code === '403-188') {
-        alert('O sistema identificou que você está fora da nossa área de cobertura, tente concluir o seu pedido novamente')
+        alert(this.translate.text().system_identified_you_are_outside)
         location.reload()
       } else if (error.error?.code === '409') {
         error.error.dates.length > 0
@@ -506,7 +512,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       } else if (error.error.code === '401') {
         this.matDialog.open(AlertComponent, {
           data: {
-            title: 'Atenção!',
+            title: `${this.translate.text().attention}!`,
             message: error.error.message,
             textButton: 'Ok',
           },
@@ -521,8 +527,8 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       } else if (error.error?.code === '403-239') {
         this.matDialog.open(AlertComponent, {
           data: {
-            title: 'Atenção!',
-            message: 'Seu endereço está fora da nossa área de cobertura!',
+            title: `${this.translate.text().attention}!`,
+            message: this.translate.alert().address_covarage_area,
             textButton: 'Ok',
           },
         })
@@ -567,7 +573,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
 
     const dialog = this.matDialog.open(AlertComponent, {
       data: {
-        title: 'Atenção!',
+        title: `${this.translate.text().attention}!`,
         message: textMessage,
         textButton: 'Tentar novamente',
       },
@@ -690,15 +696,15 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     let verifyHour = moment(new Date(this.data.dataPackage)).format('ss') === '01'
 
     if (this.customer.name) {
-      message += `*Meu nome é ${this.customer.name}, contato ${this.customer.whatsapp}*\n\n`
+      message += `*${this.translate.text().my_name_is} ${this.customer.name}, contato ${this.customer.whatsapp}*\n\n`
     }
-    message += `*Código do pedido: wm${this.requestCode}${'-' + this.cartRequest.type}\n\n`
+    message += `*${this.translate.text().order_coder}: wm${this.requestCode}${'-' + this.cartRequest.type}\n\n`
 
     if (this.cartRequest.type === 'P') {
-      message += `*Data de entrega : ${
+      message += `*${this.translate.text().delivery_date} : ${
         verifyHour
-          ? moment(new Date(this.cartRequest.packageDate)).format('DD/MM/YYYY') + '(SEM HORÁRIO)'
-          : moment(new Date(this.cartRequest.packageDate)).format('DD/MM/YYYY HH:mm')
+          ? moment(new Date(this.cartRequest.packageDate)).format(this.translate.masks().date_mask_format_m) + `(${this.translate.text().no_time_up})`
+          : moment(new Date(this.cartRequest.packageDate)).format(`${this.translate.masks().date_mask_format_m} HH:mm`)
       } *\n\n`
     }
 
@@ -747,7 +753,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       }
       // item.addons.forEach(addon => message += `   ${addon.name}\n`);
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().observations}:\n${item.obs}*\n`
       }
       if (this.clientData.showTotal) {
         // const val = this.formatCurrency((item.promoteStatus ? item.promoteValue : item.value) * item.quantity);
@@ -759,7 +765,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     this.whatsCartPizza.forEach((item) => {
       if (this.clientData.showTotal) {
         // let val = this.formatCurrency(item.value * item.quantity);
-        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} sabores`
+        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} ${this.translate.text().flavors}`
         let pizza = `${item.quantity}x ${item.size} ${sabor}`
         pizza = `${item.quantity}x ${item.size.trim()} ${sabor}`
         // while (pizza.length < 32) {
@@ -797,14 +803,14 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
           message += `${nameImplementation}`
         })
       } else {
-        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} sabores`
+        const sabor = item.flavors.length === 1 ? '' : `${item.flavors.length} ${this.translate.text().flavors}`
         message += `*${item.quantity}x ${item.size} ${sabor}*\n`
         // item.addons.forEach(addon => message += `   ${addon.name}\n`);
         item.flavors.forEach((product) => (message += `   *${product.name}*\n`))
         item.implementations.forEach((implementation) => (message += `   *com ${implementation.name.trim()}*\n`))
       }
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().observations}:\n${item.obs}*\n`
       }
 
       if (this.clientData.showTotal) {
@@ -819,24 +825,24 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     if (this.clientData.showTotal) {
       let value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(this.totalCart())
 
-      message += `*Cupom usado: ${this.cupom.code.toUpperCase()}*\n`
+      message += `*${this.translate.text().coupon_used}: ${this.cupom.code.toUpperCase()}*\n`
       if (this.typeDelivery === 'delivery') {
         if (this.taxDeliveryValue > 0) {
           message += `*Subtotal: ${this.formatCurrency(this.cartService.totalCartValue(this.cart, this.cartPizza, this.cartRequest))}*\n`
 
           if (this.cartRequest.formsPayment[0].addon.status) {
             if (this.cartRequest.formsPayment[0].addon.type === 'fee')
-              message += `*Taxa: ${this.addonType()}${this.formatCurrency(this.addonCalcResult())}*\n`
+              message += `*${this.translate.text().fee}: ${this.addonType()}${this.formatCurrency(this.addonCalcResult())}*\n`
           }
           if (this.cartRequest.formsPayment[0].addon.type === 'discount') {
-            message += `*Desconto:  ${this.formatCurrency(this.addonCalcResult())}*\n`
+            message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(this.addonCalcResult())}*\n`
           }
 
           if (this.cupom) {
-            message += `*Cupom: ${this.cupom.type !== 'freight' ? this.formatCurrency(this.cupomValue() * -1) : 'Frete Grátis'}*\n`
+            message += `*${this.translate.text().coupon}: ${this.cupom.type !== 'freight' ? this.formatCurrency(this.cupomValue() * -1) : 'Frete Grátis'}*\n`
           }
 
-          message += `*Entrega: ${this.cupom && this.cupom.type === 'freight' ? 'FRETE GRÁTIS' : this.formatCurrency(this.taxDeliveryValue)}*\n`
+          message += `*${this.translate.text().delivery}: ${this.cupom && this.cupom.type === 'freight' ? this.translate.text().fee_shipping_up : this.formatCurrency(this.taxDeliveryValue)}*\n`
           value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
             this.totalCart() - this.cupomValue() + this.taxDeliveryValue + this.addonCalcResult()
           )
@@ -849,18 +855,18 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
 
           if (this.cartRequest.formsPayment[0].addon.status) {
             if (this.cartRequest.formsPayment[0].addon.type === 'fee')
-              message += `*Taxa: ${this.addonType()} ${this.formatCurrency(this.addonCalcResult())}*\n`
+              message += `*${this.translate.text().fee_comment}: ${this.addonType()} ${this.formatCurrency(this.addonCalcResult())}*\n`
           }
           0
           if (this.cartRequest.formsPayment[0].addon.type === 'discount') {
-            message += `*Desconto:  ${this.formatCurrency(this.addonCalcResult())}*\n`
+            message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(this.addonCalcResult())}*\n`
           }
 
           if (this.cupom && this.cupom.type !== 'freight') {
-            message += `*Cupom: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
+            message += `*${this.translate.text().coupon}: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
           }
 
-          message += `*Entrega: Grátis*\n`
+          message += `*${this.translate.text().delivery}: ${this.translate.text().free}*\n`
           value = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
             this.totalCart() - this.cupomValue() + this.addonCalcResult()
           )
@@ -869,32 +875,34 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
 
         if (this.taxDeliveryValue === null) {
           if (this.cartRequest.formsPayment[0].addon.type === 'discount') {
-            message += `*Desconto:  ${this.formatCurrency(this.addonCalcResult())}\*n`
+            message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(this.addonCalcResult())}\*n`
           }
           message += `*Subtotal: ${this.formatCurrency(this.cartService.totalCartValue(this.cart, this.cartPizza, this.cartRequest))}*\n`
 
           if (this.cupom && this.cupom.type !== 'freight') {
-            message += `*Cupom: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
+            message += `*${this.translate.text().coupon}: ${this.formatCurrency(this.cupomValue() * -1)}*\n`
           }
 
-          message += `*Entrega: Consultar*\n`
+          message += `*${this.translate.text().delivery}: ${this.translate.text().consult}*\n`
         }
       } else {
         message += `*Subtotal: ${this.formatCurrency(this.cartService.totalCartValue(this.cart, this.cartPizza, this.cartRequest))}*\n`
 
         if (this.cartRequest.formsPayment[0].addon.status) {
           if (this.cartRequest.formsPayment[0].addon.type === 'fee')
-            message += `*Taxa: ${this.addonType()} ${this.formatCurrency(this.addonCalcResult())}*\n`
+            message += `*${this.translate.text().fee_comment}: ${this.addonType()} ${this.formatCurrency(this.addonCalcResult())}*\n`
         }
         if (this.cartRequest.formsPayment[0].addon.type === 'discount') {
-          message += `*Desconto:  ${this.formatCurrency(this.addonCalcResult())}*\n`
+          message += `*${this.translate.text().discount_comment}:  ${this.formatCurrency(this.addonCalcResult())}*\n`
         }
 
         if (this.cupom) {
-          message += `*Cupom: ${this.cupom.type !== 'freight' ? this.formatCurrency(this.cupomValue() * -1) : 'Frete Grátis'}*\n`
+          message += `*${this.translate.text().coupon}: ${
+            this.cupom.type !== 'freight' ? this.formatCurrency(this.cupomValue() * -1) : this.translate.text().free_freight_comment
+          }*\n`
         }
 
-        message += `*Entrega: Local*\n`
+        message += `*${this.translate.text().delivery}: Local*\n`
         value = this.formatCurrency(this.totalCart() - this.cupomValue() + this.addonCalcResult())
         message += `*Total: ${value}*\n`
       }
@@ -904,14 +912,18 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       ? `${this.cartRequest.formsPayment[0].label}(${this.paymentFlag?.name || 'Online'})`
       : this.cartRequest.formsPayment[0].label
 
-    message += `\n*Pagamento em:      ${formPayment} ${this.onlineOrLocal === 'online' ? ' - Pago Online' : ''}*\n`
+    message += `\n*${this.translate.text().payment_in_comment}:      ${formPayment} ${
+      this.onlineOrLocal === 'online' ? ` - ${this.translate.text().paid_online_comment}` : ''
+    }*\n`
 
     if (this.change && formPayment === 'Dinheiro') {
       const transshipmentVal = parseFloat(this.change.toString().replace(',', '.').trim())
-      const troco = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(transshipmentVal)
+      const troco = new Intl.NumberFormat(this.profile.locale.language, { style: 'currency', currency: this.profile.locale.currency }).format(
+        transshipmentVal
+      )
 
       if (transshipmentVal > 0) {
-        message += `*Troco para ${troco}*\n`
+        message += `*${this.translate.text().change_for_comment} ${troco}*\n`
 
         if (this.clientData.showTotal) {
           let totalRequest = this.totalCart() - this.cupomValue() + this.addonCalcResult()
@@ -920,51 +932,52 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
             totalRequest += this.taxDeliveryValue
           }
 
-          message += `*Troco: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-            transshipmentVal ? transshipmentVal - totalRequest : totalRequest
-          )}*\n`
+          message += `*${this.translate.text().change}: ${new Intl.NumberFormat(this.profile.locale.language, {
+            style: 'currency',
+            currency: this.profile.locale.currency,
+          }).format(transshipmentVal ? transshipmentVal - totalRequest : totalRequest)}*\n`
         }
       } else {
         this.delivery.transshipment = ''
-        message += '*Não preciso de troco*\n'
+        message += `*${this.translate.text().i_not_need_transhipment}*\n`
       }
     }
 
-    message += `*Link para status do pedido*\n http://www.whatsmenu.com.br/${this.clientData.slug}/status/${this.requestCode}`
+    message += `*${this.translate.text().link_for_order_status}*\n http://www.whatsmenu.com.br/${this.clientData.slug}/status/${this.requestCode}`
 
     if (this.typeDelivery === 'delivery') {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){
       if (this.cartRequest.type === 'P') {
-        message += `\n\n*Encomendas*\n\n*Endereço da Entrega*\n\n`
+        message += `\n\n*${this.translate.text().package_s}*\n\n*${this.translate.text().delivery_address}*\n\n`
       } else {
-        message += `\n\n*Endereço da Entrega*\n\n`
+        message += `\n\n*${this.translate.text().i_not_need_transhipment}*\n\n`
       }
       // message += `\n\n*Endereço da Entrega*\n\n`;
-      message += `*Rua: ${this.delivery.street.trim()}*\n`
-      message += `*Número: ${this.delivery.number}*\n`
+      message += `*${this.translate.text().delivery_address}: ${this.delivery.street.trim()}*\n`
+      message += `*${this.translate.text().number_comment}: ${this.delivery.number}*\n`
 
       if (this.delivery.complement) {
-        message += `*Complemento: ${this.delivery.complement.trim()}*\n`
+        message += `*${this.translate.text().add_on}: ${this.delivery.complement.trim()}*\n`
       }
 
-      message += `*Bairro: ${this.delivery.neighborhood.trim()}*\n`
+      message += `*${this.translate.text().neighborhood}: ${this.delivery.neighborhood.trim()}*\n`
 
       if (this.delivery.reference) {
-        message += `*Referencia: ${this.delivery.reference.trim()}*\n`
+        message += `*${this.translate.text().reference}: ${this.delivery.reference.trim()}*\n`
       }
 
-      message += `*Cidade: ${this.delivery.city.trim()}*\n`
+      message += `*${this.translate.text().city}: ${this.delivery.city.trim()}*\n`
     } else {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){
       if (this.cartRequest.type === 'P') {
-        message += `\n\n*Encomendas*\n\n*Vou retirar no local*\n\n`
+        message += `\n\n*${this.translate.text().package_s}*\n\n*${this.translate.text().pickup_the_location}*\n\n`
       } else {
-        message += `\n\n*Vou retirar no local*\n\n`
+        message += `\n\n*${this.translate.text().pickup_the_location}*\n\n`
       }
     }
 
     message += split
-    message += '*Tecnologia*\n      *www.whatsmenu.com.br*'
+    message += `*${this.translate.text().technology}*\n      *www.whatsmenu.com.br*`
 
     console.log(message)
     return encodeURI(message)
@@ -1073,7 +1086,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
         this.convertToNumber(this.totalCart()) -
         this.cupomValue() +
         (this.cupom?.type === 'freight' || this.typeDelivery === 'local' ? 0 : this.taxDeliveryValue),
-      description: `Pedido ${this.clientData.name} - WhatsMenu`,
+      description: `${this.translate.text().order} ${this.clientData.name} - WhatsMenu`,
       walletId: this.clientData.options.asaas.walletId,
       clientId: this.customer.id,
     }
@@ -1103,7 +1116,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     this.scrollTo('copy-paste', 1000)
 
     if (!apiQuery.payment.success) {
-      this.cardError = 'Erro ao gerar QR Code. Por favor, tente novamente.'
+      this.cardError = `${this.translate.text().error_generating_qrcode}`
     }
 
     this.pixInvoice = {
@@ -1122,7 +1135,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     } else {
       this.scrollTo('cardError', 300)
     }
-    this.cardError = 'Pagamento não detectado. por favor verifique o aplicativo do seu banco.'
+    this.cardError = this.translate.text().payment_not_detected_check_banking
   }
 
   public calculateOrderTotal() {
@@ -1184,11 +1197,11 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       if (order.statusPayment === 'paid') {
         return this.closeModal({ success: true, sendMessage: this.sendMessage })
       } else {
-        this.cardError = 'Erro ao processar o pagamento, por favor tente novamente.'
+        this.cardError = this.translate.text().error_processing_payment
       }
     } catch (error) {
       console.log(error)
-      this.cardError = typeof error?.error?.message === 'string' ? error?.error?.message : 'Erro ao processar o pagamento, por favor tente novamente.'
+      this.cardError = typeof error?.error?.message === 'string' ? error?.error?.message : this.translate.text().error_processing_payment
     } finally {
       this.loading = false
     }
@@ -1250,7 +1263,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
       return newCustomer
     } catch (error) {
       console.log(error)
-      throw new Error('Erro ao criar cliente. Por favor tente novamente.')
+      throw new Error(this.translate.text().error_creating_customer)
     }
   }
 
@@ -1260,7 +1273,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
 
   public validatePixCPF(): string | boolean {
     if (this.cartRequest.formsPayment[0].label === 'Pix' && !cpf.isValid(this.cartRequest.secretNumber)) {
-      return 'Insira um CPF válido!'
+      return `${this.translate.text().enter_a_valid_cpf}`
     }
     return false
   }
