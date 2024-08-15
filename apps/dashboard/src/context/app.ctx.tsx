@@ -508,7 +508,7 @@ export function AppProvider({ children }: AppProviderProps) {
     setToast(toastProps)
     setShowToast(true)
   }
-
+  //
   const verifyInventory = async () => {
     if (!profile?.options.inventoryControl) return
     const { data: lowAndSoldOutItems } = await apiRoute(
@@ -1006,9 +1006,9 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const showInvoiceAlertMessage = user?.controls?.alertInvoiceDayBefore
     ? Interval.fromDateTimes(
-        DateTime.local(),
-        DateTime.fromISO(invoicePending.invoice?.expiration)
-      ).count('days') <= user?.controls?.alertInvoiceDayBefore
+      DateTime.local(),
+      DateTime.fromISO(invoicePending.invoice?.expiration)
+    ).count('days') <= user?.controls?.alertInvoiceDayBefore
     : true
 
   return (
@@ -1162,10 +1162,10 @@ export function AppProvider({ children }: AppProviderProps) {
                   ) : null}
 
                   {navigator.userAgent.includes('Windows NT 10') &&
-                  parseInt(getBrowserVersion()) > 109 &&
-                  !whatsmenuDesktopDownloaded &&
-                  !('isElectron' in window) &&
-                  !possibleMobile ? (
+                    parseInt(getBrowserVersion()) > 109 &&
+                    !whatsmenuDesktopDownloaded &&
+                    !('isElectron' in window) &&
+                    !possibleMobile ? (
                     <>
                       <div className="bd-callout bd-callout-warning bg-warning bg-opacity-25">
                         <h2 className="mb-3">
@@ -1392,11 +1392,11 @@ export function AppProvider({ children }: AppProviderProps) {
                           ],
                           day: user.controls?.migrationMessage
                             ? DateTime.fromFormat(
-                                user.controls?.migrationMessage,
-                                `${t('date_format')}`
-                              )
-                                .setLocale(`${t('language')}`)
-                                .toFormat(`cccc ${t('date_format_v2')}`)
+                              user.controls?.migrationMessage,
+                              `${t('date_format')}`
+                            )
+                              .setLocale(`${t('language')}`)
+                              .toFormat(`cccc ${t('date_format_v2')}`)
                             : '',
                         }}
                       />
@@ -1429,7 +1429,7 @@ export function AppProvider({ children }: AppProviderProps) {
         ref={audioRef}
         src="/audio/pedido.mp3"
         id="voiceRequest"
-        onPlay={() => {}}
+        onPlay={() => { }}
         onEnded={() => {
           setPlayCount((prevCount) => --prevCount)
         }}
