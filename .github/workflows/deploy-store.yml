@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - beta
-      - main
     paths:
       - "apps/store/**"
       - ".github/workflows/deploy-store.yml"
@@ -22,7 +21,7 @@ env:
 
 jobs:
   build:
-    if: github.ref_name == 'main' || github.event.pull_request.merged == true
+    if: github.ref_name == 'beta' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     outputs:
