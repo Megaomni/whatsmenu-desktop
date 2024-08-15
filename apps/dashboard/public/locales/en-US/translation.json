@@ -326,6 +326,7 @@
   "flavors_will_be": "flavors will be",
   "flavor_will_be": "flavor will be",
   "please_wait": "Please wait...",
+  "coin_t": "Coin",
   "please_wait_n": "Please wait",
   "edit_products": "Edit Products",
   "products_will_be": "products will be",
@@ -1149,5 +1150,7 @@
   "check_security_code": "Check the security code",
   "check_zip_code": "Check the ZIP code",
   "unable_register_your_order_try_again": "Unable to register your order. Please try again.",
-  "system_identified_you_are_outside": "The system has identified that you are outside our coverage area. Please try to complete your order again."
+  "system_identified_you_are_outside": "The system has identified that you are outside our coverage area. Please try to complete your order again.",
+  "swiss_french": "Swiss French",
+  "swiss_french_chf": "Swiss French (CHF Fr.)"
 }

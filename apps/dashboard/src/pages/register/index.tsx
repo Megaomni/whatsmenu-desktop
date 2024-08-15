@@ -248,7 +248,12 @@ RegisterProps) {
       <div className="d-flex">
         <Card className="w-75 mx-auto mt-5 text-center">
           <Card.Header>
-            <Image src="/images/logoWhatsVertical.png" height={80} width={140} alt="Logo" />
+            <Image
+              src="/images/logoWhatsVertical.png"
+              height={80}
+              width={140}
+              alt="Logo"
+            />
             <h4 className="mt-4">{t('register_customer')}</h4>
           </Card.Header>
           <Card.Body>
@@ -290,7 +295,12 @@ RegisterProps) {
                       }}
                       maxLength={18}
                     />
-                    <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
+                    <Form.Control.Feedback
+                      tooltip
+                      type="invalid"
+                      style={{ zIndex: 0 }}
+                      className="mt-2"
+                    >
                       {secretNumberInvalid?.type} {t('invalid')}
                     </Form.Control.Feedback>
                   </div>
@@ -315,7 +325,12 @@ RegisterProps) {
                         setNewUser({ ...newUser, email: e.target.value })
                       }}
                     />
-                    <Form.Control.Feedback tooltip type="invalid" style={{ zIndex: 0 }} className="mt-2">
+                    <Form.Control.Feedback
+                      tooltip
+                      type="invalid"
+                      style={{ zIndex: 0 }}
+                      className="mt-2"
+                    >
                       {t('invalid_email')}
                     </Form.Control.Feedback>
                   </div>
@@ -395,13 +410,14 @@ RegisterProps) {
                   >
                     <option value="pt-BR">{i18n.t('portuguese_brazil')}</option>
                     <option value="en-US">{i18n.t('english_us')}</option>
+                    <option value="fr-CH">{i18n.t('swiss_french_chf')}</option>
                   </Form.Select>
                 </Col>
               </Row>
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
-                    <b>{i18n.t('country')}</b>
+                    <b>{i18n.t('coin_t')}</b>
                   </Form.Label>
                   <Form.Select
                     defaultValue={newUser.controls?.currency}
@@ -433,6 +449,7 @@ RegisterProps) {
                     }}
                   >
                     <option value="brl">{i18n.t('brazil')}</option>
+                    <option value="chf">{i18n.t('swiss_french')}</option>
                     <option value="usd">{i18n.t('united_states')}</option>
                   </Form.Select>
                 </Col>
@@ -465,8 +482,10 @@ RegisterProps) {
                 </Col>
               </Row>
               <Row className="mt-2">
-                <Col className="d-flex gap-2 flex-row-reverse justify-content-end mt-4">
-                  <Form.Label htmlFor="cardMensality">{t('monthly_payment')}</Form.Label>
+                <Col className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
+                  <Form.Label htmlFor="cardMensality">
+                    {t('monthly_payment')}
+                  </Form.Label>
                   <Form.Check
                     id="cardMensality"
                     checked={newUser.controls?.disableInvoice ?? false}
@@ -487,8 +506,10 @@ RegisterProps) {
                 </Col>
               </Row>
               <Row className="d-flex gap-2 ">
-                <Col className="d-flex flex-row-reverse gap-2 justify-content-end">
-                  <Form.Label htmlFor="registerService">{t('add_registration_service')}</Form.Label>
+                <Col className="d-flex justify-content-end flex-row-reverse gap-2">
+                  <Form.Label htmlFor="registerService">
+                    {t('add_registration_service')}
+                  </Form.Label>
                   <Form.Check
                     id="registerService"
                     checked={newUser.controls?.serviceStart ?? false}
@@ -852,7 +873,7 @@ RegisterProps) {
                 products={products}
               />
               <br />
-              <h4 className="text-start fw-bold">{t('cart')}</h4>
+              <h4 className="fw-bold text-start">{t('cart')}</h4>
               <hr />
               {cart.map((item) => {
                 return (

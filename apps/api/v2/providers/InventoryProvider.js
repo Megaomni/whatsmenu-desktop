@@ -167,7 +167,7 @@ class InventoryProvider extends ServiceProvider {
         return {
           code: '400',
           status: 'inventory',
-          message: `O sabor <b>${unavailableFlavor[0].name}</b> não está mais disponível na quantidade escolhida (apenas ${unavailableFlavor[0].amount} restantes).`,
+          message: `O sabor <b>${unavailableFlavor[0].name}</b> não está mais disponível na quantidade escolhida (apenas ${amount} restantes).`,
         }
       }
       return {}

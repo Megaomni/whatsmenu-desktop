@@ -251,6 +251,7 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
     return 'Salvar cartão e Finalizar Pagamento'
   }
 
+  // Visto: Alterna Local e Online
   handlePaymentTypeAlternate() {
     this.paymentType = this.paymentType === 'local' ? 'online' : 'local'
     this.formPaymentSelected = this.paymentType === 'online' ? this.onlineFormsPayment[0] : this.offlineFormsPayment[0]
@@ -259,6 +260,7 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  // Visto: Checar o CVV
   handleCheckCVV(card: CustomerCardTypeWithCodeAndId) {
     this.selectedCard = card
     this.formPaymentSelected = this.getFormpayment('credit')

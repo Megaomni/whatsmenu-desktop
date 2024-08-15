@@ -1090,6 +1090,7 @@ export function ClientConfig({
                 >
                   <option value="pt-BR">{t('portuguese_brazil')}</option>
                   <option value="en-US">{t('english_us')}</option>
+                  <option value="fr-CH">{t('swiss_french_chf')}</option>
                 </Form.Select>
               </Col>
               <Col sm="6" className="my-lg-0 my-2">
@@ -1119,6 +1120,7 @@ export function ClientConfig({
                 >
                   <option value="BRL">BRL (R$)</option>
                   <option value="USD">USD ($)</option>
+                  <option value="CHF">CHF (Fr)</option>
                 </Form.Select>
               </Col>
             </Row>
@@ -1127,6 +1129,20 @@ export function ClientConfig({
                 sm={12}
                 className="d-flex justify-content-end gap-2 text-end"
               >
+                <Button
+                  onClick={() =>
+                    window.open(
+                      `${process.env.WHATSMENU_BASE_URL}/${user.profile?.slug}`,
+                      '_blank'
+                    )
+                  }
+                  disabled={
+                    (secretNumberInvalid && !secretNumberInvalid?.valid) ||
+                    emailInvalid
+                  }
+                >
+                  {t('menu')}
+                </Button>
                 <Button variant="success" onClick={handleSaveUserProfile}>
                   {t('save')}
                 </Button>

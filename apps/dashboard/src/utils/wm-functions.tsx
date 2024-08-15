@@ -95,11 +95,22 @@ export const getNow = ({
 
 /** Formata telefone para (00) 0000-0000 ou (00) 00000-0000 */
 export const maskedPhone = (contact: string) => {
-  if (contact.length > 11) {
-    return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  switch (i18n.language) {
+    case 'pt-BR': {
+      if (contact.length > 11) {
+        return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+      }
+      return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+    }
+    case 'en-US': {
+      return contact.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '($1) $2-$3-$4')
+    }
+    case 'fr-CH': {
+      return contact.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '($1) $2-$3-$4')
+    }
+    default:
+      return contact
   }
-
-  return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
 }
 
 /** Verifica a luminosidade a cor do fundo e retorna a cor da fonte de acordo com a luminosidade. Ex: (background: #000000 => color: #FFFFFF), Retorna uma cor alternativa para o fundo de encomendas/agendamentos para loja */
@@ -267,6 +278,11 @@ export const mask = (
               e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
             }
             break
+          case 'fr-CH': {
+            e.currentTarget.maxLength = 4
+            e.target.value = e.target.value.substring(0, 4)
+            e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
+          }
         }
       }
 
@@ -303,14 +319,33 @@ export const mask = (
               .replace(/-(\d{2})(\d)/, '-$1-$2') // Adiciona o segundo hífen
               .replace(/-(\d{4})$/, '-$1') // Adiciona o quarto grupo de dígitos
 
-            return { type: 'SSN', valid: rawValue.length === 9 } // Verifica se a quantidade de dígitos é 9
+            return { type: 'SSN', valid: rawValue.length === 9 }
           } else {
             e.currentTarget.maxLength = 9
 
             // Formatação para EIN (no formato XX-XXXXXXX)
-            e.currentTarget.value = rawValue.replace(/^(\d{2})(\d{7})$/, '$1-$2') // Adiciona o hífen após os dois primeiros dígitos e antes dos últimos 7 dígitos
+            e.currentTarget.value = rawValue.replace(
+              /^(\d{2})(\d{7})$/,
+              '$1-$2'
+            )
 
-            return { type: 'EIN', valid: rawValue.length === 9 } // Verifica se a quantidade de dígitos é 9
+            return { type: 'EIN', valid: rawValue.length === 9 }
+          }
+        }
+        case 'fr-CH': {
+          const rawValue = e.currentTarget.value.replace(/\D/g, '')
+          if (rawValue.length <= 11) {
+            e.currentTarget.maxLength = 14 // Permite até 14 caracteres incluindo pontos
+
+            // Formatação para o formato 756.XXXX.XXXX.XX
+            e.currentTarget.value = rawValue
+              .replace(/^(\d{3})(\d{0,4})/, '$1.$2') // Adiciona o primeiro ponto após os 3 primeiros dígitos
+              .replace(/\.(\d{4})(\d{0,4})/, '.$1.$2') // Adiciona o segundo ponto após os 4 próximos dígitos
+              .replace(/\.(\d{4})(\d{0,2})/, '.$1.$2') // Adiciona o terceiro ponto após os 4 próximos dígitos
+              .replace(/\.(\d{2})$/, '.$1') // Adiciona os últimos 2 dígitos
+
+            // Verifica se o comprimento da string sem formatação é 11 (contando apenas os dígitos)
+            return { type: 'FormattedNumber', valid: rawValue.length === 11 }
           }
         }
       }
@@ -337,15 +372,21 @@ export const mask = (
           case 'en-US': {
             e.currentTarget.maxLength = 14
 
-            if (e.currentTarget.value.length > 10) {
-              e.currentTarget.value = e.currentTarget.value
-                .replace(/^(\d{3})(\d)/, '($1) $2')
-                .replace(/(\d{3})(\d{4})$/, '$1-$2')
-            } else {
-              e.currentTarget.value = e.currentTarget.value
-                .replace(/^(\d{3})(\d)/, '($1) $2')
-                .replace(/(\d{3})(\d{4})$/, '$1-$2')
-            }
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{3})(\d{0,3})/, '($1) $2') // Adiciona parênteses e espaço
+              .replace(/\s(\d{3})(\d{0,4})/, ' $1-$2') // Adiciona hífen
+            break
+          }
+          case 'fr-CH': {
+            e.currentTarget.maxLength = 12 // Permite até 12 caracteres incluindo espaços
+
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{3})(\d{0,3})/, '$1 $2') // Adiciona espaço após os primeiros 3 dígitos
+              .replace(/(\d{3})(\d{0,2})/, '$1 $2') // Adiciona espaço após os próximos 3 dígitos
+              .replace(/(\d{2})(\d{0,2})$/, '$1 $2') // Adiciona espaço antes dos últimos 2 dígitos
+
             break
           }
         }

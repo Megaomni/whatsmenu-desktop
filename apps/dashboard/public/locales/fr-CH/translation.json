@@ -6,9 +6,9 @@
     { "label": "Fernando de Noronha", "value": "America/Noronha" }
   ],
 
-  "coin": "R$",
-  "currency_config": "brl",
-  "ddi": "55",
+  "coin": "CHF",
+  "currency_config": "chf",
+  "ddi": "41",
   "date_format": "dd/MM/yyyy",
   "date_format_v2": "dd/MM",
   "welcome": "Bem vindo!",
@@ -626,6 +626,7 @@
   "gain_extra_speed": "Ganhe uma velocidade extra no atendimento das mesas.",
   "support_more_information": "A mensalidade do seu plano completo venceu e não identificamos o pagamento. Entre em contato com o suporte para mais informações",
   "dear_customer": "Prezado Cliente,",
+  "Nenhum garçom ativo": "Ver Cardápio",
   "have": "têm",
   "not_have": "não têm",
   "new_orders": "novos pedidos.",
@@ -1099,10 +1100,10 @@
   "closing_date": "Data de encerramento",
   "box_closure": "Encerramento de Caixas",
   "paid_a": "Paga",
-  "view_menu": "Ver Cardápio",
-  "coin_t": "Moeda",
+  "view_menu": "Ver Menu",
   "food": "Vale Refeição",
   "snack": "Vale Alimentação",
+  "coin_t": "Moeda",
   "order_printed_please_wait_finish": "Um pedido esta sendo impresso, aguarde a finalização",
   "password_settings": "Configurações de senha",
   "access": "acesso",
@@ -1137,6 +1138,6 @@
   "check_zip_code": "Verifique o CEP",
   "unable_register_your_order_try_again": "Não foi possível registrar seu pedido tente novamente",
   "system_identified_you_are_outside": "O sistema identificou que você está fora da nossa área de cobertura, tente concluir o seu pedido novamente",
-  "swiss_french": "Franco Suiço",
-  "swiss_french_chf": "Franco Suiço (CHF Fr.)"
+  "swiss_french": "Français suisse",
+  "swiss_french_chf": "Français suisse (CHF Fr.)"
 }
