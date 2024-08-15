@@ -8,3 +8,4 @@ export default withAuth(function middleware(request: NextRequest) {
 })
 
 export const config = { matcher: ['/dashboard/:path*', '/adm/:path*'] }
+//
