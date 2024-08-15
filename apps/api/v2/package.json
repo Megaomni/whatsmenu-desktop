@@ -8,7 +8,6 @@
     "node": "10.24.1"
   },
   "scripts": {
-    "postinstall": "chmod +x ./install.sh && ./install.sh",
     "start": "node server.js",
     "test": "nyc --reporter=html node ace test",
     "dev": "chmod +x ./dev.sh && ./dev.sh",
