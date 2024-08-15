@@ -49,7 +49,8 @@ jobs:
 
       - name: Package application
         run: |
-          sudo tar -czf deploy.tar.gz -C ./apps/api/v2 .
+          tar -czf deploy.tar.gz --exclude='node_modules' -C ./apps/api/v2 .
+
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
@@ -83,17 +84,17 @@ jobs:
 
           ssh-keyscan -H ${{ matrix.ec2_host }} >> ~/.ssh/known_hosts
 
-          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH/public_html
+          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH
 
           ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
             cd ${{ env.PROJECT_PATH }}
-            ls -la
-            find ./public_html ! -name 'deploy.tar.gz' -type f -exec rm -f {} +
-            cd public_html
-            tar -xzf deploy.tar.gz
+            sudo rm -rf public_html/*
+            tar -xzf deploy.tar.gz -C public_html
+            ls -la public_html
             rm deploy.tar.gz
+            cd public_html
             scp ${{ secrets.EC2_ENV_HOST }}:${{ env.ENV_PATH }} .env
-            npm install
+            npm install --ignore-scripts
             pm2 start ${{ env.BRANCH == 'beta' && 'ecosystem_beta.config.cjs' || 'ecosystem.config.cjs' }}
           EOF
 
