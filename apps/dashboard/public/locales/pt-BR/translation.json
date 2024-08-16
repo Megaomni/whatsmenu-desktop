@@ -103,8 +103,8 @@
   "whatsapp": "Whatsapp",
   "language": "Idioma",
   "country": "Pais",
-  "brazil": "Brasil",
-  "united_states": "Estados Unidos",
+  "brazil": "Brasil (R$)",
+  "united_states": "Estados Unidos ($)",
   "select_language": "Selecione o Idioma",
   "currency": "Moeda",
   "select_currency": "Selecione a Moeda",
@@ -1137,6 +1137,6 @@
   "check_zip_code": "Verifique o CEP",
   "unable_register_your_order_try_again": "Não foi possível registrar seu pedido tente novamente",
   "system_identified_you_are_outside": "O sistema identificou que você está fora da nossa área de cobertura, tente concluir o seu pedido novamente",
-  "swiss_french": "Franco Suiço",
-  "swiss_french_chf": "Franco Suiço (CHF)"
+  "swiss_french": "Franco Suiço (Fr.)",
+  "swiss_french_chf": "Franco Suiço"
 }
