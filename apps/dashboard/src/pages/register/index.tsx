@@ -253,6 +253,70 @@ export default function Register({
           </Card.Header>
           <Card.Body>
             <div className="col-md-7 mx-auto">
+            <Row className="mt-2">
+                <Col>
+                  <Form.Label>
+                    <b>{i18n.t('language')}</b>
+                  </Form.Label>
+                  <Form.Select
+                    onChange={(e) => {
+                      i18n.changeLanguage(e.target.value)
+                      setNewUser((old) => {
+                        return {
+                          ...newUser,
+                          plans: [],
+                          controls: {
+                            ...newUser.controls,
+                            language: e.target.value,
+                          },
+                        }
+                      })
+                    }}
+                  >
+                    <option value="pt-BR">{i18n.t('portuguese_brazil')}</option>
+                    <option value="en-US">{i18n.t('english_us')}</option>
+                  </Form.Select>
+                </Col>
+              </Row>
+              <Row className="mt-2">
+                <Col>
+                  <Form.Label>
+                    <b>{i18n.t('country')}</b>
+                  </Form.Label>
+                  <Form.Select
+                    defaultValue={newUser.controls?.currency}
+                    onChange={(e) => {
+                      if (newUser.controls) {
+                        setNewUser((old) => {
+                          return {
+                            ...newUser,
+                            plans: [],
+                            controls: {
+                              ...newUser.controls,
+                              currency: e.target.value,
+                            },
+                          }
+                        })
+                        const selectStartValue = document.getElementById(
+                          'select_start_value'
+                        ) as HTMLSelectElement
+                        if (selectStartValue && productMenu) {
+                          selectStartValue.value = productMenu.default_price
+                        }
+                        const selectPrinter = document.getElementById(
+                          'printer_value'
+                        ) as HTMLSelectElement
+                        if (selectPrinter && productPrinter) {
+                          selectPrinter.value = productPrinter.default_price
+                        }
+                      }
+                    }}
+                  >
+                    <option value="brl">{i18n.t('brazil')}</option>
+                    <option value="usd">{i18n.t('united_states')}</option>
+                  </Form.Select>
+                </Col>
+              </Row>
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
@@ -373,70 +437,6 @@ export default function Register({
                   </option>
                 ))}
               </Form.Select>
-              <Row className="mt-2">
-                <Col>
-                  <Form.Label>
-                    <b>{i18n.t('language')}</b>
-                  </Form.Label>
-                  <Form.Select
-                    onChange={(e) => {
-                      i18n.changeLanguage(e.target.value)
-                      setNewUser((old) => {
-                        return {
-                          ...newUser,
-                          plans: [],
-                          controls: {
-                            ...newUser.controls,
-                            language: e.target.value,
-                          },
-                        }
-                      })
-                    }}
-                  >
-                    <option value="pt-BR">{i18n.t('portuguese_brazil')}</option>
-                    <option value="en-US">{i18n.t('english_us')}</option>
-                  </Form.Select>
-                </Col>
-              </Row>
-              <Row className="mt-2">
-                <Col>
-                  <Form.Label>
-                    <b>{i18n.t('country')}</b>
-                  </Form.Label>
-                  <Form.Select
-                    defaultValue={newUser.controls?.currency}
-                    onChange={(e) => {
-                      if (newUser.controls) {
-                        setNewUser((old) => {
-                          return {
-                            ...newUser,
-                            plans: [],
-                            controls: {
-                              ...newUser.controls,
-                              currency: e.target.value,
-                            },
-                          }
-                        })
-                        const selectStartValue = document.getElementById(
-                          'select_start_value'
-                        ) as HTMLSelectElement
-                        if (selectStartValue && productMenu) {
-                          selectStartValue.value = productMenu.default_price
-                        }
-                        const selectPrinter = document.getElementById(
-                          'printer_value'
-                        ) as HTMLSelectElement
-                        if (selectPrinter && productPrinter) {
-                          selectPrinter.value = productPrinter.default_price
-                        }
-                      }
-                    }}
-                  >
-                    <option value="brl">{i18n.t('brazil')}</option>
-                    <option value="usd">{i18n.t('united_states')}</option>
-                  </Form.Select>
-                </Col>
-              </Row>
               <Row className="mt-2">
                 <Col>
                   <Form.Label>
