@@ -238,7 +238,7 @@ export default class Cart {
   }
 
   public date() {
-    const formatted = `${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(`${i18n.t('date_format')}`)} ${
+    const formatted = `${DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(`dd/MM/yyyy`)} ${
       DateTime.fromSQL(this.packageDate, { setZone: true })
         .toFormat('ss')
         .includes('01')
@@ -251,7 +251,7 @@ export default class Cart {
     return {
       date: this.packageDate,
       onlyDate: DateTime.fromSQL(this.packageDate, { setZone: true }).toFormat(
-        `${i18n.t('date_format')}`
+        `dd/MM/yyyy`
       ),
       zero: DateTime.fromSQL(this.packageDate, { setZone: true }).set({
         hour: 0,
