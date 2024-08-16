@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
+import i18n from 'i18n'
 import { DateTime } from 'luxon'
 import { UserType } from 'next-auth'
 import { signIn, useSession } from 'next-auth/react'
@@ -16,19 +17,16 @@ import {
   Table,
 } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { BsFillArrowLeftCircleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa'
+import { api } from 'src/lib/axios'
 import { z } from 'zod'
 import { AppContext } from '../../../context/app.ctx'
 import { Plan, SystemProduct } from '../../../types/plan'
-import Profil from '../../../types/profile'
+import Profile from '../../../types/profile'
 import { apiRoute, mask } from '../../../utils/wm-functions'
 import { Plans } from '../../Plans'
-import { api } from 'src/lib/axios'
-import i18n from 'i18n'
-import { useTranslation } from 'react-i18next'
-import { ProfileFormsPayment } from '@components/Profile/FormsPayment'
-import Profile from '../../../types/profile'
 
 const PixNegotiationSchema = z.object({
   fee: z
