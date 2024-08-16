@@ -16,8 +16,8 @@ import { apiRoute, currency } from '../../utils/wm-functions'
 interface PlansProps {
   type: 'create' | 'update'
   setUser?:
-    | Dispatch<SetStateAction<Partial<UserType>>>
-    | Dispatch<SetStateAction<UserType>>
+  | Dispatch<SetStateAction<Partial<UserType>>>
+  | Dispatch<SetStateAction<UserType>>
   user: Partial<UserType>
   plans?: Plan[]
   period?: 'monthly' | 'semester' | 'yearly' | string
@@ -505,16 +505,16 @@ export function Plans({
                   }
                 })}
             </Form.Select>
-            <Row className="mt-3">
+            {/* <Row className="mt-3">
               <Col sm={12}>
                 <h5 className="fw-bold">Planos Adicionais</h5>
               </Col>
               <Col className="ps-4">{$plans('register')}</Col>
-            </Row>
+            </Row> */}
             <hr />
             <Row className="mt-3">
               <Col sm={12}>
-                <h5 className="fw-bold">Planos Adicionais com desconto</h5>
+                <h5 className="fw-bold">Planos Adicionais</h5>
               </Col>
               <Col className="ps-4">{$plans('upgrade')}</Col>
             </Row>

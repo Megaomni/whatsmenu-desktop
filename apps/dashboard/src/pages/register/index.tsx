@@ -36,8 +36,8 @@ export default function Register({
   plans,
   products,
 }: // startValue: menuValue,
-// printValue: printServiceValue,
-RegisterProps) {
+  // printValue: printServiceValue,
+  RegisterProps) {
   const [cart, setCart] = useState<
     {
       id: number
@@ -777,71 +777,48 @@ RegisterProps) {
               <br />
               {(newUser.controls?.disableInvoice ||
                 newUser.controls?.period === 'yearly') && (
-                <Row>
-                  <Col md className="text-center">
-                    <Form.Label>
-                      <b>{t('number_installments')}</b>
-                    </Form.Label>
-                    <Form.Select
-                      value={installments}
-                      onChange={(e) => {
-                        const invoiceInstallments = Number(e.target.value)
-                        if (newUser.controls) {
-                          setNewUser({
-                            ...newUser,
-                            controls: {
-                              ...newUser.controls,
-                              bilhetParcelament: getBilhetParcelament({
-                                invoiceInstallments,
-                              }),
-                            },
-                          })
-                        }
-                        setInstallments(invoiceInstallments)
-                      }}
-                    >
-                      {Array(newUser.controls.disableInvoice ? 12 : 3)
-                        .fill(null)
-                        .map((item, index) => {
-                          const indexValue = index + 1
-                          return (
-                            <option
-                              key={index}
-                              selected={indexValue === 1}
-                              value={indexValue}
-                            >
-                              {indexValue}
-                            </option>
-                          )
-                        })}
-                    </Form.Select>
-                  </Col>
-                </Row>
-              )}
-              <Row className="mt-2">
-                <Col>
-                  <Form.Label>
-                    <b>{t('payment_gateway')}</b>
-                  </Form.Label>
-                  <Form.Select
-                    disabled={!newUser.controls?.disableInvoice}
-                    title={
-                      !newUser.controls?.disableInvoice
-                        ? 'Ative mensalidade no cartão para habilitar o gateway'
-                        : ''
-                    }
-                    onChange={(e) => {
-                      setGateway(e.target.value)
-                    }}
-                  >
-                    <option selected disabled>
-                      {t('select_option')}
-                    </option>
-                    {/* <option value="stripe">Stripe</option> */}
-                    <option value="pagarme">Pagar.me</option>
-                  </Form.Select>
-                </Col>
-              </Row>
+                  <Row>
+                    <Col md className="text-center">
+                      <Form.Label>
+                        <b>{t('number_installments')}</b>
+                      </Form.Label>
+                      <Form.Select
+                        value={installments}
+                        onChange={(e) => {
+                          const invoiceInstallments = Number(e.target.value)
+                          if (newUser.controls) {
+                            setNewUser({
+                              ...newUser,
+                              controls: {
+                                ...newUser.controls,
+                                bilhetParcelament: getBilhetParcelament({
+                                  invoiceInstallments,
+                                }),
+                              },
+                            })
+                          }
+                          setInstallments(invoiceInstallments)
+                        }}
+                      >
+                        {Array(newUser.controls.disableInvoice ? 12 : 3)
+                          .fill(null)
+                          .map((item, index) => {
+                            const indexValue = index + 1
+                            return (
+                              <option
+                                key={index}
+                                selected={indexValue === 1}
+                                value={indexValue}
+                              >
+                                {indexValue}
+                              </option>
+                            )
+                          })}
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                )}
+
               <Plans
                 type="create"
                 plans={plans}
