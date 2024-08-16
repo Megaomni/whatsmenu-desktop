@@ -1,1 +1,0 @@
-../../../config/scripts/adonis-legacy/install.sh
