@@ -333,20 +333,23 @@ export const mask = (
           }
         }
         case 'fr-CH': {
-          const rawValue = e.currentTarget.value.replace(/\D/g, '')
-          if (rawValue.length <= 11) {
-            e.currentTarget.maxLength = 14 // Permite até 14 caracteres incluindo pontos
+          // Remove todos os caracteres não numéricos
+          let rawValue = e.currentTarget.value.replace(/\D/g, '')
 
-            // Formatação para o formato 756.XXXX.XXXX.XX
-            e.currentTarget.value = rawValue
-              .replace(/^(\d{3})(\d{0,4})/, '$1.$2') // Adiciona o primeiro ponto após os 3 primeiros dígitos
-              .replace(/\.(\d{4})(\d{0,4})/, '.$1.$2') // Adiciona o segundo ponto após os 4 próximos dígitos
-              .replace(/\.(\d{4})(\d{0,2})/, '.$1.$2') // Adiciona o terceiro ponto após os 4 próximos dígitos
-              .replace(/\.(\d{2})$/, '.$1') // Adiciona os últimos 2 dígitos
-
-            // Verifica se o comprimento da string sem formatação é 11 (contando apenas os dígitos)
-            return { type: 'FormattedNumber', valid: rawValue.length === 11 }
+          // Garante que o número sempre comece com '756'
+          if (!rawValue.startsWith('756')) {
+            rawValue = '756' + rawValue.slice(3)
           }
+
+          e.currentTarget.maxLength = 16
+
+          // Formatação para o formato 756.XXXX.XXXX.XX
+          e.currentTarget.value = rawValue
+            .replace(/^(\d{3})(\d{0,4})/, '$1.$2') // Adiciona o primeiro ponto após os 3 primeiros dígitos
+            .replace(/\.(\d{4})(\d{1,4})/, '.$1.$2') // Adiciona o segundo ponto após os 4 próximos dígitos
+            .replace(/\.(\d{4})(\d{1,2})$/, '.$1.$2') // Adiciona os últimos 2 dígitos
+
+          return { type: 'AVS', valid: rawValue.length === 13 }
         }
       }
 

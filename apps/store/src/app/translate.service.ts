@@ -10,7 +10,7 @@ export class TranslateService {
   constructor(private httpClient: HttpClient) {
     this.setLanguage(localStorage.getItem('lang') || 'pt-BR')
       .then((data: TranslateType) => {
-        console.log('Língua Carregada com Sucesso')
+        console.log('Língua Carregada com Sucesso: ' + data.language)
         ;[
           {
             provide: LOCALE_ID,
