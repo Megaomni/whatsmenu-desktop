@@ -1071,6 +1071,7 @@ export function ClientConfig({
                   aria-label={t('select_language')}
                   value={user.profile?.options?.locale?.language}
                   onChange={(e) => {
+                    i18n.changeLanguage(e.target.value)
                     if (user.profile) {
                       setUser({
                         ...user,
@@ -1252,129 +1253,141 @@ export function ClientConfig({
             products={props.systemProducts}
           />
         )}
-        <span className="fw-bold">{t('add_ons')}</span>
-        <hr />
-        {props.systemProducts.map((prod) => {
-          const price = prod.operations.prices.find(
-            (price) => price.id === prod.default_price
-          )
-          const value =
-            (price?.currencies[
-              user?.controls?.currency ?? price?.default_currency
-            ].unit_amount ?? 0) / 100
-          const productItem = invoiceItems.find((item) => item.id === prod.id)
-          if (prod.service === 'menu' || prod.service === 'printer') {
-            return (
-              <Row key={prod.name} className="mb-2">
-                <Col>
-                  <Form.Switch
-                    id={prod.name}
-                    label={prod.name}
-                    checked={!!productItem}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        if (price) {
-                          setInvoiceItems((oldItems) => {
-                            if (!oldItems.some((item) => item.id === prod.id)) {
-                              oldItems.push({
-                                id: prod.id,
-                                name: prod.name,
-                                service: prod.service,
-                                quantity: 1,
-                                price_id: price?.id,
-                                value,
+        {i18n.language === 'pt-BR' && (
+          <>
+            <span className="fw-bold">{t('add_ons')}</span>
+            <hr />
+            {props.systemProducts.map((prod) => {
+              const price = prod.operations.prices.find(
+                (price) => price.id === prod.default_price
+              )
+              const value =
+                (price?.currencies[
+                  user?.controls?.currency ?? price?.default_currency
+                ].unit_amount ?? 0) / 100
+              const productItem = invoiceItems.find(
+                (item) => item.id === prod.id
+              )
+              if (prod.service === 'menu' || prod.service === 'printer') {
+                return (
+                  <Row key={prod.name} className="mb-2">
+                    <Col>
+                      <Form.Switch
+                        id={prod.name}
+                        label={prod.name}
+                        checked={!!productItem}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            if (price) {
+                              setInvoiceItems((oldItems) => {
+                                if (
+                                  !oldItems.some((item) => item.id === prod.id)
+                                ) {
+                                  oldItems.push({
+                                    id: prod.id,
+                                    name: prod.name,
+                                    service: prod.service,
+                                    quantity: 1,
+                                    price_id: price?.id,
+                                    value,
+                                  })
+                                }
+
+                                return [...oldItems]
                               })
                             }
-
-                            return [...oldItems]
-                          })
-                        }
-                      } else {
-                        setInvoiceItems((oldItems) => {
-                          return oldItems.filter((item) => item.id !== prod.id)
-                        })
-                      }
-                    }}
-                    className="my-auto"
-                  />
-                </Col>
-                {prod.service === 'printer' && (
-                  <Col>
-                    <InputGroup>
-                      <InputGroup.Text>{t('quantity')}</InputGroup.Text>
-                      <Form.Control
-                        type="number"
-                        min={1}
-                        value={productItem?.quantity ?? 1}
-                        onChange={(e) => {
-                          setInvoiceItems((oldItems) => {
-                            const item = oldItems.find(
-                              (item) => item.id === prod.id
-                            )
-                            if (item) {
-                              item.quantity = Number(e.target.value)
-                            }
-
-                            return [...oldItems]
-                          })
+                          } else {
+                            setInvoiceItems((oldItems) => {
+                              return oldItems.filter(
+                                (item) => item.id !== prod.id
+                              )
+                            })
+                          }
                         }}
+                        className="my-auto"
                       />
-                      <InputGroup.Text>
-                        {currency({
-                          value: value * (productItem?.quantity ?? 1),
-                        })}
-                      </InputGroup.Text>
-                    </InputGroup>
-                  </Col>
-                )}
-                <Col sm={4}>
-                  <Form.Select
-                    disabled={!invoiceItems.some((item) => item.id === prod.id)}
-                    onChange={(e) => {
-                      if (productItem) {
-                        productItem.value = Number(e.target.value)
-                        if (e.target.dataset.priceId) {
-                          productItem.price_id = e.target.dataset.priceId
-                        }
-                        setInvoiceItems((oldItems) => [...oldItems])
-                      }
-                    }}
-                  >
-                    {prod.operations.prices.map((price) => {
-                      const currencyMoney =
-                        price.currencies[user?.controls?.currency ?? 'brl']
+                    </Col>
+                    {prod.service === 'printer' && (
+                      <Col>
+                        <InputGroup>
+                          <InputGroup.Text>{t('quantity')}</InputGroup.Text>
+                          <Form.Control
+                            type="number"
+                            min={1}
+                            value={productItem?.quantity ?? 1}
+                            onChange={(e) => {
+                              setInvoiceItems((oldItems) => {
+                                const item = oldItems.find(
+                                  (item) => item.id === prod.id
+                                )
+                                if (item) {
+                                  item.quantity = Number(e.target.value)
+                                }
 
-                      return (
-                        <option
-                          key={price.id}
-                          selected={price.id === prod.default_price}
-                          value={currencyMoney.unit_amount / 100}
-                          data-price-id={price.id}
-                        >
-                          {currency({ value: currencyMoney.unit_amount / 100 })}
-                        </option>
-                      )
-                    })}
-                  </Form.Select>
-                </Col>
-              </Row>
-            )
-          }
-        })}
-        <Row>
-          <Col>
-            <span>
-              <b>Total</b>:{' '}
-              {currency({
-                value: invoiceItems.reduce(
-                  (acc, item) => acc + item.value * item.quantity,
-                  0
-                ),
-              })}
-            </span>
-          </Col>
-        </Row>
-        {/* <Row>
+                                return [...oldItems]
+                              })
+                            }}
+                          />
+                          <InputGroup.Text>
+                            {currency({
+                              value: value * (productItem?.quantity ?? 1),
+                            })}
+                          </InputGroup.Text>
+                        </InputGroup>
+                      </Col>
+                    )}
+                    <Col sm={4}>
+                      <Form.Select
+                        disabled={
+                          !invoiceItems.some((item) => item.id === prod.id)
+                        }
+                        onChange={(e) => {
+                          if (productItem) {
+                            productItem.value = Number(e.target.value)
+                            if (e.target.dataset.priceId) {
+                              productItem.price_id = e.target.dataset.priceId
+                            }
+                            setInvoiceItems((oldItems) => [...oldItems])
+                          }
+                        }}
+                      >
+                        {prod.operations.prices.map((price) => {
+                          const currencyMoney =
+                            price.currencies[user?.controls?.currency ?? 'brl']
+
+                          return (
+                            <option
+                              key={price.id}
+                              selected={price.id === prod.default_price}
+                              value={currencyMoney.unit_amount / 100}
+                              data-price-id={price.id}
+                            >
+                              {currency({
+                                value: currencyMoney.unit_amount / 100,
+                              })}
+                            </option>
+                          )
+                        })}
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                )
+              }
+            })}
+            <Row>
+              <Col>
+                <span>
+                  <b>Total</b>:{' '}
+                  {currency({
+                    value: invoiceItems.reduce(
+                      (acc, item) => acc + item.value * item.quantity,
+                      0
+                    ),
+                  })}
+                </span>
+              </Col>
+            </Row>
+            {/* <Row>
           <Col md className="d-flex">
             <Form.Switch
               id="Serviço de Cadastro"
@@ -1458,39 +1471,42 @@ export function ClientConfig({
             </Col>
           </>
         </Row> */}
-        <Row>
-          <Col className="d-flex align-items-end gap-2">
-            <Button
-              className="px-5"
-              variant="success"
-              onClick={handleEmitAddons}
-              disabled={!invoiceItems?.length}
-            >
-              {t('issue')}
-            </Button>
-            <div>
-              <Form.Label>{t('number_installments')}</Form.Label>
-              <Form.Select
-                value={installments}
-                onChange={(e) => {
-                  setInstallments(Number(e.target.value))
-                }}
-              >
-                {Array(12)
-                  .fill('')
-                  .map((item, index) => {
-                    const newIndex = index + 1
+            <Row>
+              <Col className="d-flex align-items-end gap-2">
+                <Button
+                  className="px-5"
+                  variant="success"
+                  onClick={handleEmitAddons}
+                  disabled={!invoiceItems?.length}
+                >
+                  {t('issue')}
+                </Button>
+                <div>
+                  <Form.Label>{t('number_installments')}</Form.Label>
+                  <Form.Select
+                    value={installments}
+                    onChange={(e) => {
+                      setInstallments(Number(e.target.value))
+                    }}
+                  >
+                    {Array(12)
+                      .fill('')
+                      .map((item, index) => {
+                        const newIndex = index + 1
 
-                    return (
-                      <option key={newIndex} value={newIndex}>
-                        {newIndex}
-                      </option>
-                    )
-                  })}
-              </Form.Select>
-            </div>
-          </Col>
-        </Row>
+                        return (
+                          <option key={newIndex} value={newIndex}>
+                            {newIndex}
+                          </option>
+                        )
+                      })}
+                  </Form.Select>
+                </div>
+              </Col>
+            </Row>
+          </>
+        )}
+
         <span className="fw-bold">{t('invoices')}</span>
         <hr />
         <Table responsive striped hover className="text-center align-middle">

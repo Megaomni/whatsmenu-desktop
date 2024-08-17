@@ -768,6 +768,7 @@
   "number_deliveries": "Quantidade de Entregas",
   "total_sales_and_coupons": "Total de vendas do período - Total de cupons",
   "period": "Período",
+  "notes": "Notas",
   "total_canceled": "Total cancelado",
   "number_canceled_orders": "Quantidade de Pedidos Cancelados",
   "total_fees": "Total de taxas",
