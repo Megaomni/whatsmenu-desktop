@@ -1,9 +1,7 @@
 {
   "timezones": [
-    { "label": "Acre", "value": "America/Rio_Branco" },
-    { "label": "Brasília", "value": "America/Sao_Paulo" },
-    { "label": "Manaus", "value": "America/Manaus" },
-    { "label": "Fernando de Noronha", "value": "America/Noronha" }
+    { "label": "Zurich", "value": "Europe/Zurich" },
+    { "label": "Paris", "value": "Europe/Paris" }
   ],
 
   "coin": "CHF",
