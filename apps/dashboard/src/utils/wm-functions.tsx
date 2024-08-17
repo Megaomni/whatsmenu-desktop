@@ -259,34 +259,32 @@ export const mask = (
         '$1.$2'
       )
       break
-    case 'cep':
-      {
-        e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
-        switch (i18n.language) {
-          case 'pt-BR': {
-            e.currentTarget.maxLength = 9
-            e.currentTarget.value = e.currentTarget.value.replace(
-              /^(\d{5})(\d)/g,
-              '$1-$2'
-            )
-            break
-          }
-          case 'en-US':
-            {
-              e.currentTarget.maxLength = 5
-              e.target.value = e.target.value.substring(0, 5)
-              e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
-            }
-            break
-          case 'fr-CH': {
-            e.currentTarget.maxLength = 4
-            e.target.value = e.target.value.substring(0, 4)
+    case 'cep': {
+      e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
+      switch (i18n.language) {
+        case 'pt-BR': {
+          e.currentTarget.maxLength = 9
+          e.currentTarget.value = e.currentTarget.value.replace(
+            /^(\d{5})(\d)/g,
+            '$1-$2'
+          )
+          break
+        }
+        case 'en-US':
+          {
+            e.currentTarget.maxLength = 5
+            e.target.value = e.target.value.substring(0, 5)
             e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
           }
+          break
+        case 'fr-CH': {
+          e.currentTarget.maxLength = 4
+          e.target.value = e.target.value.substring(0, 4)
+          e.target.value = e.target.value.replace(/^(\d{4})/, '$1')
+          break
         }
       }
-
-      break
+    }
     case 'cpf/cnpj':
       switch (i18n.language) {
         case 'pt-BR': {
@@ -386,9 +384,7 @@ export const mask = (
 
             e.currentTarget.value = e.currentTarget.value
               .replace(/\D/g, '') // Remove todos os caracteres não numéricos
-              .replace(/^(\d{3})(\d{0,3})/, '$1 $2') // Adiciona espaço após os primeiros 3 dígitos
-              .replace(/(\d{3})(\d{0,2})/, '$1 $2') // Adiciona espaço após os próximos 3 dígitos
-              .replace(/(\d{2})(\d{0,2})$/, '$1 $2') // Adiciona espaço antes dos últimos 2 dígitos
+              .replace(/^(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4')
 
             break
           }
