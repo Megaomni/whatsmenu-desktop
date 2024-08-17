@@ -850,30 +850,7 @@ RegisterProps) {
                   )}
                 </>
               )}
-              <Row className="mt-2">
-                <Col>
-                  <Form.Label>
-                    <b>{t('payment_gateway')}</b>
-                  </Form.Label>
-                  <Form.Select
-                    disabled={!newUser.controls?.disableInvoice}
-                    title={
-                      !newUser.controls?.disableInvoice
-                        ? 'Ative mensalidade no cartão para habilitar o gateway'
-                        : ''
-                    }
-                    onChange={(e) => {
-                      setGateway(e.target.value)
-                    }}
-                  >
-                    <option selected disabled>
-                      {t('select_option')}
-                    </option>
-                    {/* <option value="stripe">Stripe</option> */}
-                    <option value="pagarme">Pagar.me</option>
-                  </Form.Select>
-                </Col>
-              </Row>
+
               <Plans
                 type="create"
                 plans={plans}

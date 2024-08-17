@@ -5,6 +5,7 @@
   "description": "The fullstack application boilerplate for Adonisjs",
   "main": "index.js",
   "scripts": {
+    "postinstall": "chmod +x ./install.sh && ./install.sh",
     "dev": "chmod +x ./dev.sh && ./dev.sh",
     "start": "node server.js",
     "test": "node ace test",

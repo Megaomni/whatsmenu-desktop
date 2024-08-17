@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
+import i18n from 'i18n'
 import { DateTime } from 'luxon'
 import { UserType } from 'next-auth'
 import { signIn, useSession } from 'next-auth/react'
@@ -16,19 +17,16 @@ import {
   Table,
 } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { BsFillArrowLeftCircleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa'
+import { api } from 'src/lib/axios'
 import { z } from 'zod'
 import { AppContext } from '../../../context/app.ctx'
 import { Plan, SystemProduct } from '../../../types/plan'
-import Profil from '../../../types/profile'
+import Profile from '../../../types/profile'
 import { apiRoute, mask } from '../../../utils/wm-functions'
 import { Plans } from '../../Plans'
-import { api } from 'src/lib/axios'
-import i18n from 'i18n'
-import { useTranslation } from 'react-i18next'
-import { ProfileFormsPayment } from '@components/Profile/FormsPayment'
-import Profile from '../../../types/profile'
 
 const PixNegotiationSchema = z.object({
   fee: z
@@ -93,9 +91,9 @@ export function ClientConfig({
     user?.profile?.options?.asaas?.negotiation?.pix.at(-1)
   const pixFeeExpirationDayCount = lastPixNegotiation
     ? DateTime.fromFormat(
-        lastPixNegotiation?.expiration_date!,
-        'yyyy-MM-dd HH:mm:ss'
-      ).diffNow('days').days
+      lastPixNegotiation?.expiration_date!,
+      'yyyy-MM-dd HH:mm:ss'
+    ).diffNow('days').days
     : 0
 
   const pixNegotiationForm = useForm<PixNegotiationSchemaInput>({
@@ -638,27 +636,27 @@ export function ClientConfig({
               </Col>
               {(userContext?.controls.type === 'adm' ||
                 userContext?.controls.type === 'manager') && (
-                <Col sm="12" md className="mb-md-0 mb-2">
-                  <FormGroup>
-                    <Form.Label>{t('password')}</Form.Label>
-                    <Form.Control
-                      type="password"
-                      placeholder={t('enter_new_password')}
-                      onChange={(e) => handleChange(e.target.value, 'password')}
-                    />
-                  </FormGroup>
-                </Col>
-              )}
+                  <Col sm="12" md className="mb-md-0 mb-2">
+                    <FormGroup>
+                      <Form.Label>{t('password')}</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder={t('enter_new_password')}
+                        onChange={(e) => handleChange(e.target.value, 'password')}
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
             </Row>
           </Col>
           <Col className="d-flex justify-content-around fs-7 fw-bold flex-column flex-md-row gap-2  ">
             {(userContext?.controls.type === 'adm' ||
               userContext?.controls.type === 'manager') && (
-              <FormGroup className="d-flex flex-column flex-grow-1">
-                <Form.Label>{t('security_key')}</Form.Label>
-                <Button onClick={handleResetSecurityKey}>{t('reset')}</Button>
-              </FormGroup>
-            )}
+                <FormGroup className="d-flex flex-column flex-grow-1">
+                  <Form.Label>{t('security_key')}</Form.Label>
+                  <Button onClick={handleResetSecurityKey}>{t('reset')}</Button>
+                </FormGroup>
+              )}
             <FormGroup className="d-flex flex-column flex-grow-1">
               <Form.Label>{t('access_panel')}</Form.Label>
               <Button
@@ -670,7 +668,7 @@ export function ClientConfig({
                 }
                 title={
                   userContext?.controls?.type !== 'adm' &&
-                  user?.controls?.type === 'adm'
+                    user?.controls?.type === 'adm'
                     ? i18n.t('not_have_permission_adm')
                     : ''
                 }
@@ -718,78 +716,78 @@ export function ClientConfig({
         </Modal>
         {(userContext?.controls?.type === 'adm' ||
           userContext?.controls?.type === 'manager') && (
-          <Row className="fs-7 fw-bold mt-4">
-            <Col>
-              <FormGroup>
-                <Form.Label>{t('user_cancellation')}</Form.Label>
-                <Form.Switch
-                  label={t('cancel_charges_user')}
-                  id="Cancelar cobranças deste usuário?"
-                  className="text-wrap"
-                  checked={user.controls?.canceled ?? false}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      controls: {
-                        ...user.controls,
-                        canceled: e.target.checked,
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Form.Label>
-                  {t('version_next')}{' '}
-                  <span className="text-uppercase">({t('test')})</span>
-                </Form.Label>
-                <Form.Switch
-                  id="nextVersion"
-                  label={t('activate')}
-                  className="text-wrap"
-                  checked={user.controls?.beta}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      controls: {
-                        ...user.controls,
-                        beta: e.target.checked,
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Form.Label>
-                  {t('automatic_printing_browser')}{' '}
-                  <span className="text-uppercase">({t('test')})</span>
-                </Form.Label>
-                <Form.Switch
-                  id="webPrint"
-                  label="Ativar"
-                  className="text-wrap"
-                  checked={user.controls?.print?.web}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      controls: {
-                        ...user.controls,
-                        print: {
-                          ...user?.controls?.print,
-                          web: e.target.checked,
+            <Row className="fs-7 fw-bold mt-4">
+              <Col>
+                <FormGroup>
+                  <Form.Label>{t('user_cancellation')}</Form.Label>
+                  <Form.Switch
+                    label={t('cancel_charges_user')}
+                    id="Cancelar cobranças deste usuário?"
+                    className="text-wrap"
+                    checked={user.controls?.canceled ?? false}
+                    onChange={(e) =>
+                      setUser({
+                        ...user,
+                        controls: {
+                          ...user.controls,
+                          canceled: e.target.checked,
                         },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-        )}
+                      })
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <Form.Label>
+                    {t('version_next')}{' '}
+                    <span className="text-uppercase">({t('test')})</span>
+                  </Form.Label>
+                  <Form.Switch
+                    id="nextVersion"
+                    label={t('activate')}
+                    className="text-wrap"
+                    checked={user.controls?.beta}
+                    onChange={(e) =>
+                      setUser({
+                        ...user,
+                        controls: {
+                          ...user.controls,
+                          beta: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <Form.Label>
+                    {t('automatic_printing_browser')}{' '}
+                    <span className="text-uppercase">({t('test')})</span>
+                  </Form.Label>
+                  <Form.Switch
+                    id="webPrint"
+                    label="Ativar"
+                    className="text-wrap"
+                    checked={user.controls?.print?.web}
+                    onChange={(e) =>
+                      setUser({
+                        ...user,
+                        controls: {
+                          ...user.controls,
+                          print: {
+                            ...user?.controls?.print,
+                            web: e.target.checked,
+                          },
+                        },
+                      })
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          )}
         <FormGroup className="fw-bold my-3">
           <Form.Label>{t('notes')}</Form.Label>
           <Form.Control
@@ -1524,8 +1522,8 @@ export function ClientConfig({
               <tr key={invoice.id}>
                 <td>
                   {invoice.requests &&
-                  invoice.requests[0] &&
-                  invoice.requests[0].transactionId
+                    invoice.requests[0] &&
+                    invoice.requests[0].transactionId
                     ? invoice.requests[0].transactionId
                     : '-'}
                 </td>
