@@ -13,9 +13,9 @@ class StrategyGrovePay {
   setSecret(secret) {
     const includesBearerKeyword = secret.includes('Bearer')
     this.headers = {
-      'accept': 'application/json',
+      accept: 'application/json',
       'Content-Type': 'application/json',
-      'authorization': `${!includesBearerKeyword || process.env.NODE_ENV === 'production' ? 'Bearer' : ''} ${secret}`,
+      authorization: `${!includesBearerKeyword || process.env.NODE_ENV === 'production' ? 'Bearer' : ''} ${secret}`,
     }
   }
 
