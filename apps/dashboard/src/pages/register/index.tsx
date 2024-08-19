@@ -285,9 +285,6 @@ RegisterProps) {
                     <option value="pt-BR">{i18n.t('portuguese_brazil')}</option>
                     <option value="en-US">{i18n.t('english_us')}</option>
                     <option value="fr-CH">{i18n.t('swiss_french_chf')}</option>
-                    <option value="pt-PT">
-                      {i18n.t('portuguese_portugal')}
-                    </option>
                   </Form.Select>
                 </Col>
               </Row>
@@ -326,9 +323,8 @@ RegisterProps) {
                     }}
                   >
                     <option value="brl">{i18n.t('brazil')}</option>
-                    <option value="usd">{i18n.t('united_states')}</option>
                     <option value="chf">{i18n.t('swiss_french')}</option>
-                    <option value="eur">{i18n.t('portugal')}</option>
+                    <option value="usd">{i18n.t('united_states')}</option>
                   </Form.Select>
                 </Col>
               </Row>
