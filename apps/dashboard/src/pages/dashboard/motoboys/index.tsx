@@ -170,7 +170,9 @@ export default function Motoboys({}: MotoboysProps) {
                   className="mb-sm-0 mb-1 p-1"
                   style={{ width: '100%' }}
                 >
-                  <FormLabel className="fw-600 fs-7">WhatsApp:</FormLabel>
+                  <FormLabel className="fw-600 fs-7">
+                    {t('whatsapp')}:
+                  </FormLabel>
                   <Form.Control
                     type="text"
                     maxLength={15}

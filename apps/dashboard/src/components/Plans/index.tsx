@@ -245,7 +245,7 @@ export function Plans({
         const currency =
           price.currencies[user?.controls?.currency ?? price.default_currency]
 
-        const valuePrice = currency.unit_amount
+        const valuePrice = currency?.unit_amount
         const planValue = valuePrice ? valuePrice / 100 : plan[period]
 
         return {
