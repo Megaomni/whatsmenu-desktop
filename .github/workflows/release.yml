@@ -32,6 +32,9 @@ jobs:
           echo IFOOD_CLIENT_SECRET='${{ secrets.IFOOD_CLIENT_SECRET }}' >> .env
           echo IFOOD_INTEGRATION_TOKEN='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
 
+          echo WM_DASHBOARD='${{ secrets.WM_DASHBOARD }}' >> .env
+          echo WM_STORE='${{ secrets.WM_STORE }}' >> .env
+          echo WM_WEBSOCKET='${{ secrets.WM_WEBSOCKET }}' >> .env
       - name: Build
         run: npm run make
 

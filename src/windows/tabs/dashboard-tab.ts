@@ -5,6 +5,7 @@ import { WebTabContentsView } from "../../extends/tab";
 import { getMerchant, getProfile, store } from "../../main/store";
 import { getMerchantApi, polling } from "../../services/ifood";
 import { MerchantType } from "../../@types/merchant";
+import { env } from "../../environments";
 
 export const create_dashboard_tab = () => {
   const tab = new WebTabContentsView({
@@ -13,10 +14,6 @@ export const create_dashboard_tab = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-
-  // tab.webContents.loadURL(`https://next.whatsmenu.com.br/`)
-  // tab.webContents.loadURL(`https://teste.whatsmenu.com.br/`)
-  tab.webContents.loadURL(`http://localhost:3000`);
 
   tab.webContents.on("did-finish-load", () => {
     const profile = getProfile();
@@ -66,6 +63,7 @@ export const create_dashboard_tab = () => {
       });
     }
   });
+  tab.webContents.loadURL(env.WM_DASHBOARD);
 
   return tab;
 };

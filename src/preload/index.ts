@@ -1,8 +1,8 @@
 // See the Electron documentation for details on how to use preload scripts:
 
 import { contextBridge, ipcRenderer } from "electron";
-import { ClientType } from "../@types/client";
 import WAWebJS from "whatsapp-web.js";
+import { ClientType } from "../@types/client";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
 import { Env } from "../environments";
@@ -81,7 +81,7 @@ export const TabsApi = {
   setActiveTab: (tab: string) => ipcRenderer.send("setActiveTab", tab),
 };
 
-export const envPreload = () => ipcRenderer.sendSync("env");
+export const envPreload = (): Env => ipcRenderer.sendSync("env");
 
 contextBridge.exposeInMainWorld("isElectron", true);
 contextBridge.exposeInMainWorld("WhatsAppBotApi", WhatsAppBotApi);

@@ -172,13 +172,34 @@ export const findCacheContact = async (whatsapp: string) => {
   return cache;
 };
 
+/**
+ * Armazena uma notificação de voucher na fila.
+ *
+ * @param {VoucherNotification} payload - A notificação de voucher a ser armazenada.
+ * @return {Promise<void>} Uma promessa que é resolvida quando a notificação de voucher é armazenada.
+ */
 export const storeVoucherToNotify = (payload: VoucherNotification) =>
   vouchersToNotifyQueue.push(async () => {
-    store.set("configs.voucherToNotify", [
-      ...getVoucherToNotifyList(),
-      payload,
-    ]);
+    const currentVouchers = getVoucherToNotifyList() || [];
+    const exists = currentVouchers.some((voucher) => voucher.id === payload.id);
+
+    if (!exists) {
+      store.set("configs.voucherToNotify", [...currentVouchers, payload]);
+    }
   });
+
+/**
+ * Remove vouchers duplicados da chave "configs.voucherToNotify" no armazenamento.
+ *
+ * @return {void} Esta função não retorna nada.
+ */
+export const removeDuplicateVouchers = (): void => {
+  const currentVouchers = getVoucherToNotifyList() || [];
+  const uniqueVouchers = Array.from(
+    new Map(currentVouchers.map((voucher) => [voucher.id, voucher])).values()
+  );
+  return store.set("configs.voucherToNotify", uniqueVouchers);
+};
 
 export const getVoucherToNotifyList = () => {
   const vouchersToNotify = store.get<
@@ -198,6 +219,7 @@ export const deleteVoucherToNotify = (id: number) =>
     "configs.voucherToNotify",
     getVoucherToNotifyList().filter((voucher) => voucher.id !== id)
   );
+
 export const updateVoucherToNotify = (
   id: number,
   payload: Partial<VoucherNotification>
