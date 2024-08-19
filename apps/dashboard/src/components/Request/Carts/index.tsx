@@ -1,3 +1,4 @@
+//
 import { DateTime } from 'luxon'
 
 import Link from 'next/link'
@@ -372,12 +373,12 @@ export function Carts(data: any) {
                                   {cart.type === 'T'
                                     ? '-'
                                     : Array.from(
-                                        new Set(
-                                          cart.formsPayment.map((formPayment) =>
-                                            i18n.t(formPayment.payment)
-                                          )
+                                      new Set(
+                                        cart.formsPayment.map((formPayment) =>
+                                          i18n.t(formPayment.payment)
                                         )
-                                      ).join(', ')}
+                                      )
+                                    ).join(', ')}
                                   {cart.statusPayment === 'paid' && (
                                     <Badge className="bg-success p-2">
                                       Online
@@ -410,10 +411,10 @@ export function Carts(data: any) {
                                 <span className="fs-7 align-middle">
                                   {cart.transshipment() > 0
                                     ? currency({
-                                        value:
-                                          cart.transshipment() -
-                                          cart.getTotalValue('total'),
-                                      })
+                                      value:
+                                        cart.transshipment() -
+                                        cart.getTotalValue('total'),
+                                    })
                                     : '-'}
                                 </span>
                               </td>
