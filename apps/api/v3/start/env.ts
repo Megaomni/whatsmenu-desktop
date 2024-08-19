@@ -31,11 +31,11 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string(),
   DB_DATABASE: Env.schema.string(),
 
-  DB_HOST2: Env.schema.string(),
-  DB_PORT2: Env.schema.number(),
-  DB_USER2: Env.schema.string(),
-  DB_PASSWORD2: Env.schema.string(),
-  DB_DATABASE2: Env.schema.string(),
+  // DB_HOST2: Env.schema.string(),
+  // DB_PORT2: Env.schema.number(),
+  // DB_USER2: Env.schema.string(),
+  // DB_PASSWORD2: Env.schema.string(),
+  // DB_DATABASE2: Env.schema.string(),
 
   ASAAS_MIN_VALUE: Env.schema.number(),
 

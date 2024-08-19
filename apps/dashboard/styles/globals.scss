@@ -2217,3 +2217,21 @@ table.last tbody tr:last-child {
     border-right: 1px #d4dae0 solid;
   }
 }
+
+
+/*--------------------------------------------------------------
+# TABS NAVS FLEX
+--------------------------------------------------------------*/
+
+.tab-nav-flex {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row !important;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  padding-top: 0.6rem;
+  scrollbar-color: #c7c7c7 #d9d9d9;
+  animation-name: scrollAnimation;
+  animation-duration: 2ms;
+}
