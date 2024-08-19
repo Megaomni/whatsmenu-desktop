@@ -755,6 +755,8 @@
   "key": "Key",
   "invalid_pix": "Invalid Pix",
   "money": "Money",
+  "pix": "Pix",
+  "picpay": "PicPay",
   "credit_card": "Credit Card",
   "credit": "Credit",
   "debit": "Debit",

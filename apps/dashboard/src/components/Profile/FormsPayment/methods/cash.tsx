@@ -66,7 +66,7 @@ const CashPaymentSettings = ({ paymentMethod }: PaymentSettingsProps) => {
         >
           <Card.Header className="text-dark d-flex justify-content-between">
             <h4 className="text-capitalize">
-              <b>{cashSettings?.payment}</b>
+              <b>{t(cashSettings!.payment as string)}</b>
             </h4>
 
             <Form.Switch
