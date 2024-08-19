@@ -741,6 +741,8 @@
   "key": "Chave",
   "invalid_pix": "Pix inválido",
   "money": "Dinheiro",
+  "pix": "Pix",
+  "picpay": "PicPay",
   "credit_card": "Cartão de Crédito",
   "credit": "Crédito",
   "debit": "Débito",
