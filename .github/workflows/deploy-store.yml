@@ -45,7 +45,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm install -g turbo
+          npm install -g turbo
           pnpm turbo prune site store
 
       - name: Build application
