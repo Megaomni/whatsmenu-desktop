@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - beta
+      - main
     paths:
       - "apps/store/**"
       - ".github/workflows/deploy-store.yml"
