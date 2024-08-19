@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Button, Card, OverlayTrigger, Popover, Table } from 'react-bootstrap'
+import { Badge, Button, Card, OverlayTrigger, Popover, Table } from 'react-bootstrap'
 import { IoTicket } from 'react-icons/io5'
 import { AppContext } from '../../../context/app.ctx'
 import { maskedPhone, textPackage } from '../../../utils/wm-functions'
@@ -108,9 +108,9 @@ export function ReportList({
           ? tables?.data?.length % tables.perPage === 0
           : carts?.data?.length % carts?.perPage === 0) &&
         (tableElement?.getBoundingClientRect()?.height as number) -
-          190 -
-          window.scrollY <
-          0
+        190 -
+        window.scrollY <
+        0
       ) {
         setControlFetch(true)
       }
@@ -166,7 +166,7 @@ export function ReportList({
             variant="success"
             disabled={fetchAll}
             onClick={(e) => {
-              ;(e.target as HTMLButtonElement).disabled = true
+              ; (e.target as HTMLButtonElement).disabled = true
               handleDownloadSheet()
             }}
           >
@@ -228,10 +228,17 @@ export function ReportList({
                                   </Popover>
                                 }
                               >
-                                <div className="my-auto">
-                                  <IoTicket />
-                                </div>
+                                <>
+                                  <div className="my-auto">
+                                    <IoTicket />
+                                  </div>
+                                </>
                               </OverlayTrigger>
+                            )}
+                            {cart.statusPayment === 'paid' && (
+                              <Badge className="bg-success p-2 ms-auto">
+                                Online
+                              </Badge>
                             )}
                           </span>
                         </td>
@@ -307,20 +314,20 @@ export function ReportList({
                         <td>
                           {table.deleted_at
                             ? table.name.replace(
-                                table.name.substring(table.name.length - 25),
-                                t('disabled')
-                              )
+                              table.name.substring(table.name.length - 25),
+                              t('disabled')
+                            )
                             : table.name}
                         </td>
                         <td>{opened.commands.length}</td>
                         <td>
                           {type === 'daily'
                             ? DateTime.fromSQL(opened.created_at).toFormat(
-                                'HH:mm'
-                              )
+                              'HH:mm'
+                            )
                             : DateTime.fromSQL(opened.created_at).toFormat(
-                                `${t('day')} dd - HH:mm`
-                              )}
+                              `${t('day')} dd - HH:mm`
+                            )}
                         </td>
                         <td>{opened.perm}</td>
                         <td>

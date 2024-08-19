@@ -1,4 +1,3 @@
-//
 import { AlertMessage } from '@components/Generic/AlertMessage'
 import { ConfirmModal, ConfirmModalProps } from '@components/Modals/Confirm'
 import { HelpVideos, UrlsType } from '@components/Modals/HelpVideos'
