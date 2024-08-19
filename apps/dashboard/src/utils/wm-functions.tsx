@@ -270,6 +270,7 @@ export const mask = (
           )
           break
         }
+        case 'fr-CH':
         case 'en-US':
           {
             e.currentTarget.maxLength = 5
@@ -277,12 +278,6 @@ export const mask = (
             e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
           }
           break
-        case 'fr-CH': {
-          e.currentTarget.maxLength = 4
-          e.target.value = e.target.value.substring(0, 4)
-          e.target.value = e.target.value.replace(/^(\d{4})/, '$1')
-          break
-        }
       }
     }
     case 'cpf/cnpj':
