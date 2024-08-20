@@ -215,8 +215,8 @@ class ProfileController {
     }
 
     data.options.locale = {
-      language: user.controls.language,
-      currency: String(user.controls.currency).toUpperCase(),
+      language: user.controls.language || 'pt-BR',
+      currency: String(user.controls.currency).toUpperCase() || 'BRL',
     }
 
     try {

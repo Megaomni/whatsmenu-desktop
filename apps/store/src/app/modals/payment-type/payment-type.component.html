@@ -73,7 +73,7 @@
       >
         <div class="px-2 py-3 d-flex justify-content-center flex-column" (click)="cartRequest.formsPayment[0] = getPayment('pix')">
           <fa-icon [icon]="pix" size="2x" class="color-theme text-center my-3" role="button"></fa-icon>
-          <h4 class="text-center">Pix</h4>
+          <h4 class="text-center">{{ translate.text().pix }}</h4>
         </div>
       </div>
       <div
@@ -123,13 +123,13 @@
             type="text"
             inputmode="numeric"
             class="form-control"
-            placeholder="000.000.000-00"
+            [placeholder]="translate.masks().ssn_mask"
             id="pix-cpf-input"
-            mask="000.000.000-00"
+            [mask]="translate.masks().ssn_mask"
             [(ngModel)]="cartRequest.secretNumber"
           />
           <button [disabled]="validatePixCPF()" class="btn btn-success form-control my-2" (click)="generatePix()">
-            {{ validatePixCPF() || 'Gerar chave PIX' }}
+            {{ validatePixCPF() || translate.text().generate_pix_key }}
           </button>
         </div>
       </div>
