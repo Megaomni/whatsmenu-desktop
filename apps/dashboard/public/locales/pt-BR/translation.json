@@ -104,6 +104,7 @@
   "language": "Idioma",
   "country": "Pais",
   "brazil": "Brasil (R$)",
+  "phone_footer": "Telefone",
   "united_states": "Estados Unidos ($)",
   "portugal": "Portugal (€)",
   "select_language": "Selecione o Idioma",
