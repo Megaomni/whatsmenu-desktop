@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  grove-mysql:
+    image: mysql:8.0.23
+    container_name: whatsmenu-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: whatsmenudev23
+      MYSQL_DATABASE: whatsmenuv3
+      MYSQL_PASSWORD: whatsmenudev23
+      MYSQL_INITDB_SKIP_TZINFO: 1
+    command:
+      --default_authentication_plugin=mysql_native_password
+    ports:
+      - "3306:3306"
+   

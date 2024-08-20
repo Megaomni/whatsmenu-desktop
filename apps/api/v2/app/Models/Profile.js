@@ -32,21 +32,21 @@ class Profile extends Model {
       ]
 
       switch (profile.options.locale.language) {
-        case 'pt-BR':
-          profile.formsPayment.concat([
+        case 'en-US':
+          profile.formsPayment = profile.formsPayment.concat([
+            { flags: [], status: false, payment: 'snack' },
+            { flags: [], status: false, payment: 'food' },
+          ]);
+          break;
+
+        default:
+          profile.formsPayment = profile.formsPayment.concat([
             { flags: [], status: false, payment: 'snack' },
             { flags: [], status: false, payment: 'food' },
             { key: { type: '', value: '' }, status: false, payment: 'pix' },
             { key: { type: 'email', value: '' }, status: false, payment: 'picpay' },
-          ])
-          break
-
-        case 'en-US':
-          profile.formsPayment.concat([
-            { flags: [], status: false, payment: 'snack' },
-            { flags: [], status: false, payment: 'food' },
-          ])
-          break
+          ]);
+          break;
       }
 
       const addon = { status: false, type: 'fee', valueType: 'fixed', value: 0 }
