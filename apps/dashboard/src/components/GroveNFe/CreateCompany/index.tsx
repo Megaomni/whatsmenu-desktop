@@ -1,9 +1,66 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { maskedPhone, mask } from "@utils/wm-functions";
+import axios from "axios";
+import i18n from "i18n";
 import {  useState } from "react";
 import { Button, Card, Col, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { z } from 'zod'
+
+const createCompanySchema = z.object({
+    cnpj: z.coerce.number({
+        required_error: 'CNPJ obrigatório',
+        invalid_type_error: 'CNPJ inválido'
+    }).min(10, 'CNPJ inválido'),
+    nome: z.string().min(1, 'Digite um nome'),
+    // arquivo_certificado_base64: z.string().base64(),
+    // senha_certificado: z.string().min(1, 'Senha obrigatória'),
+    arquivo_logo_base64: z.string().base64().optional(),
+    nome_fantasia: z.string({
+        required_error: 'Nome fantasia obrigatório',
+    }).min(1, 'Digite um nome fantasia'),
+    inscricao_estadual: z.coerce.number({
+        required_error: 'Inscricão estadual obrigatório',
+    }).min(9, 'Inscricão estadual inválido'),
+    inscricao_municipal: z.coerce.number().optional(),
+    regime_tributario: z.enum(['1', '2', '3']),
+    email: z.coerce.string().email('Formato de e-mail inválido'),
+    telefone: z.coerce.number().min(10, 'Telefone inválido'),
+    cep: z.coerce.number().min(8, 'CEP inválido'),
+    Logradouro: z.string().min(5, 'Logradouro obrigatório'),
+    number: z.coerce.number().min(1, 'Número obrigatório'),
+    complemento: z.string().optional(),
+    bairro: z.string().min(1, 'Bairro obrigatório'),
+    municipio: z.string().min(1, 'Município obrigatório'),
+    uf: z.string().min(2, 'UF obrigatório'),
+    nome_responsavel: z.string().optional(),
+    cpf_responsavel: z.string().optional(),
+    cpf_cnpj_contabilidade: z.coerce.number().optional(),
+    habilita_nfce: z.boolean(),
+    serie_nfce_homologacao: z.coerce.number().optional(),
+    proximo_numero_nfce_homologacao: z.coerce.number().optional(),
+    id_token_nfce_homologacao: z.coerce.number().optional(),
+    csc_nfce_homologacao: z.string().optional(),
+    serie_nfce_producao : z.coerce.number().optional(),
+    proximo_numero_nfce_producao: z.coerce.number().optional(),
+    id_token_nfce_producao : z.coerce.number().optional(),
+    csc_nfce_producao: z.string().optional(),
+    habilita_contingencia_offline_nfce: z.boolean().optional(),
+    enviar_email_destinatario: z.boolean().optional(),
+    enviar_email_homologacao: z.boolean().optional(),
+    discrimina_impostos: z.boolean().optional(),
+    mostrar_danfse_badge: z.boolean().optional(),
+})
+
+type CreateCompanyFormData = z.infer<typeof createCompanySchema>
 
 export function CreateCompany() {
-    const { register, handleSubmit } = useForm();
+    const { register, handleSubmit, getValues, formState: { errors } } = useForm<CreateCompanyFormData>({
+        resolver: zodResolver(createCompanySchema),
+    });
+
+    const [tabKey, setTabKey] = useState('identification')
+    
     const [toggleNaturalPerson, setToggleNaturalPerson] = useState(false)
     
     const [advancedSettings, setAdvancedSettings] = useState(false)
@@ -14,12 +71,31 @@ export function CreateCompany() {
 
     const [nfce, setNfce] = useState(false)
 
-    function CreateCompany(data: any) {
-        console.log(data);
+    async function CreateCompany(company: any) {
+        console.log(company);
+        
+        try {
+            const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
+                headers: {
+                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+                }
+            })
+            console.log('url',data);
+            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
     }
 
     // arquivo_certificado_base64  ,  senha_certificado	
-
+    console.log('erros', errors);
+    console.log('valores', getValues());
+    const phone = getValues().telefone
+    console.log(
+        maskedPhone(String(phone))
+    );
+    
     return (
         <>
             <form id="createCompany" onSubmit={handleSubmit(CreateCompany)}>
@@ -27,25 +103,42 @@ export function CreateCompany() {
                     <Card.Header className="m-2 p-2 fw-bold fs-5">Nova Empresa</Card.Header>
                     <Card.Body>
                         <Row>
-                            <Form.Switch className="ms-3 mb-3" label="Pessoa Física" onChange={(event) => setToggleNaturalPerson(event.target.checked)}>
+                            <Form.Switch className="ms-3 mb-3" label="Pessoa Física" 
+                            onChange={(event) => {
+                                setToggleNaturalPerson(event.target.checked)}
+                            }
+                            >
                             </Form.Switch>
                             <Col md={6} className="mb-3">
                                 <FormGroup>
                                     <Form.Label>{toggleNaturalPerson ? 'CPF' : 'CNPJ'}</Form.Label>
-                                    <Form.Control required type="text" {...register('cnpj', { required:'CNPJ obrigatório' })}></Form.Control>
+                                    <Form.Control
+                                    {...register('cnpj')}
+                                    onChange={event => {
+                                        console.log('lingua',i18n.language);
+                                        console.log(mask(event, 'cpf/cnpj'));
+                                        console.log(getValues().cnpj);       
+                                    }}
+                                    ></Form.Control>
+                                    {errors.cnpj && <span className="text-danger">{errors.cnpj.message}</span>}
                                 </FormGroup>
                             </Col>
                             <Col md={6}>
                                 <FormGroup>
                                     <Form.Label>{toggleNaturalPerson ? 'Nome' : 'Razão Social'}</Form.Label>
-                                    <Form.Control type="text" {...register('nome', { required:'Nome obrigatório' })}></Form.Control>
+                                    <Form.Control type="text" {...register('nome')}></Form.Control>
+                                    {errors.nome && <span className="text-danger">{errors.nome.message}</span>}
+
                                 </FormGroup>
                             </Col>
                         </Row>
                         <Row className="mt-4">
                             <Col>
                                 <p>Certificado:</p>
-                                <Button style={{ backgroundColor: '#13C296', border: 'none', cursor: 'grab' }} >Anexar Certificado</Button>
+                                <Button style={{ backgroundColor: '#13C296', border: 'none', position: 'relative' }} >
+                                    Anexar Certificado
+                                    {/* <input type="file" style={{  position: 'absolute', display: 'none' }}></input> */}
+                                </Button>
                             </Col>
                         </Row>
 
@@ -54,46 +147,63 @@ export function CreateCompany() {
 
                 <Card>
                     <Card.Body>
-                        <Tab.Container>
-
-
+                        <Tab.Container 
+                        activeKey={tabKey} 
+                        onSelect={(key) => setTabKey(key)}>
                             <Nav className="tab-nav-flex m-0 p-0 gap-3">
                                 <Nav.Item>
-                                    <Nav.Link className="m-0 p-0 mb-3" style={{ color: '#637381' }} eventKey='identification'>Identificação</Nav.Link>
+                                    <Nav.Link 
+                                    className={`m-0 p-0 pb-1 mb-3 pb-1 ${tabKey === 'identification' ? 'active-mini-tab' : 'no-active-mini-tab'}`} 
+                                    eventKey='identification'>
+                                        Identificação
+                                    </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0" style={{ color: '#637381' }} eventKey='contact'>Contato</Nav.Link>
+                                    <Nav.Link 
+                                    className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'contact' ? 'active-mini-tab' : 'no-active-mini-tab'}`} 
+                                    eventKey='contact'>
+                                        Contato
+                                    </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0" style={{ color: '#637381' }} eventKey='address'>Endereço</Nav.Link>
+                                    <Nav.Link 
+                                    className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'address' ? 'active-mini-tab' : 'no-active-mini-tab'}`} 
+                                    eventKey='address'>
+                                        Endereço
+                                    </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0" style={{ color: '#637381' }} eventKey='responsable'>Responsável</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'responsable' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='responsable'>Responsável</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0" style={{ color: '#637381' }} eventKey='accounting'>Contabilidade</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'accounting' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='accounting'>Contabilidade</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0" style={{ color: '#637381' }} eventKey='tokens'>Tokens</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'tokens' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='tokens'>Tokens</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0 text-nowrap" style={{ color: '#637381' }} eventKey='docFiscal'>Documentos Fiscais</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 text-nowrap ${tabKey === 'docFiscal' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='docFiscal'>Documentos Fiscais</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className="m-0 p-0" style={{ color: '#637381' }} eventKey='config'>Configurações</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'config' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='config'>Configurações</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content className="mt-4">
                                 <Tab.Pane eventKey='identification'>
+                                arquivo_logo_base64
                                     <Button style={{ backgroundColor: '#13C296', border: 'none' }} >Anexar Logo da Empresa</Button>
                                     <Row>
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Nome Fantasia</Form.Label>
                                             <Form.Control {...register('nome_fantasia', { required:'Nome Fantasia obrigatório' })}></Form.Control>
+                                            {errors.nome_fantasia && <span className="text-danger">{errors.nome_fantasia.message}</span>}
+
                                         </Col>
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Inscrição Estadual</Form.Label>
                                             <Form.Control {...register('inscricao_estadual', { required:'Inscrição Estadual obrigatória' })}></Form.Control>
+                                            {errors.inscricao_estadual && <span className="text-danger">{errors.inscricao_estadual.message}</span>}
+
                                         </Col>
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Inscrição Municipal</Form.Label>
@@ -115,10 +225,14 @@ export function CreateCompany() {
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Email</Form.Label>
                                             <Form.Control {...register('email', { required:'Email obrigatório' })}></Form.Control>
+                                            {errors.email && <span className="text-danger">{errors.email.message}</span>}
+
                                         </Col>
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Telefone</Form.Label>
-                                            <Form.Control {...register('telefone', { required:'Telefone obrigatório' })}></Form.Control>
+                                            <Form.Control maxLength={11} {...register('telefone')}></Form.Control>
+                                            {errors.telefone && <span className="text-danger">{errors.telefone.message}</span>}
+
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
@@ -127,26 +241,36 @@ export function CreateCompany() {
                                         <Col md={2}>
                                             <Form.Label className="m-0 p-0 mt-4">CEP</Form.Label>
                                             <Form.Control {...register('cep', { required:'CEP obrigatório' })}></Form.Control>
+                                            {errors.cep && <span className="text-danger">{errors.cep.message}</span>}
+
                                         </Col>
                                         <Col md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">Logradouro</Form.Label>
-                                            <Form.Control {...register('Logradouro', { required:'Logradouro obrigatório' })}></Form.Control>
+                                            <Form.Control {...register('Logradouro')}></Form.Control>
+                                            {errors.Logradouro && <span className="text-danger">{errors.Logradouro.message}</span>}
+
                                         </Col>
                                         <Col xs={6} md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Número</Form.Label>
-                                            <Form.Control {...register('number', { required:'Numero obrigatório' })}></Form.Control>
+                                            <Form.Control {...register('number')}></Form.Control>
+                                            {errors.number && <span className="text-danger">{errors.number.message}</span>}
+
                                         </Col>
                                         <Col xs={6} md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Complemento</Form.Label>
-                                            <Form.Control {...register('complement')}></Form.Control>
+                                            <Form.Control {...register('complemento')}></Form.Control>
                                         </Col>
                                         <Col xs={6} md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">Bairro</Form.Label>
-                                            <Form.Control {...register('neighborhood', { required:'Bairro obrigatório' })}></Form.Control>
+                                            <Form.Control {...register('bairro')}></Form.Control>
+                                            {errors.bairro && <span className="text-danger">{errors.bairro.message}</span>}
+
                                         </Col>
                                         <Col xs={6} md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Municipio</Form.Label>
-                                            <Form.Control {...register('municipio', { required:'Municipio obrigatório' })}></Form.Control>
+                                            <Form.Control {...register('municipio')}></Form.Control>
+                                            {errors.municipio && <span className="text-danger">{errors.municipio.message}</span>}
+
                                         </Col>
                                         <Col md={2}>
                                             <Form.Label className="m-0 p-0 mt-4">Uf</Form.Label>
@@ -180,6 +304,7 @@ export function CreateCompany() {
                                                 <option value="SE">Sergipe (SE)</option>
                                                 <option value="TO">Tocantins (TO)</option>
                                             </Form.Select>
+                                            {errors.uf && <span className="text-danger">{errors.uf.message}</span>}
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
@@ -187,11 +312,11 @@ export function CreateCompany() {
                                     <Row>
                                         <Col md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">Nome do Responsável</Form.Label>
-                                            <Form.Control></Form.Control>
+                                            <Form.Control {...register('nome_responsavel')}></Form.Control>
                                         </Col>
                                         <Col md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">CPF do Responsável</Form.Label>
-                                            <Form.Control></Form.Control>
+                                            <Form.Control {...register('cpf_responsavel')}></Form.Control>
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
@@ -199,7 +324,7 @@ export function CreateCompany() {
                                     <Row>
                                         <Col md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">CPF/CNPJ</Form.Label>
-                                            <Form.Control></Form.Control>
+                                            <Form.Control {...register('cpf_cnpj_contabilidade')}></Form.Control>
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
@@ -276,22 +401,22 @@ export function CreateCompany() {
                                 </Tab.Pane>
                                 <Tab.Pane eventKey='config'>
                                     <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
-                                        <Form.Switch className="d-flex align-items-center" ></Form.Switch>
+                                        <Form.Switch className="d-flex align-items-center" {...register('enviar_email_destinatario')}></Form.Switch>
                                         <Form.Label className="ms-3 mt-3">(Todos os documentos) Enviar email ao destinatário - Produção</Form.Label>
                                     </div>
                                     <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
-                                        <Form.Switch className="d-flex align-items-center" ></Form.Switch>
+                                        <Form.Switch className="d-flex align-items-center" {...register('enviar_email_homologacao')}></Form.Switch>
                                         <Form.Label className="ms-3 mt-3">(Todos os documentos) Enviar email ao destinatário - Homologação</Form.Label>
                                     </div>
                                     <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
-                                        <Form.Switch className="d-flex align-items-center" ></Form.Switch>
+                                        <Form.Switch className="d-flex align-items-center" {...register('discrimina_impostos')}></Form.Switch>
                                         <Form.Label className="ms-3 mt-3">(NFe, NFCe) Discrimina impostos</Form.Label>
                                     </div>
                                     <div className="mt-3">
                                         <p className="ms-3" onClick={() => toggleAdvancedSettings()} style={{ color: 'red', textDecoration: 'underline' }}>Configurações avançadas</p>
                                         {advancedSettings &&
                                             <div className="d-flex align-itens-center">
-                                                <Form.Switch className="d-flex align-items-center"></Form.Switch>
+                                                <Form.Switch className="d-flex align-items-center" {...register('mostrar_danfse_badge')}></Form.Switch>
                                                 <Form.Label className="ms-3">Mostrar badge Focus NFe na DANFSe</Form.Label>
                                             </div>
                                         }

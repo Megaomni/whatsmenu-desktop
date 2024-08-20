@@ -9,6 +9,7 @@ export default function Grovenfe() {
     const [grovenfePlan, setGrovenfePlan] = useState('')
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [modalCheckouGroveNfe, setModalCheckouGrovenfe] = useState(false)
+    const [tabKey, setTabKey] = useState('addCompany')
 
     const aditional = (grovenfePlan: string) => {
         let value
@@ -188,23 +189,23 @@ export default function Grovenfe() {
             </ Modal> */}
 
             <h1 className="fw-bold" style={{ color: '#012970' }}>Configurações NFe</h1>
-            <Tab.Container>
+            <Tab.Container activeKey={tabKey} onSelect={(key) => setTabKey(key)}>
                 <Row>
                     <Col md={6}>
                         <Nav
                             variant="tabs"
-                            className="d-flex flex-row">
+                            className="tab-nav-flex flex-row">
                             <Nav.Item
                                 eventKey="addCompany"
                                 className="position-relative"
                             >
-                                <Nav.Link eventKey="addCompany">Adicionar Empresa</Nav.Link>
+                                <Nav.Link eventKey="addCompany" className="text-nowrap">Adicionar Empresa</Nav.Link>
                             </Nav.Item>
                             <Nav.Item
                                 eventKey="configEmission"
                                 className="position-relative"
                             >
-                                <Nav.Link eventKey="configEmission">Configur emissão</Nav.Link>
+                                <Nav.Link eventKey="configEmission" className="text-nowrap">Configur emissão</Nav.Link>
                             </Nav.Item>
                         </Nav>
                         <Tab.Content>
