@@ -9,7 +9,10 @@ export class I18n {
 }
 @Injectable()
 export class CustomDatepickerI18n extends NgbDatepickerI18n {
-  constructor(private _i18n: I18n, public translate: TranslateService) {
+  constructor(
+    private _i18n: I18n,
+    public translate: TranslateService
+  ) {
     super()
   }
 
@@ -44,6 +47,8 @@ export class CustomAdapter extends NgbDateAdapter<string> {
     if (!value) return null
     let date = value.split(this.DELIMITER)
     switch (this.translate.language()) {
+      case 'pt-PT':
+      case 'fr-CH':
       case 'pt-BR':
         return {
           day: parseInt(date[0], 10),
@@ -66,6 +71,8 @@ export class CustomAdapter extends NgbDateAdapter<string> {
   toModel(date: NgbDateStruct | null): string | null {
     if (!date) return null
     switch (this.translate.language()) {
+      case 'pt-PT':
+      case 'fr-CH':
       case 'pt-BR':
         return date.day.toString().padStart(2, '0') + this.DELIMITER + date.month.toString().padStart(2, '0') + this.DELIMITER + date.year
 
@@ -87,6 +94,8 @@ export class CustomDateParserFormatter extends NgbDateParserFormatter {
     if (!value) return null
     let date = value.split(this.DELIMITER)
     switch (this.translate.language()) {
+      case 'pt-PT':
+      case 'fr-CH':
       case 'pt-BR':
         return {
           day: parseInt(date[0], 10),
@@ -110,6 +119,8 @@ export class CustomDateParserFormatter extends NgbDateParserFormatter {
     if (!date) return ''
 
     switch (this.translate.language()) {
+      case 'pt-PT':
+      case 'fr-CH':
       case 'pt-BR':
         return date.day.toString().padStart(2, '0') + this.DELIMITER + date.month.toString().padStart(2, '0') + this.DELIMITER + date.year
 
