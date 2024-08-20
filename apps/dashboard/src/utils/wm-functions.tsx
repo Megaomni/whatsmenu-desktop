@@ -396,8 +396,7 @@ export const mask = (
 
             e.currentTarget.value = e.currentTarget.value
               .replace(/\D/g, '') // Remove todos os caracteres não numéricos
-              .replace(/^(\d{2})(\d)/, '$1 $2') // Adiciona espaço após os dois primeiros dígitos
-              .replace(/(\d{3})(\d)/, '$1 $2') // Adiciona espaço após o terceiro dígito
+              .replace(/^(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3')
               .trim() // Remove espaços extras no final, se houver
 
             break
