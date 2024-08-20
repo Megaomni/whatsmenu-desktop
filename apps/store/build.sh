@@ -4,9 +4,6 @@ export NVM_DIR="$HOME/.nvm"
 
 nvm install
 nvm use
-
-npm install -g @angular/cli@15.2.1
-
 ng build -c='production'
 
 # Define o diretório de origem e de destino
