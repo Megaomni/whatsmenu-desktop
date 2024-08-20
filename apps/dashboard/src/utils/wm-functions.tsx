@@ -262,6 +262,7 @@ export const mask = (
     case 'cep': {
       e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
       switch (i18n.language) {
+        case 'pt-PT':
         case 'pt-BR': {
           e.currentTarget.maxLength = 9
           e.currentTarget.value = e.currentTarget.value.replace(
@@ -344,6 +345,13 @@ export const mask = (
 
           return { type: 'AVS', valid: rawValue.length === 13 }
         }
+        case 'pt-PT': {
+          e.currentTarget.maxLength = 9 // Permite até 11 caracteres, incluindo espaços
+
+          e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '') // Remove todos os caracteres não numéricos
+
+          return { type: 'NIF', valid: e.currentTarget.value.length === 9 } // Valida com base no comprimento
+        }
       }
 
     case 'tel':
@@ -380,6 +388,17 @@ export const mask = (
             e.currentTarget.value = e.currentTarget.value
               .replace(/\D/g, '') // Remove todos os caracteres não numéricos
               .replace(/^(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4')
+
+            break
+          }
+          case 'pt-PT': {
+            e.currentTarget.maxLength = 11 // Permite até 12 caracteres, incluindo espaços
+
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{2})(\d)/, '$1 $2') // Adiciona espaço após os dois primeiros dígitos
+              .replace(/(\d{3})(\d)/, '$1 $2') // Adiciona espaço após o terceiro dígito
+              .trim() // Remove espaços extras no final, se houver
 
             break
           }
