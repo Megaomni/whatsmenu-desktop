@@ -19,7 +19,7 @@ const { createHash } = require("crypto");
 const axios = require("axios");
 const fs = use("fs");
 const moment = require("moment");
-const version = "49.3.4";
+const version = "49.3.5";
 const valueBase = "79,90";
 const GoogleProvider = use("GoogleProvider");
 const View = use("View");
@@ -670,8 +670,8 @@ class PageController {
                 ? dataDecrypted.table.id
                 : "",
             styles: `<link rel="stylesheet" href="/${profile.options.migrated_at || profile.id >= 1000000
-                ? "profile2"
-                : "profile"
+              ? "profile2"
+              : "profile"
               }/${files.find((f) => f.includes("styles"))}?v=${version}">`,
           })
         );
