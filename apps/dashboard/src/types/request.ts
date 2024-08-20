@@ -676,7 +676,7 @@ export default class Request {
     const messageLink = document.createElement('a')
 
     const hrefLink = (envText: string) =>
-      `${options?.linkWhatsapp ? 'whatsapp://' : possibleMobile ? 'https://api.whatsapp.com/' : 'https://web.whatsapp.com/'}send/?phone=55${
+      `${options?.linkWhatsapp ? 'whatsapp://' : possibleMobile ? 'https://api.whatsapp.com/' : 'https://web.whatsapp.com/'}send/?phone=${i18n.t('ddi')}${
         this.contact
       }${envText}`
     messageLink.href = hrefLink(

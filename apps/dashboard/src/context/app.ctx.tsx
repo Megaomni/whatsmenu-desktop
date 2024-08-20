@@ -173,7 +173,6 @@ interface AppContextData {
 
   wsCommand: CommandType | null
   setShowNewFeatureModal: (value: boolean | ((val: boolean) => boolean)) => void
-  profileLocale: ProfileOptions['locale']
   currency: (payload: {
     value: number
     symbol?: boolean
@@ -309,13 +308,6 @@ export function AppProvider({ children }: AppProviderProps) {
   )
   const [whatsmenuDesktopDownloaded, setWhatsmenuDesktopDownloaded] =
     useLocalStorage('@whatsmenu:whatsmenu-desktop-downloaded', false)
-  const [profileLocale, setProfileLocale] = useLocalStorage<
-    ProfileOptions['locale']
-  >(
-    '@whatsmenu:profile-locale',
-    { language: 'pt-BR', currency: 'BRL' },
-    'localStorage'
-  )
 
   // const [bluetoothPrinter, setBlueToothPrinter] = useLocalStorage<any>('@default-printer', null)
 
@@ -995,20 +987,20 @@ export function AppProvider({ children }: AppProviderProps) {
   }, [profile, showUpdateSubAccountModal])
 
   useEffect(() => {
-    if (!profile && profileLocale) {
-      i18n.changeLanguage(profileLocale.language)
+    if (!profile?.id) {
+      console.log('lingua: ', user.controls)
+      i18n.changeLanguage(user?.controls?.language)
     }
     if (profile?.options?.locale) {
-      i18n.changeLanguage(profile?.options?.locale.language)
-      setProfileLocale(profile?.options?.locale)
+      // i18n.changeLanguage(profile?.options?.locale.language)
     }
   }, [profile])
 
   const showInvoiceAlertMessage = user?.controls?.alertInvoiceDayBefore
     ? Interval.fromDateTimes(
-      DateTime.local(),
-      DateTime.fromISO(invoicePending.invoice?.expiration)
-    ).count('days') <= user?.controls?.alertInvoiceDayBefore
+        DateTime.local(),
+        DateTime.fromISO(invoicePending.invoice?.expiration)
+      ).count('days') <= user?.controls?.alertInvoiceDayBefore
     : true
 
   return (
@@ -1086,8 +1078,6 @@ export function AppProvider({ children }: AppProviderProps) {
             currency,
             // overlaySpinnerConfig,
             // setOverlaySpinnerConfig,
-
-            profileLocale,
           }}
         >
           <CartsProvider>
@@ -1162,10 +1152,10 @@ export function AppProvider({ children }: AppProviderProps) {
                   ) : null}
 
                   {navigator.userAgent.includes('Windows NT 10') &&
-                    parseInt(getBrowserVersion()) > 109 &&
-                    !whatsmenuDesktopDownloaded &&
-                    !('isElectron' in window) &&
-                    !possibleMobile ? (
+                  parseInt(getBrowserVersion()) > 109 &&
+                  !whatsmenuDesktopDownloaded &&
+                  !('isElectron' in window) &&
+                  !possibleMobile ? (
                     <>
                       <div className="bd-callout bd-callout-warning bg-warning bg-opacity-25">
                         <h2 className="mb-3">
@@ -1392,11 +1382,11 @@ export function AppProvider({ children }: AppProviderProps) {
                           ],
                           day: user.controls?.migrationMessage
                             ? DateTime.fromFormat(
-                              user.controls?.migrationMessage,
-                              `${t('date_format')}`
-                            )
-                              .setLocale(`${t('language')}`)
-                              .toFormat(`cccc ${t('date_format_v2')}`)
+                                user.controls?.migrationMessage,
+                                `${t('date_format')}`
+                              )
+                                .setLocale(`${t('language')}`)
+                                .toFormat(`cccc ${t('date_format_v2')}`)
                             : '',
                         }}
                       />
@@ -1429,7 +1419,7 @@ export function AppProvider({ children }: AppProviderProps) {
         ref={audioRef}
         src="/audio/pedido.mp3"
         id="voiceRequest"
-        onPlay={() => { }}
+        onPlay={() => {}}
         onEnded={() => {
           setPlayCount((prevCount) => --prevCount)
         }}
