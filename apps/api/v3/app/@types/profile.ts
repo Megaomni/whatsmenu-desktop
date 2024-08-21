@@ -145,4 +145,9 @@ export interface ProfileOptions {
     showProductsWhenPaused: boolean
   }
   inventoryControl: boolean
+  integrations: {
+    grovenfe: {
+      created_at: string
+    }
+  }
 }

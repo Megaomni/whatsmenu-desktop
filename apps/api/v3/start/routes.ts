@@ -20,6 +20,7 @@ import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
+const IntegrationsController = () => import('#controllers/integrations_controller')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -77,6 +78,13 @@ router
         router.delete('/:id', [CuponsController, 'delete'])
       })
       .prefix('cupons')
+
+    //INTEGRATIONS
+    router
+      .group(() => {
+        router.patch('/grovenfe', [IntegrationsController, 'createdGrovenfe'])
+      })
+      .prefix('integrations')
 
     // VOUCHER
     router

@@ -1,16 +1,18 @@
+import { AppContext } from "@context/app.ctx";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { maskedPhone, mask } from "@utils/wm-functions";
+import { mask } from "@utils/wm-functions";
 import axios from "axios";
 import i18n from "i18n";
-import {  useState } from "react";
+import {  useContext, useState } from "react";
 import { Button, Card, Col, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { api } from "src/lib/axios";
 import { z } from 'zod'
 
 const createCompanySchema = z.object({
-    cnpj: z.coerce.number({
+    cnpj: z.string({
         required_error: 'CNPJ obrigatório',
-        invalid_type_error: 'CNPJ inválido'
+        // invalid_type_error: 'CNPJ inválido'
     }).min(10, 'CNPJ inválido'),
     nome: z.string().min(1, 'Digite um nome'),
     // arquivo_certificado_base64: z.string().base64(),
@@ -25,8 +27,8 @@ const createCompanySchema = z.object({
     inscricao_municipal: z.coerce.number().optional(),
     regime_tributario: z.enum(['1', '2', '3']),
     email: z.coerce.string().email('Formato de e-mail inválido'),
-    telefone: z.coerce.number().min(10, 'Telefone inválido'),
-    cep: z.coerce.number().min(8, 'CEP inválido'),
+    telefone: z.string().min(10, 'Telefone inválido'),
+    cep: z.string().min(8, 'CEP inválido'),
     Logradouro: z.string().min(5, 'Logradouro obrigatório'),
     number: z.coerce.number().min(1, 'Número obrigatório'),
     complemento: z.string().optional(),
@@ -55,9 +57,10 @@ const createCompanySchema = z.object({
 type CreateCompanyFormData = z.infer<typeof createCompanySchema>
 
 export function CreateCompany() {
-    const { register, handleSubmit, getValues, formState: { errors } } = useForm<CreateCompanyFormData>({
+    const { register, handleSubmit, getValues, setValue ,formState: { errors } } = useForm<CreateCompanyFormData>({
         resolver: zodResolver(createCompanySchema),
     });
+  const { setProfile, profile } = useContext(AppContext)
 
     const [tabKey, setTabKey] = useState('identification')
     
@@ -72,15 +75,23 @@ export function CreateCompany() {
     const [nfce, setNfce] = useState(false)
 
     async function CreateCompany(company: any) {
-        console.log(company);
-        
+        company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
+        company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
+        company.cep = Number(company.cep.replace(/[^\d]/g, ''))
+
+        console.log('empresa',company);
         try {
-            const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
-                headers: {
-                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-                }
-            })
-            console.log('url',data);
+            // const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
+            //     headers: {
+            //         Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+            //     }
+            // })
+            const {data: profileData} = await api.patch('/dashboard/integrations/grovenfe')
+
+            console.log('profile',profileData);
+            
+            
+            // console.log('url',data);
             
         } catch (error) {
             console.error(error);
@@ -89,12 +100,8 @@ export function CreateCompany() {
     }
 
     // arquivo_certificado_base64  ,  senha_certificado	
-    console.log('erros', errors);
-    console.log('valores', getValues());
-    const phone = getValues().telefone
-    console.log(
-        maskedPhone(String(phone))
-    );
+    // console.log('erros', errors);
+    // console.log('valores', getValues());
     
     return (
         <>
@@ -117,7 +124,6 @@ export function CreateCompany() {
                                     onChange={event => {
                                         console.log('lingua',i18n.language);
                                         console.log(mask(event, 'cpf/cnpj'));
-                                        console.log(getValues().cnpj);       
                                     }}
                                     ></Form.Control>
                                     {errors.cnpj && <span className="text-danger">{errors.cnpj.message}</span>}
@@ -230,7 +236,13 @@ export function CreateCompany() {
                                         </Col>
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">Telefone</Form.Label>
-                                            <Form.Control maxLength={11} {...register('telefone')}></Form.Control>
+                                            <Form.Control 
+                                                maxLength={11} 
+                                                {...register('telefone')} 
+                                                onChange={event => {
+                                                    event.target.value = event.target.value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+                                                }}
+                                                ></Form.Control>
                                             {errors.telefone && <span className="text-danger">{errors.telefone.message}</span>}
 
                                         </Col>
@@ -240,7 +252,13 @@ export function CreateCompany() {
                                     <Row>
                                         <Col md={2}>
                                             <Form.Label className="m-0 p-0 mt-4">CEP</Form.Label>
-                                            <Form.Control {...register('cep', { required:'CEP obrigatório' })}></Form.Control>
+                                            <Form.Control 
+                                                maxLength={8} 
+                                                {...register('cep', { required:'CEP obrigatório' })}
+                                                onChange={event => {
+                                                    mask(event, 'cep')
+                                                }}
+                                                ></Form.Control>
                                             {errors.cep && <span className="text-danger">{errors.cep.message}</span>}
 
                                         </Col>
@@ -428,11 +446,13 @@ export function CreateCompany() {
                 </Card>
             </form >
             
+            {!errors && 
             <div className="d-flex justify-content-end p-3 m-0 position-fixed bottom-0" style={{ background: '#DFE6E9', width: '103vw', marginLeft:'-1.5rem !important' }}>
                 <Button className="flex w-100" type="submit" form="createCompany" style={{backgroundColor:'#13C296', border:'none'}}>
                     Criar
                 </Button>
             </div>
+            }
         </>
     )
 }
