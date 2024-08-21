@@ -988,11 +988,10 @@ export function AppProvider({ children }: AppProviderProps) {
 
   useEffect(() => {
     if (!profile?.id) {
-      console.log('lingua: ', user.controls)
       i18n.changeLanguage(user?.controls?.language)
     }
     if (profile?.options?.locale) {
-      // i18n.changeLanguage(profile?.options?.locale.language)
+      i18n.changeLanguage(profile?.options?.locale.language)
     }
   }, [profile])
 

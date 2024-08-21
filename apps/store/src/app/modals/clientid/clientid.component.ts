@@ -1,6 +1,6 @@
 import { AfterViewChecked, Component, Inject, OnInit } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
-import { faArrowLeft, faThList } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { NgbDateAdapter, NgbDateParserFormatter, NgbDatepickerI18n } from '@ng-bootstrap/ng-bootstrap'
 import { DateTime } from 'luxon'
 import { CustomerType } from 'src/app/customer-type'
