@@ -1090,7 +1090,7 @@ export function ClientConfig({
                   <option value="pt-BR">{t('portuguese_brazil')}</option>
                   <option value="en-US">{t('english_us')}</option>
                   <option value="fr-CH">{t('swiss_french_chf')}</option>
-                  <option value="pt-PT">{i18n.t('portuguese_portugal')}</option>
+                  <option value="pt-PT">{t('portuguese_portugal')}</option>
                 </Form.Select>
               </Col>
               <Col sm="6" className="my-lg-0 my-2">
