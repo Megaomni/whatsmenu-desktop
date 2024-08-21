@@ -158,7 +158,7 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
                   >
                     {keyArray?.map((type) => (
                       <option value={type} key={type}>
-                        {type} asdasdas
+                        {type}
                       </option>
                     ))}
                   </Form.Select>
