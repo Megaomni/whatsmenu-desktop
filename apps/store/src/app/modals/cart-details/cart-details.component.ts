@@ -306,7 +306,7 @@ export class CartDetailsComponent implements OnInit, OnDestroy, AfterViewChecked
       return `${this.translate.text().enter_your_cell}!`
     }
 
-    if (this.customer.whatsapp.length < 10) {
+    if (this.translate.language() === 'pt-BR' ? this.customer.whatsapp.length < 10 : this.customer.whatsapp.length < 8) {
       return `${this.translate.text().enter_you_ddd}!`
     }
 

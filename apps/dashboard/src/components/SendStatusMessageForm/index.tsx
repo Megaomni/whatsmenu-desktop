@@ -76,7 +76,7 @@ export const SendStatusMessageForm = ({
             (linkWhatsapp && !isWindows)
           ) {
             window.open(
-              `whatsapp://send?phone=55${cart.client.whatsapp}&text=${encodeTextURL(
+              `whatsapp://send?phone=${i18n.t('ddi')}${cart.client.whatsapp}&text=${encodeTextURL(
                 cart.client.name,
                 phoneMessage.replaceAll('[NOME]', cart.client.name)
               )}`
@@ -87,7 +87,7 @@ export const SendStatusMessageForm = ({
 
           if (!('isElectron' in window)) {
             window.open(
-              `https://web.whatsapp.com/send?phone=55${cart.client.whatsapp}&text=${encodeTextURL(cart.client.name, phoneMessage)}`
+              `https://web.whatsapp.com/send?phone=${i18n.t('ddi')}${cart.client.whatsapp}&text=${encodeTextURL(cart.client.name, phoneMessage)}`
             )
             buttonRef.current.disabled = false
             return

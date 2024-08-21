@@ -161,7 +161,9 @@ export class ClientidComponent implements OnInit, AfterViewChecked {
     if (!this.customer?.name) {
       return this.translate.text().enter_your_name
     }
-    if (!this.customer?.whatsapp || this.customer?.whatsapp.length < 10) {
+    if (
+      !this.customer?.whatsapp || this.translate.language() === 'pt-BR' ? this.customer?.whatsapp.length < 11 : this.customer?.whatsapp.length < 8
+    ) {
       return this.translate.alert().enter_your_whatsapp
     }
     if (this.customer && !this.customer.birthday_date && this.data.clientData.options.pdv?.clientConfig?.required) {
