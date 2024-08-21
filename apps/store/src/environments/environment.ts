@@ -11,7 +11,7 @@ export const environment = {
   // apiUrlRequest: 'http://localhost:3333/api/v2/business',
   // apiLocalRequest: 'http://127.0.0.1:5555',
   // nextApi: 'http://localhost:3000/api',
-  // apiUrlV3: 'http://localhost:7777/api/v3/business',
+  // apiUrlV3: 'http://localhost:3339/api/v3/business',
 
   // BETA
   // apiUrl: 'https://beta.whatsmenu.com.br/api/v2/business',
