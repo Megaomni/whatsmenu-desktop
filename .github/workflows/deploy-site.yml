@@ -1,43 +1,37 @@
-name: Deploy Store to EC2
+name: Deploy Site to EC2
 
 on:
   push:
     branches:
       - beta
+      - main
+
     paths:
-      - "apps/store/**"
-      - ".github/workflows/deploy-store.yml"
+      - "apps/site/**"
+      - ".github/workflows/deploy-site.yml"
 
   pull_request:
     types: [closed]
     branches:
       - main
     paths:
-      - "apps/store/**"
-      - ".github/workflows/deploy-store.yml"
+      - "apps/site/**"
+      - ".github/workflows/deploy-site.yml"
 
 env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
-  build:
-    if: github.ref_name == 'beta' || github.event.pull_request.merged == true
+  deploy:
     runs-on: ubuntu-latest
 
-    outputs:
-      ec2_deploy_hosts: ${{ steps.set_output.outputs.ec2_deploy_hosts }}
-    steps:
-      - name: Set EC2 Deploy Hosts
-        id: set_output
-        run: |
-          if [ "${{ env.BRANCH }}" == "beta" ]; then
-            echo "::set-output name=ec2_deploy_hosts::${{ vars.EC2_DEPLOY_HOSTS_1}}"
-          else
-            echo "::set-output name=ec2_deploy_hosts::${{ vars.EC2_DEPLOY_HOSTS}}"
-          fi
+    strategy:
+      matrix:
+        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS) }}
 
+    steps:
       - name: Check out the repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install NVM
         run: |
@@ -51,33 +45,18 @@ jobs:
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm --filter site install
+        run: |
+          npm install -g turbo
+          pnpm turbo prune site
 
       - name: Build application
-        run: pnpm build --filter="store"
+        run: |
+          cd out
+          pnpm install
 
       - name: Package application
         run: |
-          tar -czf deploy.tar.gz --exclude='node_modules' -C apps/site/ .
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: deploy-package
-          path: deploy.tar.gz
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ec2_host: ${{ fromJson(needs.build.outputs.ec2_deploy_hosts) }}
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: deploy-package
+          tar -czf deploy.tar.gz --exclude='node_modules' -C out/apps/site .
 
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:

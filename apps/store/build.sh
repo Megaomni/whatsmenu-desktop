@@ -4,14 +4,11 @@ export NVM_DIR="$HOME/.nvm"
 
 nvm install
 nvm use
-
-npm install -g @angular/cli@15.2.1
-
 ng build -c='production'
 
 # Define o diretório de origem e de destino
 diretorio_origem="./dist/whatsmenu"
-diretorio_destino="../whatsmenu-site/public/profile2"
+diretorio_destino="../site/public/profile2"
 
 # Verifica se o diretório de destino existe
 if [ -d "$diretorio_destino" ]; then

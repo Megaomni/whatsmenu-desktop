@@ -1939,6 +1939,15 @@ export class HomeComponent implements OnInit, AfterViewChecked {
       case 'en-US': {
         return `(${phone.substring(0, 3)}) ${phone.substring(3, 6)}-${phone.substring(6, 10)}`
       }
+      case 'fr-CH': {
+        return `(${phone.substring(0, 2)}) ${phone.substring(2, 5)} ${phone.substring(5, 8)} ${phone.substring(8, 10)} ${phone.substring(10, 12)}`
+      }
+      case 'pt-PT': {
+        return `${phone.substring(0, 3)} ${phone.substring(3, 6)} ${phone.substring(6, 9)}`
+      }
+      case 'ar-AE': {
+        return `${phone.substring(3, 4)} ${phone.substring(4, 7)} ${phone.substring(7, 11)}`
+      }
     }
   }
 

@@ -58,6 +58,19 @@ export const Login = ({ csrfToken, ip, userAgent }: LoginProps) => {
       {error ? (
         <div className="alert alert-danger" role="alert">
           {error}
+          {error.includes('Limite de tentativas') ? (
+            <>
+              <br />
+              <br />
+              Para redefinir a sua senha {' '}
+              <span
+                className="text-primary text-decoration-underline cursor-pointer"
+                onClick={() => setShowRecover(true)}
+              >
+                clique aqui
+              </span>
+            </>
+          ) : null}
         </div>
       ) : null}
       <form onSubmit={handleSubmit(handleLogin)}>

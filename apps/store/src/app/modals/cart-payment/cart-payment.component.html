@@ -167,7 +167,7 @@
     [(formsPayment)]="data.cartRequest.formsPayment"
   />
   <div class="card mt-3 p-3 border-0 d-flex flex-column align-items-center">
-    <p #paymentStep2 class="fw-bold text-black fs-5 mb-3 text-capitalize">{{ translate.text().payment_in }} {{ formPaymentSelected.label }}</p>
+    <p #paymentStep2 class="fw-bold text-black fs-5 mb-3 text-capitalize">{{ translate.text().payment_in }} {{ translate.text()[formPaymentSelected.payment] }}</p>
     <div [ngSwitch]="formPaymentSelected.payment" class="d-flex flex-column w-100 gap-3">
       <ng-container *ngSwitchCase="'money'">
         <div class="d-flex flex-column">
@@ -259,8 +259,8 @@
         <input
           type="text"
           class="form-control"
-          placeholder="000.000.000-00"
-          mask="000.000.000-00"
+          [placeholder]="translate.masks().secret_number"
+          [mask]="translate.masks().ssn_mask"
           id="secretNumber-input"
           [(ngModel)]="data.cartRequest.secretNumber"
         />

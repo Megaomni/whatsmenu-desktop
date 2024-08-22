@@ -19,7 +19,7 @@ const { createHash } = require("crypto");
 const axios = require("axios");
 const fs = use("fs");
 const moment = require("moment");
-const version = "49.3.3";
+const version = "49.3.7";
 const valueBase = "79,90";
 const GoogleProvider = use("GoogleProvider");
 const View = use("View");
@@ -370,23 +370,23 @@ class PageController {
       try {
         await axios.post(`https://graph.facebook.com/v16.0/${fbPixel}/events?access_token=${fbToken}`, {
           data: [
-              {
-                event_name: "Lead",
-                event_time: moment().utc().unix(),
-                action_source: "website",
-                user_data: {
-                  em: [null],
-                  ph: [
-                    createHash("sha256").update(contact.whatsapp).digest("hex"),
-                  ],
-                  fn: createHash("sha256").update(contact.name).digest("hex"),
-                  client_user_agent: userAgent,
-                  client_ip_address: request.header("x-real-ip"),
-                  fbp: fbp,
-                },
+            {
+              event_name: "Lead",
+              event_time: moment().utc().unix(),
+              action_source: "website",
+              user_data: {
+                em: [null],
+                ph: [
+                  createHash("sha256").update(contact.whatsapp).digest("hex"),
+                ],
+                fn: createHash("sha256").update(contact.name).digest("hex"),
+                client_user_agent: userAgent,
+                client_ip_address: request.header("x-real-ip"),
+                fbp: fbp,
               },
-            ],
-          }
+            },
+          ],
+        }
         );
       } catch (error) {
         console.error(error.response);
@@ -453,13 +453,11 @@ class PageController {
           );
         }
       */
-      let message = `*Nome:* ${
-        contact.name ? contact.name : "Não Informado"
-      }\n`;
+      let message = `*Nome:* ${contact.name ? contact.name : "Não Informado"
+        }\n`;
       // message += `*WhatsApp:* ${whatsapp ? whatsapp : 'Não Informado'}\n`
-      message += `*Eu trabalho com:* ${
-        contact.work ? contact.work : "Não Informado"
-      }\n\n`;
+      message += `*Eu trabalho com:* ${contact.work ? contact.work : "Não Informado"
+        }\n\n`;
       console.log(page);
       switch (page) {
         case "basic":
@@ -531,8 +529,8 @@ class PageController {
 
       const cart = params.cartCode
         ? await Cart.query()
-            .where({ profileId: profile.id, code: params.cartCode })
-            .first()
+          .where({ profileId: profile.id, code: params.cartCode })
+          .first()
         : undefined;
       // console.log(cart)
 
@@ -671,11 +669,10 @@ class PageController {
               dataDecrypted && dataDecrypted.table
                 ? dataDecrypted.table.id
                 : "",
-            styles: `<link rel="stylesheet" href="/${
-              profile.options.migrated_at || profile.id >= 1000000
-                ? "profile2"
-                : "profile"
-            }/${files.find((f) => f.includes("styles"))}?v=${version}">`,
+            styles: `<link rel="stylesheet" href="/${profile.options.migrated_at || profile.id >= 1000000
+              ? "profile2"
+              : "profile"
+              }/${files.find((f) => f.includes("styles"))}?v=${version}">`,
           })
         );
       } else {
@@ -830,7 +827,7 @@ class PageController {
           title: "Reúnião",
         })
       );
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async getRegisters({ params, response }) {
@@ -1263,11 +1260,9 @@ class PageController {
         let x = 1;
         let paginate = "";
         while (x <= profiles.lastPage) {
-          paginate += `<li class="page-item${
-            x == profiles.page ? " disabled" : ""
-          }"><a class="page-link" href="/portal/${
-            params.city
-          }/listagem/${x}">${x}</a></li>`;
+          paginate += `<li class="page-item${x == profiles.page ? " disabled" : ""
+            }"><a class="page-link" href="/portal/${params.city
+            }/listagem/${x}">${x}</a></li>`;
           ++x;
         }
         return paginate;
@@ -1332,11 +1327,9 @@ class PageController {
         let x = 1;
         let paginate = "";
         while (x <= profiles.lastPage) {
-          paginate += `<li class="page-item${
-            x == profiles.page ? " disabled" : ""
-          }"><a class="page-link" href="/portal/${
-            params.city
-          }/listagem/${x}">${x}</a></li>`;
+          paginate += `<li class="page-item${x == profiles.page ? " disabled" : ""
+            }"><a class="page-link" href="/portal/${params.city
+            }/listagem/${x}">${x}</a></li>`;
           ++x;
         }
         return paginate;
