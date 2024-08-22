@@ -93,8 +93,9 @@ class PageController {
       }
   }
 
-  async whatsmenu({ request, response, view, count }) {
+  async whatsmenu({ request, response, view, count, locale }) {
     console.log("whatsmenu");
+    console.log(locale);
     const userAgent = request.header("X-User-Agent").toLowerCase();
     let ambient = "desktop";
     if (userAgent.includes("iphone") || userAgent.includes("android")) {
@@ -115,6 +116,7 @@ class PageController {
         valueBase: valueBase,
         ambient: ambient,
         page: "WhatsMenu",
+        showValue: locale !== "pt-BR" ? false : true,
         isIphone: userAgent.includes("iphone"),
       })
     );
