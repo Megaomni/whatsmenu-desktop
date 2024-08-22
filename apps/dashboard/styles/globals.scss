@@ -2218,7 +2218,6 @@ table.last tbody tr:last-child {
   }
 }
 
-
 /*--------------------------------------------------------------
 # TABS NAVS FLEX
 --------------------------------------------------------------*/
@@ -2238,7 +2237,7 @@ table.last tbody tr:last-child {
 
 .active-mini-tab {
   // border-bottom: 2px solid #FF0000;
-  color: #FF0000 !important;
+  color: #ff0000 !important;
   position: relative;
 }
 
@@ -2248,10 +2247,10 @@ table.last tbody tr:last-child {
 }
 
 .active-mini-tab::after {
-  content: " ";
+  content: ' ';
   width: 100%;
   height: 1px;
-  background-color: #FF0000;
+  background-color: #ff0000;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -2259,18 +2258,29 @@ table.last tbody tr:last-child {
   animation: under 0.5s;
 }
 
-
 @keyframes under {
   0% {
-  width: 0%;
-  background-color: #FF0000;
+    width: 0%;
+    background-color: #ff0000;
   }
   100% {
-  width: 100%;
-  background-color: #FF0000;
+    width: 100%;
+    background-color: #ff0000;
   }
 }
 
 .no-active-mini-tab {
-  color: #637381
+  color: #637381;
+}
+
+/* Estilos gerais */
+.table-header {
+  display: none;
+}
+
+/* Estilos para telas médias e maiores */
+@media (min-width: 768px) {
+  .table-header {
+    display: table-header-group;
+  }
 }
