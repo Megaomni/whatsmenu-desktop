@@ -8,7 +8,7 @@
     "phone": "00 000 00 00",
     "cell": "00 000 00 00",
     "secret_number": "756.####.####.##",
-    "ssn_mask": "756.0000.0000.00",
+    "ssn_mask": "000.0000.0000.00",
     "zipcode": "0000",
     "date_mask": "dd/MM/yyyy",
     "date_mask_format_m": "DD/MM/YYYY",
