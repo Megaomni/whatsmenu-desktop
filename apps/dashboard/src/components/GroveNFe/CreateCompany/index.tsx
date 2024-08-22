@@ -1,13 +1,17 @@
+import { CropModal } from "@components/Modals/CropModal";
 import { AppContext } from "@context/app.ctx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mask } from "@utils/wm-functions";
 import axios from "axios";
 import i18n from "i18n";
-import {  useContext, useState } from "react";
-import { Button, Card, Col, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
+import {  useContext, useEffect, useRef, useState } from "react";
+import { Button, Card, Col, Figure, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 import { api } from "src/lib/axios";
+import Integrations from "src/pages/dashboard/integrations";
 import { z } from 'zod'
+
 
 const createCompanySchema = z.object({
     cnpj: z.string({
@@ -30,7 +34,7 @@ const createCompanySchema = z.object({
     telefone: z.string().min(10, 'Telefone inválido'),
     cep: z.string().min(8, 'CEP inválido'),
     Logradouro: z.string().min(5, 'Logradouro obrigatório'),
-    number: z.coerce.number().min(1, 'Número obrigatório'),
+    numero: z.coerce.number().min(1, 'Número obrigatório'),
     complemento: z.string().optional(),
     bairro: z.string().min(1, 'Bairro obrigatório'),
     municipio: z.string().min(1, 'Município obrigatório'),
@@ -57,10 +61,14 @@ const createCompanySchema = z.object({
 type CreateCompanyFormData = z.infer<typeof createCompanySchema>
 
 export function CreateCompany() {
-    const { register, handleSubmit, getValues, setValue ,formState: { errors } } = useForm<CreateCompanyFormData>({
+    const { t } = useTranslation()
+    const buttonFooter = useRef<HTMLDivElement>(null)
+
+    const { register, handleSubmit, getValues, setValue ,formState: { errors, isValid }, formState, reset } = useForm<CreateCompanyFormData>({
         resolver: zodResolver(createCompanySchema),
     });
   const { setProfile, profile } = useContext(AppContext)
+  const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
     const [tabKey, setTabKey] = useState('identification')
     
@@ -73,65 +81,164 @@ export function CreateCompany() {
     const toggleAdvancedSettingsNfce = () => setAdvancedSettingsNfce(!advancedSettingsNfce)
 
     const [nfce, setNfce] = useState(false)
+    const [cnpjMasked, setCnpjMasked] = useState('')
+    const[phoneMasked, setPhoneMasked] = useState('')
+    const [cepMasked, setCepMasked] = useState('')
+  const [showSpinner, setShowSpinner] = useState<boolean>(false)
+  const [inputFileImage, setInputFileImage] = useState<HTMLInputElement>()
+  const [imageCropped, setImageCroped] = useState<Blob>()
 
-    async function CreateCompany(company: any) {
+
+
+
+    const CreateCompany = async (company: any) => {
         company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
         company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
         company.cep = Number(company.cep.replace(/[^\d]/g, ''))
 
         console.log('empresa',company);
         try {
-            // const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
-            //     headers: {
-            //         Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-            //     }
-            // })
+            const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
+                headers: {
+                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+                }
+            })
             const {data: profileData} = await api.patch('/dashboard/integrations/grovenfe')
 
-            console.log('profile',profileData);
-            
-            
-            // console.log('url',data);
-            
+            console.log('profile',profileData.grovenfe.created_at);
+            if (profileData) {
+                setProfile(prevProfile => ({ 
+                    ...prevProfile!,
+                options: {
+                    ...prevProfile!.options,
+                    integrations: {
+                        ...prevProfile!.options.integrations,
+                        grovenfe: {
+                            ...prevProfile!.options.integrations?.grovenfe,
+                            created_at: profileData.grovenfe.created_at
+                        }
+                    }
+                } }))
+            }
+                company.cnpj = cnpjMasked
+                company.telefone = phoneMasked
+                company.cep = cepMasked
+            reset(company)            
         } catch (error) {
             console.error(error);
             throw error
         }
     }
 
+    // const modalCrop = (
+    //     <CropModal
+    //       typeCrop="logoCompany"
+    //       show={!!inputFileImage}
+    //       inputFile={inputFileImage}
+    //       setImageBlob={(blob, url) => {
+    //         const image = document.getElementById(
+    //           'logoCompany'
+    //         ) as HTMLImageElement
+    //         if (image) {
+    //           image.src = url
+    //         }
+    //         setImageCroped(blob)
+    //         console.log('imagem',image);
+    //       }}
+    //       onHide={() => {
+    //         setInputFileImage(undefined)
+    //         setShowSpinner(false)
+    //       }}
+    //     />
+    //   )
+    //   console.log(inputFileImage);
+    //   console.log(imageCropped);
+    // console.log(document.getElementById('logoCompany'));
+      
     // arquivo_certificado_base64  ,  senha_certificado	
-    // console.log('erros', errors);
     // console.log('valores', getValues());
-    
+
+    useEffect(() => {
+        if(profile.options.integrations.grovenfe.company_id) {
+            axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
+                headers: {
+                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+                }
+            }).then(({data}) => {
+                console.log('useEfecct',data);
+                reset(({
+                    cnpj: data.company.docNumber.replace(/(\d{2})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1/$2')
+                    .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
+                    nome: data.focus_company_data.nome,
+                    nome_fantasia: data.focus_company_data.nome_fantasia,
+                    inscricao_estadual: data.company.aditionalInfo.inscricao_estadual,
+                    inscricao_municipal: data.company.aditionalInfo.inscricao_municipal,
+                    regime_tributario: data.company.aditionalInfo.regime_tributario,
+                    email: data.focus_company_data.email,
+                    telefone: data.company.phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
+                    cep: data.company.address.zip_code.replace(
+                        /^(\d{5})(\d)/g,
+                        '$1-$2'
+                      ),
+                    Logradouro: data.focus_company_data.logradouro,
+                    numero: data.focus_company_data.numero,
+                    complemento: data.focus_company_data.complemento,
+                    bairro: data.focus_company_data.bairro,
+                    municipio: data.focus_company_data.municipio,
+                    uf: data.focus_company_data.uf,
+                    nome_responsavel: data.focus_company_data.nome_responsavel,
+                    cpf_responsavel: data.focus_company_data.cpf_responsavel,
+                    cpf_cnpj_contabilidade: data.company.aditionalInfo.cpf_cnpj_contabilidade,
+                    habilita_nfce: data.company.aditionalInfo.habilita_nfce,
+                    enviar_email_destinatario: data.focus_company_data.enviar_email_destinatario,
+                    discrimina_impostos: data.company.aditionalInfo.discrimina_impostos,
+                    habilita_contingencia_offline_nfce: data.focus_company_data.habilita_contingencia_offline_nfce,
+                    mostrar_danfse_badge: data.company.aditionalInfo.mostrar_danfse_badge,
+                    serie_nfce_producao: data.company.aditionalInfo.serie_nfce_producao,
+                    proximo_numero_nfce_producao: data.company.aditionalInfo.proximo_numero_nfce_producao,
+                    id_token_nfce_producao: data.company.aditionalInfo.id_token_nfce_producao,
+                    csc_nfce_producao: data.company.aditionalInfo.csc_nfce_producao,
+                }))
+            })
+        }
+    }, [])
+
     return (
         <>
             <form id="createCompany" onSubmit={handleSubmit(CreateCompany)}>
                 <Card>
-                    <Card.Header className="m-2 p-2 fw-bold fs-5">Nova Empresa</Card.Header>
+                    <Card.Header className="m-2 p-2 fw-bold fs-5">
+                        {t('new_company')}
+                    </Card.Header>
                     <Card.Body>
                         <Row>
-                            <Form.Switch className="ms-3 mb-3" label="Pessoa Física" 
+                            <Form.Switch className="ms-3 mb-3" label={t('natural_person')} 
                             onChange={(event) => {
                                 setToggleNaturalPerson(event.target.checked)}
                             }
                             >
                             </Form.Switch>
-                            <Col md={6} className="mb-3">
+                            <Col md={4} className="mb-3">
                                 <FormGroup>
-                                    <Form.Label>{toggleNaturalPerson ? 'CPF' : 'CNPJ'}</Form.Label>
+                                    <Form.Label>
+                                        {toggleNaturalPerson ? t('ssn') : t('ein')}
+                                    </Form.Label>
                                     <Form.Control
                                     {...register('cnpj')}
+                                    defaultValue={cnpjMasked}
                                     onChange={event => {
-                                        console.log('lingua',i18n.language);
-                                        console.log(mask(event, 'cpf/cnpj'));
+                                        mask(event, 'cpf/cnpj')                                        
+                                        setCnpjMasked(event.target.value)
                                     }}
                                     ></Form.Control>
                                     {errors.cnpj && <span className="text-danger">{errors.cnpj.message}</span>}
                                 </FormGroup>
                             </Col>
-                            <Col md={6}>
+                            <Col md={4}>
                                 <FormGroup>
-                                    <Form.Label>{toggleNaturalPerson ? 'Nome' : 'Razão Social'}</Form.Label>
+                                    <Form.Label>{toggleNaturalPerson ? t('name') : t('company_name')}</Form.Label>
                                     <Form.Control type="text" {...register('nome')}></Form.Control>
                                     {errors.nome && <span className="text-danger">{errors.nome.message}</span>}
 
@@ -140,10 +247,26 @@ export function CreateCompany() {
                         </Row>
                         <Row className="mt-4">
                             <Col>
-                                <p>Certificado:</p>
+                                <p>{t('certificate')}:</p>
                                 <Button style={{ backgroundColor: '#13C296', border: 'none', position: 'relative' }} >
-                                    Anexar Certificado
-                                    {/* <input type="file" style={{  position: 'absolute', display: 'none' }}></input> */}
+                                    {t('attach_certificate')}
+                                    {/* <Form.Control
+                                      type="file"
+                                      
+                                      onChange={(e) => {
+                                        setInputFileImage(
+                                          e.target as HTMLInputElement
+                                        )
+                                      }}
+                                      style={{
+                                        opacity: 0,
+                                        position: 'absolute',
+                                        top: 0,
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                      }}
+                                    /> */}
                                 </Button>
                             </Col>
                         </Row>
@@ -161,86 +284,134 @@ export function CreateCompany() {
                                     <Nav.Link 
                                     className={`m-0 p-0 pb-1 mb-3 pb-1 ${tabKey === 'identification' ? 'active-mini-tab' : 'no-active-mini-tab'}`} 
                                     eventKey='identification'>
-                                        Identificação
+                                        {t('identification')}
                                     </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
                                     <Nav.Link 
                                     className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'contact' ? 'active-mini-tab' : 'no-active-mini-tab'}`} 
                                     eventKey='contact'>
-                                        Contato
+                                        {t('contact')}
                                     </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
                                     <Nav.Link 
                                     className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'address' ? 'active-mini-tab' : 'no-active-mini-tab'}`} 
                                     eventKey='address'>
-                                        Endereço
+                                        {t('address')}
                                     </Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'responsable' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='responsable'>Responsável</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'responsable' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='responsable'>
+                                        {t('responsable')}</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'accounting' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='accounting'>Contabilidade</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'accounting' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='accounting'>
+                                        {t('accounting')}</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'tokens' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='tokens'>Tokens</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'tokens' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='tokens'>
+                                        {t('tokens')}</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 text-nowrap ${tabKey === 'docFiscal' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='docFiscal'>Documentos Fiscais</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 text-nowrap ${tabKey === 'docFiscal' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='docFiscal'>{t('tax_documents')}</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item >
-                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'config' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='config'>Configurações</Nav.Link>
+                                    <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'config' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='config'>
+                                        {t('settings')}
+                                    </Nav.Link>
                                 </Nav.Item>
                             </Nav>
                             <Tab.Content className="mt-4">
                                 <Tab.Pane eventKey='identification'>
                                 arquivo_logo_base64
-                                    <Button style={{ backgroundColor: '#13C296', border: 'none' }} >Anexar Logo da Empresa</Button>
+                                {/* <Figure>
+                                    <Figure.Image
+                                      width={600}
+                                      // height={450}
+                                      alt="Imagem da Logo do Empresa"
+                                      src={
+                                        inputFileImage
+                                      }
+                                      id="logoCompany"
+                                      style={{
+                                        maxHeight: 270,
+                                      }}
+                                    />
+                                  </Figure> */}
+                                    <Button style={{ backgroundColor: '#13C296', border: 'none' }}>
+                                        {t('attach_company_logo')}
+                                        {/* <Form.Control
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => {
+                                          console.log(e.target);
+                                        setInputFileImage(
+                                          e.target as HTMLInputElement
+                                        )
+                                      }}
+                                      style={{
+                                        opacity: 0,
+                                        position: 'absolute',
+                                        top: 0,
+                                        bottom: 0,
+                                        left: 0,
+                                        right: 0,
+                                      }}
+                                    /> */}
+                                        </Button>
                                     <Row>
                                         <Col md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Nome Fantasia</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">
+                                                {t('trade_name')}
+                                            </Form.Label>
                                             <Form.Control {...register('nome_fantasia', { required:'Nome Fantasia obrigatório' })}></Form.Control>
                                             {errors.nome_fantasia && <span className="text-danger">{errors.nome_fantasia.message}</span>}
 
                                         </Col>
                                         <Col md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Inscrição Estadual</Form.Label>
-                                            <Form.Control {...register('inscricao_estadual', { required:'Inscrição Estadual obrigatória' })}></Form.Control>
+                                            <Form.Label className="m-0 p-0 mt-4">
+                                                {t('state_registration')}
+                                            </Form.Label>
+                                            <Form.Control maxLength={13} {...register('inscricao_estadual', { required:'Inscrição Estadual obrigatória' })}></Form.Control>
                                             {errors.inscricao_estadual && <span className="text-danger">{errors.inscricao_estadual.message}</span>}
 
                                         </Col>
                                         <Col md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Inscrição Municipal</Form.Label>
+                                            <Form.Label maxlength={11} className="m-0 p-0 mt-4">
+                                                {t('municipal_registration')}
+                                            </Form.Label>
                                             <Form.Control {...register('inscricao_municipal')}></Form.Control>
                                         </Col>
                                         <Col md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Regime Tributário</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">
+                                                {t('tax_regime')}
+                                            </Form.Label>
                                             <Form.Select {...register('regime_tributario', {required:'Regime Tributário obrigatório'})}>
-                                                <option value="" disabled> Selecione uma opção</option>
-                                                <option value="1"> Simples Nacional</option>
-                                                <option value="2">Simples Nacional - Excesso de sublimite de receita bruta</option>
-                                                <option value="3">Regime Normal</option>
+                                                <option value="" disabled>{t('select_an_option')}</option>
+                                                <option value="1">{t('simple_national')}</option>
+                                                <option value="2">{t('simple_national')} - {t('Excess_gross_revenue_sublimit')}</option>
+                                                <option value="3">{t('normal_regime')}</option>
                                             </Form.Select>
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey='contact'>
                                     <Row>
-                                        <Col md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Email</Form.Label>
-                                            <Form.Control {...register('email', { required:'Email obrigatório' })}></Form.Control>
+                                        <Col md={4}>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('email')}</Form.Label>
+                                            <Form.Control {...register('email')}></Form.Control>
                                             {errors.email && <span className="text-danger">{errors.email.message}</span>}
 
                                         </Col>
                                         <Col md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Telefone</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('phone_number')}</Form.Label>
                                             <Form.Control 
                                                 maxLength={11} 
                                                 {...register('telefone')} 
                                                 onChange={event => {
                                                     event.target.value = event.target.value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+                                                    setPhoneMasked(event.target.value)
                                                 }}
                                                 ></Form.Control>
                                             {errors.telefone && <span className="text-danger">{errors.telefone.message}</span>}
@@ -251,47 +422,48 @@ export function CreateCompany() {
                                 <Tab.Pane eventKey='address'>
                                     <Row>
                                         <Col md={2}>
-                                            <Form.Label className="m-0 p-0 mt-4">CEP</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('zip_code')}</Form.Label>
                                             <Form.Control 
                                                 maxLength={8} 
                                                 {...register('cep', { required:'CEP obrigatório' })}
                                                 onChange={event => {
                                                     mask(event, 'cep')
+                                                    setCepMasked(event.target.value)
                                                 }}
                                                 ></Form.Control>
                                             {errors.cep && <span className="text-danger">{errors.cep.message}</span>}
 
                                         </Col>
-                                        <Col md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">Logradouro</Form.Label>
+                                        <Col md={4}> 
+                                            <Form.Label className="m-0 p-0 mt-4">{t('street')}</Form.Label>
                                             <Form.Control {...register('Logradouro')}></Form.Control>
                                             {errors.Logradouro && <span className="text-danger">{errors.Logradouro.message}</span>}
 
                                         </Col>
                                         <Col xs={6} md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Número</Form.Label>
-                                            <Form.Control {...register('number')}></Form.Control>
-                                            {errors.number && <span className="text-danger">{errors.number.message}</span>}
+                                            <Form.Label className="m-0 p-0 mt-4">{t('number')}</Form.Label>
+                                            <Form.Control {...register('numero')}></Form.Control>
+                                            {errors.numero && <span className="text-danger">{errors.numero.message}</span>}
 
                                         </Col>
                                         <Col xs={6} md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Complemento</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('complement')}</Form.Label>
                                             <Form.Control {...register('complemento')}></Form.Control>
                                         </Col>
-                                        <Col xs={6} md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">Bairro</Form.Label>
+                                        <Col xs={6} md={3}>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('neighborhood')}</Form.Label>
                                             <Form.Control {...register('bairro')}></Form.Control>
                                             {errors.bairro && <span className="text-danger">{errors.bairro.message}</span>}
 
                                         </Col>
                                         <Col xs={6} md={3}>
-                                            <Form.Label className="m-0 p-0 mt-4">Municipio</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('municipality')}</Form.Label>
                                             <Form.Control {...register('municipio')}></Form.Control>
                                             {errors.municipio && <span className="text-danger">{errors.municipio.message}</span>}
 
                                         </Col>
                                         <Col md={2}>
-                                            <Form.Label className="m-0 p-0 mt-4">Uf</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('fu')}</Form.Label>
                                             <Form.Select {...register('uf', { required:'Uf obrigatório' })}>
                                                 <option value="" disabled> Selecione o estado</option>
                                                 <option value="AC">Acre (AC)</option>
@@ -329,11 +501,11 @@ export function CreateCompany() {
                                 <Tab.Pane eventKey='responsable'>
                                     <Row>
                                         <Col md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">Nome do Responsável</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('responsible_name')}</Form.Label>
                                             <Form.Control {...register('nome_responsavel')}></Form.Control>
                                         </Col>
                                         <Col md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">CPF do Responsável</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('responsible_ssn')}</Form.Label>
                                             <Form.Control {...register('cpf_responsavel')}></Form.Control>
                                         </Col>
                                     </Row>
@@ -341,7 +513,7 @@ export function CreateCompany() {
                                 <Tab.Pane eventKey='accounting'>
                                     <Row>
                                         <Col md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">CPF/CNPJ</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('ssn_ein')}</Form.Label>
                                             <Form.Control {...register('cpf_cnpj_contabilidade')}></Form.Control>
                                         </Col>
                                     </Row>
@@ -349,11 +521,7 @@ export function CreateCompany() {
                                 <Tab.Pane eventKey='tokens'>
                                     <Row>
                                         <Col md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">Token de Homologação</Form.Label>
-                                            <Form.Control></Form.Control>
-                                        </Col>
-                                        <Col md={4}>
-                                            <Form.Label className="m-0 p-0 mt-4">Token de Produção</Form.Label>
+                                            <Form.Label className="m-0 p-0 mt-4">{t('production_token')}</Form.Label>
                                             <Form.Control></Form.Control>
                                         </Col>
                                     </Row>
@@ -364,53 +532,33 @@ export function CreateCompany() {
                                     }}></Form.Switch>
                                     {nfce &&
                                         <Row className="d-flex">
-                                            <div >
-                                                <p className="m-0 p-0 fw-bold">Homologação</p>
-                                                <Row >
-                                                    <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2">Série</Form.Label>
-                                                        <Form.Control {...register('serie_nfce_homologacao')}></Form.Control></Col>
-                                                    <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">Próximo número</Form.Label>
-                                                        <Form.Control {...register('proximo_numero_nfce_homologacao')}></Form.Control>
-                                                    </Col>
-                                                    <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">ID Token Homol.</Form.Label>
-                                                        <Form.Control {...register('id_token_nfce_homologacao')}></Form.Control>
-                                                    </Col>
-                                                    <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">CSC Homol.</Form.Label>
-                                                        <Form.Control {...register('csc_nfce_homologacao')}></Form.Control>
-                                                    </Col>
-                                                </Row>
-                                            </div>
                                             <div className="mt-2">
-                                                <p className="m-0 p-0 fw-bold">Produção</p>
+                                                <p className="m-0 p-0 fw-bold">{t('production')}</p>
                                                 <Row>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2">Série</Form.Label>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2">{t('series')}</Form.Label>
                                                         <Form.Control defaultValue="1" {...register('serie_nfce_producao')}></Form.Control></Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">Próximo número</Form.Label>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('next_number')}</Form.Label>
                                                         <Form.Control defaultValue="1" {...register('proximo_numero_nfce_producao')}></Form.Control>
                                                     </Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">ID Token Prod.</Form.Label>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('id_production_token')}</Form.Label>
                                                         <Form.Control {...register('id_token_nfce_producao', { required: 'Este campo é obrigatório' })}></Form.Control>
                                                     </Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">CSC Prod.</Form.Label>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('security_code_production')}</Form.Label>
                                                         <Form.Control {...register('csc_nfce_producao', { required: 'Este campo é obrigatório' })}></Form.Control>
                                                     </Col>
                                                 </Row>
                                             </div>
                                             <div>
                                                 <div className="mt-3">
-                                                    <p onClick={() => toggleAdvancedSettingsNfce()} style={{ color: 'red', textDecoration: 'underline' }}>Configurações avançadas</p>
+                                                    <p onClick={() => toggleAdvancedSettingsNfce()} style={{ color: 'red', textDecoration: 'underline' }}>{t('advanced_settings')}</p>
                                                     {advancedSettingsNfce &&
                                                         <div className="d-flex align-itens-center">
                                                             <Form.Switch className="d-flex align-items-center" {...register('habilita_contingencia_offline_nfce')}></Form.Switch>
-                                                            <Form.Label className="ms-3">(NFCe) Hbilita contingência offline</Form.Label>
+                                                            <Form.Label className="ms-3">({t('electronic_consumer_invoice')}) {t('enable_offline_contingency')}</Form.Label>
                                                         </div>
                                                     }
                                                 </div>
@@ -420,22 +568,18 @@ export function CreateCompany() {
                                 <Tab.Pane eventKey='config'>
                                     <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
                                         <Form.Switch className="d-flex align-items-center" {...register('enviar_email_destinatario')}></Form.Switch>
-                                        <Form.Label className="ms-3 mt-3">(Todos os documentos) Enviar email ao destinatário - Produção</Form.Label>
-                                    </div>
-                                    <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
-                                        <Form.Switch className="d-flex align-items-center" {...register('enviar_email_homologacao')}></Form.Switch>
-                                        <Form.Label className="ms-3 mt-3">(Todos os documentos) Enviar email ao destinatário - Homologação</Form.Label>
+                                        <Form.Label className="ms-3 mt-3">({t('all_documents')}) {t('send_email_to_recipient')} - {t('production')}</Form.Label>
                                     </div>
                                     <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
                                         <Form.Switch className="d-flex align-items-center" {...register('discrimina_impostos')}></Form.Switch>
-                                        <Form.Label className="ms-3 mt-3">(NFe, NFCe) Discrimina impostos</Form.Label>
+                                        <Form.Label className="ms-3 mt-3">({t('electronic_fiscal_note')}, {t('electronic_consumer_fiscal_note')}) {t('discriminate_taxes')}</Form.Label>
                                     </div>
                                     <div className="mt-3">
-                                        <p className="ms-3" onClick={() => toggleAdvancedSettings()} style={{ color: 'red', textDecoration: 'underline' }}>Configurações avançadas</p>
+                                        <p className="ms-3" onClick={() => toggleAdvancedSettings()} style={{ color: 'red', textDecoration: 'underline' }}>{t('advanced_settings')}</p>
                                         {advancedSettings &&
                                             <div className="d-flex align-itens-center">
-                                                <Form.Switch className="d-flex align-items-center" {...register('mostrar_danfse_badge')}></Form.Switch>
-                                                <Form.Label className="ms-3">Mostrar badge Focus NFe na DANFSe</Form.Label>
+                                                <Form.Switch className="d-flex align-items-center" {...register(' ')}></Form.Switch>
+                                                <Form.Label className="ms-3">{t('show_badge_focus_efn_on_adefn')}</Form.Label>
                                             </div>
                                         }
                                     </div>
@@ -446,13 +590,26 @@ export function CreateCompany() {
                 </Card>
             </form >
             
-            {!errors && 
-            <div className="d-flex justify-content-end p-3 m-0 position-fixed bottom-0" style={{ background: '#DFE6E9', width: '103vw', marginLeft:'-1.5rem !important' }}>
-                <Button className="flex w-100" type="submit" form="createCompany" style={{backgroundColor:'#13C296', border:'none'}}>
-                    Criar
+            <div 
+                ref={buttonFooter} 
+                className={`${isValid ? 'btn-footer-show' : 'btn-footer'} d-flex justify-content-end p-3 m-0 position-fixed bottom-0 w-100`}
+                style={{
+                    left: '0 ',
+                    right: '0 ',
+                }}
+            >
+                <Button  
+                    className="flex-grow-1 flex-md-grow-0"
+                    type="submit"
+                    form="createCompany" 
+                    style={{
+                        backgroundColor:'#13C296', 
+                        border:'none',
+                    }}
+                >
+                    {grovenfe ? t('update') : t('create')}
                 </Button>
             </div>
-            }
         </>
     )
 }

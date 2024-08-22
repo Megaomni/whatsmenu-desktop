@@ -10,12 +10,15 @@ export default class IntegrationsController {
         const { profile } = user
 
         if (profile) {
-          profile.options.integrations.grovenfe.created_at = DateTime.local().toISO()
+          profile.options.integrations = { grovenfe: { created_at: DateTime.now().toISO() } }
           await profile.save()
         }
-      }
 
-      return response.status(201).json({ success: true })
+        return response.status(201).json({ grovenfe: profile.options.integrations.grovenfe })
+      }
+      if (!user) {
+        return response.status(404).json({ message: 'Usário não encontrado.' })
+      }
     } catch (error) {
       console.error(error)
       throw error

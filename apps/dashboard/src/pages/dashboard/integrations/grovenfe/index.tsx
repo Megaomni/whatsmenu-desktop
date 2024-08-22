@@ -1,11 +1,17 @@
 import { ConfigEmission } from "@components/GroveNFe/ConfigEmission";
 import { CreateCompany } from "@components/GroveNFe/CreateCompany";
 import { ProfileOpeningHours } from "@components/Profile/OpeningHours";
+import { AppContext } from "@context/app.ctx";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Card, Col, Form, Modal, ModalBody, Nav, Row, Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 export default function Grovenfe() {
+  const { t } = useTranslation()
+  const { profile } = useContext(AppContext)
+  const grovenfe = profile.options.integrations?.grovenfe?.created_at
+
     const [grovenfePlan, setGrovenfePlan] = useState('')
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [modalCheckouGroveNfe, setModalCheckouGrovenfe] = useState(false)
@@ -188,10 +194,12 @@ export default function Grovenfe() {
 
             </ Modal> */}
 
-            <h1 className="fw-bold" style={{ color: '#012970' }}>Configurações NFe</h1>
+            <h1 className="fw-bold" style={{ color: '#012970' }}>
+                {t('tax_settings')}
+            </h1>
             <Tab.Container activeKey={tabKey} onSelect={(key) => setTabKey(key)}>
                 <Row>
-                    <Col md={6}>
+                    <Col>
                         <Nav
                             variant="tabs"
                             className="tab-nav-flex flex-row">
@@ -199,13 +207,15 @@ export default function Grovenfe() {
                                 eventKey="addCompany"
                                 className="position-relative"
                             >
-                                <Nav.Link eventKey="addCompany" className="text-nowrap">Adicionar Empresa</Nav.Link>
+                                <Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
                             </Nav.Item>
                             <Nav.Item
                                 eventKey="configEmission"
                                 className="position-relative"
                             >
-                                <Nav.Link eventKey="configEmission" className="text-nowrap">Configur emissão</Nav.Link>
+                                <Nav.Link eventKey="configEmission" className="text-nowrap">
+                                    {t('configure_emission')}
+                                </Nav.Link>
                             </Nav.Item>
                         </Nav>
                         <Tab.Content>

@@ -1272,7 +1272,7 @@ export function AppProvider({ children }: AppProviderProps) {
                     </span>
                   </Alert>
                 )}
-                {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
+                {/* {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
                   <Alert
                     variant={`${invoicePending.invoice?.overdue ? 'danger' : 'warning'}`}
                     className="position-fixed w-100 m-0 text-center"
@@ -1294,7 +1294,7 @@ export function AppProvider({ children }: AppProviderProps) {
                         : t('message_menu_locked')}
                     </a>
                   </Alert>
-                ) : null}
+                ) : null} */}
                 <Footer
                   sideOpen={showSidebar}
                   haveInvoice={invoicePending.invoice}
