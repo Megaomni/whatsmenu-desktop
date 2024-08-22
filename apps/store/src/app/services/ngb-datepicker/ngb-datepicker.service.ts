@@ -50,6 +50,7 @@ export class CustomAdapter extends NgbDateAdapter<string> {
       case 'pt-PT':
       case 'fr-CH':
       case 'pt-BR':
+      case 'ar-AE':
         return {
           day: parseInt(date[0], 10),
           month: parseInt(date[1], 10),
@@ -74,6 +75,7 @@ export class CustomAdapter extends NgbDateAdapter<string> {
       case 'pt-PT':
       case 'fr-CH':
       case 'pt-BR':
+      case 'ar-AE':
         return date.day.toString().padStart(2, '0') + this.DELIMITER + date.month.toString().padStart(2, '0') + this.DELIMITER + date.year
 
       case 'en-US':
@@ -97,6 +99,7 @@ export class CustomDateParserFormatter extends NgbDateParserFormatter {
       case 'pt-PT':
       case 'fr-CH':
       case 'pt-BR':
+      case 'ar-AE':
         return {
           day: parseInt(date[0], 10),
           month: parseInt(date[1], 10),
@@ -122,6 +125,7 @@ export class CustomDateParserFormatter extends NgbDateParserFormatter {
       case 'pt-PT':
       case 'fr-CH':
       case 'pt-BR':
+      case 'ar-AE':
         return date.day.toString().padStart(2, '0') + this.DELIMITER + date.month.toString().padStart(2, '0') + this.DELIMITER + date.year
 
       case 'en-US':

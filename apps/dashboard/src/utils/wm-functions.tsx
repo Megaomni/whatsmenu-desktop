@@ -272,13 +272,16 @@ export const mask = (
           break
         }
         case 'fr-CH':
-        case 'en-US':
-          {
+        case 'en-US': {
             e.currentTarget.maxLength = 5
             e.target.value = e.target.value.substring(0, 5)
             e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
+            break
           }
-          break
+        case 'ar-AE': {
+          e.currentTarget.maxLength = 6
+        }
+
       }
     }
     case 'cpf/cnpj':
@@ -352,6 +355,14 @@ export const mask = (
 
           return { type: 'NIF', valid: e.currentTarget.value.length === 9 } // Valida com base no comprimento
         }
+        case 'ar-AE': {
+          e.currentTarget.value = e.currentTarget.value
+              .replace(/(\d{3})(\d)/, '$1-$2')
+              .replace(/(\d{4})(\d)/, '$1-$2')
+              .replace(/(\d{7})(\d)$/, '$1-$2')
+              .replace(/(\d{1})(\d)$/, '$1-$2')
+          return { type: 'Emirates ID', valid: cpf.isValid(e.currentTarget.value) }
+        }
       }
 
     case 'tel':
@@ -399,6 +410,15 @@ export const mask = (
               .replace(/^(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3')
               .trim() // Remove espaços extras no final, se houver
 
+            break
+          }
+          case 'ar-AE': {
+            e.currentTarget.maxLength = 8
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{1})(\d)/, '$1 $2')
+              .replace(/^(\d{3})(\d)/, '$1 $2')
+              .replace(/^(\d{4})(\d)/, '$1 $2')
             break
           }
         }

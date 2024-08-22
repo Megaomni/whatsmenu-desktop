@@ -285,9 +285,8 @@ RegisterProps) {
                     <option value="pt-BR">{i18n.t('portuguese_brazil')}</option>
                     <option value="en-US">{i18n.t('english_us')}</option>
                     <option value="fr-CH">{i18n.t('swiss_french_chf')}</option>
-                    <option value="pt-PT">
-                      {i18n.t('portuguese_portugal')}
-                    </option>
+                    <option value="pt-PT">{i18n.t('portuguese_portugal')}</option>
+                    <option value="ar-AE">{i18n.t('english_ar')}</option>
                   </Form.Select>
                 </Col>
               </Row>

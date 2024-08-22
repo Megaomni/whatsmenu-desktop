@@ -55,6 +55,7 @@ import { NgIf, registerLocaleData } from '@angular/common'
 import localePt from '@angular/common/locales/pt'
 import localeFrCH from '@angular/common/locales/fr-CH'
 import localePtPT from '@angular/common/locales/pt-PT'
+import localeArAe from '@angular/common/locales/ar-AE'
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet'
 import { MatSelectModule } from '@angular/material/select'
 import { ServiceWorkerModule } from '@angular/service-worker'
@@ -121,6 +122,7 @@ import { TranslateService } from './translate.service'
 registerLocaleData(localePt, 'pt-BR')
 registerLocaleData(localeFrCH, 'fr-CH')
 registerLocaleData(localePtPT, 'pt-PT')
+registerLocaleData(localeArAe, 'ar-AE')
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
