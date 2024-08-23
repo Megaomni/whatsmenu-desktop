@@ -1184,8 +1184,9 @@
   "whenever_necessary_you_can_manually_issue_in_addition_to_the_defined_standard": "sempre que necessário você poderá emitir manualmente alem do padrão definido",
   "set_defaults_for_automatic_issuance_of_your_fiscal_notes": "Defina padrões para emissão automática de suas notas fiscais",
   "daily_average": "Media Diária",
-  "credit_machine": "Crédito Maquininha",
-  "debit_machine": "Débito Maquininha",
+  "credit_machine": "Crédito Maquina",
+  "credit_online": "Crédito Online",
+  "debit_machine": "Débito Maquina",
   "debit_online": "Débito Online",
   "dont_miss_deadlines": "Não perca prazos",
   "we_will_send_the_fiscal_closing": "Enviaremos mensalmente o fechamento fiscal (XML) para sua contabilidade",
@@ -1217,9 +1218,9 @@
   "integrations": "Integrações",
   "online_payment_s": "Pagamentos Online",
   "online_payment_description": "Evite golpes, erros e atrasos tendo que verificar comprovantes no app do banco, o pedido chega no painel e o pagamento com segurança direto na sua conta.",
-  "credit_online": "Crédito Online",
   "fiscal_note_issuer": "Emissor de NFe e NFCe",
   "fiscal_note_issuer_description": "Chega de perder tempo lançando notas fiscais na mão, Defina automações e configure limites de acordo com o seu enquadramento CNPJ.",
   "grove_nfe_description": "Emissão e Gestão Automática de Notas Fiscais",
-  "automation_of_nfe": "Automação de Notas Ficais"
+  "automation_of_nfe": "Automação de Notas Ficais",
+  "certificate_password": "Senha do Certificado"
 }

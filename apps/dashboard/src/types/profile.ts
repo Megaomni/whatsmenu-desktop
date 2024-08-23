@@ -178,6 +178,12 @@ export interface ProfileOptions {
   order: string
   integrations: {
     grovenfe:{
+      config:{
+        fiscal_notes:{
+          day_limiter: number | null
+          forms_payment: {type: string}[]
+        }
+      }
       created_at: string
       company_id: number
     }

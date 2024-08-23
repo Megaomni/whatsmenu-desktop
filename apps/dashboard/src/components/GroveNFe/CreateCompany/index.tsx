@@ -7,7 +7,7 @@ import {  useContext, useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Figure, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { api } from "src/lib/axios";
+import { api, groveNfeApi } from "src/lib/axios";
 import Integrations from "src/pages/dashboard/integrations";
 import { z } from 'zod'
 
@@ -69,10 +69,8 @@ export function CreateCompany() {
   const { setProfile, profile } = useContext(AppContext)
   const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
-    const [tabKey, setTabKey] = useState('identification')
-    
-    const [toggleNaturalPerson, setToggleNaturalPerson] = useState(false)
-    
+    const [tabKey, setTabKey] = useState<string | null>('identification')
+        
     const [advancedSettings, setAdvancedSettings] = useState(false)
     const toggleAdvancedSettings = () => setAdvancedSettings(!advancedSettings)
 
@@ -97,16 +95,9 @@ export function CreateCompany() {
         // company.arquivo_logo_base64 = logoBase64
         company.certificado_base64 = certificateBase64
 
-        console.log('empresa',company);
         try {
-            const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
-                headers: {
-                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-                }
-            })
+            const {data} = await groveNfeApi.post('/v1/companies', company)
          
-
-            console.log('profile',data.grovenfe.created_at);
             if (data) {
                 setProfile(prevProfile => ({ 
                     ...prevProfile!,
@@ -123,65 +114,58 @@ export function CreateCompany() {
             }
                 company.cnpj = cnpjMasked
                 company.telefone = phoneMasked
-                company.cep = cepMasked
-            reset(company)            
+                company.cep = cepMasked        
         } catch (error) {
             console.error(error);
             throw error
         }
     }
-      
-    // arquivo_certificado_base64  ,  senha_certificado	
-    // console.log('valores', getValues());
 
-    // useEffect(() => {
-    //     if(profile.options.integrations.grovenfe.company_id) {
-    //         axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-    //             }
-    //         }).then(({data}) => {
-    //             console.log('useEfecct',data);
-    //             reset(({
-    //                 cnpj: data.company.docNumber.replace(/(\d{2})(\d)/, '$1.$2')
-    //                 .replace(/(\d{3})(\d)/, '$1.$2')
-    //                 .replace(/(\d{3})(\d)/, '$1/$2')
-    //                 .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
-    //                 nome: data.focus_company_data.nome,
-    //                 nome_fantasia: data.focus_company_data.nome_fantasia,
-    //                 inscricao_estadual: data.company.aditionalInfo.inscricao_estadual,
-    //                 inscricao_municipal: data.company.aditionalInfo.inscricao_municipal,
-    //                 regime_tributario: data.company.aditionalInfo.regime_tributario,
-    //                 email: data.focus_company_data.email,
-    //                 telefone: data.company.phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
-    //                 cep: data.company.address.zip_code.replace(
-    //                     /^(\d{5})(\d)/g,
-    //                     '$1-$2'
-    //                   ),
-    //                 Logradouro: data.focus_company_data.logradouro,
-    //                 numero: data.focus_company_data.numero,
-    //                 complemento: data.focus_company_data.complemento,
-    //                 bairro: data.focus_company_data.bairro,
-    //                 municipio: data.focus_company_data.municipio,
-    //                 uf: data.focus_company_data.uf,
-    //                 nome_responsavel: data.focus_company_data.nome_responsavel,
-    //                 cpf_responsavel: data.focus_company_data.cpf_responsavel,
-    //                 cpf_cnpj_contabilidade: data.company.aditionalInfo.cpf_cnpj_contabilidade,
-    //                 habilita_nfce: data.company.aditionalInfo.habilita_nfce,
-    //                 enviar_email_destinatario: data.focus_company_data.enviar_email_destinatario,
-    //                 discrimina_impostos: data.company.aditionalInfo.discrimina_impostos,
-    //                 habilita_contingencia_offline_nfce: data.focus_company_data.habilita_contingencia_offline_nfce,
-    //                 mostrar_danfse_badge: data.company.aditionalInfo.mostrar_danfse_badge,
-    //                 serie_nfce_producao: data.company.aditionalInfo.serie_nfce_producao,
-    //                 proximo_numero_nfce_producao: data.company.aditionalInfo.proximo_numero_nfce_producao,
-    //                 id_token_nfce_producao: data.company.aditionalInfo.id_token_nfce_producao,
-    //                 csc_nfce_producao: data.company.aditionalInfo.csc_nfce_producao,
-    //             }))
-    //         })
-    //     }
-    // }, [])    
-
-    console.log(errors);
+    useEffect(() => {
+        if(profile.options.integrations.grovenfe.company_id) {
+            axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
+                headers: {
+                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+                }
+            }).then(({data}) => {
+                reset(({
+                    cnpj: data.company.docNumber.replace(/(\d{2})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1/$2')
+                    .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
+                    nome: data.focus_company_data.nome,
+                    nome_fantasia: data.focus_company_data.nome_fantasia,
+                    inscricao_estadual: data.company.aditionalInfo.inscricao_estadual,
+                    inscricao_municipal: data.company.aditionalInfo.inscricao_municipal,
+                    regime_tributario: data.company.aditionalInfo.regime_tributario,
+                    email: data.focus_company_data.email,
+                    telefone: data.company.phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
+                    cep: data.company.address.zip_code.replace(
+                        /^(\d{5})(\d)/g,
+                        '$1-$2'
+                      ),
+                    Logradouro: data.focus_company_data.logradouro,
+                    numero: data.focus_company_data.numero,
+                    complemento: data.focus_company_data.complemento,
+                    bairro: data.focus_company_data.bairro,
+                    municipio: data.focus_company_data.municipio,
+                    uf: data.focus_company_data.uf,
+                    nome_responsavel: data.focus_company_data.nome_responsavel,
+                    cpf_responsavel: data.focus_company_data.cpf_responsavel,
+                    cpf_cnpj_contabilidade: data.company.aditionalInfo.cpf_cnpj_contabilidade,
+                    habilita_nfce: data.company.aditionalInfo.habilita_nfce,
+                    enviar_email_destinatario: data.focus_company_data.enviar_email_destinatario,
+                    discrimina_impostos: data.company.aditionalInfo.discrimina_impostos,
+                    habilita_contingencia_offline_nfce: data.focus_company_data.habilita_contingencia_offline_nfce,
+                    mostrar_danfse_badge: data.company.aditionalInfo.mostrar_danfse_badge,
+                    serie_nfce_producao: data.company.aditionalInfo.serie_nfce_producao,
+                    proximo_numero_nfce_producao: data.company.aditionalInfo.proximo_numero_nfce_producao,
+                    id_token_nfce_producao: data.company.aditionalInfo.id_token_nfce_producao,
+                    csc_nfce_producao: data.company.aditionalInfo.csc_nfce_producao,
+                }))
+            })
+        }
+    }, [])    
     
     useEffect(() => {
         if (errors.cep || errors.Logradouro || errors.bairro || errors.municipio || errors.numero) {
@@ -224,16 +208,10 @@ export function CreateCompany() {
                     </Card.Header>
                     <Card.Body>
                         <Row>
-                            <Form.Switch className="ms-3 mb-3" label={t('natural_person')} 
-                            onChange={(event) => {
-                                setToggleNaturalPerson(event.target.checked)}
-                            }
-                            >
-                            </Form.Switch>
                             <Col md={4} className="mb-3">
                                 <FormGroup>
                                     <Form.Label>
-                                        {toggleNaturalPerson ? t('ssn') : t('ein')}
+                                        { t('ein')}
                                     </Form.Label>
                                     <Form.Control
                                     {...register('cnpj')}
@@ -248,7 +226,7 @@ export function CreateCompany() {
                             </Col>
                             <Col md={4}>
                                 <FormGroup>
-                                    <Form.Label>{toggleNaturalPerson ? t('name') : t('company_name')}</Form.Label>
+                                    <Form.Label>{ t('company_name')}</Form.Label>
                                     <Form.Control type="text" {...register('nome')}></Form.Control>
                                     {errors.nome && <span className="text-danger">{errors.nome.message}</span>}
 
@@ -294,7 +272,7 @@ export function CreateCompany() {
                 <Card>
                     <Card.Body>
                         <Tab.Container 
-                        activeKey={tabKey} 
+                        activeKey={tabKey as string}
                         onSelect={(key) => setTabKey(key)}>
                             <Nav className="tab-nav-flex m-0 p-0 gap-3">
                                 <Nav.Item>
