@@ -34,7 +34,6 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
         })
     }
   }, [profile])
-  console.log(invoices)
   return (
     <>
       <Container className="p-1">
@@ -197,6 +196,7 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                         )}
                       </td>
                     </tr>
+
                     {/* Mobile */}
                     <tr className="d-md-none d-lg-none">
                       <td className=" p-3">
@@ -228,7 +228,7 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                         </div>
                         {invoice.transactions[0]?.status === 'paid' ? (
                           <span
-                            className="fw-bolder rounded px-4 py-2 text-center text-white"
+                            className="fw-bolder ms-1 rounded px-4 py-2 text-center text-white"
                             style={{
                               backgroundColor: '#13c296',
                             }}
@@ -237,7 +237,7 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                           </span>
                         ) : (
                           <span
-                            className="fw-bolder rounded px-1 py-2 text-center text-white"
+                            className="fw-bolder ms-1 rounded px-1 py-2 text-center text-white"
                             style={{
                               backgroundColor: '#FF3355',
                             }}
