@@ -20,6 +20,7 @@ export default class GroveNfeService {
           config: {
             fiscal_notes: company.controls.fiscal_notes,
           },
+          plan: company.plan,
           company_id: Number(company.id),
           created_at: company.created_at,
         },

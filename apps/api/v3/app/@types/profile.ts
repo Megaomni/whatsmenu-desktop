@@ -148,6 +148,7 @@ export interface ProfileOptions {
   integrations: {
     grovenfe: {
       company_id: number
+      plan: any
       config: {
         fiscal_notes: {
           day_limiter: null | number
