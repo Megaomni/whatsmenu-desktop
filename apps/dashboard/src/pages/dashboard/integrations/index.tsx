@@ -32,7 +32,7 @@ export default function Integrations() {
                 className="vr mt-4"
                 style={{ height: 'var(--dropdown-padding-x, 24px)' }}
               ></div>
-              <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
+              {/* <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} /> */}
             </Col>
           </Row>
           <Row>
@@ -95,7 +95,7 @@ export default function Integrations() {
               className="vr mt-4 "
               style={{ height: 'var(--dropdown-padding-x, 24px)' }}
             ></div>
-            <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
+            {/* <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} /> */}
           </Col>
         </Row>
         <Row>
