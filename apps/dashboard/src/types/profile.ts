@@ -177,7 +177,8 @@ export interface ProfileFormPayment {
 export interface ProfileOptions {
   order: string
   integrations: {
-    grovenfe:{
+    grovenfe: {
+      plan: any
       created_at: string
       company_id: number
     }

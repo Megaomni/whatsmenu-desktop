@@ -1,11 +1,40 @@
-import React from 'react'
-import { Container, Row, Col, Button, Card, Table } from 'react-bootstrap'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Table,
+  Badge,
+} from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Title } from '../../../components/Partials/title'
+import { groveNfeApi } from 'src/lib/axios'
+import { AppContext } from '@context/app.ctx'
+import { DateTime } from 'luxon'
 
 interface InvoicesProps {}
 export default function InvoicesGroveNFe({}: InvoicesProps) {
   const { t } = useTranslation()
+  const { profile, currency } = useContext(AppContext)
+  const [invoices, setInvoices] = useState<any[]>([])
+  useEffect(() => {
+    if (profile && profile.options.integrations.grovenfe) {
+      groveNfeApi
+        .get(
+          `/v1/invoices/list/${profile.options.integrations.grovenfe.company_id}`
+        )
+        .then((response) => {
+          const invoices = response.data.invoices.reverse()
+          setInvoices(response.data.invoices)
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    }
+  }, [profile])
+  console.log(invoices)
   return (
     <>
       <Container className="p-1">
@@ -26,7 +55,9 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                 }}
               >
                 <h2 className="font-weight-bold fs-4">Plano Atual:</h2>
-                <span className="font-weight-bold">Plano 100</span>
+                <span className="font-weight-bold">
+                  {profile.options.integrations.grovenfe.plan.name}
+                </span>
                 <Button variant="link" className="fw-bold btn-sm text-white">
                   Mudar
                 </Button>
@@ -40,21 +71,27 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                     <span style={{ color: '#126DFC' }} className="fw-bold">
                       Vencimento:
                     </span>
-                    <span className="fw-bold ms-2">03/10/2024</span>
+                    <span className="fw-bold ms-2">
+                      {DateTime.fromISO(invoices[0]?.expiration_date).toFormat(
+                        'dd/MM/yyyy'
+                      )}
+                    </span>
                   </Col>
                   <Col lg className="">
                     <span style={{ color: '#126DFC' }} className="fw-bold">
                       Valor:
                     </span>
-                    <span className="fw-bold ms-2">R$67,00</span>
+                    <span className="fw-bold ms-2">
+                      {currency({ value: invoices[0]?.value })}
+                    </span>
                   </Col>
                   <Col lg className="">
                     <span style={{ color: '#126DFC' }} className="fw-bold">
                       Adicionais:
                     </span>
-                    <span className="fw-bold ms-2">R$10,00</span>
+                    <span className="fw-bold ms-2">R$0,00</span>
                   </Col>
-                  <Col lg className="align-items-center">
+                  {/* <Col lg className="align-items-center">
                     <span style={{ color: '#126DFC' }} className="fw-bold">
                       Forma de Pag.:
                     </span>
@@ -67,12 +104,14 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                         Mudar
                       </a>
                     </span>
-                  </Col>
+                  </Col> */}
                   <Col lg className="d-flex">
                     <span style={{ color: '#126DFC' }} className="fw-bold">
                       Total:
                     </span>
-                    <span className="fw-bold ms-2">R$77,00</span>
+                    <span className="fw-bold ms-2">
+                      {currency({ value: invoices[0]?.value })}
+                    </span>
                   </Col>
                 </Row>
               </Card.Body>
@@ -98,8 +137,8 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
           <Card.Header>
             <h4>Histórico de Faturas</h4>
           </Card.Header>
-          <Card.Body>
-            <Table responsive className="table-striped table">
+          <Card.Body className="p-0">
+            <Table striped>
               <thead className="table-header">
                 <tr>
                   <th>{t('due_date')}</th>
@@ -109,106 +148,107 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                 </tr>
               </thead>
               <tbody>
-                <tr className="table-row">
-                  <td>
-                    <span className="fw-bolder">02/10/2024</span>
-                  </td>
-                  <td>
-                    <span className="fw-bolder">02/10/2024</span>
-                  </td>
-                  <td>
-                    <span className="fw-bolder">R$77,00</span>
-                  </td>
-                  <td>
-                    <span className="fw-bolder">GroveNFe</span>
-                  </td>
-                  <td>
-                    <Button
-                      className="d-flex ms-auto"
-                      variant="success"
-                      style={{ backgroundColor: '#13c296', border: 'none' }}
-                    >
-                      Pago
-                    </Button>
-                  </td>
-                </tr>
-                <tr className="table-row">
-                  <td>
-                    <span className="fw-bolder">02/10/2024</span>
-                  </td>
-                  <td>
-                    <span className="fw-bolder">02/10/2024</span>
-                  </td>
-                  <td>
-                    <span className="fw-bolder">R$77,00</span>
-                  </td>
-                  <td>
-                    <span className="fw-bolder">GroveNFe</span>
-                  </td>
-                  <td>
-                    <Button
-                      className="d-flex ms-auto"
-                      variant="success"
-                      style={{ backgroundColor: '#13c296', border: 'none' }}
-                    >
-                      Pago
-                    </Button>
-                  </td>
-                </tr>
-                <tr className="d-md-none d-lg-none">
-                  <td className="p-0">
-                    <div className=" d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('due_date')}:</span>
-                      <span>02/10/2024</span>
-                    </div>
-                    <div className="d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('payment')}:</span>
-                      <span>02/10/2024</span>
-                    </div>
-                    <div className="d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('value')}:</span>
-                      <span>R$77,00</span>
-                    </div>
-                    <div className="d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('services')}:</span>
-                      <span>GroveNFe</span>
-                    </div>
-                    <Button
-                      className="d-flex ms-2"
-                      variant="success"
-                      style={{ backgroundColor: '#13c296', border: 'none' }}
-                    >
-                      Pago
-                    </Button>
-                  </td>
-                </tr>
-                <tr className="d-md-none d-lg-none">
-                  <td className="p-0">
-                    <div className=" d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('due_date')}:</span>
-                      <span>02/10/2024</span>
-                    </div>
-                    <div className="d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('payment')}:</span>
-                      <span>02/10/2024</span>
-                    </div>
-                    <div className="d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('value')}:</span>
-                      <span>R$77,00</span>
-                    </div>
-                    <div className="d-flex gap-2 p-2">
-                      <span className="fw-bold">{t('services')}:</span>
-                      <span>GroveNFe</span>
-                    </div>
-                    <Button
-                      className="d-flex ms-2"
-                      variant="success"
-                      style={{ backgroundColor: '#13c296', border: 'none' }}
-                    >
-                      Pago
-                    </Button>
-                  </td>
-                </tr>
+                {invoices.slice(1).map((invoice) => (
+                  <Fragment key={invoice.id}>
+                    <tr className="table-row">
+                      <td>
+                        <span className="fw-bolder">
+                          {DateTime.fromISO(invoice.expiration_date).toFormat(
+                            'dd/MM/yyyy'
+                          )}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="fw-bolder">
+                          {invoice.transactions[0]?.paid_at
+                            ? DateTime.fromISO(
+                                invoice.transactions[0]?.paid_at
+                              ).toFormat('dd/MM/yyyy')
+                            : 'Não Pago'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="fw-bolder">
+                          {currency({ value: invoice.value })}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="fw-bolder">GroveNFe</span>
+                      </td>
+                      <td className="col-1">
+                        {invoice.transactions[0]?.status === 'paid' ? (
+                          <span
+                            className="fw-bolder d-block rounded px-2 py-2 text-center text-end text-white"
+                            style={{
+                              backgroundColor: '#13c296',
+                            }}
+                          >
+                            Pago
+                          </span>
+                        ) : (
+                          <span
+                            className="fw-bolder d-block rounded px-2 py-2 text-center text-end text-white"
+                            style={{
+                              backgroundColor: '#FF3355',
+                            }}
+                          >
+                            Pendente
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                    {/* Mobile */}
+                    <tr className="d-md-none d-lg-none">
+                      <td className=" p-3">
+                        <div className=" d-flex gap-2 p-2">
+                          <span className="fw-bold">{t('due_date')}:</span>
+                          <span>
+                            {DateTime.fromISO(invoice.expiration_date).toFormat(
+                              'dd/MM/yyyy'
+                            )}
+                          </span>
+                        </div>
+                        <div className="d-flex gap-2 p-2">
+                          <span className="fw-bold">{t('payment')}:</span>
+                          <span>
+                            {invoice.transactions[0]?.paid_at
+                              ? DateTime.fromISO(
+                                  invoice.transactions[0]?.paid_at
+                                ).toFormat('dd/MM/yyyy')
+                              : 'Não Pago'}
+                          </span>
+                        </div>
+                        <div className="d-flex gap-2 p-2">
+                          <span className="fw-bold">{t('value')}:</span>
+                          <span>{currency({ value: invoice.value })}</span>
+                        </div>
+                        <div className="d-flex mb-2 gap-2 p-2">
+                          <span className="fw-bold">{t('services')}:</span>
+                          <span>GroveNFe</span>
+                        </div>
+                        {invoice.transactions[0]?.status === 'paid' ? (
+                          <span
+                            className="fw-bolder rounded px-4 py-2 text-center text-white"
+                            style={{
+                              backgroundColor: '#13c296',
+                            }}
+                          >
+                            Pago
+                          </span>
+                        ) : (
+                          <span
+                            className="fw-bolder rounded px-1 py-2 text-center text-white"
+                            style={{
+                              backgroundColor: '#FF3355',
+                            }}
+                          >
+                            Pendente
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  </Fragment>
+                ))}
               </tbody>
             </Table>
           </Card.Body>
