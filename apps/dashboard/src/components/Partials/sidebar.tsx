@@ -23,6 +23,7 @@ import {
   BsGear,
   BsMegaphone,
   BsPerson,
+  BsReceipt,
 } from 'react-icons/bs'
 import {
   FaBarcode,
@@ -32,6 +33,7 @@ import {
   FaMedal,
   FaMoneyBillWave,
   FaMotorcycle,
+  FaReceipt,
 } from 'react-icons/fa'
 import { GiRoundTable } from 'react-icons/gi'
 import { GoPackage } from 'react-icons/go'
@@ -146,6 +148,36 @@ export function Sidebar() {
                 >
                   <BsCashCoin />
                   <span>Cashback</span>
+                  <span className="badge bg-danger ms-3 inline">
+                    {t('new')}
+                  </span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  href="/dashboard/integrations/grovenfe"
+                  className="with-icon nav-link collapsed"
+                  onClick={(e) => {
+                    verificationStateRouter(e)
+                    window.innerWidth < 1020 && setShowSidebar(false)
+                  }}
+                >
+                  <span>{t('automation_of_nfe')}</span>
+                  <span className="badge bg-danger ms-3 inline">
+                    {t('new')}
+                  </span>
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  href="/dashboard/integrations"
+                  className="with-icon nav-link collapsed"
+                  onClick={(e) => {
+                    verificationStateRouter(e)
+                    window.innerWidth < 1020 && setShowSidebar(false)
+                  }}
+                >
+                  <span>{t('integrations')}</span>
                   <span className="badge bg-danger ms-3 inline">
                     {t('new')}
                   </span>
@@ -379,6 +411,21 @@ export function Sidebar() {
             <FaBarcode />
             <span className="d-flex justify-content-between align-items-center w-100">
               {t('invoices')}
+            </span>
+          </Link>
+        </li>
+        <li className="nav-item">
+          <Link
+            href="/dashboard/invoiceGrove"
+            className={`with-icon nav-link collapsed`}
+            onClick={(e) => {
+              verificationStateRouter(e)
+              window.innerWidth < 1020 && setShowSidebar(false)
+            }}
+          >
+            <FaBarcode />
+            <span className="d-flex justify-content-between align-items-center w-100">
+              FaturasNFe
             </span>
           </Link>
         </li>
