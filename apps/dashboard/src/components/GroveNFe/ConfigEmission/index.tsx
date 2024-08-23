@@ -74,11 +74,11 @@ export function ConfigEmission() {
                 <Card.Body>
                     <h5 className="fw-bold" style={{ color: '#000' }}>{t('set_defaults_for_automatic_issuance_of_your_fiscal_notes')}.</h5>
                     <p style={{color: '#9894A4'}}>*{t('whenever_necessary_you_can_manually_issue_in_addition_to_the_defined_standard')}.</p>
-                    <div className="m-0 p-0 d-flex flex-column gap-3">
+                    <Row className="">
                         <h4>Formas de Pagamento</h4>
-                        <div className="d-flex gap-3">
+                        <Col md={5}>
                         {profile.formsPayment?.map((formPayment, index) => (
-                            <Col key={index}>
+                            
                             <Form.Switch 
                                 key={index}
                                 name={formPayment.payment}
@@ -90,11 +90,11 @@ export function ConfigEmission() {
                                     console.log(e.target.checked, e.target.name)
                                 }}
                             />
-                            </Col>
+                            
                         ))}
                           
-                        </div> 
-                        <div >
+                        </Col> 
+                        <Col md={3}>
                             <Form.Label className="m-0 p-0 my-2">{t('daily_average')}</Form.Label>
                             <Form.Control 
                             {...register('day_limiter')}
@@ -105,12 +105,12 @@ export function ConfigEmission() {
                                     mask(e,'currency')    
                                 }
                             ></Form.Control>
-                        </div>
+                        </Col>
                         
 
                         
                         
-                    </div>
+                    </Row>
                 </Card.Body>
             </Card>
 
