@@ -1,13 +1,5 @@
 import React from 'react'
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Card,
-  Table,
-  Badge,
-} from 'react-bootstrap'
+import { Container, Row, Col, Button, Card, Table } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 import { Title } from '../../../components/Partials/title'
 
