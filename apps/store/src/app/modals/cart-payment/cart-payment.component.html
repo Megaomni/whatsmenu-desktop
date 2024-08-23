@@ -73,7 +73,7 @@
     type="submit"
     class="btn btn-danger mt-auto p-3 w-100 fw-bold"
   >
-    Finalizar Pagamento
+    {{ translate.text().finish_payment }}
   </button>
 </mat-dialog-actions>
 
@@ -103,14 +103,16 @@
       </payment-button>
       <payment-button *ngIf="!cards.length && data.clientData.options.onlineCard" (click)="setOnlineFormPayment('credit', 'card')">
         <img src="/assets/credit-cart.svg" alt="card icon" />
-        <p class="fw-semibold fs-6">Cartão de Crédito</p>
+        <p class="fw-semibold fs-6 text-capitalize">{{ translate.text().credit_card }}</p>
         <fa-icon [icon]="faChevronRight" size="xs" transform="grow-10" class="text-black fw-bold ms-auto" />
       </payment-button>
     </div>
     <div *ngIf="cards.length && data.clientData.options.onlineCard">
-      <p class="text-black fw-semibold fs-6">Meus Cartões</p>
+      <p class="text-black fw-semibold fs-6 text-capitalize">{{ translate.text().my_cards }}</p>
       <hr />
-      <button class="btn btn-link text-danger fw-semibold mb-3" (click)="setOnlineFormPayment('credit', 'card')">Adicionar Novo Cartão</button>
+      <button class="btn btn-link text-danger fw-semibold mb-3 text-capitalize" (click)="setOnlineFormPayment('credit', 'card')">
+        {{ translate.text().add_new_card }}
+      </button>
       <div class="d-flex flex-column gap-3">
         <ng-container *ngFor="let card of cards">
           <payment-button class="flex-grow-1" (click)="handleCheckCVV(card)">
@@ -137,15 +139,15 @@
 <!-- PAGAMENTO NA ENTREGA -->
 <ng-template #offlinePaymentChoicesTemplate>
   <div class="d-flex flex-column gap-2 mb-3">
-    <p class="fw-semibold text-black fs-5">Pagar na entrega</p>
+    <p class="fw-semibold text-black fs-5 text-capitalize">{{ translate.text().pay_on_delivery }}</p>
     <!-- <p class="fw-semibold">Escolha a forma de pagamento abaixo</p> -->
   </div>
   <ul class="d-flex flex-column" [ngClass]="disabledPaymentDefault ? 'disabled' : ''">
     <ng-container *ngFor="let formPayment of offlineFormsPayment; first as first; last as last">
       <li *ngIf="formPayment.status" [ngClass]="!last ? 'border-bottom' : ''">
         <label class="d-flex gap-3 py-3">
-          <p class="flex-grow-1 fw-semibold text-black">{{ formPayment.label }}</p>
-          <span class="fw-semibold text-danger" style="font-size: 0.875rem">{{ addonDisplay(formPayment) }}</span>
+          <p class="flex-grow-1 fw-semibold text-black">{{ translate.text()[formPayment.payment] }}</p>
+          <span class="fw-semibold text-danger text-capitalize" style="font-size: 0.875rem">{{ addonDisplay(formPayment) }}</span>
           <input
             (click)="formPaymentSelected = formPayment; scroll(paymentStep2)"
             type="radio"
@@ -165,11 +167,13 @@
     [(formsPayment)]="data.cartRequest.formsPayment"
   />
   <div class="card mt-3 p-3 border-0 d-flex flex-column align-items-center">
-    <p #paymentStep2 class="fw-bold text-black fs-5 mb-3">Pagamento em {{ formPaymentSelected.label }}</p>
+    <p #paymentStep2 class="fw-bold text-black fs-5 mb-3 text-capitalize">{{ translate.text().payment_in }} {{ translate.text()[formPaymentSelected.payment] }}</p>
     <div [ngSwitch]="formPaymentSelected.payment" class="d-flex flex-column w-100 gap-3">
       <ng-container *ngSwitchCase="'money'">
         <div class="d-flex flex-column">
-          <label class="form-label fw-semibold m-0" style="font-size: 0.75rem" for="transhippment">Preciso de Troco para:</label>
+          <label class="form-label fw-semibold m-0 text-capitalize" style="font-size: 0.75rem" for="transhippment"
+            >{{ translate.text().i_need_change_for }}:</label
+          >
           <input
             class="form-control"
             placeholder="0.00"
@@ -190,18 +194,18 @@
             #transhippment_check
             (click)="changeIsHigher = transhippment_check.checked; transhippment_check.checked ? (formPaymentSelected.change = null) : ''"
           />
-          <label class="form-check-label" for="transhippment-check">Não preciso de troco</label>
+          <label class="form-check-label" for="transhippment-check" class="text-capitalize">{{ translate.text().i_dont_need_change }}</label>
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'pix'">
         <div class="text-black">
           <p class="border-bottom py-3"><b>Pix:</b> {{ formPaymentSelected.key.value }}</p>
           <p class="border-bottom py-3">
-            <b>Total a Transferir:</b> {{ formPaymentSelected.value | currency }}
+            <b class="text-capitalize">{{ translate.text().total_to_transfer }}:</b> {{ formPaymentSelected.value | currency }}
             <!-- <b>Total a Transferir:</b> {{ data.cartRequest.total + addonCalcResult(formPaymentSelected.addon) | currency }} -->
           </p>
         </div>
-        <p style="color: var(--wm-gray-550); font-size: 0.875rem">Envie o comprovante em nosso WhatsApp para agilizar o seu atendimento.</p>
+        <p style="color: var(--wm-gray-550); font-size: 0.875rem text-capitalize">{{ translate.text().send_there_receipt }}.</p>
 
         <button
           class="btn mt-4 d-flex gap-2 align-items-center justify-content-center"
@@ -209,7 +213,7 @@
           style="background-color: var(--wm-gray-100)"
         >
           <img src="/assets/pix.svg" alt="pix logo" style="width: 18px; aspect-ratio: 1/1" />
-          <p class="fw-semibold">Copiar Chave</p>
+          <p class="fw-semibold text-capitalize">{{ translate.text().copy_key }}</p>
         </button>
       </ng-container>
       <ng-container *ngSwitchCase="'picpay'">
@@ -219,7 +223,7 @@
             <b>Total a Transferir:</b> {{ data.cartRequest.total + addonCalcResult(formPaymentSelected.addon) | currency }}
           </p>
         </div>
-        <p style="color: var(--wm-gray-550); font-size: 0.875rem">Envie o comprovante em nosso WhatsApp para agilizar o seu atendimento.</p>
+        <p style="color: var(--wm-gray-550); font-size: 0.875rem text-capitalize">{{ translate.text().send_there_receipt }}</p>
 
         <button
           class="btn mt-4 d-flex gap-2 align-items-center justify-content-center"
@@ -227,14 +231,16 @@
           style="background-color: var(--wm-gray-100)"
         >
           <img src="/assets/picpay-icon.svg" alt="picpay logo" style="width: 18px; aspect-ratio: 1/1" />
-          <p class="fw-semibold">Copiar Chave</p>
+          <p class="fw-semibold text-api text-capitalize">{{ translate.text().copy_key }}</p>
         </button>
       </ng-container>
       <ng-container *ngSwitchDefault>
         <div *ngIf="formPaymentSelected.flags?.length" class="d-flex flex-column">
-          <label class="form-label fw-semibold m-0" style="font-size: 0.75rem" for="transhippment">Selecione a Bandeira:</label>
-          <select class="form-select payment-flags" [(ngModel)]="formPaymentSelected.flag">
-            <option value="" selected disabled>Selecione</option>
+          <label class="form-label fw-semibold m-0 text-capitalize" style="font-size: 0.75rem" for="transhippment"
+            >{{ translate.text().select_the_flag }}:</label
+          >
+          <select class="form-select payment-flags text-capitalize" [(ngModel)]="formPaymentSelected.flag">
+            <option value="" selected disabled>{{ translate.text().select }}</option>
             <ng-container *ngFor="let flag of formPaymentSelected.flags">
               <option [value]="flag.name">
                 {{ flag.name }}
@@ -247,12 +253,14 @@
         *ngIf="!data.clientData.options.hideSecretNumber && formPaymentSelected.payment !== 'picpay' && formPaymentSelected.payment !== 'pix'"
         [ngClass]="formPaymentSelected.payment === 'money' || formPaymentSelected.flags?.length ? 'border-top' : ''"
       >
-        <label class="form-label fw-semibold m-0" for="secretNumber-input" style="font-size: 0.75rem">CPF na nota?</label>
+        <label class="form-label fw-semibold m-0" for="secretNumber-input" style="font-size: 0.75rem"
+          >{{ translate.text().cpf_on_the_receipt }}?</label
+        >
         <input
           type="text"
           class="form-control"
-          placeholder="000.000.000-00"
-          mask="000.000.000-00"
+          [placeholder]="translate.masks().secret_number"
+          [mask]="translate.masks().ssn_mask"
           id="secretNumber-input"
           [(ngModel)]="data.cartRequest.secretNumber"
         />
@@ -268,7 +276,7 @@
     <ng-container *ngIf="!pixInvoice.qrCode">
       <div class="d-flex flex-column align-items-center gap-3">
         <img src="/assets/pix.svg" alt="pix logo" style="width: 42px; aspect-ratio: 1/1" />
-        <p class="fs-4 fw-semibold text-black">Como pagar no PIX!</p>
+        <p class="fs-4 fw-semibold text-black">{{ translate.text().how_to_pay_with_pix }}!</p>
       </div>
       <!-- <ul class="text-black fw-semibold p-0 d-flex flex-column gap-2">
         <ng-container *ngFor="let step of pixSteps; let index = index">
@@ -282,7 +290,7 @@
       </ul> -->
 
       <div class="my-auto">
-        <label for="pix-cpf-input" class="mb-1 fw-semibold form-label">Digite seu CPF para gerar uma chave PIX</label>
+        <label for="pix-cpf-input" class="mb-1 fw-semibold form-label">{{ translate.text().enter_cpf_generate_pix }}</label>
         <input
           type="text"
           inputmode="numeric"
@@ -292,68 +300,68 @@
           mask="000.000.000-00"
           [(ngModel)]="data.customer.secretNumber"
         />
-        <p style="color: var(--wm-gray-550); font-size: 0.75rem">Insira um CPF Válido</p>
+        <p style="color: var(--wm-gray-550); font-size: 0.75rem">{{ translate.text().enter_a_valid_cpf }}</p>
       </div>
       <button class="btn btn-danger mt-auto p-3 w-100 fw-bold" [disabled]="data.customer.secretNumber.length < 11" (click)="createCart()">
-        Gerar Chave Pix
+        {{ translate.text().generate_pix_key }}
       </button>
     </ng-container>
     <ng-container *ngIf="pixInvoice.qrCode">
       <!-- <div class="alert alert-danger mb-2" role="alert">Pagamento ainda pendente. Por favor tente novamente.</div> -->
 
       <div class="d-flex align-items-center flex-column">
-        <p class="fs-5 fw-semibold">Pedido Aguardando Pagamento</p>
+        <p class="fs-5 fw-semibold text-capitalize">{{ translate.text().order_pending_payment }}</p>
         <div *ngIf="!pixRegeneration">
           <!-- <p style="width: 140px; font-size: 12px" class="text-center text-black fw-semibold lh-1 mt-5">O tempo para pagamento acaba em:</p> -->
           <app-countdown [minutes]="5" [radius]="45" />
         </div>
         <img src="data:image/jpeg;base64, {{ pixInvoice.qrCode }}" alt="QR Code Pix" style="width: 125px; aspect-ratio: 1/1" />
 
-        <label for="pixCopyPaste" class="form-label" style="color: var(--wm-gray-550)">Pix Copia e Cola</label>
+        <label for="pixCopyPaste" class="form-label" style="color: var(--wm-gray-550)">{{ translate.text().pix_copy_paste }}</label>
         <div class="input-group mb-3">
           <input class="form-control" id="pixCopyPaste" [(ngModel)]="pixInvoice.copyPaste" readonly />
         </div>
         <button
           id="copy-paste"
-          class="btn btn-primary"
+          class="btn btn-primary text-capitalize"
           type="button"
           #t="ngbTooltip"
           triggers="manual"
           [ngbTooltip]="'Chave PIX copiada!'"
           (click)="copyToClipboardOnline()"
         >
-          Copiar Código
+          {{ translate.text().copy_code }}
           <fa-icon [icon]="faPaste" />
         </button>
       </div>
       <div *ngIf="pixRegeneration" class="h-100 d-flex flex-column justify-content-center align-items-center">
         <fa-icon [icon]="faRotate" role="button" (click)="generatePix({ regenerate: true })" size="4x" class="text-center"></fa-icon>
-        <p class="text-center mt-4">Sua chave PIX expirou. Clique no botão para gerar uma nova.</p>
+        <p class="text-center mt-4">{{ translate.text().pix_key_expired }}.</p>
       </div>
       <!-- <p *ngIf="!pixRegeneration" class="text-center text-black fw-semibold mx-5" style="font-size: 0.875rem">
         Caso a confirmação demorar muito, clique no botão abaixo
       </p> -->
       <p *ngIf="!pixRegeneration" class="text-center text-black fw-semibold mx-5" style="font-size: 0.875rem">
-        Cole este código na opção Pix Copia e Cola do seu banco.
+        {{ translate.text().paste_this_code_your_bank }}.
       </p>
 
-      <button class="btn btn-danger mt-auto p-3 w-100 fw-bold" (click)="verifyPix()">Verificar pagamento do Pix</button>
+      <button class="btn btn-danger mt-auto p-3 w-100 fw-bold" (click)="verifyPix()">{{ translate.text().verify_pix_payment }}</button>
     </ng-container>
   </div>
 </ng-template>
 
 <ng-template #cardChoiceTemplate>
-  <div class="d-flex flex-column flex-grow-1 gap-2">
+  <div class="d-flex flex-column flex-grow-1 gap-2 text-capitalize">
     <div>
-      <h3 id="credit">Dados do Cartão</h3>
+      <h3 id="credit">{{ translate.text().card_details }}</h3>
     </div>
     <div>
-      <label class="form-label" for="holder_name">Nome no Cartão</label>
+      <label class="form-label text-capitalize" for="holder_name">{{ translate.text().name_on_the_card }}</label>
       <!--  [(ngModel)]="billing.card.holder_name" (ngModelChange)="resetCardError()"  -->
       <input type="text" class="form-control" placeholder="Nome que está no cartão" [(ngModel)]="newCard.creditCard.holderName" />
     </div>
     <div>
-      <label class="form-label" for="number">Número do Cartão</label>
+      <label class="form-label text-capitalize" for="number">{{ translate.text().card_number }}</label>
       <div class="input-group mb-3">
         <span class="input-group-text ps-1" style="background-color: white; border-right: none" id="basic-addon1">
           <fa-icon [icon]="creditCardIcon(newCard.creditCard.number[0])" size="lg" class="text-center px-2" />
@@ -373,7 +381,7 @@
     </div>
     <div class="row">
       <div class="col-6">
-        <label class="form-label" for="exp">Validade</label>
+        <label class="form-label" for="exp">{{ translate.text().expiry }}</label>
         <input
           type="text"
           inputmode="numeric"
@@ -401,12 +409,12 @@
       </div>
     </div>
     <div>
-      <label class="form-label" for="cpf">CPF</label>
+      <label class="form-label" for="cpf">{{ translate.text().ssn }}</label>
       <input
         type="text"
         inputmode="numeric"
         class="form-control ps-1"
-        mask="000.000.000-00"
+        [mask]="translate.masks().ssn_mask"
         name="cpf"
         id="cpf"
         placeholder="000.000.000-00"
@@ -414,11 +422,18 @@
       />
     </div>
     <div>
-      <label class="form-label" for="surname">Apelido do cartão (opcional)</label>
-      <input type="text" class="form-control ps-1" name="surname" id="surname" placeholder="Ex: Meu cartão favorito" [(ngModel)]="newCard.surname" />
+      <label class="form-label text-capitalize" for="surname">{{ translate.text().card_nickname }}</label>
+      <input
+        type="text"
+        class="form-control ps-1"
+        name="surname"
+        id="surname"
+        [placeholder]="translate.text().favorite_card_comment"
+        [(ngModel)]="newCard.surname"
+      />
     </div>
-    <div class="mt-5">
-      <h3>Endereço da Fatura</h3>
+    <div class="mt-5 text-capitalize">
+      <h3>{{ translate.text().billing_adress }}</h3>
     </div>
     <!-- <div class="my-3">
         <button class="btn btn-primary" (click)="handleSetSameCartAddress()">Usar endereço de entrega</button>
@@ -426,13 +441,13 @@
     <div class="row">
       <div class="col-8">
         <div>
-          <label class="form-label" for="postalCode">CEP</label>
+          <label class="form-label" for="postalCode">{{ translate.text().zip_code }}</label>
           <input
             type="text"
             class="form-control"
             name="postalCode"
             id="postalCode"
-            mask="00000-000"
+            mask="{{ translate.masks().zipcode }}"
             [(ngModel)]="newCard.creditCardHolderInfo.postalCode"
           />
         </div>
@@ -443,7 +458,7 @@
       </div>
     </div>
     <div>
-      <label class="form-label" for="addressComplement">Complemento (opcional)</label>
+      <label class="form-label text-capitalize" for="addressComplement">{{ translate.text().adress_line_2 }}</label>
       <input class="form-control" name="addressComplement" id="addressComplement" [(ngModel)]="newCard.creditCardHolderInfo.addressComplement" />
     </div>
     <button #createCardButton class="btn btn-danger mt-auto p-3 w-100 fw-bold" (click)="createCardAndSubmitOrder()">

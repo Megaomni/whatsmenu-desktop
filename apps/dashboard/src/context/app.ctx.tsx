@@ -173,7 +173,6 @@ interface AppContextData {
 
   wsCommand: CommandType | null
   setShowNewFeatureModal: (value: boolean | ((val: boolean) => boolean)) => void
-  profileLocale: ProfileOptions['locale']
   currency: (payload: {
     value: number
     symbol?: boolean
@@ -309,13 +308,6 @@ export function AppProvider({ children }: AppProviderProps) {
   )
   const [whatsmenuDesktopDownloaded, setWhatsmenuDesktopDownloaded] =
     useLocalStorage('@whatsmenu:whatsmenu-desktop-downloaded', false)
-  const [profileLocale, setProfileLocale] = useLocalStorage<
-    ProfileOptions['locale']
-  >(
-    '@whatsmenu:profile-locale',
-    { language: 'pt-BR', currency: 'BRL' },
-    'localStorage'
-  )
 
   // const [bluetoothPrinter, setBlueToothPrinter] = useLocalStorage<any>('@default-printer', null)
 
@@ -995,12 +987,11 @@ export function AppProvider({ children }: AppProviderProps) {
   }, [profile, showUpdateSubAccountModal])
 
   useEffect(() => {
-    if (!profile && profileLocale) {
-      i18n.changeLanguage(profileLocale.language)
+    if (!profile?.id) {
+      i18n.changeLanguage(user?.controls?.language)
     }
     if (profile?.options?.locale) {
       i18n.changeLanguage(profile?.options?.locale.language)
-      setProfileLocale(profile?.options?.locale)
     }
   }, [profile])
 
@@ -1086,8 +1077,6 @@ export function AppProvider({ children }: AppProviderProps) {
             currency,
             // overlaySpinnerConfig,
             // setOverlaySpinnerConfig,
-
-            profileLocale,
           }}
         >
           <CartsProvider>
@@ -1272,7 +1261,7 @@ export function AppProvider({ children }: AppProviderProps) {
                     </span>
                   </Alert>
                 )}
-                {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
+                {/* {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
                   <Alert
                     variant={`${invoicePending.invoice?.overdue ? 'danger' : 'warning'}`}
                     className="position-fixed w-100 m-0 text-center"
@@ -1294,7 +1283,7 @@ export function AppProvider({ children }: AppProviderProps) {
                         : t('message_menu_locked')}
                     </a>
                   </Alert>
-                ) : null}
+                ) : null} */}
                 <Footer
                   sideOpen={showSidebar}
                   haveInvoice={invoicePending.invoice}

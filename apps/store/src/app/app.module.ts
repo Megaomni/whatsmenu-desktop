@@ -53,6 +53,9 @@ import { TableComponent } from './table/table.component'
 // import { DialogConfirmComponent } from './dialog-confirm/dialog-confirm.component';
 import { NgIf, registerLocaleData } from '@angular/common'
 import localePt from '@angular/common/locales/pt'
+import localeFrCH from '@angular/common/locales/fr-CH'
+import localePtPT from '@angular/common/locales/pt-PT'
+import localeArAe from '@angular/common/locales/ar-AE'
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet'
 import { MatSelectModule } from '@angular/material/select'
 import { ServiceWorkerModule } from '@angular/service-worker'
@@ -111,12 +114,15 @@ import { PdvComponent } from './pdv/pdv.component'
 import { StatusComponent } from './status/status.component'
 import { ToastsContainerComponent } from './toasts-container/toasts-container.component'
 import { NotifcationPermissionComponent } from './modals/notifcation-permission/notifcation-permission.component'
-import { LatestRequestsComponent } from './modals/latest-requests/latest-requests.component';
+import { LatestRequestsComponent } from './modals/latest-requests/latest-requests.component'
 import { CashbackComponent } from './modals/cashback/cashback.component'
 import { TranslateService } from './translate.service'
 
 // Register the localization
 registerLocaleData(localePt, 'pt-BR')
+registerLocaleData(localeFrCH, 'fr-CH')
+registerLocaleData(localePtPT, 'pt-PT')
+registerLocaleData(localeArAe, 'ar-AE')
 
 const DEFAULT_SWIPER_CONFIG: SwiperConfigInterface = {
   direction: 'horizontal',
@@ -258,7 +264,7 @@ export let options: Partial<IConfig> | (() => Partial<IConfig>)
       provide: DEFAULT_CURRENCY_CODE,
       deps: [TranslateService],
       useValue: localStorage.currency,
-      multi: true
+      multi: true,
     },
   ],
   bootstrap: [AppComponent],

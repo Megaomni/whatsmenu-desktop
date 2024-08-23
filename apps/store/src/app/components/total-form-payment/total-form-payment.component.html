@@ -30,31 +30,43 @@
                 <div class="flex-grow-1">
                   <ul class="list-unstyled small">
                     <li class="text-black-50 d-flex justify-content-between">
-                      <span>Pedido:</span>
+                      <span class="text-capitalize">{{ translate.text().order }}:</span>
                       <div class="d-flex gap-2">
                         <span>+ {{ convertToNumber(cartRequest.total) }}</span>
                       </div>
                     </li>
-                    <li *ngIf="cartRequest.addressId != null && cartRequest.typeDelivery != null" class="text-black-50 d-flex justify-content-between">
-                      <span>Entrega:</span>
+                    <li
+                      *ngIf="cartRequest.addressId != null && cartRequest.typeDelivery != null"
+                      class="text-black-50 d-flex justify-content-between"
+                    >
+                      <span class="text-capitalize">{{ translate.text().delivery }}:</span>
                       <div class="d-flex gap-2">
-                        
                         <span>
-                          {{ cartRequest.cupom?.type === 'freight' || cartRequest.taxDelivery === 0 ? 'GRÁTIS' : "+ " + convertToNumber(cartRequest.taxDelivery) }}
+                          {{
+                            cartRequest.cupom?.type === 'freight' || cartRequest.taxDelivery === 0
+                              ? translate.text().free_comment_up
+                              : '+ ' + convertToNumber(cartRequest.taxDelivery)
+                          }}
                         </span>
                       </div>
                     </li>
                     <li class="text-black-50 d-flex justify-content-between" *ngIf="addonStatus()">
-                      <span>{{ addonType() === '+' ? 'Taxa' : 'Desc.' }} {{ cartRequest.formsPayment[0].label }}:</span>
+                      <span
+                        >{{ addonType() === '+' ? translate.text().fee_comment : translate.text().disc }}
+                        {{ translate.text()[cartRequest.formsPayment[0].payment] }}:</span
+                      >
                       <span>{{ addonType() }} {{ convertToNumber(addonValue()) }}</span>
                     </li>
                     <li class="text-black-50 d-flex justify-content-between" *ngIf="cartRequest.cupom && cartRequest.cupom.type !== 'freight'">
-                      <span>Cupom:</span>
+                      <span class="text-capitalize">{{ translate.text().coupon }}:</span>
                       <span>- {{ convertToNumber(calcCupom()) }}</span>
                     </li>
                     <li class="text-black-50 d-flex justify-content-between" *ngIf="cashback()">
                       <span>{{ cashback().label }}:</span>
-                      <span>- {{ convertToNumber(cashback().value > this.cartService.totalCartFinalValue({ cartRequest, formPayment: firstFormPayment() }) ? this.cartService.totalCartFinalValue({ cartRequest, formPayment: firstFormPayment() }) : cashback().value) }}</span>
+                      <span
+                        >-
+                        {{ convertToNumber(cashback().value > this.cartService.totalCartFinalValue({ cartRequest, formPayment: firstFormPayment() }) ? this.cartService.totalCartFinalValue({ cartRequest, formPayment: firstFormPayment() }) : cashback().value) }}</span
+                      >
                     </li>
                     <li class="fw-bold text-black-50 d-flex justify-content-between">
                       <span>TOTAL</span>

@@ -2274,3 +2274,18 @@ table.last tbody tr:last-child {
 .no-active-mini-tab {
   color: #637381
 }
+
+/*--------------------------------------------------------------
+# BUTTON FIXED ON FOOTER
+--------------------------------------------------------------*/
+
+.btn-footer {
+  background: #DFE6E9;
+  bottom:-100px !important;
+  transition: bottom 0.7s ease-out;
+}
+
+.btn-footer-show {
+  background: #DFE6E9;
+  transition: bottom 0.7s ease-out;
+}

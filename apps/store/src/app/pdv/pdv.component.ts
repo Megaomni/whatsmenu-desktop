@@ -19,7 +19,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { NgbNavChangeEvent } from '@ng-bootstrap/ng-bootstrap'
 import { formatDistanceToNow } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { DateTime } from 'luxon'
 import Command from 'src/classes/command'
 import Table, { TableOpened } from 'src/classes/table'
@@ -52,6 +51,8 @@ import { StoreService } from '../services/store/store.service'
 import { ProfileOptionsType } from '../profile-type'
 import { Observable } from 'rxjs'
 import { CustomerType } from '../customer-type'
+import { TranslateService } from '../translate.service'
+import { enUS, ptBR } from 'date-fns/locale'
 // import { encodeTextURL } from '../../utils/wm-functions'
 
 @Component({
@@ -120,7 +121,8 @@ export class PdvComponent implements OnInit, AfterViewChecked {
     private route: ActivatedRoute,
     private websocket: WebsocketService,
     private storeService: StoreService,
-    private electronService: ElectronService
+    private electronService: ElectronService,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -210,7 +212,7 @@ export class PdvComponent implements OnInit, AfterViewChecked {
           }
         }
 
-        this.context.packageLabel = this.context.profile.options.package.label2 ? 'Agendamento' : 'Encomenda'
+        this.context.packageLabel = this.context.profile.options.package.label2 ? this.translate.text().scheduling : this.translate.text().package
         // AINDA ALTERAR
 
         // this.context.profile.categories = this.context.profile.categories.filter(category => {
@@ -611,7 +613,10 @@ export class PdvComponent implements OnInit, AfterViewChecked {
       return
     } else {
       if (!this.cart.length && !this.cartPizza.length) {
-        return this.toastService.show(`Carrinho Vazio!`, { classname: 'bg-warning text-black text-center pos middle-center', delay: 3000 })
+        return this.toastService.show(`${this.translate.text().cart_empty}!`, {
+          classname: 'bg-warning text-black text-center pos middle-center',
+          delay: 3000,
+        })
       }
       this.matDialog
         .open(CartResumeComponent, {
@@ -918,9 +923,9 @@ export class PdvComponent implements OnInit, AfterViewChecked {
     this.cartPizza = []
   }
 
-  /** Retorna data passada no formato dd/MM/yyyy */
+  /** Retorna data passada no formato dd/MM/yyyy ou MM/dd/yyyy em en-US*/
   public requestDate(date: string): string {
-    return DateTime.fromSQL(date).toFormat('dd/MM/yyyy')
+    return DateTime.fromSQL(date).toFormat(this.translate.masks().date_mask)
   }
 
   /** Limpa todos os dados no pedido */
@@ -952,7 +957,7 @@ export class PdvComponent implements OnInit, AfterViewChecked {
   public checkCashier(open?: boolean) {
     if (DateTime.local().diff(DateTime.fromSQL(this.context.activeBartender?.controls.activeCashier?.created_at), 'days').days > 1) {
       this.openAlert({
-        message: 'Existe um caixa aberto há mais de 24 horas e ele será encerrado',
+        message: this.translate.alert().register_open_24,
         onClose: async () => {
           await this.api.closeCashier({
             bartenderId: this.context.activeBartender?.id ?? null,
@@ -1138,10 +1143,23 @@ export class PdvComponent implements OnInit, AfterViewChecked {
     return item.id
   }
 
+  // Mapeamento das linguagens para as locales do date-fns
+  localeMap = {
+    'en-US': enUS,
+    'pt-BR': ptBR,
+  }
+
+  // Função para obter a locale com base na linguagem do usuário
+  getCurrentLocale = () => {
+    const userLocale = this.context.profile?.options.locale?.language
+    return this.localeMap[userLocale] || enUS
+  }
+
   /** Retorna a diferença de tempo da data passada */
   public diffTime(time: string): string {
+    const locale = this.getCurrentLocale()
     return formatDistanceToNow(new Date(time), {
-      locale: ptBR,
+      locale: locale,
       addSuffix: true,
     })
   }

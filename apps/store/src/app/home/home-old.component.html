@@ -1,9 +1,9 @@
 <div class="grid" *ngIf="!clientData">
   <div class="row flex-align-center" style="height: 100vh">
     <div class="cell flex-align-self-center text-center">
-      <m4-activity style="margin: 0 auto" activity-style="color" type="metro"></m4-activity>
+      <m4-activity class="text-capitalize" style="margin: 0 auto" activity-style="color" type="metro"></m4-activity>
       <br />
-      Carregando
+      {{ translate.text().loading }}
     </div>
   </div>
 </div>
@@ -37,7 +37,7 @@
       style="z-index: 9"
       data-bs-toggle="modal"
       data-bs-target="#horario"
-      ><i class="bi bi-shop"></i> Fechado</a
+      ><i class="bi bi-shop text-capitalize"></i> {{ translate.text().closed }}</a
     >
   </section>
 
@@ -106,7 +106,7 @@
             : {}
         "
       >
-        {{ clientData.options.package.label2 === 'false' || !clientData.options.package.label2 ? 'Encomendas' : 'Agendamento' }}
+        {{ clientData.options.package.label2 === 'false' || !clientData.options.package.label2 ? translate.text().package : translate.text().scheduling }}
       </button>
     </div>
 
@@ -155,16 +155,16 @@
                   (parse(clientData.options.package.shippingDelivery.active) && viewContentAlternate === 'package' && !table)
                 "
               >
-                <b><span class="mif-money"></span> Taxa de Entrega</b>
-                <p *ngIf="!timeDelivery" style="cursor: pointer" (click)="openAddressCalc()">Calcular</p>
+                <b class="text-capitalize"><span class="mif-money"></span> {{ translate.text().delivery_fee }}</b>
+                <p *ngIf="!timeDelivery" style="cursor: pointer" (click)="openAddressCalc()">{{ translate.text().calculate }}</p>
                 <p *ngIf="taxDeliveryValue !== null && taxDeliveryValue >= 0">
                   {{ taxDeliveryValue === 0 ? 'Grátis' : (taxDeliveryValue | currency) }}
                 </p>
-                <p *ngIf="taxDeliveryValue === null">A consultarr</p>
+                <p *ngIf="taxDeliveryValue === null">{{ translate.text().to_consult }}</p>
               </div>
             </div>
             <div *ngIf="viewContentAlternate === 'package' && !parse(clientData.options.package.shippingDelivery.active) && !table">
-              <b>Somente retirada no local</b>
+              <b>{{ translate.text().pickup_only }}</b>
             </div>
             <!-- <div *ngSwitchCase="'package'">
                             <div *ngIf="parse(clientData.options.package.shippingDelivery.active) && !table">
@@ -188,7 +188,7 @@
             </p>
           </b>
           <div *ngIf="table">
-            <b><span>Mesa</span></b>
+            <b><span class="text- capitalize">{{ translate.text().table }}</span></b>
             <p>{{ table.name }}</p>
           </div>
         </div>
@@ -214,17 +214,17 @@
           </div>
           <div *ngIf="!table && viewContentAlternate === 'package'">
             <div>
-              <b><span class="mif-calendar"></span>&nbsp;Entrega</b>
+              <b><span class="mif-calendar text-capitalize"></span>&nbsp;{{ translate.text().shipping }}</b>
               <div [ngSwitch]="datesAndHoursLength">
                 <div [ngSwitch]="packageDate" *ngSwitchCase="true" (click)="datesAndHoursLength ? choiceDate() : false" style="cursor: pointer">
-                  <p *ngSwitchCase="null">Escolher uma data</p>
+                  <p *ngSwitchCase="null">{{ translate.text().choose_date }}</p>
                   <p *ngSwitchDefault>
                     {{ returnMomentDate(packageDate, 'DD/MM/yyyy HH:mm') }}
                   </p>
                 </div>
                 <div *ngSwitchCase="false" class="text-upper">
                   <m4-icon icon="spinner" m4-animation="spin"></m4-icon>
-                  carregando datas...
+                  {{ translate.text().loading_dates }}...
                 </div>
               </div>
             </div>
@@ -233,7 +233,7 @@
             <!-- <p *ngIf="timeDelivery">{{ timeFreightText() }}</p> -->
           </div>
           <div *ngIf="table">
-            <b><span>Comanda</span></b>
+            <b><span>{{ translate.text().order_slip }}</span></b>
             <p>{{ commandSession && commandSession.name }}</p>
           </div>
         </div>
@@ -480,9 +480,9 @@
   >
     <div class="container">
       <div *ngIf="filterProducts().length == 0 && filterinput.value" style="height: 500px; width: 100%; text-align: center">
-        <h1 style="font-size: 3rem; margin-top: 200px; line-height: 58px">Nenhum produto encontrado</h1>
+        <h1 class="text-capitalize" style="font-size: 3rem; margin-top: 200px; line-height: 58px">{{ translate.text().no_products_found }</h1>
         <span (click)="clearSearchFilter()" style="cursor: pointer; color: #777">
-          <p>Clique aqui para ver a lista completa de produtos</p>
+          <p class="text-capitalize">{{ translate.text().see_full_list }}</p>
         </span>
       </div>
       <!-- CASE ABA DE DELIVERY  -->
@@ -492,7 +492,7 @@
             <mat-spinner [color]="'warn'"></mat-spinner>
           </div>
           <div *ngIf="clientCategories === null" [ngStyle]="{ 'display': 'flex', 'justify-content': 'center' }">
-            <h1 style="font-size: 3rem; margin-top: 50px; text-align: center; line-height: 1.2">Desculpe, nenhum produto encontrado!</h1>
+            <h1 style="font-size: 3rem; margin-top: 50px; text-align: center; line-height: 1.2">{{ translate.text().no_products_found }}!</h1>
           </div>
           <div *ngFor="let category of clientCategories">
             <div class="grid" *ngIf="!filterinput.value && filterProducts().length === 0" [ngStyle]="{ padding: '5px' }">
@@ -516,6 +516,7 @@
                   *ngFor="let item of category.products"
                 >
                   <h4
+                    class="text-capitalize"
                     *ngIf="!item.status"
                     [ngStyle]="{
                       'color': 'red',
@@ -527,7 +528,7 @@
                       'text-transform': 'uppercase'
                     }"
                   >
-                    Produto Indisponível
+                    {{ translate.text().product_unavilable}}
                   </h4>
                   <div [ngStyle]="{ opacity: !item.status && 0.2 }">
                     <a class="product-details" id="product-{{ viewContentAlternate }}-{{ item.id }}" (click)="openModalProduct2(item, category)">
@@ -575,6 +576,7 @@
                 <div *ngFor="let size of category.product.sizes" class="row product">
                   <div *ngFor="let item of size.flavors" class="cell-sm-full cell-md-6 cell-lg-6" [ngStyle]="{ position: 'relative' }">
                     <h4
+                      class="text-capitalize"
                       *ngIf="!size.status"
                       [ngStyle]="{
                         'color': 'red',
@@ -586,7 +588,7 @@
                         'text-transform': 'uppercase'
                       }"
                     >
-                      Tamanho Indisponível
+                      {{ translate.text().size_unavilable }}
                     </h4>
                     <div [ngStyle]="{ opacity: !size.status && 0.2 }">
                       <a class="product-details" (click)="openModalPizza(category.product, size.name, size.covers[item - 1], item, category, size)">
@@ -599,7 +601,7 @@
                           <p
                             style="overflow: hidden; text-overflow: ellipsis; -moz-box-orient: vertical; display: -webkit-box; -webkit-line-clamp: 2"
                           >
-                            {{ item }} {{ item === 1 ? 'sabor' : 'sabores' }}
+                            {{ item }} {{ item === 1 ? translate.text().flavor_comment : translate.text().flavors_comment }}
                           </p>
                           <!-- <p><span class="price" *ngIf="item.value > 0" >{{ item.value | currency }}</span></p> -->
                         </span>
@@ -736,7 +738,7 @@
             </div>
           </div>
           <div class="cell-4 cell-sm-4 cell-md-4 cell-lg-4 d-flex flex-self-center text-center">
-            <strong style="margin: 0 auto">Fechar Pedido</strong>
+            <strong class="text-capitalize" style="margin: 0 auto">{{ translate.text().close_order }}</strong>
           </div>
           <div class="cell-4 cell-sm-4 cell-md-4 cell-lg-4 d-flex flex-self-center">
             <div class="ml-auto text-bold">{{ requestTotalValue() | currency }}</div>
@@ -753,11 +755,11 @@
     <div dialog-title></div>
     <div dialog-content>
       <div class="dialog-box text-center">
-        <a href="#0">Editar Item</a>
+        <a class="text-capitalize" href="#0">{{ translate.text().edit_item }}</a>
         <hr />
-        <a href="#0">Editar Observações</a>
+        <a class="text-capitalize" href="#0">{{ translate.text().edit_notes }}</a>
         <hr />
-        <a href="#0">Remover Item</a>
+        <a class="text-capitalize" href="#0">{{ translate.text().remove_item }}</a>
       </div>
     </div>
   </m4-dialog>

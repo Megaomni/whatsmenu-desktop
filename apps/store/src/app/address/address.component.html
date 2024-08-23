@@ -1,7 +1,7 @@
 <div class="d-flex flex-column justify-content-between bg-5" [ngStyle]="{ height: '100%' }">
   <div dialog-title>
     <div class="modal-header">
-      <h5 class="modal-title pe-2" id="exampleModalLabel">Endereço de Entrega</h5>
+      <h5 class="modal-title pe-2 text-capitalize" id="exampleModalLabel">{{ translate.text().delivery_address }}</h5>
       <!-- <div *ngIf="addressRevalidation && data.clientData.deliveryLocal">
             <button *ngIf="data.clientData.deliveryLocal" btn-style="alert" class="btn-deliveryLocal"
                 (click)="close({deliveryLocal: true})">Retirar no Local</button>
@@ -22,36 +22,38 @@
         <div *ngIf="!hiddenCEP" class="row mb-1 gap-2">
           <div class="col-12">
             <div class="mb-1">
-              <label for="">CEP</label>
-              <input type="tel" mask="00000-000" class="form-control" (keyup)="searchZipCode()" [(ngModel)]="address.zipcode" />
+              <label for="">{{ translate.text().zip_code }}</label>
+              <input type="tel" mask="{{ translate.masks().zipcode }}" class="form-control" (keyup)="searchZipCode()" [(ngModel)]="address.zipcode" />
             </div>
             <div>
-              <button class="btn btn-link" (click)="showFields = true" *ngIf="!showFields && !address.city">Não sei meu CEP</button>
+              <button class="btn btn-link" (click)="showFields = true" *ngIf="!showFields && !address.city">
+                {{ translate.text().dont_know_my_zip }}
+              </button>
             </div>
           </div>
         </div>
         <div *ngIf="hiddenCEP && !address.city" class="row gap-2">
           <div class="col-12">
-            <label for="">Cidade</label>
+            <label for="">{{ translate.text().city }}</label>
             <input class="form-control" [(ngModel)]="address.city" />
           </div>
         </div>
         <div *ngIf="address.city || showFields" class="gap-2">
           <div class="row mb-1">
             <div class="col-12">
-              <label for="">Endereço</label>
+              <label class="text-capitalize" for="">{{ translate.text().address }}</label>
               <input class="form-control" [(ngModel)]="address.street" />
             </div>
           </div>
           <div class="row mb-1">
             <div class="col-12">
-              <label for="">Nº</label>
+              <label for="">{{ translate.text().number }}</label>
               <div class="input-group">
                 <input class="form-control" [disabled]="sn" type="text" [(ngModel)]="address.number" />
                 <div class="input-group-text">
                   <div class="d-flex align-items-center form-check">
                     <input class="form-check-input mt-0" id="semnumero" type="checkbox" (change)="changeSN()" [(ngModel)]="sn" />
-                    <label class="form-check-label ms-1" for="semnumero"> Sem número </label>
+                    <label class="form-check-label ms-1 text-capitalize" for="semnumero"> {{ translate.text().no_number }} </label>
                   </div>
                 </div>
               </div>
@@ -60,17 +62,17 @@
 
           <div class="row mb-1">
             <div class="col-12">
-              <label for="">Complemento</label>
+              <label for="">{{ translate.text().address_complement }}</label>
               <input class="form-control" [(ngModel)]="address.complement" />
             </div>
           </div>
           <div class="row mb-1">
             <div class="col-12">
-              <label for="">Ponto de Referencia</label>
+              <label class="text-capitalize" for="">{{ translate.text().reference_point }}</label>
               <input class="form-control" [(ngModel)]="address.reference" />
             </div>
           </div>
-          <div class="row mb-1" *ngIf="address.city || showFields">
+          <div class="row mb-1" *ngIf="translate.shouldShowLocale() || address.city">
             <div class="col-12">
               <label for="">UF</label>
               <select class="form-select" disabled [(ngModel)]="address.uf">
@@ -106,13 +108,13 @@
           </div>
           <div class="row mb-1" *ngIf="address.city || showFields">
             <div class="col-12">
-              <label for="">Cidade</label>
+              <label class="text-capitalize" for="">{{ translate.text().city }}</label>
               <input class="form-control" [(ngModel)]="address.city" />
             </div>
           </div>
           <div class="row mb-1" *ngIf="address.city || showFields">
             <div class="col-12">
-              <label for="">Bairro</label>
+              <label class="text-cpaitalize" for="">{{ translate.text().neighborhood }}</label>
               <input class="form-control" [(ngModel)]="address.neighborhood" />
             </div>
           </div>
@@ -131,19 +133,19 @@
                 </div> -->
         <div class="row mb-3" *ngIf="address.neighborhood">
           <div class="col-12">
-            <label for="">Endereço</label>
+            <label class="text-capitalize" for="">{{ translate.text().address }}</label>
             <input class="form-control" [(ngModel)]="address.street" />
           </div>
         </div>
         <div class="row mb-3" *ngIf="address.neighborhood">
           <div class="col-12">
-            <label for="">Nº</label>
+            <label for="">{{ translate.text().number }}</label>
             <div class="input-group">
               <input class="form-control" [disabled]="sn" type="number" [(ngModel)]="address.number" />
               <div class="input-group-text">
                 <div class="d-flex align-items-center form-check">
                   <input class="form-check-input mt-0" id="semnumero" type="checkbox" (change)="changeSN()" [(ngModel)]="sn" />
-                  <label class="form-check-label ms-1" for="semnumero"> Sem número </label>
+                  <label class="form-check-label ms-1 text-capitalize" for="semnumero"> {{ translate.text().no_number }} </label>
                 </div>
               </div>
             </div>
@@ -151,11 +153,11 @@
         </div>
         <div class="row mb-3" *ngIf="address.neighborhood">
           <div class="col-12">
-            <label for="">Complemento</label>
+            <label class="text-capitalize" for="">{{ translate.text().address_complement }}</label>
             <input class="form-control" [(ngModel)]="address.complement" />
           </div>
         </div>
-        <div class="row mb-3" *ngIf="address.neighborhood">
+        <div class="row mb-3" *ngIf="(translate.shouldShowLocale() && address.neighborhood) || showFields">
           <div class="col-12">
             <label for="">UF</label>
             <select class="form-select" [(ngModel)]="address.uf">
@@ -191,27 +193,27 @@
         </div>
         <div class="row mb-3">
           <div class="col-12">
-            <label for="">Cidade</label>
+            <label class="text-capitalize" for="">{{ translate.text().city }}</label>
             <select class="form-select" [(ngModel)]="address.city" (change)="loadNeighborhoods()">
-              <option value="" selected disabled>Selecione</option>
+              <option class="text-capitalize" value="" selected disabled>{{ translate.text().select }}</option>
               <option *ngFor="let item of data.clientData.taxDelivery" value="{{ item.city }}">{{ item.city }}</option>
-              <option *ngIf="!data.clientData.options.expose"  value="others">Outras</option>
+              <option *ngIf="!data.clientData.options.expose" class="text-capitalize" value="others">{{ translate.text().other_s }}</option>
             </select>
           </div>
         </div>
         <div class="row mb-3">
           <div class="col-12">
-            <label for="">Bairro</label>
+            <label class="text-capitalize" for="">{{ translate.text().neighborhood }}</label>
             <select class="form-select" [(ngModel)]="address.neighborhood" [disabled]="!address.city">
-              <option value="">Selecione</option>
+              <option class="text-capitalize" value="">{{ translate.text().select }}</option>
               <option *ngFor="let item of neighborhoods" value="{{ item.name }}">{{ item.name }}</option>
-              <option *ngIf="!data.clientData.options.expose" value="others">Outros</option>
+              <option *ngIf="!data.clientData.options.expose" class="text-capitalize" value="others">{{ translate.text().other_s }}</option>
             </select>
           </div>
         </div>
         <div class="row mb-3" *ngIf="address.neighborhood">
           <div class="col-12">
-            <label for="">Ponto de Referencia</label>
+            <label class="text-capitalize" for="">{{ translate.text().reference_point }}</label>
             <input class="form-control" [(ngModel)]="address.reference" />
           </div>
         </div>
@@ -219,7 +221,9 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="align-items-center justify-content-end p-2">
-    <button class="btn btn-primary form-control" (click)="close()" [disabled]="validation() !== 'Entregar neste endereço'">{{ validation() }}</button>
+    <button class="btn btn-primary form-control" (click)="close()" [disabled]="validation() !== translate.text().deliver_this_address">
+      {{ validation() }}
+    </button>
     <!-- <div dialog-actions class="pt-3 pb-3 text-center"> -->
     <!-- <button class="fluid" m4-button btn-style="alert" [rounded]="true" (click)="saveAddress();sendMessage()">Finalizar Pedido</button> -->
     <!-- <a class="fluid button alert" target="_blank" m4-button btn-style="alert" href="https://wa.me/{{data.clientData.whatsapp}}?text={{getMessage()}}" (click)="saveAddress();">Enviar Pedido</a> -->

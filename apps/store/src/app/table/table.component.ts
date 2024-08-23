@@ -6,6 +6,7 @@ import { ApiService } from '../services/api/api.service'
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog'
 import { AlertComponent } from '../modals/alert/alert.component'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { TranslateService } from '../translate.service'
 
 @Component({
   selector: 'app-table',
@@ -14,7 +15,13 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 })
 export class TableComponent implements OnInit, AfterViewInit {
   @ViewChild('newCommandNameInput') newCommandNameInput: ElementRef
-  constructor(public dialogRef: MatDialogRef<any>, private api: ApiService, private matDialog: MatDialog, @Inject(MAT_DIALOG_DATA) public data) {}
+  constructor(
+    public translate: TranslateService,
+    public dialogRef: MatDialogRef<any>,
+    private api: ApiService,
+    private matDialog: MatDialog,
+    @Inject(MAT_DIALOG_DATA) public data
+  ) {}
 
   tableCommands: string[]
   newCommand: boolean
@@ -101,7 +108,7 @@ export class TableComponent implements OnInit, AfterViewInit {
 
         sessionStorage.setItem('command', JSON.stringify(reqCommand))
         localStorage.removeItem(`table_cart_${this.clientData.slug}`)
-        this.dialogRef.close({ send: true, command: reqCommand})
+        this.dialogRef.close({ send: true, command: reqCommand })
       }
     } catch (error) {
       if (error.status === 403) {

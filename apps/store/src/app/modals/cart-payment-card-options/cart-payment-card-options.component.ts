@@ -3,6 +3,7 @@ import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bott
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { faChevronLeft, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { CustomerCardTypeWithCodeAndId } from '../cart-payment/cart-payment.component';
+import { TranslateService } from 'src/app/translate.service';
 
 type CloseAction = 'update' | 'delete'
 export type CartPaymentCardOptionsComponentData = { card: CustomerCardTypeWithCodeAndId }
@@ -25,6 +26,7 @@ export class CartPaymentCardOptionsComponent implements OnInit {
   constructor(
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: CartPaymentCardOptionsComponentData,
     private bottomSheetRef: MatBottomSheetRef<any, CartPaymentCardOptionsComponentReturn>,
+    public translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

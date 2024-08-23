@@ -6,6 +6,7 @@ import { CartPizza } from 'src/app/cart-pizza';
 import { CartType } from 'src/app/cart-type';
 import { CartService } from 'src/app/services/cart/cart.service';
 import { ContextService } from 'src/app/services/context/context.service';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-menu-nav',
@@ -22,6 +23,7 @@ export class MenuNavComponent implements OnInit, AfterViewChecked {
   constructor(
     public context: ContextService,
     public cartService: CartService,
+    public translate: TranslateService,
   ) { }
   @Input() bartender: BartenderType
   @Input() cart: CartType[]

@@ -20,6 +20,7 @@ import { MatKeyboardComponent, MatKeyboardRef, MatKeyboardService } from 'angula
 import { NgControl, NgModel } from '@angular/forms'
 import { CartService } from '../services/cart/cart.service'
 import { ContextService } from '../services/context/context.service'
+import { TranslateService } from '../translate.service'
 
 @Component({
   selector: 'app-bartender',
@@ -93,7 +94,8 @@ export class BartenderComponent implements OnInit, AfterViewChecked {
     public cartService: CartService,
     private keyboardService: MatKeyboardService,
     private changeDetector: ChangeDetectorRef,
-    public context: ContextService
+    public context: ContextService,
+    public translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

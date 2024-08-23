@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>Atenção!</h1>
+<h1 class="text-capitalize" mat-dialog-title>{{ translate.text().attention }}!</h1>
 <mat-dialog-content>
-    <p class="p-3">Complete o seu pedido com os itens obrigatórios:</p>
+    <p class="p-3 text-capitalize">{{ translate.text(). complete_order_mandotory }}:</p>
     <ul>
         <li *ngFor="let item of itens">{{ item }}</li>
     </ul>

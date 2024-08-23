@@ -3,7 +3,7 @@
   <div mat-dialog-title class="d-flex align-items-center justify-content-between" style="margin: -1.5rem -1.5rem 0;">
     <div class="d-flex align-items-center gap-3">
       <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close(true)"></fa-icon>
-      <h3 class="m-0 fs-5">{{ data.type === 'create' ? 'Cadastro de' : 'Alterar' }} Cliente</h3>
+      <h3 class="m-0 fs-5 text-capitalize">{{ data.type === 'create' ? translate.text().registration_comment : translate.text().change_comment }} {{ translate.text().customer }}</h3>
     </div>
   </div>
   <mat-dialog-content *ngIf="!loading" class="flex-fill">
@@ -11,24 +11,24 @@
       <div class="container w-100 gap-2 mt-3" style="font-size: 1rem;">
         <div class="row">
           <div class="col-6">
-            <label class="mb-2">Nome</label>
-            <input type="text" class="form-control" placeholder="Nome do cliente" name="name" [(ngModel)]="name">
+            <label class="mb-2 text-capitalize">{{ translate.text().name }}</label>
+            <input type="text" class="form-control" [placeholder]="translate.text().customer_name_comment" name="name" [(ngModel)]="name">
           </div>
           <div class="col-6">
             <label class="mb-2">Tel./Whats</label>
-            <input type="text" class="form-control" placeholder="00 90000-0000" name="whatsapp"
-              [mask]="whatsapp?.length > 10 ? '(00) 00000-0000' : '(00) 0000-00009'" [(ngModel)]="whatsapp">
+            <input type="text" class="form-control" [placeholder]="translate.text().number_model_comment" name="whatsapp"
+              [mask]="whatsapp?.length > 10 ? translate.masks().cell : translate.masks().cell" [(ngModel)]="whatsapp">
           </div>
         </div>
         <div class="row mt-3">
           <div class="col-6">
-            <label class="mb-2">CPF</label>
-            <input type="text" class="form-control" mask="000.000.000-00" placeholder="000.000.000-00"
+            <label class="mb-2">{{ translate.text().ssn }}</label>
+            <input type="text" class="form-control" [mask]="translate.text().ssn_model_comment" [placeholder]="translate.text().ssn_model_comment"
               name="secretNumber" [(ngModel)]="secretNumber">
           </div>
           <div class="col-6">
             <label class="mb-2">Email</label>
-            <input type="email" class="form-control" placeholder="cliente@exemplo.com" name="email" [(ngModel)]="email">
+            <input type="email" class="form-control" [placeholder]="translate.text().email_example_comment" name="email" [(ngModel)]="email">
           </div>
         </div>
       </div>
@@ -45,25 +45,25 @@
           *ngTemplateOutlet="newAddressTemplate; context: { address: address, index: index, type: 'create' }"></ng-container>
       </div>
       <div class="d-flex justify-content-end my-4" style="margin-right: 0.75rem;">
-        <button type="button" class="btn btn-primary" (click)="addAddress()">
-          Adicionar {{ addresses.length || (data?.client && data.client.addresses?.length) ? 'Mais um ' : null
-          }}Endereço
+        <button type="button" class="btn btn-primary text-capitalize" (click)="addAddress()">
+          {{ translate.text().add }} {{ addresses.length || (data?.client && data.client.addresses?.length) ? translate.text().one_more_comment : null
+          }}{{ translate.text().address }}
         </button>
       </div>
     </form>
   </mat-dialog-content>
   <mat-dialog-actions *ngIf="!loading" class="d-flex justify-content-between">
-    <button class="btn  btn-outline-secondary" style="color: var(--wm-gray-300);" (click)="close(true)">Cancelar</button>
-    <button type="submit" form="clientRegisterForm" class="btn"
-      style="color: var(--wm-white); background-color: var(--wm-green-500);">Salvar</button>
+    <button class="btn  btn-outline-secondary text-capitalize" style="color: var(--wm-gray-300);" (click)="close(true)">{{ translate.text().cancel }}</button>
+    <button type="submit" form="clientRegisterForm" class="btn text-capitalize"
+      style="color: var(--wm-white); background-color: var(--wm-green-500);">{{ translate.text().save }}</button>
   </mat-dialog-actions>
   <div *ngIf="loading" class="flex-fill"><app-loading /></div>
   <ng-template #newAddressTemplate let-address="address" let-index="index" let-type="type">
     <div class="d-flex align-items-center gap-2">
       <!-- <input type="radio" [id]="'new-address-' + index" name="address-store" [checked]="address.id === data.addressId"
       class="form-check-input" [(ngModel)]="addressId" [value]="address.id"> -->
-      <label style="font-size: 1.125rem;">
-        ENDEREÇO {{ (data?.client && data.client.addresses && type === "create" ? data.client.addresses.length : 0) +
+      <label class="text-uppercase" style="font-size: 1.125rem;">
+        {{ translate.text().address }} {{ (data?.client && data.client.addresses && type === "create" ? data.client.addresses.length : 0) +
         (index + 1) }}
       </label>
     </div>

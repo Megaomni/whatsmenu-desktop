@@ -10,6 +10,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { ContextService } from 'src/app/services/context/context.service'
 import { CartItem } from 'src/app/cart-request-type'
 import { CartService } from 'src/app/services/cart/cart.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-table',
@@ -35,7 +36,7 @@ export class TableResumeComponent implements OnInit {
 
   faArrowLeft = faArrowLeft
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data, public context: ContextService, public cartService: CartService) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data, public translate: TranslateService, public context: ContextService, public cartService: CartService) {}
 
   ngOnInit(): void {
     this.cartPizza = this.data.table.commands[0].cartPizza

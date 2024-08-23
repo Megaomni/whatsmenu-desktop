@@ -6,9 +6,9 @@
     [ngStyle]="{ visibility: haveOpenedCashier() ? 'visible' : 'hidden' }"
   >
     <fa-icon [icon]="faArrowLeft" class="text-gray"></fa-icon>
-    <h3 class="m-0 fs-5">Fazer Pedido</h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().place_order }}</h3>
   </div>
-  <p class="fs-5">Usuário: {{ context.activeBartender?.name }}</p>
+  <p class="fs-5 text-capitalize">{{ translate.text().user }}: {{ context.activeBartender?.name }}</p>
 </div>
 <mat-dialog-content
   style="min-height: 84%"
@@ -18,8 +18,8 @@
   <form (submit)="openCashierAPI($event)" class="open-cashier">
     <p>PDV WhatsMenu</p>
     <fa-icon [icon]="faCashRegister" style="font-size: 5rem"></fa-icon>
-    <p style="font-size: 2rem">Abrir Caixa</p>
-    <p style="font-size: 1rem">Saldo Inicial R$</p>
+    <p class="text-capitalize" style="font-size: 2rem">{{ translate.text().open_register }}</p>
+    <p class="text-capitalize" style="font-size: 1rem">{{ translate.text().initial_balance }}</p>
     <input
       class="form-control text-center"
       type="number"
@@ -28,10 +28,13 @@
       name="initialValue"
       style="border: 1px solid var(--wm-gray-light-500); color: var(--wm-gray-400); max-width: 100%; width: 20rem"
     />
-
-    <button class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100" type="submit" #openCashierSubmitButton>
+    <button
+      class="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 text-capitalize"
+      type="submit"
+      #openCashierSubmitButton
+    >
       <fa-icon [icon]="faLockOpen"></fa-icon>
-      Abrir Caixa
+      {{ translate.text().open_register }}
     </button>
   </form>
 </mat-dialog-content>
@@ -43,32 +46,32 @@
   <div *ngIf="context.activeCashier" class="cashier-content flex-column flex-md-row">
     <div class="d-flex flex-column w-100 h-100 position-relative">
       <div class="d-flex justify-content-between px-2 w-100 my-2" style="font-size: 1rem">
-        <p class="fw-bold">
-          Status do Caixa:
+        <p class="fw-bold text-capitalize">
+          {{ translate.text().cash_register_status }}:
           <span [ngStyle]="{ color: context.activeCashier.closed_at ? 'var(--wm-red-300)' : 'var(--wm-green-500)' }">{{
-            context.activeCashier.closed_at ? 'Fechado' : 'Aberto'
+            context.activeCashier.closed_at ? translate.text().closed : translate.text().opened
           }}</span>
         </p>
         <p>{{ formatDate(context.activeCashier.created_at) }}</p>
       </div>
       <div class="w-100 d-flex text-center mb-3">
         <div class="d-flex flex-column gap-2 py-4" style="color: var(--wm-white); background-color: var(--wm-green-500); flex-basis: 50%">
-          <p style="font-size: 1rem" class="mb-2">Entrada</p>
+          <p style="font-size: 1rem" class="mb-2 text-capitalize">{{ translate.text().income }}</p>
           <p class="price-highlight">{{ incomeTotal | currency }}</p>
         </div>
         <div class="d-flex flex-column gap-2 py-4" style="color: var(--wm-white); background-color: var(--wm-red-300); flex-basis: 50%">
-          <p style="font-size: 1rem" class="mb-2">Saida</p>
+          <p style="font-size: 1rem" class="mb-2 text-capitalize">{{ translate.text().cash_outflow }}</p>
           <p class="price-highlight">{{ outcomeTotal | currency }}</p>
         </div>
       </div>
       <table class="table table-striped table-hover mb-5">
         <thead style="border-bottom: 0px solid black">
           <tr>
-            <th>Data</th>
-            <th>Cód.</th>
-            <th>Nome</th>
-            <th>Descrição</th>
-            <th>Valor</th>
+            <th class="text-capitalize">{{ translate.text().date }}</th>
+            <th class="text-capitalize">{{ translate.text().code }}</th>
+            <th class="text-capitalize">{{ translate.text().name }}</th>
+            <th class="text-capitalize">{{ translate.text().description }}</th>
+            <th class="text-capitalize">{{ translate.text().value }}</th>
           </tr>
         </thead>
         <tbody class="no-scroll-bar" style="padding-bottom: 8rem">
@@ -92,10 +95,10 @@
             <fa-icon class="toggle-footer" [icon]="faChevronUp"></fa-icon>
             <div class="w-100 my-2" id="resume-accordion-header">
               <div class="w-100 d-flex align-items-center justify-content-between p-3" style="background-color: var(--wm-gray-light-300)">
-                <p class="fw-bold">Resumo</p>
+                <p class="fw-bold text-capitalize">{{ translate.text().summary }}</p>
                 <div class="d-flex align-items-center justify-content-between gap-2" style="color: var(--wm-red-400)">
                   <fa-icon [icon]="faLock"></fa-icon>
-                  <span class="fw-bold">Fechar Caixa</span>
+                  <span class="fw-bold text-capitalize">{{ translate.text().close_cash_register }}</span>
                 </div>
               </div>
             </div>
@@ -129,7 +132,7 @@
               (click)="openTransaction({ type: 'income' })"
             >
               <fa-icon style="color: var(--wm-green-500); font-size: 1.5rem" [icon]="faPlusCircle"></fa-icon>
-              <p>Entrada</p>
+              <p class="text-capitalize">{{ translate.text().income }}</p>
             </button>
             <button
               class="btn btn-link btn-sm text-black p-0 text-decoration-none d-flex flex-column align-items-center gap-2"
@@ -138,7 +141,7 @@
               (click)="openTransaction({ type: 'outcome' })"
             >
               <fa-icon style="color: var(--wm-red-300); font-size: 1.5rem" [icon]="faMinusCircle"></fa-icon>
-              <p>Saída</p>
+              <p class="text-capitalize">{{ translate.text().cash_outflow }}</p>
             </button>
           </div>
         </div>

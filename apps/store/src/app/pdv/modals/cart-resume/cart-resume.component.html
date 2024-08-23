@@ -2,10 +2,10 @@
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer" (click)="close({})"></fa-icon>
     <h3 class="m-0 fs-5">
-      Carrinho
+      {{ this.translate.text().cart }}
       <ng-container [ngSwitch]="data.cartRequest?.type">
-        <span *ngSwitchCase="'D'">Balcão/Delivery</span>
-        <span *ngSwitchCase="'T'">Mesa: {{ context.getActiveTable()?.name }}</span>
+        <span *ngSwitchCase="'D'">{{ translate.text().counter_and_delivery }}</span>
+        <span class="text-capitalize" *ngSwitchCase="'T'">{{ translate.text().table }}: {{ context.getActiveTable()?.name }}</span>
         <span *ngSwitchCase="'P'">{{ context.packageLabel }}</span>
       </ng-container>
     </h3>
@@ -19,24 +19,30 @@
   <ng-container *ngIf="context.profile.options.activeCupom && data.cartRequest?.type !== 'T'">
     <div class="d-flex justify-content-center mt-3">
       <form class="input-group mb-3" (submit)="verifyCupom(cupomCodeInput.value)">
-        <input type="text" class="form-control" placeholder="Ative seu Cupom" #cupomCodeInput required />
-        <button type="submit" class="btn btn-outline-secondary rounded-end" style="border-radius: 0">Ativar</button>
+        <input type="text" class="form-control" placeholder="{{ translate.text().activate_coupon_comment }}" #cupomCodeInput required />
+        <button type="submit" class="btn btn-outline-secondary rounded-end text-capitalize" style="border-radius: 0">
+          {{ translate.text().activate }}
+        </button>
       </form>
     </div>
-    <span class="text-center text-success mb-3 fw-bold" *ngIf="cupom">
-      Desconto de {{ cupom.type === 'freight' ? 'Frete Grátis' : cupom.type === 'value' ? (cupom.value | currency) : cupom.value + '%' }} Aplicado!
+    <span class="text-center text-success mb-3 fw-bold text-capitalize" *ngIf="cupom">
+      {{ translate.text().discount_of }} {{ cupom.type === 'freight' ? '{{ translate.text().free_freight }}' : cupom.type === 'value' ? (cupom.value |
+      currency) : cupom.value + '%' }} {{ translate.text().applied }}!
     </span>
   </ng-container>
   <div *ngIf="data.cartRequest?.type === 'P'" class="my-3 px-3 w-100">
-    <p class="fs-5 fw-bold mb-3">Selecione uma data para entrega</p>
+    <p class="fs-5 fw-bold mb-3 text-capitalize">{{ translate.text().select_delivery_date }}</p>
     <app-calendar [dataObject]="{ packageHours: data.packageHours }" (changePackageCalendar)="updatePackageCalendar($event)"></app-calendar>
   </div>
   <div class="border-top container">
     <ng-container *ngIf="data.cartRequest?.type !== 'T'">
       <div class="d-flex align-items-center justify-content-between my-2">
-        <p class="fs-5">ENTREGA</p>
-        <div class="fw-bold py-1 px-2 rounded-pill" style="background-color: var(--wm-green-500); color: var(--wm-white); font-size: 0.75rem">
-          Obrigatório
+        <p class="fs-5 text-uppercase">{{ translate.text().delivery }}</p>
+        <div
+          class="fw-bold py-1 px-2 rounded-pill text-capitalize"
+          style="background-color: var(--wm-green-500); color: var(--wm-white); font-size: 0.75rem"
+        >
+          {{ translate.text().obrigatory }}
         </div>
       </div>
       <div class="container">
@@ -53,8 +59,8 @@
                 [checked]="context.profile.options.delivery.disableDelivery || addressId === null"
               />
               <div>
-                <p style="font-size: 1.125rem">Retirar no Balcão</p>
-                <p class="mt-3">GRÁTIS</p>
+                <p style="font-size: 1.125rem text-capitalize">{{ translate.text().pick_up_counter }}</p>
+                <p class="mt-3 text-uppercase">{{ translate.text().free }}</p>
               </div>
             </label>
           </div>
@@ -73,35 +79,40 @@
                 [checked]="!context.profile.options.delivery.disableDelivery && addressId === addressSelected.id"
               />
               <div>
-                <p style="font-size: 1.125rem">ENDEREÇO {{ selectedAddressIndex() + 1 }}</p>
+                <p style="font-size: 1.125rem">{{ translate.text().addresses }} {{ selectedAddressIndex() + 1 }}</p>
                 <p class="my-1">{{ addressSelected.street }}, {{ addressSelected.number ? addressSelected.number : 'SN' }}</p>
                 <p class="my-1">{{ addressSelected.neighborhood }} - {{ addressSelected.city }} - {{ addressSelected.uf }}</p>
-                <button type="button" class="btn btn-link px-0" (click)="openAddress()">
+                <button type="button" class="btn btn-link px-0 text-capitalize" (click)="openAddress()">
                   <!-- openClientRegister({ type: 'update', refId: selectedAddressIndex() }) -->
-                  Mudar Endereço
+                  {{ translate.text().change_address }}
                 </button>
               </div>
             </label>
           </div>
           <div *ngIf="!context.profile.options.delivery.disableDelivery && !addressSelected" class="p-2 col-12 col-md-6">
-            <div class="address-radio align-items-center justify-content-center" style="height: 100%">
-              <button class="btn btn-link p-0" (click)="openAddress()">Adicionar endereço</button>
+            <div class="address-radio align-items-center justify-content-center text-capitalize" style="height: 100%">
+              <button class="btn btn-link p-0" (click)="openAddress()">{{ translate.text().add_address }}</button>
             </div>
           </div>
         </div>
       </div>
     </ng-container>
     <ng-container *ngIf="data.cartRequest?.type === 'T'">
-      <p class="mt-3" style="font-size: 1.125rem">COMANDA: {{ context.getActiveCommand()?.name }}</p>
+      <p class="mt-3 text-uppercase" style="font-size: 1.125rem">{{ translate.text().order_slip }}: {{ context.getActiveCommand()?.name }}</p>
     </ng-container>
   </div>
   <div class="border-top container py-2 flex-grow-1 my-3">
-    <p style="font-size: 1.125rem">RESUMO</p>
+    <p style="font-size: 1.125rem text-uppercase">{{ translate.text().summary }}</p>
     <app-cart-itens [cartPizza]="data.cartPizza" [cart]="data.cart" [valueType]="data.cartRequest?.type"></app-cart-itens>
   </div>
   <div class="d-flex justify-content-center border-top container py-2">
-    <button type="button" class="btn btn-link text-decoration-none" (click)="close({})" style="font-size: 1.125rem; color: var(--wm-red-300)">
-      ADICIONAR MAIS ITENS
+    <button
+      type="button"
+      class="btn btn-link text-decoration-none text-uppercase"
+      (click)="close({})"
+      style="font-size: 1.125rem; color: var(--wm-red-300)"
+    >
+      {{ translate.text().add_more_items }}
     </button>
   </div>
 </mat-dialog-content>
@@ -110,12 +121,16 @@
   class="d-flex flex-column justify-content-center align-items-center"
   style="max-height: calc(100% - 3.625rem); height: 100%; padding: 0 1rem !important"
 >
-  <p class="fs-3 fw-bold text-center">
-    Nenhum cliente selecionado para este pedido, busque por um cliente cadastrado o cadastre um para poder prosseguir.
+  <p class="fs-3 fw-bold text-center text-capitalize">
+    {{ translate.text().message_no_costumer_selected }}
   </p>
   <div class="d-flex align-items-center gap-2 mt-3">
-    <button type="button" class="btn btn-primary" (click)="close({ focusSearch: true })">Buscar cliente</button>
-    <button type="button" class="btn btn-primary" (click)="openClientRegister({ type: 'create' })">Cadastrar cliente</button>
+    <button type="button" class="btn btn-primary text-capitalize" (click)="close({ focusSearch: true })">
+      {{ translate.text().search_customer }}
+    </button>
+    <button type="button" class="btn btn-primary text-capitalize" (click)="openClientRegister({ type: 'create' })">
+      {{ translate.text().add_customer }}
+    </button>
   </div>
 </mat-dialog-content>
 <div *ngIf="data.client || data.cartRequest?.type === 'T'" class="border-top p-3 w-100">
@@ -123,18 +138,22 @@
     <p>SUBTOTAL</p>
     <p style="color: var(--wm-red-300); font-size: 20px">{{ data.cartRequest?.total | currency }}</p>
   </div>
-  <div *ngIf="cupom" class="d-flex align-items-center justify-content-between">
-    <p>CUPOM</p>
+  <div *ngIf="cupom" class="text-uppercase d-flex align-items-center justify-content-between">
+    <p>{{ translate.text().coupon }}</p>
     <p style="color: var(--wm-red-300)">-{{ cartService.cupomValue(cupom, data.cartRequest) | currency }}</p>
   </div>
   <div *ngIf="data.cartRequest?.type !== 'T'" class="d-flex align-items-center justify-content-between">
-    <p>TAXA DE ENTREGA</p>
+    <p class="text-uppercase">{{ translate.text().delivery_fee }}</p>
     <p *ngIf="cupom?.type !== 'freight'" style="color: var(--wm-red-300)">
       {{
-        addressId ? (data.cartRequest.taxDelivery !== -1 ? (data.cartRequest.taxDelivery || 0 | currency) : 'FORA DA ÁREA DE COBERTURA') : 'Grátis'
+        addressId
+          ? data.cartRequest.taxDelivery !== -1
+            ? (data.cartRequest.taxDelivery || 0 | currency)
+            : translate.text().outside_service_area
+          : translate.text().free_comment
       }}
     </p>
-    <p *ngIf="cupom?.type === 'freight'" style="color: var(--wm-red-300)">FRETE GRÁTIS</p>
+    <p *ngIf="cupom?.type === 'freight'" style="color: var(--wm-red-300) text-uppercase">{{ translate.text().free_freight }}</p>
   </div>
   <div class="d-flex align-items-center justify-content-between fw-bold" style="font-size: 1.125rem">
     <p>TOTAL</p>
@@ -144,18 +163,19 @@
   </div>
 </div>
 <mat-dialog-actions *ngIf="data.client || data.cartRequest?.type === 'T'" class="justify-content-between">
-  <button type="button" class="btn btn-outline-secondary" style="color: var(--wm-gray-300)" (click)="close({})">Cancelar</button>
+  <button type="button" class="btn btn-outline-secondary" style="color: var(--wm-gray-300)" (click)="close({})">{{ translate.text().cancel }}</button>
   <button
     type="button"
-    class="btn"
+    class="btn text-capitalize"
     style="color: var(--wm-white); background-color: var(--wm-green-500)"
     [disabled]="
       (!data.cart.length && !data.cartPizza.length) ||
-      (data.cartRequest?.type === 'P' && !data.cartRequest.packageDate || data.cartRequest.packageDate === 'Invalid DateTime') ||
+      (data.cartRequest?.type === 'P' && !data.cartRequest.packageDate) ||
+      data.cartRequest.packageDate === 'Invalid DateTime' ||
       (data.cartRequest.taxDelivery === -1 && addressId !== null)
     "
     (click)="close({ toPayment: data.cartRequest?.type !== 'T', finishCartRequest: data.cartRequest?.type === 'T' })"
   >
-    Prosseguir
+    {{ translate.text().proceed }}
   </button>
 </mat-dialog-actions>

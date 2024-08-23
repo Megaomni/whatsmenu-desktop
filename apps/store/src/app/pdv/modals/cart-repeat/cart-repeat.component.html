@@ -13,7 +13,7 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="justify-content-between">
-    <button class="btn btn-outline-secondary" style="color: var(--wm-gray-300);" (click)="close({ confirm: false })">Cancelar</button>
-    <button class="btn" style="color: var(--wm-white); background-color: var(--wm-blue-500);" (click)="close({ confirm: true })">Repetir Pedido</button>
+    <button class="btn btn-outline-secondary text-capitalize" style="color: var(--wm-gray-300);" (click)="close({ confirm: false })">{{ translate.text().cancel }}</button>
+    <button class="btn text-capitalize" style="color: var(--wm-white); background-color: var(--wm-blue-500);" (click)="close({ confirm: true })">{{ translate.text().repeat_order }}</button>
   </mat-dialog-actions>
 </ng-container>

@@ -14,6 +14,7 @@ import { ClientAddressComponent } from '../client-address/client-address.compone
 import Table, { TableOpened } from 'src/classes/table'
 import Command from 'src/classes/command'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-payment',
@@ -62,7 +63,8 @@ export class PaymentComponent implements OnInit, AfterContentChecked, OnDestroy 
     private matDialog: MatDialog,
     public toastService: ToastService,
     public api: ApiService,
-    private websocket: WebsocketService
+    private websocket: WebsocketService,
+    public translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -163,12 +165,12 @@ export class PaymentComponent implements OnInit, AfterContentChecked, OnDestroy 
     if (address) {
       return `${address.street}, ${address.number ? address.number : 'SN'} - ${address.neighborhood} - ${address.city} - ${address.uf}`
     } else {
-      return 'Retirar no Balcão'
+      return this.translate.text().pick_up_counter
     }
   }
 
   public getPackageDateString(): string {
-    return DateTime.fromFormat(this.data.cartRequest?.packageDate, 'yyyy-MM-dd HH:mm:ss').toFormat("dd/MM/yyyy • HH:mm:ss'")
+    return DateTime.fromFormat(this.data.cartRequest?.packageDate, 'yyyy-MM-dd HH:mm:ss').toFormat(`${this.translate.masks().date_mask} • HH:mm:ss'`)
   }
 
   public getFilterPayment(): CartFormPaymentType[] {
@@ -243,7 +245,8 @@ export class PaymentComponent implements OnInit, AfterContentChecked, OnDestroy 
         this.total = this.totalWithOutAddon + this.addonValue || 0
         this.total = Number(this.total.toFixed(2))
         this.paidValue =
-          this.formsPayment.reduce((total, paymentForm) => (total += this.formPaymentListValue(paymentForm)), 0) + this.context.getActiveCommand()?.getTotalValue('paid')
+          this.formsPayment.reduce((total, paymentForm) => (total += this.formPaymentListValue(paymentForm)), 0) +
+          this.context.getActiveCommand()?.getTotalValue('paid')
         this.lackValue = Math.fround(Math.max(0, this.total - this.paidValue))
         this.value = this.value === null || refreshValue ? Math.fround(this.lackValue).toFixed(2) : this.value
         break
@@ -661,7 +664,7 @@ export class PaymentComponent implements OnInit, AfterContentChecked, OnDestroy 
   cashbackValueAvaliable() {
     let result = 0
     if (this.data.client.vouchers.length && this.context.profile.options.voucher[0].status) {
-      result = this.data.client.vouchers.reduce((total, voucher) => total += voucher.value, 0)
+      result = this.data.client.vouchers.reduce((total, voucher) => (total += voucher.value), 0)
     }
     return result
   }

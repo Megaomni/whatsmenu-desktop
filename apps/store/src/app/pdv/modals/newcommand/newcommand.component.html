@@ -1,15 +1,15 @@
 <div mat-dialog-title class="d-flex align-items-center justify-content-between">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="close({ createCommand: false })"></fa-icon>
-    <h3 class="m-0 fs-5">Criar Comanda</h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().create_order_slip }}</h3>
   </div>
 </div>
 <mat-dialog-content class="d-flex flex-column align-items-center justify-content-center">
-  <p class="text-center fs-5 my-4">Nome da Comanda</p>
+  <p class="text-center fs-5 my-4 text-capitalize">{{ translate.text().order_name }}</p>
   <div class="d-grid d-md-flex flex-column align-items-center">
     <div class="d-flex flex-column flex-md-row justify-content-center gap-3 ">
-      <input class="form-control" type="text" placeholder="Comanda" [(ngModel)]="name">
+      <input class="form-control" type="text" [placeholder]="translate.text().order_slip" [(ngModel)]="name">
     </div>
-    <button class="btn btn-primary mt-3" (click)="close({ createCommand: true })">Criar Comanda</button>
+    <button class="btn btn-primary mt-3 text-capitalize" (click)="close({ createCommand: true })">{{ translate.text().create_order_slip }}</button>
   </div>
 </mat-dialog-content>

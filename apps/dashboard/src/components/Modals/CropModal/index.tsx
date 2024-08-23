@@ -29,6 +29,7 @@ interface CropModalTypes {
     | 'productImage'
     | 'pizzaSizeCover'
     | 'pizzaFlavorImage'
+    | 'logoCompany'
   inputFile?: HTMLInputElement
   setImageBlob?: (...props: any) => void
   onHide: () => void
