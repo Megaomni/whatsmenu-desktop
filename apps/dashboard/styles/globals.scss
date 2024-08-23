@@ -2284,3 +2284,15 @@ table.last tbody tr:last-child {
     display: table-header-group;
   }
 }
+
+/* Estilos gerais */
+.table-row {
+  display: none;
+}
+
+/* Estilos para telas médias e maiores */
+@media (min-width: 768px) {
+  .table-row {
+    display: table-row;
+  }
+}
