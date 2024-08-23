@@ -3,7 +3,6 @@ import { AppContext } from "@context/app.ctx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mask } from "@utils/wm-functions";
 import axios from "axios";
-import i18n from "i18n";
 import {  useContext, useEffect, useRef, useState } from "react";
 import { Button, Card, Col, Figure, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
 import { useForm } from "react-hook-form";
@@ -19,9 +18,9 @@ const createCompanySchema = z.object({
         // invalid_type_error: 'CNPJ inválido'
     }).min(10, 'CNPJ inválido'),
     nome: z.string().min(1, 'Digite um nome'),
-    // arquivo_certificado_base64: z.string().base64().optional(),
+    arquivo_certificado_base64: z.object({}).optional(),
     senha_certificado: z.string().min(1, 'Senha obrigatória').optional(),
-    // arquivo_logo_base64: z.string().base64().optional(),
+    arquivo_logo_base64: z.object({}).optional(),
     nome_fantasia: z.string({
         required_error: 'Nome fantasia obrigatório',
     }).min(1, 'Digite um nome fantasia'),
@@ -64,7 +63,7 @@ export function CreateCompany() {
     const { t } = useTranslation()
     const buttonFooter = useRef<HTMLDivElement>(null)
 
-    const { register, handleSubmit ,formState: { errors }, formState, reset, trigger, setFocus} = useForm<CreateCompanyFormData>({
+    const { register, handleSubmit ,formState: { errors }, formState, reset} = useForm<CreateCompanyFormData>({
         resolver: zodResolver(createCompanySchema),
     });
   const { setProfile, profile } = useContext(AppContext)
@@ -95,40 +94,41 @@ export function CreateCompany() {
         company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
         company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
         company.cep = Number(company.cep.replace(/[^\d]/g, ''))
-        company.arquivo_logo_base64 = logoBase64
+        // company.arquivo_logo_base64 = logoBase64
+        company.certificado_base64 = certificateBase64
 
         console.log('empresa',company);
-        // try {
-        //     const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
-        //         headers: {
-        //             Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-        //         }
-        //     })
-        //     const {data: profileData} = await api.patch('/dashboard/integrations/grovenfe')
+        try {
+            const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
+                headers: {
+                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+                }
+            })
+         
 
-        //     console.log('profile',profileData.grovenfe.created_at);
-        //     if (profileData) {
-        //         setProfile(prevProfile => ({ 
-        //             ...prevProfile!,
-        //         options: {
-        //             ...prevProfile!.options,
-        //             integrations: {
-        //                 ...prevProfile!.options.integrations,
-        //                 grovenfe: {
-        //                     ...prevProfile!.options.integrations?.grovenfe,
-        //                     created_at: profileData.grovenfe.created_at
-        //                 }
-        //             }
-        //         } }))
-        //     }
-        //         company.cnpj = cnpjMasked
-        //         company.telefone = phoneMasked
-        //         company.cep = cepMasked
-        //     reset(company)            
-        // } catch (error) {
-        //     console.error(error);
-        //     throw error
-        // }
+            console.log('profile',data.grovenfe.created_at);
+            if (data) {
+                setProfile(prevProfile => ({ 
+                    ...prevProfile!,
+                options: {
+                    ...prevProfile!.options,
+                    integrations: {
+                        ...prevProfile!.options.integrations,
+                        grovenfe: {
+                            ...prevProfile!.options.integrations?.grovenfe,
+                            created_at: data.grovenfe.created_at
+                        }
+                    }
+                } }))
+            }
+                company.cnpj = cnpjMasked
+                company.telefone = phoneMasked
+                company.cep = cepMasked
+            reset(company)            
+        } catch (error) {
+            console.error(error);
+            throw error
+        }
     }
       
     // arquivo_certificado_base64  ,  senha_certificado	
@@ -184,18 +184,17 @@ export function CreateCompany() {
     console.log(errors);
     
     useEffect(() => {
-        if (errors.nome_fantasia || errors.inscricao_estadual) {
-            setTabKey('identification')
-        }
-
-        if (errors.email || errors.telefone) {
-            setTabKey('contact')
-        }
-
         if (errors.cep || errors.Logradouro || errors.bairro || errors.municipio || errors.numero) {
             setTabKey('address')
         }
         
+        if (errors.email || errors.telefone) {
+            setTabKey('contact')
+        }
+
+        if (errors.nome_fantasia || errors.inscricao_estadual) {
+            setTabKey('identification')
+        }
     }, [errors])
     
     const convertFileToBase64 = ({file, eventName}: {file: File, eventName: string} ) => {        
@@ -256,14 +255,14 @@ export function CreateCompany() {
                                 </FormGroup>
                             </Col>
                         </Row>
-                        <Row className="mt-4">
-                            <Col>
+                        <Row className="mt-4 gap-3">
+                            <Col md={4}>
                                 <p>{t('certificate')}:</p>
                                 <Button style={{ backgroundColor: '#13C296', border: 'none', position: 'relative' }} >
                                     {t('attach_certificate')}
                                     <input
                                       type="file"
-                                    //   {...register('arquivo_certificado_base64')}
+                                      {...register('arquivo_certificado_base64')}
                                       name="certificateCompany"
                                       onChange={(e) => {
                                           if(e.target.files) {
@@ -281,6 +280,11 @@ export function CreateCompany() {
                                       }}
                                     />
                                 </Button>
+                            </Col>
+                            <Col md={4}>
+                            <Form.Label>{t('certificate_password')}</Form.Label>
+                                    <Form.Control type="text" {...register('senha_certificado')}></Form.Control>
+                                    {errors.senha_certificado && <span className="text-danger">{errors.senha_certificado.message}</span>}
                             </Col>
                         </Row>
 
@@ -335,9 +339,9 @@ export function CreateCompany() {
                                     </Nav.Link>
                                 </Nav.Item>
                             </Nav>
-                            <Tab.Content className="mt-4">
+                            <Tab.Content >
                                 <Tab.Pane eventKey='identification'>
-                                arquivo_logo_base64
+                                {/* arquivo_logo_base64
                                 <Figure>
                                     <Figure.Image
                                       width={600}
@@ -356,13 +360,16 @@ export function CreateCompany() {
                                         {t('attach_company_logo')}
                                         <input
                                       type="file"
-                                    //   {...register('arquivo_logo_base64')}
+                                      accept="image/*"
+                                      {...register('arquivo_logo_base64')}
                                       name="inputLogoCompany"
                                       onChange={(e) => {
                                           
                                           if(e.target.files) {
-                                              console.log(e.target.files[0].name);
-                                              setImageLogo(e.target.files[0].name)
+                                              console.log(e.target.files[0]);
+                                              if (e.target.files[0].name) {
+                                                  setImageLogo(e.target.files[0].name)
+                                              }
                                             setInputLogoCompany(e.target.files[0])
                                             convertFileToBase64({file: e.target.files[0], eventName: e.target.name})
                                           }
@@ -376,7 +383,7 @@ export function CreateCompany() {
                                         right: 0,
                                       }}
                                     />
-                                        </Button>
+                                        </Button> */}
                                     <Row>
                                         <Col md={3}>
                                             <Form.Label className="m-0 p-0 mt-4">
