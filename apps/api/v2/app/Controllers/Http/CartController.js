@@ -392,6 +392,34 @@ class CartController {
         }
       }
 
+      const integrations = profile.options.integrations
+      if (integrations?.grovenfe) {
+        try {
+          const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
+          if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
+            try {
+              const companieId = integrations.grovenfe.companie_id
+              const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/create/${companieId}`, {
+                formPayment: data.formsPayment[0],
+              }, {
+                headers: {
+                  Authorization: `Bearer ${integrations.grovenfe.config.token}`,
+                },
+              }
+            )
+            console.log('Nota fiscal criada com sucesso', response.data)
+            } catch (error) {
+              console.error('Erro ao criar a nota fiscal:', error);
+              throw error;
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao verificar as integrações:', error);
+          throw error;
+        }
+        return
+      }
+
       const address = await ClientAddress.find(data.addressId)
 
       const isPackageDeliveryDate =
