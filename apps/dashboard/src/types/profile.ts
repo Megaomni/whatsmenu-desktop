@@ -176,6 +176,12 @@ export interface ProfileFormPayment {
 
 export interface ProfileOptions {
   order: string
+  integrations: {
+    grovenfe:{
+      created_at: string
+      company_id: number
+    }
+  }
   pizza: {
     higherValue: boolean
     multipleBorders: boolean

@@ -20,6 +20,7 @@ import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
+const GroveNfesController = () => import('#controllers/grove_nfes_controller')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -146,3 +147,9 @@ router
     router.get('/closeCashiers', [CronsController, 'closeCashiers'])
   })
   .prefix('cron')
+
+router
+  .group(() => {
+    router.post('/webhook', [GroveNfesController, 'webhook'])
+  })
+  .prefix('grovenfe')
