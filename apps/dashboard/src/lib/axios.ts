@@ -10,3 +10,11 @@ export const api = axios.create({
     'Content-Type': 'application/json',
   },
 })
+
+export const groveNfeApi = axios.create({
+  baseURL: process.env.GROVE_NFE_URL,
+  headers: {
+    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+    'Content-Type': 'application/json',
+  },
+})
