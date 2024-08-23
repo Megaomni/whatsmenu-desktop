@@ -393,7 +393,7 @@ class CartController {
       }
 
       const integrations = profile.options.integrations
-      if (integrations?.grovenfe) {
+      if (integrations && integrations.grovenfe) {
         try {
           const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
           if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
@@ -407,7 +407,6 @@ class CartController {
                 },
               }
             )
-            console.log('Nota fiscal criada com sucesso', response.data)
             } catch (error) {
               console.error('Erro ao criar a nota fiscal:', error);
               throw error;
