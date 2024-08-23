@@ -147,6 +147,13 @@ export interface ProfileOptions {
   inventoryControl: boolean
   integrations: {
     grovenfe: {
+      company_id: number
+      config: {
+        fiscal_notes: {
+          day_limiter: null | number
+          forms_payments: Array<{ type: string }>
+        }
+      }
       created_at: string
     }
   }
