@@ -403,7 +403,7 @@ class CartController {
                 formPayment: data.formsPayment[0],
               }, {
                 headers: {
-                  Authorization: `Bearer ${integrations.grovenfe.config.token}`,
+                  Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
                 },
               }
             )
