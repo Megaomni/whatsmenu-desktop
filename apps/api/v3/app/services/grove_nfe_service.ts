@@ -30,8 +30,7 @@ export default class GroveNfeService {
     }
   }
 
-  
- /**
+  /**
    * Adiciona uma nota fiscal ao carrinho.
    *
    * @param {string} externalId - ID externo do carrinho.
@@ -39,16 +38,15 @@ export default class GroveNfeService {
    *
    * @returns {Promise<void>}
    */
- async addFiscalNoteToCart( {fiscal_note}: {fiscal_note: any}): Promise<void> {
-  try {
-    const cart = await Cart.find(fiscal_note.externalId);
+  async addFiscalNoteToCart({ fiscal_note }: { fiscal_note: any }): Promise<void> {
+    try {
+      const cart = await Cart.find(fiscal_note.externalId)
       if (cart) {
-        cart.controls = { grovenfe: { fiscal_note }};
-        await cart.save();
+        cart.controls = { grovenfe: { fiscal_note } }
+        await cart.save()
       }
     } catch (error) {
-     throw error;
+      throw error
     }
   }
 }
-
