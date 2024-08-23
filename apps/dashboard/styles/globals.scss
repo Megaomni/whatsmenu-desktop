@@ -2296,3 +2296,18 @@ table.last tbody tr:last-child {
     display: table-row;
   }
 }
+
+/*--------------------------------------------------------------
+# BUTTON FIXED ON FOOTER
+--------------------------------------------------------------*/
+
+.btn-footer {
+  background: #dfe6e9;
+  bottom: -100px !important;
+  transition: bottom 0.7s ease-out;
+}
+
+.btn-footer-show {
+  background: #dfe6e9;
+  transition: bottom 0.7s ease-out;
+}

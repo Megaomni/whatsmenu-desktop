@@ -9,6 +9,7 @@ import { ClientType, Package } from 'src/app/client-type'
 import { ApiService } from 'src/app/services/api/api.service'
 import { CartService } from 'src/app/services/cart/cart.service'
 import { ContextService } from 'src/app/services/context/context.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-dialog-confirm-date',
@@ -67,7 +68,8 @@ export class DialogConfirmDateComponent implements OnInit, AfterViewChecked {
     @Inject(MatDialogRef) private dialogRef,
     @Inject(MatDialog) private matDialog,
     public cartService: CartService,
-    public context: ContextService
+    public context: ContextService,
+    public translate: TranslateService
   ) {
     this.clientData = data.clientData
     this.package = data.clientData.options.package
@@ -118,7 +120,7 @@ export class DialogConfirmDateComponent implements OnInit, AfterViewChecked {
 
   applyTime() {
     if (window.confirm(`A data da sua entrega é: ${this.packageCalendar} ${this.packageHour}`)) {
-      this.dialogRef.close(DateTime.fromFormat(`${this.packageCalendar} ${this.packageHour}`, `dd-MM-yyyy HH:mm`))
+      this.dialogRef.close(DateTime.fromFormat(`${this.packageCalendar} ${this.packageHour}`, `${this.translate.masks().date_mask} HH:mm`))
     }
   }
 

@@ -14,9 +14,9 @@ class StrategyPagarme {
     this.security_key = security_key
     this.public_key = public_key
     this.headers = {
-      'accept': 'application/json',
+      accept: 'application/json',
       'content-type': 'application/json',
-      'authorization': `Basic ${Buffer.from(`${security_key}:*`).toString('base64')}`,
+      authorization: `Basic ${Buffer.from(`${security_key}:*`).toString('base64')}`,
     }
   }
 

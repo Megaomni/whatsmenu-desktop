@@ -1,13 +1,13 @@
 <div mat-dialog-title class="d-flex align-items-center justify-content-between">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer" (click)="close(false)"></fa-icon>
-    <h3 class="m-0 fs-5">Troca de Mesa</h3>
+    <h3 class="m-0 fs-5 text-capitalize">{{ translate.text().table_change }}</h3>
   </div>
 </div>
 <mat-dialog-content class="d-flex flex-column flex-md-row" style="max-height: calc(100% - 3.625rem); height: 100%; overflow: hidden">
   <div class="drag-container ps-4" style="flex-basis: 48%">
     <h2>
-      De: <span style="color: var(--wm-red-300)" class="mx-3">{{ oldTable?.name }}</span>
+      {{ translate.text().from_de }}: <span style="color: var(--wm-red-300)" class="mx-3">{{ oldTable?.name }}</span>
     </h2>
     <div
       cdkDropList
@@ -28,7 +28,7 @@
         >
           {{ command.name }}
           <div class="d-flex align-items-center gap-3">
-            <span>Cód.</span>
+            <span class="text-capitalize">{{ translate.text().code }}</span>
             <fa-icon *ngIf="deviceWidth <= 600" [icon]="faArrowsAlt" class="px-4 py-2" cdkDragHandle></fa-icon>
           </div>
         </div>
@@ -43,8 +43,8 @@
     <hr />
   </div>
   <div class="drag-container pe-4" style="flex-basis: 48%">
-    <h2 class="justify-content-between">
-      Para
+    <h2 class="justify-content-between text-capitalize">
+      {{ translate.text().for }}:
       <select class="form-select" [ngModel]="newTableId" (ngModelChange)="resetTables($event)">
         <option *ngFor="let table of tablesToSwitch" [value]="table.id">{{ table.name }}</option>
       </select>
@@ -69,7 +69,7 @@
         >
           {{ command.name }}
           <div class="d-flex align-items-center gap-3">
-            <span>Cód.</span>
+            <span class="text-capitalize">{{ translate.text().code }}</span>
           </div>
         </div>
       </div>
@@ -77,6 +77,6 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions class="justify-content-between">
-  <button class="btn btn-outline-secondary" style="background-color: var(--wm-gray-300)" (click)="close(false)">Cancelar</button>
-  <button class="btn" style="color: var(--wm-white); background-color: var(--wm-green-500)" (click)="close(true)">Salvar</button>
+  <button class="btn btn-outline-secondary" style="background-color: var(--wm-gray-300)" (click)="close(false)">{{ translate.text().cancel }}</button>
+  <button class="btn" style="color: var(--wm-white); background-color: var(--wm-green-500)" (click)="close(true)">{{ translate.text().save }}</button>
 </mat-dialog-actions>

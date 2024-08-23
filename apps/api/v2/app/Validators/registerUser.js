@@ -4,7 +4,7 @@ class registerUser {
   get rules() {
     return {
       name: 'required',
-      secretNumber: 'required|min:14',
+      secretNumber: this.ctx.request.language === 'pt-BR' ? 'required|min:14' : 'min:5',
       email: 'required|email|unique:users',
       whatsapp: 'required',
       password: 'required|min:6',

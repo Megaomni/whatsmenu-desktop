@@ -20,22 +20,17 @@ env:
   BRANCH: ${{ github.ref_name }}
 
 jobs:
-  package:
-    if: github.ref_name == 'beta' || github.event.pull_request.merged == true
+  deploy:
     runs-on: ubuntu-latest
+    env:
+      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
-    outputs:
-      ec2_deploy_hosts: ${{ steps.set_output.outputs.ec2_deploy_hosts }}
+    strategy:
+      matrix:
+        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS) }}
+
     steps:
-      - name: Set EC2 Deploy Hosts
-        id: set_output
-        run: |
-          if [ "${{ env.BRANCH }}" == "beta" ]; then
-            echo "::set-output name=ec2_deploy_hosts::${{ vars.EC2_DEPLOY_HOSTS_1}}"
-          else
-            echo "::set-output name=ec2_deploy_hosts::${{ vars.EC2_DEPLOY_HOSTS}}"
-          fi
-
       - name: Check out the repository
         uses: actions/checkout@v2
 
@@ -49,26 +44,7 @@ jobs:
 
       - name: Package application
         run: |
-          sudo tar -czf deploy.tar.gz -C ./apps/api/v2 .
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: deploy-package
-          path: deploy.tar.gz
-
-  deploy:
-    needs: package
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        ec2_host: ${{ fromJson(needs.package.outputs.ec2_deploy_hosts) }}
-
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: deploy-package
+          tar -czf deploy.tar.gz --exclude='node_modules' -C ./apps/api/v2 .
 
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
@@ -84,17 +60,20 @@ jobs:
 
           ssh-keyscan -H ${{ matrix.ec2_host }} >> ~/.ssh/known_hosts
 
-          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH/public_html
+          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH
 
           ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
             cd ${{ env.PROJECT_PATH }}
-            ls -la
-            find ./public_html ! -name 'deploy.tar.gz' -type f -exec rm -f {} +
-            cd public_html
-            tar -xzf deploy.tar.gz
+            sudo rm -rf public_html/*
+            tar -xzf deploy.tar.gz -C public_html
+            ls -la public_html
             rm deploy.tar.gz
+            cd public_html
             scp ${{ secrets.EC2_ENV_HOST }}:${{ env.ENV_PATH }} .env
-            npm install
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+            npm install --ignore-scripts
             pm2 start ${{ env.BRANCH == 'beta' && 'ecosystem_beta.config.cjs' || 'ecosystem.config.cjs' }}
           EOF
 

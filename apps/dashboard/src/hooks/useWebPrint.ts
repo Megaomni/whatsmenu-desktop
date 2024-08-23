@@ -200,8 +200,8 @@ export default function useWebPrint() {
   }
 
   const checkBluetooth = (type: 'bluetooth' | 'usb' = 'bluetooth') => {
-    //@ts-ignore
     if (
+      //@ts-ignore
       !('bluetooth' in navigator && 'getDevices' in navigator.bluetooth) &&
       type === 'bluetooth'
     ) {

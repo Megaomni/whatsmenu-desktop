@@ -9,7 +9,7 @@
               <i class="fs-1 color-theme text-decoration-none"> <fa-icon id="arrowLeft" [icon]="faArrowLeft"></fa-icon></i>
             </div>
             <div>
-              <h5 class="ps-2 mb-0">Status do Pedido</h5>
+              <h5 class="text-capitalize ps-2 mb-0">{{ translate.text().order_status }}</h5>
             </div>
           </div>
         </div>
@@ -23,34 +23,38 @@
         <div class="col-md-12">
           <div class="d-flex py-2 align-items-center border-bottom">
             <div class="">
-              <h3 class="fw-bold mb-0 pb-0">Pedido {{ cart.code }}</h3>
+              <h3 class="fw-bold mb-0 pb-0 text-capitalize">{{ translate.text().order }} {{ cart.code }}</h3>
               <div class="small mt-n2">{{ formatDate(cart.created_at) }}</div>
               <!-- <div *ngIf="cart.statusPayment !== 'paid'">
                 <img src="data:image/jpeg;base64, {{ pixInvoice.qrCode }}" alt="QR Code Pix" style="width: 125px; aspect-ratio: 1/1" />
               </div> -->
             </div>
             <div class="ms-auto col-auto" [ngSwitch]="cart?.status">
-              <span class="badge text-bg-success" *ngSwitchCase="'production'">Em Preparo</span>
+              <span class="badge text-bg-success text-capitalize" *ngSwitchCase="'production'">{{ translate.text().in_preparation }}</span>
               <span class="badge text-bg-success" *ngSwitchCase="'transport'">{{
-                cart.addressId ? 'Saiu para entrega' : 'Aguardando Retirada'
+                cart.addressId ? translate.text().out_for_delivery : translate.text().waiting_for_pickup
               }}</span>
-              <span class="badge text-bg-success" *ngSwitchCase="'canceled'">Cancelado</span>
+              <span class="badge text-bg-success text-capitalize" *ngSwitchCase="'canceled'">{{ translate.text().canceled }}</span>
               <!-- <span class="badge text-bg-success" *ngSwitchCase="'completed'">{{cart.addressId ? "Entregue" : "Retirado"}}</span> -->
-              <span class="badge text-bg-success" *ngSwitchDefault> - Pedido Recebido</span>
+              <span class="text-capitalize badge text-bg-success" *ngSwitchDefault> - {{ translate.text().order_received }}</span>
             </div>
           </div>
           <div class="px-3 mb-2 mt-2">
             <ng-container *ngIf="cart.statusPayment !== 'offline'">
-              <ng-container *ngTemplateOutlet="loading; context: { title: 'Aguardando Pagamento', status: processStatus(0) }"></ng-container>
+              <ng-container
+                *ngTemplateOutlet="loading; context: { title: translate.text().pending_payment, status: processStatus(0) }"
+              ></ng-container>
             </ng-container>
 
-            <ng-container *ngTemplateOutlet="loading; context: { title: 'Pedido Aprovado', status: processStatus(1) }"></ng-container>
-            <ng-container *ngTemplateOutlet="loading; context: { title: 'Pedido em Preparo', status: processStatus(2) }"></ng-container>
+            <ng-container *ngTemplateOutlet="loading; context: { title: translate.text().order_approved, status: processStatus(1) }"></ng-container>
+            <ng-container
+              *ngTemplateOutlet="loading; context: { title: translate.text().order_preparation, status: processStatus(2) }"
+            ></ng-container>
             <ng-container
               *ngTemplateOutlet="
                 loading;
                 context: {
-                  title: cart.addressId ? 'Pedido saiu para entrega' : 'Pedido pronto para retirada',
+                  title: cart.addressId ? translate.text().order_out_for_delivery : translate.text().order_ready_for_pickup,
                   status: processStatus(3),
                   no_line: cart.status !== 'canceled'
                 }
@@ -58,7 +62,7 @@
             ></ng-container>
             <ng-container *ngIf="cart.status === 'canceled'">
               <ng-container
-                *ngTemplateOutlet="loading; context: { title: 'Pedido Cancelado', no_line: true, status: processStatus(4) }"
+                *ngTemplateOutlet="loading; context: { title: translate.text().order_canceled, no_line: true, status: processStatus(4) }"
               ></ng-container>
             </ng-container>
           </div>
@@ -75,7 +79,7 @@
           target="_blank"
         >
           <fa-icon [icon]="faWhatsApp" [size]="'2x'" class="text-white"></fa-icon>
-          <span>Enviar pedido via whatsapp</span>
+          <span class="text-capitalize">{{ translate.text().send_order_whatsapp }}</span>
         </a>
       </div>
     </div>
@@ -87,17 +91,17 @@
       *ngIf="cart.statusPayment === 'pending' && (!cart.client?.secretNumber || cart.client?.secretNumber?.length < 11)"
     >
       <div class="m-auto d-flex flex-column align-items-center">
-        <label for="pix-cpf-input" class="mb-1 fw-semibold form-label">Digite seu CPF para gerar uma chave PIX</label>
+        <label for="pix-cpf-input" class="mb-1 fw-semibold form-label">{{ translate.text().enter_cpf_generate_pix }}</label>
         <input
           type="text"
           inputmode="numeric"
           class="form-control"
-          placeholder="000.000.000-00"
+          [placeholder]="translate.text().ssn_model_comment"
           id="pix-cpf-input"
           mask="000.000.000-00"
           [(ngModel)]="pixSecretNumber"
         />
-        <p style="color: var(--wm-gray-550); font-size: 0.75rem">Insira um CPF Válido</p>
+        <p style="color: var(--wm-gray-550); font-size: 0.75rem">{{ translate.text().enter_a_valid_cpf }}</p>
         <button
           class="btn btn-primary w-100"
           [disabled]="pixSecretNumber.length < 11"
@@ -118,7 +122,7 @@
           <!-- Renderização do QR Code -->
           <ng-container *ngIf="pixInvoice.qrCode && !pixRegeneration">
             <div class="d-flex align-items-center flex-column">
-              <p class="fs-5 fw-semibold">Pedido Aguardando Pagamento</p>
+              <p class="fs-5 fw-semibold">{{ translate.text().order_pending_payment }}</p>
               <div>
                 <app-countdown [minutes]="5" [radius]="45"></app-countdown>
               </div>
@@ -146,19 +150,19 @@
           <!-- Renderização do botão para gerar novo QR Code -->
           <div *ngIf="pixRegeneration" class="h-100 d-flex flex-column justify-content-center align-items-center">
             <fa-icon [icon]="faRotate" role="button" (click)="sendQrCodePix({ regenerate: false })" size="4x" class="text-center"></fa-icon>
-            <p class="text-center mt-4">Sua chave PIX expirou. Clique no botão para gerar uma nova.</p>
+            <p class="text-center mt-4">{{ translate.text().pix_key_expired }}</p>
           </div>
 
           <!-- Conteúdo comum -->
           <p *ngIf="!pixRegeneration" class="text-center text-black fw-semibold mx-5" style="font-size: 0.875rem">
-            Cole este código na opção Pix Copia e Cola do seu banco.
+            {{ translate.text().paste_this_code_your_bank }}
           </p>
           <button
             *ngIf="!pixRegeneration"
             class="d-flex justify-content-center mx-auto col-12 col-md-7 btn btn-danger mt-auto p-2 fw-bold"
             (click)="verifyPix()"
           >
-            Verificar pagamento do Pix
+            {{ translate.text().verify_pix_payment }}
           </button>
 
           <ul class="list-group list-group-flush">
@@ -167,7 +171,8 @@
           <div *ngIf="!pixRegeneration" class="bg-white px-3 pb-3 pt-2">
             <ul class="list-unstyled" *ngIf="cart.formsPayment">
               <li *ngFor="let formPayment of returnAllFormsPayment()">
-                {{ formPayment.label }}{{ formPayment.flag ? ' - ' + formPayment.flag.name + ' - ' : ' - ' }}{{ formPayment.value | currency }}
+                {{ translate.text()[formPayment.payment] }}{{ formPayment.flag ? ' - ' + formPayment.flag.name + ' - ' : ' - '
+                }}{{ formPayment.value | currency }}
               </li>
             </ul>
           </div>
@@ -181,10 +186,10 @@
         <div class="col-12">
           <div class="row">
             <div class="col-8 col-md-10">
-              <h6>ITENS</h6>
+              <h6 class="text-uppercase">{{ translate.text().items }}</h6>
             </div>
             <div class="col-4 col-md-2">
-              <h6>PREÇO</h6>
+              <h6 class="text-uppercase">{{ translate.text().price }}</h6>
             </div>
           </div>
           <div class="row">
@@ -231,28 +236,36 @@
           </div>
 
           <div class="row">
-            <div class="col-8 col-md-10 mt-2"><span class="text-black-50 small">Pedido</span></div>
+            <div class="col-8 col-md-10 mt-2">
+              <span class="text-black-50 small text-capitalize">{{ translate.text().order }}</span>
+            </div>
             <div class="col-4 col-md-2 mt-2">
               <span class="text-black-50 small">+ {{ currencyNoSymbol(cart.total || 0) }}</span>
             </div>
           </div>
           <div class="row">
-            <div class="col-8 col-md-10"><span class="text-black-50 small">Entrega</span></div>
+            <div class="col-8 col-md-10">
+              <span class="text-black-50 small text-capitalize">{{ translate.text().delivery }}</span>
+            </div>
             <div class="col-4 col-md-2">
-              <span class="text-black-50 small" *ngIf="(cart.cupom?.type !== 'freight' && cart.taxDelivery > 0) || taxDelivery() === 'À Consultar'">
+              <span
+                class="text-black-50 small"
+                *ngIf="(cart.cupom?.type !== 'freight' && cart.taxDelivery > 0) || taxDelivery() === translate.text().to_consult"
+              >
                 {{ taxDelivery() }}
               </span>
               <span
-                class="text-black-50 small"
+                class="text-black-50 small text-capitalize"
                 *ngIf="(cart.cupom && cart.cupom.type === 'freight') || (cart.taxDelivery !== null && cart.taxDelivery <= 0)"
-                >GRÁTIS</span
+                >{{ translate.text().free }}</span
               >
             </div>
           </div>
           <div class="row" *ngIf="cart.formsPayment[0].addon.status">
             <div class="col-8 col-md-10 mt-1">
               <span class="text-black-50 small"
-                >{{ cart.formsPayment[0].addon.type === 'discount' ? 'Desc.' : 'Taxa' }} {{ cart.formsPayment[0].label }}</span
+                >{{ cart.formsPayment[0].addon.type === 'discount' ? translate.text().disc : translate.text().fee_comment }}
+                {{ cart.formsPayment[0].label }}</span
               >
             </div>
 
@@ -266,7 +279,7 @@
           </div>
           <div class="row" *ngIf="cart.cupom && cart.cupom.type !== 'freight'">
             <div class="col-8 col-md-10">
-              <span class="text-black-50 small">Cupom</span>
+              <span class="text-black-50 small text-capitalize">{{ translate.text().coupon }}</span>
             </div>
             <div class="col-4 col-md-2">
               <span class="text-black-50 small">- {{ currencyNoSymbol(cartService.cupomValue(cart.cupom, cart)) }}</span>
@@ -297,12 +310,12 @@
         <div class="col-12">
           <div class="d-flex py-2 align-items-center border-bottom">
             <div class="">
-              <h5>Entrega</h5>
+              <h5 class="text-capitalize">{{ translate.text().delivery }}</h5>
             </div>
           </div>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item d-flex justify-content-between align-items-center px-2">
-              {{ cart.addressId ? 'Endereço de Entrega' : 'Retirada no Local' }}
+            <li class="list-group-item d-flex justify-content-between align-items-center px-2 text-capitalize">
+              {{ cart.addressId ? translate.text().delivery_address : translate.text().pickup_only }}
             </li>
           </ul>
           <div class="bg-white px-3 pb-3 pt-2">
@@ -311,7 +324,9 @@
               <li>{{ cart.address.neighborhood }} • {{ cart.address.city }} / {{ cart.address.uf }}</li>
               <li *ngIf="cart.obs"><span class="fw-bold">Obs.:</span> {{ cart.address.reference }}</li>
             </ul>
-            <div class="form-group mt-1" *ngIf="cart.client?.secretNumber">CPF: {{ formatCPF(cart.client?.secretNumber) }}</div>
+            <div class="form-group mt-1" *ngIf="cart.client?.secretNumber">
+              {{ translate.text().ssn_model_comment }}: {{ formatCPF(cart.client?.secretNumber) }}
+            </div>
           </div>
         </div>
       </div>
@@ -326,7 +341,7 @@
     <div class="status-point" [ngClass]="status.pointer">
       <!-- pendente -->
       <div class="status-text" [ngClass]="status.text">
-        <span> - {{ title }}</span>
+        <span class="text-capitalize"> - {{ title }}</span>
       </div>
     </div>
   </div>

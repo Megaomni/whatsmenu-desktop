@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:jsdoc/recommended", "plugin:prettier/recommended"],
+  "extends": ["plugin:jsdoc/recommended"],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
@@ -9,7 +9,6 @@
     "node": true
   },
   "rules": {
-    "prettier/prettier": ["error", { "singleQuote": true, "semi": true }],
     "jsdoc/require-param-type": "error"
   },
   "plugins": ["jsdoc"]

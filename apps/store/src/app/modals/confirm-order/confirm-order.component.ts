@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-confirm-order',
@@ -10,6 +11,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 export class ConfirmOrderComponent {
   constructor(
     public dialogRef: MatDialogRef<any>,
+    public translate: TranslateService,
   ){}
 
   ngOnInit(): void {}

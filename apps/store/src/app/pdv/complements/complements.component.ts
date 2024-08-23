@@ -6,6 +6,7 @@ import { CartType } from 'src/app/cart-type'
 import { ComplementItemType, ComplementType } from 'src/app/product-type'
 import { CartService } from 'src/app/services/cart/cart.service'
 import { ContextService } from 'src/app/services/context/context.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'pdv-complements',
@@ -33,7 +34,7 @@ export class ComplementsComponent implements OnInit {
   faArrowLeft = faArrowLeft
   faKeyboard = faKeyboard
 
-  constructor(public cartService: CartService, public context: ContextService) {}
+  constructor(public cartService: CartService, public translate: TranslateService, public context: ContextService) {}
 
   ngOnInit(): void {
     this.displayComplements = structuredClone(this.originalComplements)

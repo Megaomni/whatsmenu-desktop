@@ -20,7 +20,7 @@ import { middleware } from './kernel.js'
 import router from '@adonisjs/core/services/router'
 import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
-const IntegrationsController = () => import('#controllers/integrations_controller')
+const GroveNfesController = () => import('#controllers/grove_nfes_controller')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -78,13 +78,6 @@ router
         router.delete('/:id', [CuponsController, 'delete'])
       })
       .prefix('cupons')
-
-    //INTEGRATIONS
-    router
-      .group(() => {
-        router.patch('/grovenfe', [IntegrationsController, 'createdGrovenfe'])
-      })
-      .prefix('integrations')
 
     // VOUCHER
     router
@@ -154,3 +147,9 @@ router
     router.get('/closeCashiers', [CronsController, 'closeCashiers'])
   })
   .prefix('cron')
+
+router
+  .group(() => {
+    router.post('/webhook', [GroveNfesController, 'webhook'])
+  })
+  .prefix('grovenfe')

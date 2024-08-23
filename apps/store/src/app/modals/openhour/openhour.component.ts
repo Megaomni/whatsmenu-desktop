@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ContextService } from 'src/app/services/context/context.service';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: "app-openhour",
@@ -19,7 +20,8 @@ export class OpenhourComponent {
     {day: 'sunday', name: 'Domingo'}];
 
     constructor(
-      public context: ContextService
+      public context: ContextService,
+      public translate: TranslateService,
     ){
     }
   close(){

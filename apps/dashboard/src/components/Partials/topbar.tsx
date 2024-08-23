@@ -128,7 +128,7 @@ export function Topbar(props: TopbarProps) {
                           .length
                       ) {
                         window.open(
-                          `${process.env.WHATSMENU_BASE_URL}/${profile.slug}/${t('tables')}`,
+                          `${process.env.WHATSMENU_BASE_URL}/${profile.slug}/mesas`,
                           '_blank'
                         )
                       } else {

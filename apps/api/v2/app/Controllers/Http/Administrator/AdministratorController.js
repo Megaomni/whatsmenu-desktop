@@ -379,6 +379,7 @@ class AdministratorController {
       profile.options.onlineCard = data.onlineCard
       profile.options.inventoryControl = data.inventoryControl
       profile.options.legacyPix = data.legacyPix
+      profile.options.locale = data.locale
       const alreadyExistisSlug = await Profile.query().where('slug', data.slug).whereNot('id', profile.id).first()
       if (alreadyExistisSlug) {
         throw new Error('Já existe um cliente com o slug enviado')

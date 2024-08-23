@@ -179,6 +179,7 @@ export interface ProfileOptions {
   integrations: {
     grovenfe:{
       created_at: string
+      company_id: number
     }
   }
   pizza: {

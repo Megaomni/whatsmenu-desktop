@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { TranslateService } from 'src/app/translate.service';
 
 export type CartPaymentCardCheckCvvComponentReturn = {
   cvv: string
@@ -13,6 +14,7 @@ export class CartPaymentCardCheckCvvComponent {
   cvv = ''
   constructor(
     private bottomSheetRef: MatBottomSheetRef<any, CartPaymentCardCheckCvvComponentReturn>,
+    public translate: TranslateService,
   ) {}
 
   dismiss() {
