@@ -32,7 +32,10 @@ export default function Integrations() {
                 className="vr mt-4"
                 style={{ height: 'var(--dropdown-padding-x, 24px)' }}
               ></div>
-              {/* <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} /> */}
+              <HelpVideos.Trigger urls={[{
+                    src: 'https://www.youtube.com/embed/uo7zxBqTBXE',
+                    title: t('online_payment'),
+              }]} />
             </Col>
           </Row>
           <Row>

@@ -55,7 +55,11 @@ export interface CartFormPayment extends ProfileFormPayment {
   online?: boolean
 }
 
-interface Controls {}
+interface Controls {
+  grovenfe: {
+    fiscal_note: any
+  }
+}
 
 interface DefaultConfig {
   filterTypeDelivery?: {

@@ -1,3 +1,4 @@
+import Cart from '#models/cart'
 import Profile from '#models/profile'
 
 export default class GroveNfeService {
@@ -28,4 +29,26 @@ export default class GroveNfeService {
       await profile.save()
     }
   }
+
+  
+ /**
+   * Adiciona uma nota fiscal ao carrinho.
+   *
+   * @param {string} externalId - ID externo do carrinho.
+   * @param {object} fiscalNote - Objeto da nota fiscal.
+   *
+   * @returns {Promise<void>}
+   */
+ async addFiscalNoteToCart( {fiscal_note}: {fiscal_note: any}): Promise<void> {
+  try {
+    const cart = await Cart.find(fiscal_note.externalId);
+      if (cart) {
+        cart.controls = { grovenfe: { fiscal_note }};
+        await cart.save();
+      }
+    } catch (error) {
+     throw error;
+    }
+  }
 }
+
