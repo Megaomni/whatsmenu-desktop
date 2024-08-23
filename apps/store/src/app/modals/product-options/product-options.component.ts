@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheet} from '@angular/material/bottom-sheet';
 import { CartFlavorPizzaType } from 'src/app/cart-pizza';
 import { CartType } from 'src/app/cart-type';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-product-options',
@@ -15,7 +16,7 @@ export class ProductOptionsComponent implements OnInit {
   product: CartType | CartFlavorPizzaType
   productType: string
 
-  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data,
+  constructor(public translate: TranslateService, @Inject(MAT_BOTTOM_SHEET_DATA) public data,
   private _bottomSheetRef: MatBottomSheet) { }
 
   ngOnInit(): void {

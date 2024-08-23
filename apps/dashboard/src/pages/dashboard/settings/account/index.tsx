@@ -45,7 +45,7 @@ export default function Account({ token, ...props }: AccountProps) {
       await apiRoute(`/dashboard/account`, session, 'PATCH', body)
       handleShowToast({
         type: 'success',
-        content: `Senha de segurança cadastrada com sucesso`,
+        content: `${t('security_password_registered')}`,
       })
       profile.not_security_key = false
       setExpired(true)

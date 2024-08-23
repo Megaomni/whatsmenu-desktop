@@ -14,6 +14,7 @@ import { PizzaFlavorComplementsComponent } from 'src/app/pdv/modals/pizza-flavor
 import { ComplementType } from 'src/app/product-type'
 import { AlertComponent } from 'src/app/modals/alert/alert.component'
 import { NgbDropdown } from '@ng-bootstrap/ng-bootstrap'
+import { TranslateService } from 'src/app/translate.service'
 
 export interface InfoDataProps {
   type: 'default' | 'pizza'
@@ -64,7 +65,8 @@ export class InfoModalComponent implements OnInit, AfterViewChecked {
     private keyboardService: MatKeyboardService,
     private matDialog: MatDialog,
     public cartService: CartService,
-    public context: ContextService
+    public context: ContextService,
+    public translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

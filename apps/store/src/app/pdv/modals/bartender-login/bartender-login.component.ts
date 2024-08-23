@@ -4,6 +4,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ContextService } from 'src/app/services/context/context.service';
 import { ToastService } from 'src/app/services/ngb-toast/toast.service';
+import { TranslateService } from 'src/app/translate.service';
 import Table from 'src/classes/table';
 
 @Component({
@@ -23,6 +24,7 @@ export class BartenderLoginComponent implements OnInit {
     public api: ApiService,
     public context: ContextService,
     public toastService: ToastService,
+    public translate: TranslateService,
   ) { }
 
   ngOnInit(): void {

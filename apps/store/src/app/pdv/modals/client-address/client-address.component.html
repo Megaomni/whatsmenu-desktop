@@ -1,7 +1,7 @@
 <div mat-dialog-title class="d-flex align-items-center justify-content-between">
   <div class="d-flex align-items-center gap-3">
     <fa-icon [icon]="faArrowLeft" style="cursor: pointer;" (click)="goBack()"></fa-icon>
-    <h3 class="m-1 fs-5">Endereços</h3>
+    <h3 class="m-1 fs-5 text-capitalize">{{ translate.text().address }}</h3>
   </div>
 </div>
 <mat-dialog-content class="d-flex flex-column align-items-center justify-content-start">
@@ -11,7 +11,7 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Endereço</th>
+            <th class="text-capitalize">{{ translate.text().address }}</th>
             <th></th>
           </tr>
         </thead>
@@ -20,8 +20,8 @@
             <td>{{ index + 1 }}</td>
             <td>{{ address.street }}, {{ address.number ? address.number : 'SN' }} - {{ address.neighborhood }} - {{ address.city }} - {{ address.uf}}</td>
             <td>
-              <button class="btn btn-primary" (click)="updateAddress(address)">
-                Editar
+              <button class="btn btn-primary text-capitalize" (click)="updateAddress(address)">
+                {{ translate.text().edit }}
               </button>
             </td>
           </tr>
@@ -37,15 +37,15 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions *ngIf="data.type !== 'list'" class="justify-content-between">
-  <button type="button" class="btn  btn-outline-secondary"
-    (click)="goBack()">Cancelar</button>
-    <button *ngIf="fromList" type="button" class="btn  btn-secondary"
-    (click)="data.type = 'list'">Lista</button>
-  <button type="button" class="btn" style="color: var(--wm-white); background-color: var(--wm-green-500);"
-    (click)="saveAddress()">Salvar</button>
+  <button type="button" class="btn  btn-outline-secondary text-capitalize"
+    (click)="goBack()">{{ translate.text().cancel }}</button>
+    <button *ngIf="fromList" type="button" class="btn  btn-secondary text-capitalize"
+    (click)="data.type = 'list'">{{ translate.text().list }}</button>
+  <button type="button" class="btn text-capitalize" style="color: var(--wm-white); background-color: var(--wm-green-500);"
+    (click)="saveAddress()">{{ translate.text().save }}</button>
 </mat-dialog-actions>
 
 <mat-dialog-actions *ngIf="data.type === 'list'" class="justify-content-end">
-  <button type="button" class="btn  btn-primary"
-    (click)="toCreateFromList()">Novo</button>
+  <button type="button" class="btn  btn-primary text-capitalize"
+    (click)="toCreateFromList()">{{ translate.text().new }}</button>
 </mat-dialog-actions>

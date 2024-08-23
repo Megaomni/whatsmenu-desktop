@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog'
 import { faTriangleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { PushNotificationsService } from 'src/app/services/push-notifications/push-notifications.service'
+import { TranslateService } from 'src/app/translate.service'
 
 export interface NotifcationPermissionComponentData {
   clientId: number
@@ -18,6 +19,7 @@ export class NotifcationPermissionComponent {
 
   constructor(
     public dialogRef: MatDialogRef<any>,
+    public translate: TranslateService,
     @Inject(MAT_DIALOG_DATA) public data: NotifcationPermissionComponentData,
     private pusNotificationshService: PushNotificationsService
   ) {}

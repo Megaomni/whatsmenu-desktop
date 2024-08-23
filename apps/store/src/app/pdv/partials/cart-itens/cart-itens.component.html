@@ -1,5 +1,5 @@
 <div class="d-flex flex-column h-100">
-  <h2 *ngIf="!cart.length && !cartPizza.length" class="text-normal text-center m-auto">Carrinho Vazio</h2>
+  <h2 *ngIf="!cart.length && !cartPizza.length" class="text-normal text-center m-auto">{{ translate.text().cart_empty }}</h2>
   <div *ngIf="cart.length || cartPizza.length" style="flex-grow: 1" class="no-scroll-bar">
     <ul class="p-0">
       <li *ngFor="let pizza of cartPizza; index as index; trackBy: trackBy" style="margin-block: 0.5rem">
@@ -112,8 +112,8 @@
         <span>{{ complement.name }}</span>
       </div>
     </h4>
-    <p *ngIf="complement.min > 0" class="text-small p-0 m-0">Quantidade mínima: {{ complement.min }}</p>
-    <p *ngIf="complement.max" class="text-small p-0 m-0">Quantidade máxima: {{ complement.max }}</p>
+    <p *ngIf="complement.min > 0" class="text-small p-0 m-0">{{ translate.text().minimum_quantity }}: {{ complement.min }}</p>
+    <p *ngIf="complement.max" class="text-small p-0 m-0">{{ translate.text().maximum_quantity }}: {{ complement.max }}</p>
     <ul class="px-0">
       <li *ngFor="let item of complement.itens; index as index; trackBy: trackBy" class="d-flex justify-content-between">
         <span style="flex-basis: 33.4%">{{ item.quantity }}x {{ item.name }}</span>

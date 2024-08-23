@@ -1,21 +1,21 @@
 <div class="d-flex flex-column align-items-center p-4">
   <ng-container *ngIf="!editMode">
-    <button class="d-flex justify-content-center border-0 btn fw-bold w-100 gap-4 p-3" (click)="editMode = true">
-      <p>Editar</p>
+    <button class="d-flex justify-content-center border-0 btn fw-bold w-100 gap-4 p-3 text-capitalize" (click)="editMode = true">
+      <p>{{ translate.text().edit }}</p>
       <fa-icon [icon]="faEdit" />
     </button>
-    <button class="d-flex justify-content-center border-0 btn fw-bold w-100 gap-4 p-3 border-top rounded-0" (click)="close('delete')">
-      <p>Excluir</p>
+    <button class="d-flex justify-content-center border-0 btn fw-bold w-100 gap-4 p-3 border-top rounded-0 text-capitalize" (click)="close('delete')">
+      <p>{{ translate.text().delete }}</p>
       <fa-icon [icon]="faTrashCan" />
     </button>
   </ng-container>
   <ng-container *ngIf="editMode">
     <fa-icon class="position-absolute" style="left: -5px; top: 5px;" [icon]="faChevronLeft" (click)="editMode = false" role="button" />
-    <label class="d-flex flex-column align-items-center gap-2 mb-4">
-      <p class="fw-bold">Qual apelido desse cartão?</p>
+    <label class="d-flex flex-column align-items-center gap-2 mb-4 text-capitalize">
+      <p class="fw-bold">{{ translate.text().what_card_nickname }}?</p>
       <input type="text" class="form-control" [(ngModel)]="surname">
     </label>
-    <button form="cvv-form" type="submit" class="btn btn-danger mt-auto p-2 w-100 fw-bold" (click)="close('update')">Salvar</button>
+    <button form="cvv-form" type="submit" class="btn btn-danger mt-auto p-2 w-100 fw-bold text-capitalize" (click)="close('update')">{{ translate.text().save }}</button>
   <!-- <button form="cvv-form" type="submit" class="btn bg-theme mt-auto p-3 w-100 fw-bold" (click)="close('update')">Salvar</button> -->
   </ng-container>
 </div>

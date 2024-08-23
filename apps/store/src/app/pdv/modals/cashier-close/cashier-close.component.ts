@@ -5,6 +5,7 @@ import { ClosedValue } from 'src/app/formpayment-type';
 import { ApiService } from 'src/app/services/api/api.service';
 import { ContextService } from 'src/app/services/context/context.service';
 import { ToastService } from 'src/app/services/ngb-toast/toast.service';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-cashier-close',
@@ -24,6 +25,7 @@ export class CashierCloseComponent implements OnInit {
     public context: ContextService,
     public api: ApiService,
     public toastService: ToastService,
+    public translate: TranslateService,
   ) { }
 
   async ngOnInit(): Promise<void> {

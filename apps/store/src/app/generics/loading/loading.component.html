@@ -1,4 +1,9 @@
 <div #loading_container class="loading-container bg-white">
-  <p>Carregando...</p>
-  <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+  <p className="text-capitalize">{{ translate && translate?.text() ? translate.text().loading_page : 'Carregando Pagina' }}</p>
+  <div class="lds-ellipsis">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
 </div>

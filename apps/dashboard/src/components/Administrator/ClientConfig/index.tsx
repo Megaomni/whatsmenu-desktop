@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AxiosError } from 'axios'
+import i18n from 'i18n'
 import { DateTime } from 'luxon'
 import { UserType } from 'next-auth'
 import { signIn, useSession } from 'next-auth/react'
@@ -16,20 +17,17 @@ import {
   Table,
 } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { BsFillArrowLeftCircleFill } from 'react-icons/bs'
 import { FaCheck } from 'react-icons/fa'
+import { api } from 'src/lib/axios'
 import { z } from 'zod'
 import { AppContext } from '../../../context/app.ctx'
 import { Plan, SystemProduct } from '../../../types/plan'
-import Profil from '../../../types/profile'
+import Profile from '../../../types/profile'
 import { apiRoute, mask } from '../../../utils/wm-functions'
 import { Plans } from '../../Plans'
-import { api } from 'src/lib/axios'
-import i18n from 'i18n'
-import { useTranslation } from 'react-i18next'
-import { ProfileFormsPayment } from '@components/Profile/FormsPayment'
-import Profile from '../../../types/profile'
-
+//
 const PixNegotiationSchema = z.object({
   fee: z
     .string()
@@ -93,9 +91,9 @@ export function ClientConfig({
     user?.profile?.options?.asaas?.negotiation?.pix.at(-1)
   const pixFeeExpirationDayCount = lastPixNegotiation
     ? DateTime.fromFormat(
-        lastPixNegotiation?.expiration_date!,
-        'yyyy-MM-dd HH:mm:ss'
-      ).diffNow('days').days
+      lastPixNegotiation?.expiration_date!,
+      'yyyy-MM-dd HH:mm:ss'
+    ).diffNow('days').days
     : 0
 
   const pixNegotiationForm = useForm<PixNegotiationSchemaInput>({
@@ -638,27 +636,27 @@ export function ClientConfig({
               </Col>
               {(userContext?.controls.type === 'adm' ||
                 userContext?.controls.type === 'manager') && (
-                <Col sm="12" md className="mb-md-0 mb-2">
-                  <FormGroup>
-                    <Form.Label>{t('password')}</Form.Label>
-                    <Form.Control
-                      type="password"
-                      placeholder={t('enter_new_password')}
-                      onChange={(e) => handleChange(e.target.value, 'password')}
-                    />
-                  </FormGroup>
-                </Col>
-              )}
+                  <Col sm="12" md className="mb-md-0 mb-2">
+                    <FormGroup>
+                      <Form.Label>{t('password')}</Form.Label>
+                      <Form.Control
+                        type="password"
+                        placeholder={t('enter_new_password')}
+                        onChange={(e) => handleChange(e.target.value, 'password')}
+                      />
+                    </FormGroup>
+                  </Col>
+                )}
             </Row>
           </Col>
           <Col className="d-flex justify-content-around fs-7 fw-bold flex-column flex-md-row gap-2  ">
             {(userContext?.controls.type === 'adm' ||
               userContext?.controls.type === 'manager') && (
-              <FormGroup className="d-flex flex-column flex-grow-1">
-                <Form.Label>{t('security_key')}</Form.Label>
-                <Button onClick={handleResetSecurityKey}>{t('reset')}</Button>
-              </FormGroup>
-            )}
+                <FormGroup className="d-flex flex-column flex-grow-1">
+                  <Form.Label>{t('security_key')}</Form.Label>
+                  <Button onClick={handleResetSecurityKey}>{t('reset')}</Button>
+                </FormGroup>
+              )}
             <FormGroup className="d-flex flex-column flex-grow-1">
               <Form.Label>{t('access_panel')}</Form.Label>
               <Button
@@ -670,7 +668,7 @@ export function ClientConfig({
                 }
                 title={
                   userContext?.controls?.type !== 'adm' &&
-                  user?.controls?.type === 'adm'
+                    user?.controls?.type === 'adm'
                     ? i18n.t('not_have_permission_adm')
                     : ''
                 }
@@ -718,78 +716,78 @@ export function ClientConfig({
         </Modal>
         {(userContext?.controls?.type === 'adm' ||
           userContext?.controls?.type === 'manager') && (
-          <Row className="fs-7 fw-bold mt-4">
-            <Col>
-              <FormGroup>
-                <Form.Label>{t('user_cancellation')}</Form.Label>
-                <Form.Switch
-                  label={t('cancel_charges_user')}
-                  id="Cancelar cobranças deste usuário?"
-                  className="text-wrap"
-                  checked={user.controls?.canceled ?? false}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      controls: {
-                        ...user.controls,
-                        canceled: e.target.checked,
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Form.Label>
-                  {t('version_next')}{' '}
-                  <span className="text-uppercase">({t('test')})</span>
-                </Form.Label>
-                <Form.Switch
-                  id="nextVersion"
-                  label={t('activate')}
-                  className="text-wrap"
-                  checked={user.controls?.beta}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      controls: {
-                        ...user.controls,
-                        beta: e.target.checked,
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col>
-              <FormGroup>
-                <Form.Label>
-                  {t('automatic_printing_browser')}{' '}
-                  <span className="text-uppercase">({t('test')})</span>
-                </Form.Label>
-                <Form.Switch
-                  id="webPrint"
-                  label="Ativar"
-                  className="text-wrap"
-                  checked={user.controls?.print?.web}
-                  onChange={(e) =>
-                    setUser({
-                      ...user,
-                      controls: {
-                        ...user.controls,
-                        print: {
-                          ...user?.controls?.print,
-                          web: e.target.checked,
+            <Row className="fs-7 fw-bold mt-4">
+              <Col>
+                <FormGroup>
+                  <Form.Label>{t('user_cancellation')}</Form.Label>
+                  <Form.Switch
+                    label={t('cancel_charges_user')}
+                    id="Cancelar cobranças deste usuário?"
+                    className="text-wrap"
+                    checked={user.controls?.canceled ?? false}
+                    onChange={(e) =>
+                      setUser({
+                        ...user,
+                        controls: {
+                          ...user.controls,
+                          canceled: e.target.checked,
                         },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-          </Row>
-        )}
+                      })
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <Form.Label>
+                    {t('version_next')}{' '}
+                    <span className="text-uppercase">({t('test')})</span>
+                  </Form.Label>
+                  <Form.Switch
+                    id="nextVersion"
+                    label={t('activate')}
+                    className="text-wrap"
+                    checked={user.controls?.beta}
+                    onChange={(e) =>
+                      setUser({
+                        ...user,
+                        controls: {
+                          ...user.controls,
+                          beta: e.target.checked,
+                        },
+                      })
+                    }
+                  />
+                </FormGroup>
+              </Col>
+              <Col>
+                <FormGroup>
+                  <Form.Label>
+                    {t('automatic_printing_browser')}{' '}
+                    <span className="text-uppercase">({t('test')})</span>
+                  </Form.Label>
+                  <Form.Switch
+                    id="webPrint"
+                    label="Ativar"
+                    className="text-wrap"
+                    checked={user.controls?.print?.web}
+                    onChange={(e) =>
+                      setUser({
+                        ...user,
+                        controls: {
+                          ...user.controls,
+                          print: {
+                            ...user?.controls?.print,
+                            web: e.target.checked,
+                          },
+                        },
+                      })
+                    }
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          )}
         <FormGroup className="fw-bold my-3">
           <Form.Label>{t('notes')}</Form.Label>
           <Form.Control
@@ -1071,6 +1069,7 @@ export function ClientConfig({
                   aria-label={t('select_language')}
                   value={user.profile?.options?.locale?.language}
                   onChange={(e) => {
+                    i18n.changeLanguage(e.target.value)
                     if (user.profile) {
                       setUser({
                         ...user,
@@ -1090,6 +1089,9 @@ export function ClientConfig({
                 >
                   <option value="pt-BR">{t('portuguese_brazil')}</option>
                   <option value="en-US">{t('english_us')}</option>
+                  <option value="fr-CH">{t('swiss_french_chf')}</option>
+                  <option value="pt-PT">{t('portuguese_portugal')}</option>
+                  <option value="ar-AE">{t('english_ar')}</option>
                 </Form.Select>
               </Col>
               <Col sm="6" className="my-lg-0 my-2">
@@ -1119,6 +1121,9 @@ export function ClientConfig({
                 >
                   <option value="BRL">BRL (R$)</option>
                   <option value="USD">USD ($)</option>
+                  <option value="CHF">CHF (Fr)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="AED">AED (.د.إ)</option>
                 </Form.Select>
               </Col>
             </Row>
@@ -1127,6 +1132,20 @@ export function ClientConfig({
                 sm={12}
                 className="d-flex justify-content-end gap-2 text-end"
               >
+                <Button
+                  onClick={() =>
+                    window.open(
+                      `${process.env.WHATSMENU_BASE_URL}/${user.profile?.slug}`,
+                      '_blank'
+                    )
+                  }
+                  disabled={
+                    (secretNumberInvalid && !secretNumberInvalid?.valid) ||
+                    emailInvalid
+                  }
+                >
+                  {t('menu')}
+                </Button>
                 <Button variant="success" onClick={handleSaveUserProfile}>
                   {t('save')}
                 </Button>
@@ -1236,129 +1255,141 @@ export function ClientConfig({
             products={props.systemProducts}
           />
         )}
-        <span className="fw-bold">{t('add_ons')}</span>
-        <hr />
-        {props.systemProducts.map((prod) => {
-          const price = prod.operations.prices.find(
-            (price) => price.id === prod.default_price
-          )
-          const value =
-            (price?.currencies[
-              user?.controls?.currency ?? price?.default_currency
-            ].unit_amount ?? 0) / 100
-          const productItem = invoiceItems.find((item) => item.id === prod.id)
-          if (prod.service === 'menu' || prod.service === 'printer') {
-            return (
-              <Row key={prod.name} className="mb-2">
-                <Col>
-                  <Form.Switch
-                    id={prod.name}
-                    label={prod.name}
-                    checked={!!productItem}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        if (price) {
-                          setInvoiceItems((oldItems) => {
-                            if (!oldItems.some((item) => item.id === prod.id)) {
-                              oldItems.push({
-                                id: prod.id,
-                                name: prod.name,
-                                service: prod.service,
-                                quantity: 1,
-                                price_id: price?.id,
-                                value,
+        {i18n.language === 'pt-BR' && (
+          <>
+            <span className="fw-bold">{t('add_ons')}</span>
+            <hr />
+            {props.systemProducts.map((prod) => {
+              const price = prod.operations.prices.find(
+                (price) => price.id === prod.default_price
+              )
+              const value =
+                (price?.currencies[
+                  user?.controls?.currency ?? price?.default_currency
+                ].unit_amount ?? 0) / 100
+              const productItem = invoiceItems.find(
+                (item) => item.id === prod.id
+              )
+              if (prod.service === 'menu' || prod.service === 'printer') {
+                return (
+                  <Row key={prod.name} className="mb-2">
+                    <Col>
+                      <Form.Switch
+                        id={prod.name}
+                        label={prod.name}
+                        checked={!!productItem}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            if (price) {
+                              setInvoiceItems((oldItems) => {
+                                if (
+                                  !oldItems.some((item) => item.id === prod.id)
+                                ) {
+                                  oldItems.push({
+                                    id: prod.id,
+                                    name: prod.name,
+                                    service: prod.service,
+                                    quantity: 1,
+                                    price_id: price?.id,
+                                    value,
+                                  })
+                                }
+
+                                return [...oldItems]
                               })
                             }
-
-                            return [...oldItems]
-                          })
-                        }
-                      } else {
-                        setInvoiceItems((oldItems) => {
-                          return oldItems.filter((item) => item.id !== prod.id)
-                        })
-                      }
-                    }}
-                    className="my-auto"
-                  />
-                </Col>
-                {prod.service === 'printer' && (
-                  <Col>
-                    <InputGroup>
-                      <InputGroup.Text>{t('quantity')}</InputGroup.Text>
-                      <Form.Control
-                        type="number"
-                        min={1}
-                        value={productItem?.quantity ?? 1}
-                        onChange={(e) => {
-                          setInvoiceItems((oldItems) => {
-                            const item = oldItems.find(
-                              (item) => item.id === prod.id
-                            )
-                            if (item) {
-                              item.quantity = Number(e.target.value)
-                            }
-
-                            return [...oldItems]
-                          })
+                          } else {
+                            setInvoiceItems((oldItems) => {
+                              return oldItems.filter(
+                                (item) => item.id !== prod.id
+                              )
+                            })
+                          }
                         }}
+                        className="my-auto"
                       />
-                      <InputGroup.Text>
-                        {currency({
-                          value: value * (productItem?.quantity ?? 1),
-                        })}
-                      </InputGroup.Text>
-                    </InputGroup>
-                  </Col>
-                )}
-                <Col sm={4}>
-                  <Form.Select
-                    disabled={!invoiceItems.some((item) => item.id === prod.id)}
-                    onChange={(e) => {
-                      if (productItem) {
-                        productItem.value = Number(e.target.value)
-                        if (e.target.dataset.priceId) {
-                          productItem.price_id = e.target.dataset.priceId
-                        }
-                        setInvoiceItems((oldItems) => [...oldItems])
-                      }
-                    }}
-                  >
-                    {prod.operations.prices.map((price) => {
-                      const currencyMoney =
-                        price.currencies[user?.controls?.currency ?? 'brl']
+                    </Col>
+                    {prod.service === 'printer' && (
+                      <Col>
+                        <InputGroup>
+                          <InputGroup.Text>{t('quantity')}</InputGroup.Text>
+                          <Form.Control
+                            type="number"
+                            min={1}
+                            value={productItem?.quantity ?? 1}
+                            onChange={(e) => {
+                              setInvoiceItems((oldItems) => {
+                                const item = oldItems.find(
+                                  (item) => item.id === prod.id
+                                )
+                                if (item) {
+                                  item.quantity = Number(e.target.value)
+                                }
 
-                      return (
-                        <option
-                          key={price.id}
-                          selected={price.id === prod.default_price}
-                          value={currencyMoney.unit_amount / 100}
-                          data-price-id={price.id}
-                        >
-                          {currency({ value: currencyMoney.unit_amount / 100 })}
-                        </option>
-                      )
-                    })}
-                  </Form.Select>
-                </Col>
-              </Row>
-            )
-          }
-        })}
-        <Row>
-          <Col>
-            <span>
-              <b>Total</b>:{' '}
-              {currency({
-                value: invoiceItems.reduce(
-                  (acc, item) => acc + item.value * item.quantity,
-                  0
-                ),
-              })}
-            </span>
-          </Col>
-        </Row>
-        {/* <Row>
+                                return [...oldItems]
+                              })
+                            }}
+                          />
+                          <InputGroup.Text>
+                            {currency({
+                              value: value * (productItem?.quantity ?? 1),
+                            })}
+                          </InputGroup.Text>
+                        </InputGroup>
+                      </Col>
+                    )}
+                    <Col sm={4}>
+                      <Form.Select
+                        disabled={
+                          !invoiceItems.some((item) => item.id === prod.id)
+                        }
+                        onChange={(e) => {
+                          if (productItem) {
+                            productItem.value = Number(e.target.value)
+                            if (e.target.dataset.priceId) {
+                              productItem.price_id = e.target.dataset.priceId
+                            }
+                            setInvoiceItems((oldItems) => [...oldItems])
+                          }
+                        }}
+                      >
+                        {prod.operations.prices.map((price) => {
+                          const currencyMoney =
+                            price.currencies[user?.controls?.currency ?? 'brl']
+
+                          return (
+                            <option
+                              key={price.id}
+                              selected={price.id === prod.default_price}
+                              value={currencyMoney.unit_amount / 100}
+                              data-price-id={price.id}
+                            >
+                              {currency({
+                                value: currencyMoney.unit_amount / 100,
+                              })}
+                            </option>
+                          )
+                        })}
+                      </Form.Select>
+                    </Col>
+                  </Row>
+                )
+              }
+            })}
+            <Row>
+              <Col>
+                <span>
+                  <b>Total</b>:{' '}
+                  {currency({
+                    value: invoiceItems.reduce(
+                      (acc, item) => acc + item.value * item.quantity,
+                      0
+                    ),
+                  })}
+                </span>
+              </Col>
+            </Row>
+            {/* <Row>
           <Col md className="d-flex">
             <Form.Switch
               id="Serviço de Cadastro"
@@ -1442,39 +1473,42 @@ export function ClientConfig({
             </Col>
           </>
         </Row> */}
-        <Row>
-          <Col className="d-flex align-items-end gap-2">
-            <Button
-              className="px-5"
-              variant="success"
-              onClick={handleEmitAddons}
-              disabled={!invoiceItems?.length}
-            >
-              {t('issue')}
-            </Button>
-            <div>
-              <Form.Label>{t('number_installments')}</Form.Label>
-              <Form.Select
-                value={installments}
-                onChange={(e) => {
-                  setInstallments(Number(e.target.value))
-                }}
-              >
-                {Array(12)
-                  .fill('')
-                  .map((item, index) => {
-                    const newIndex = index + 1
+            <Row>
+              <Col className="d-flex align-items-end gap-2">
+                <Button
+                  className="px-5"
+                  variant="success"
+                  onClick={handleEmitAddons}
+                  disabled={!invoiceItems?.length}
+                >
+                  {t('issue')}
+                </Button>
+                <div>
+                  <Form.Label>{t('number_installments')}</Form.Label>
+                  <Form.Select
+                    value={installments}
+                    onChange={(e) => {
+                      setInstallments(Number(e.target.value))
+                    }}
+                  >
+                    {Array(12)
+                      .fill('')
+                      .map((item, index) => {
+                        const newIndex = index + 1
 
-                    return (
-                      <option key={newIndex} value={newIndex}>
-                        {newIndex}
-                      </option>
-                    )
-                  })}
-              </Form.Select>
-            </div>
-          </Col>
-        </Row>
+                        return (
+                          <option key={newIndex} value={newIndex}>
+                            {newIndex}
+                          </option>
+                        )
+                      })}
+                  </Form.Select>
+                </div>
+              </Col>
+            </Row>
+          </>
+        )}
+
         <span className="fw-bold">{t('invoices')}</span>
         <hr />
         <Table responsive striped hover className="text-center align-middle">
@@ -1492,8 +1526,8 @@ export function ClientConfig({
               <tr key={invoice.id}>
                 <td>
                   {invoice.requests &&
-                  invoice.requests[0] &&
-                  invoice.requests[0].transactionId
+                    invoice.requests[0] &&
+                    invoice.requests[0].transactionId
                     ? invoice.requests[0].transactionId
                     : '-'}
                 </td>

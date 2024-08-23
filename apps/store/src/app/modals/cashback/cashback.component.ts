@@ -1,3 +1,4 @@
+import { TranslateService } from 'src/app/translate.service';
 import { Component, EventEmitter, Input, Output, ElementRef, ViewChild } from '@angular/core'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 
@@ -7,7 +8,7 @@ import { CartFormPaymentType } from 'src/app/formpayment-type'
   styleUrls: ['./cashback.component.scss'],
 })
 export class CashbackComponent {
-  constructor() {}
+  constructor(public translate: TranslateService) {}
   @Input() value: number
   @Input() formsPayment: CartFormPaymentType[]
   @Input() cashbackValue: number

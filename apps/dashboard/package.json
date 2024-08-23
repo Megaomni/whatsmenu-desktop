@@ -7,7 +7,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "local": "export WHATSMENU_API=https://beta.whatsmenu.com.br && export WHATSMENU_BASE_URL=https://homosite.whatsmenu.com.br && export NEXTAUTH_URL=http://localhost:3000 && next dev",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "format": "prettier --write ."

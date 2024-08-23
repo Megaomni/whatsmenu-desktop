@@ -21,6 +21,7 @@ const providers = [
   '@adonisjs/session/providers/SessionProvider',
   '@adonisjs/auth/providers/AuthProvider',
   '@adonisjs/drive/providers/DriveProvider',
+  '@adonisjs/antl/providers/AntlProvider',
   path.join(__dirname, '..', 'providers', 'UtilityProvider'),
   path.join(__dirname, '..', 'providers', 'GoogleProvider')
 ]

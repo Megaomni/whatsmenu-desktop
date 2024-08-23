@@ -95,11 +95,22 @@ export const getNow = ({
 
 /** Formata telefone para (00) 0000-0000 ou (00) 00000-0000 */
 export const maskedPhone = (contact: string) => {
-  if (contact.length > 11) {
-    return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+  switch (i18n.language) {
+    case 'pt-BR': {
+      if (contact.length > 11) {
+        return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+      }
+      return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+    }
+    case 'en-US': {
+      return contact.replace(/(\d{1})(\d{3})(\d{3})(\d{4})/, '($1) $2-$3-$4')
+    }
+    case 'fr-CH': {
+      return contact.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, '($1) $2-$3-$4')
+    }
+    default:
+      return contact
   }
-
-  return contact.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
 }
 
 /** Verifica a luminosidade a cor do fundo e retorna a cor da fonte de acordo com a luminosidade. Ex: (background: #000000 => color: #FFFFFF), Retorna uma cor alternativa para o fundo de encomendas/agendamentos para loja */
@@ -248,29 +259,31 @@ export const mask = (
         '$1.$2'
       )
       break
-    case 'cep':
-      {
-        e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
-        switch (i18n.language) {
-          case 'pt-BR': {
-            e.currentTarget.maxLength = 9
-            e.currentTarget.value = e.currentTarget.value.replace(
-              /^(\d{5})(\d)/g,
-              '$1-$2'
-            )
-            break
-          }
-          case 'en-US':
-            {
-              e.currentTarget.maxLength = 5
-              e.target.value = e.target.value.substring(0, 5)
-              e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
-            }
-            break
+    case 'cep': {
+      e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '')
+      switch (i18n.language) {
+        case 'pt-PT':
+        case 'pt-BR': {
+          e.currentTarget.maxLength = 9
+          e.currentTarget.value = e.currentTarget.value.replace(
+            /^(\d{5})(\d)/g,
+            '$1-$2'
+          )
+          break
         }
-      }
+        case 'fr-CH':
+        case 'en-US': {
+          e.currentTarget.maxLength = 5
+          e.target.value = e.target.value.substring(0, 5)
+          e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
+          break
+        }
+        case 'ar-AE': {
+          e.currentTarget.maxLength = 6
+        }
 
-      break
+      }
+    }
     case 'cpf/cnpj':
       switch (i18n.language) {
         case 'pt-BR': {
@@ -303,16 +316,52 @@ export const mask = (
               .replace(/-(\d{2})(\d)/, '-$1-$2') // Adiciona o segundo hífen
               .replace(/-(\d{4})$/, '-$1') // Adiciona o quarto grupo de dígitos
 
-            return { type: 'SSN', valid: rawValue.length === 9 } // Verifica se a quantidade de dígitos é 9
-          } else if (rawValue.length <= 9) {
-            e.currentTarget.maxLength = 10
+            return { type: 'SSN', valid: rawValue.length === 9 }
+          } else {
+            e.currentTarget.maxLength = 9
 
             // Formatação para EIN (no formato XX-XXXXXXX)
-            e.currentTarget.value = rawValue.replace(/^(\d{2})(\d+)/, '$1-$2') // Adiciona o hífen após os dois primeiros dígitos
+            e.currentTarget.value = rawValue.replace(
+              /^(\d{2})(\d{7})$/,
+              '$1-$2'
+            )
 
-            return { type: 'EIN', valid: rawValue.length === 9 } // Verifica se a quantidade de dígitos é 9
+            return { type: 'EIN', valid: rawValue.length === 9 }
           }
-          break
+        }
+        case 'fr-CH': {
+          // Remove todos os caracteres não numéricos
+          let rawValue = e.currentTarget.value.replace(/\D/g, '')
+
+          // Garante que o número sempre comece com '756'
+          if (!rawValue.startsWith('756')) {
+            rawValue = '756' + rawValue.slice(3)
+          }
+
+          e.currentTarget.maxLength = 16
+
+          // Formatação para o formato 756.XXXX.XXXX.XX
+          e.currentTarget.value = rawValue
+            .replace(/^(\d{3})(\d{0,4})/, '$1.$2') // Adiciona o primeiro ponto após os 3 primeiros dígitos
+            .replace(/\.(\d{4})(\d{1,4})/, '.$1.$2') // Adiciona o segundo ponto após os 4 próximos dígitos
+            .replace(/\.(\d{4})(\d{1,2})$/, '.$1.$2') // Adiciona os últimos 2 dígitos
+
+          return { type: 'AVS', valid: rawValue.length === 13 }
+        }
+        case 'pt-PT': {
+          e.currentTarget.maxLength = 9 // Permite até 11 caracteres, incluindo espaços
+
+          e.currentTarget.value = e.currentTarget.value.replace(/\D/g, '') // Remove todos os caracteres não numéricos
+
+          return { type: 'NIF', valid: e.currentTarget.value.length === 9 } // Valida com base no comprimento
+        }
+        case 'ar-AE': {
+          e.currentTarget.value = e.currentTarget.value
+            .replace(/(\d{3})(\d)/, '$1-$2')
+            .replace(/(\d{4})(\d)/, '$1-$2')
+            .replace(/(\d{7})(\d)$/, '$1-$2')
+            .replace(/(\d{1})(\d)$/, '$1-$2')
+          return { type: 'Emirates ID', valid: cpf.isValid(e.currentTarget.value) }
         }
       }
 
@@ -338,15 +387,38 @@ export const mask = (
           case 'en-US': {
             e.currentTarget.maxLength = 14
 
-            if (e.currentTarget.value.length > 10) {
-              e.currentTarget.value = e.currentTarget.value
-                .replace(/^(\d{3})(\d)/, '($1) $2')
-                .replace(/(\d{3})(\d{4})$/, '$1-$2')
-            } else {
-              e.currentTarget.value = e.currentTarget.value
-                .replace(/^(\d{3})(\d)/, '($1) $2')
-                .replace(/(\d{3})(\d{4})$/, '$1-$2')
-            }
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{3})(\d{0,3})/, '($1) $2') // Adiciona parênteses e espaço
+              .replace(/\s(\d{3})(\d{0,4})/, ' $1-$2') // Adiciona hífen
+            break
+          }
+          case 'fr-CH': {
+            e.currentTarget.maxLength = 12 // Permite até 12 caracteres incluindo espaços
+
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{2})(\d{3})(\d{2})(\d{2})$/, '$1 $2 $3 $4')
+
+            break
+          }
+          case 'pt-PT': {
+            e.currentTarget.maxLength = 11 // Permite até 12 caracteres, incluindo espaços
+
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3')
+              .trim() // Remove espaços extras no final, se houver
+
+            break
+          }
+          case 'ar-AE': {
+            e.currentTarget.maxLength = 11
+            e.currentTarget.value = e.currentTarget.value
+              .replace(/\D/g, '') // Remove todos os caracteres não numéricos
+              .replace(/^(\d{2})(\d)/, '$1 $2')
+              .replace(/(\d{3})(\d)/, '$1 $2')
+              .replace(/(\d{4})(\d)$/, '$1 $2')
             break
           }
         }
@@ -428,8 +500,8 @@ export const scrollToElement = (
           window.scroll(
             0,
             element.getBoundingClientRect().y +
-              (window?.visualViewport?.pageTop ?? 0) -
-              (topbar?.clientHeight ?? 0)
+            (window?.visualViewport?.pageTop ?? 0) -
+            (topbar?.clientHeight ?? 0)
           )
         }
       }
@@ -505,7 +577,7 @@ export const normalizeCaracter = (
     .toString()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    [typeFunction]()
+  [typeFunction]()
 }
 
 type inputProps = {
@@ -527,48 +599,48 @@ export const inputFocus: (
     differTop,
   }: inputProps = {}
 ) => {
-  let tentatives = 0
+    let tentatives = 0
 
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      const element = document.querySelector(querySelector) as HTMLInputElement
+    return new Promise((resolve, reject) => {
+      const interval = setInterval(() => {
+        const element = document.querySelector(querySelector) as HTMLInputElement
 
-      if (element) {
-        element.focus({
-          preventScroll: scroll,
-        })
+        if (element) {
+          element.focus({
+            preventScroll: scroll,
+          })
 
-        if (queryParentElement) {
-          element.focus({ preventScroll: true })
+          if (queryParentElement) {
+            element.focus({ preventScroll: true })
 
-          const parentElement = document.querySelector(queryParentElement)
+            const parentElement = document.querySelector(queryParentElement)
 
-          if (parentElement) {
-            // scroll && scrollToElement(querySelector, {
-            //   queryParentElement,
-            //   differTop
-            // });
+            if (parentElement) {
+              // scroll && scrollToElement(querySelector, {
+              //   queryParentElement,
+              //   differTop
+              // });
+            }
           }
+
+          if (selectText) {
+            element.select()
+          }
+          clearInterval(interval)
+          resolve(element)
         }
 
-        if (selectText) {
-          element.select()
+        if (tentatives >= 100) {
+          clearInterval(interval)
+          reject({
+            message: 'Input não encontrado',
+          })
         }
-        clearInterval(interval)
-        resolve(element)
-      }
 
-      if (tentatives >= 100) {
-        clearInterval(interval)
-        reject({
-          message: 'Input não encontrado',
-        })
-      }
-
-      tentatives++
-    }, 10)
-  })
-}
+        tentatives++
+      }, 10)
+    })
+  }
 
 /** Gera uma string dataURL do blob(IMAGEM) passado no parametro. */
 export const blobToBase64 = async (blob: any) => {
@@ -676,7 +748,7 @@ export const modifyFontValues = (
 /** Recebe o Event e copia o texto do Event.target */
 export const handleCopy = (
   e: any,
-  handleShowToast: ({}: WMToastProps) => void,
+  handleShowToast: ({ }: WMToastProps) => void,
   callback?: () => void
 ) => {
   const text =
@@ -742,27 +814,25 @@ export const handlePrintApp = (
         tableConfigs.opened.paid =
           tableConfigs.opened.getTotalValue('paid') || 0
         tableConfigs.opened.wsFormsPayment = tableConfigs.opened.formsPayment
-        tableConfigs.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.opened?.created_at as string).toFormat('HH:mm')}/${
-          report
-            ? DateTime.fromSQL(
-                tableConfigs.opened?.updated_at as string
-              ).toFormat('HH:mm')
-            : DateTime.local().toFormat('HH:mm')
-        } - ${
-          report
+        tableConfigs.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.opened?.created_at as string).toFormat('HH:mm')}/${report
+          ? DateTime.fromSQL(
+            tableConfigs.opened?.updated_at as string
+          ).toFormat('HH:mm')
+          : DateTime.local().toFormat('HH:mm')
+          } - ${report
             ? DateTime.fromSQL(tableConfigs.opened?.updated_at as string)
-                .diff(
-                  DateTime.fromSQL(tableConfigs.opened?.created_at as string),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
+              .diff(
+                DateTime.fromSQL(tableConfigs.opened?.created_at as string),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
             : DateTime.local()
-                .diff(
-                  DateTime.fromSQL(tableConfigs.opened?.created_at as string),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
-        }`
+              .diff(
+                DateTime.fromSQL(tableConfigs.opened?.created_at as string),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
+          }`
         tableConfigs.opened.updatedFees = tableConfigs.opened
           .getUpdatedFees(!report)
           .filter((fee) => fee.deleted_at === null)
@@ -782,31 +852,29 @@ export const handlePrintApp = (
           tableConfigs.table.opened.getTotalValue('paid') || 0
         tableConfigs.table.opened.wsFormsPayment =
           tableConfigs.table.opened.formsPayment
-        tableConfigs.table.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.table.opened?.created_at as string).toFormat('HH:mm')}/${
-          report
-            ? DateTime.fromSQL(
-                tableConfigs.table.opened?.updated_at as string
-              ).toFormat('HH:mm')
-            : DateTime.local().toFormat('HH:mm')
-        } - ${
-          report
+        tableConfigs.table.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.table.opened?.created_at as string).toFormat('HH:mm')}/${report
+          ? DateTime.fromSQL(
+            tableConfigs.table.opened?.updated_at as string
+          ).toFormat('HH:mm')
+          : DateTime.local().toFormat('HH:mm')
+          } - ${report
             ? DateTime.fromSQL(tableConfigs.table.opened?.updated_at as string)
-                .diff(
-                  DateTime.fromSQL(
-                    tableConfigs.table.opened?.created_at as string
-                  ),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
+              .diff(
+                DateTime.fromSQL(
+                  tableConfigs.table.opened?.created_at as string
+                ),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
             : DateTime.local()
-                .diff(
-                  DateTime.fromSQL(
-                    tableConfigs.table.opened?.created_at as string
-                  ),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
-        }`
+              .diff(
+                DateTime.fromSQL(
+                  tableConfigs.table.opened?.created_at as string
+                ),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
+          }`
         tableConfigs.table.opened.updatedFees = tableConfigs.table.opened
           .getUpdatedFees(!report)
           .filter((fee) => fee.deleted_at === null)
@@ -934,7 +1002,7 @@ export const groupCart = (
                   item.productId === cartItem.productId &&
                   item.details.value === cartItem.details.value &&
                   item.details.complements.length ===
-                    cartItem.details.complements.length
+                  cartItem.details.complements.length
               )
               if (newItem) {
                 const allComplements = verifyEqualsComplements(
@@ -956,11 +1024,11 @@ export const groupCart = (
                 (item) =>
                   item.pizzaId === cartItem.pizzaId &&
                   item.details.flavors.length ===
-                    cartItem.details.flavors.length &&
+                  cartItem.details.flavors.length &&
                   item.details.implementations.length ===
-                    cartItem.details.implementations.length &&
+                  cartItem.details.implementations.length &&
                   item.details.complements.length ===
-                    cartItem.details.complements.length
+                  cartItem.details.complements.length
               )
 
               const verificationOne = pizza?.details.flavors.every(

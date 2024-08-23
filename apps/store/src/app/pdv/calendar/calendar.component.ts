@@ -10,6 +10,7 @@ import { CupomType } from 'src/app/cupom'
 import { CartService } from 'src/app/services/cart/cart.service'
 import { ContextService } from 'src/app/services/context/context.service'
 import { CustomAdapter, CustomDateParserFormatter, CustomDatepickerI18n, I18n } from 'src/app/services/ngb-datepicker/ngb-datepicker.service'
+import { TranslateService } from 'src/app/translate.service'
 
 interface CalendarComponentData {
   packageHours: { [key: string]: Array<{ time: string; quantity: number }[]> }
@@ -45,7 +46,12 @@ export class CalendarComponent implements OnInit, AfterViewChecked {
 
   faCalendarDay = faCalendarDay
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: CalendarComponentData, public context: ContextService, public cartService: CartService) {}
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: CalendarComponentData,
+    public context: ContextService,
+    public cartService: CartService,
+    public translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
     if (this.dataObject.packageHours) {
@@ -59,7 +65,9 @@ export class CalendarComponent implements OnInit, AfterViewChecked {
           this.setPackageHour()
           worker.terminate()
         }
-        worker.postMessage(JSON.stringify({ context: this.context, packageHours: this.dataObject.packageHours }))
+        worker.postMessage(
+          JSON.stringify({ context: this.context, packageHours: this.dataObject.packageHours, dateFormat: this.translate.masks().date_mask })
+        )
       } else {
         this.setPackageHour()
       }
@@ -118,7 +126,7 @@ export class CalendarComponent implements OnInit, AfterViewChecked {
 
   public daysDiff() {
     if (this.packageCalendar) {
-      return DateTime.fromFormat(this.packageCalendar, 'dd-MM-yyyy').diffNow('days').days > 0
+      return DateTime.fromFormat(this.packageCalendar, this.translate.masks().date_mask).diffNow('days').days > 0
     }
   }
 }

@@ -127,13 +127,11 @@ class InventoryProvider extends ServiceProvider {
         return {
           code: '400',
           status: 'inventory',
-          message: `${
-            unavailableComplements.length > 1
-              ? 'Os complementos abaixo não estão mais disponíveis:' + `<ul>${formattedMessage}</ul>`
-              : `O complemento ${unavailableComplements[0].name} não está mais disponível${
-                  unavailableComplements[0].amount ? `. Apenas ${unavailableComplements[0].amount} disponíveis.` : '.'
-                }`
-          }`,
+          message: `${unavailableComplements.length > 1
+            ? 'Os complementos abaixo não estão mais disponíveis:' + `<ul>${formattedMessage}</ul>`
+            : `O complemento ${unavailableComplements[0].name} não está mais disponível${unavailableComplements[0].amount ? `. Apenas ${unavailableComplements[0].amount} disponíveis.` : '.'
+            }`
+            }`,
         }
       }
       return availableComplements

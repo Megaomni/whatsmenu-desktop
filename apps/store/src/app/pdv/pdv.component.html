@@ -13,7 +13,7 @@
           class="nav-pills gap-2 align-self-end"
         >
           <li *ngIf="pageType === 'pdv' && checkPlans()" ngbNavItem="counter">
-            <a ngbNavLink class="tab">Balcão</a>
+            <a ngbNavLink class="tab text-capitalize">{{ translate.text().counter }}</a>
             <ng-template ngbNavContent>
               <!-- <div style="margin-top: 4.5rem;"> -->
               <app-menu-nav
@@ -29,11 +29,11 @@
             </ng-template>
           </li>
           <li *ngIf="pageType === 'pdv' ? checkTablePlan() : true" ngbNavItem="tables">
-            <a ngbNavLink class="tab position-relative"
-              >Mesas
+            <a ngbNavLink class="tab position-relative text-capitalize"
+              >{{ translate.text().table_s }}
               <span
                 *ngIf="this.context.profile.options.queues?.bartender.length >= 1"
-                class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle"
+                class="position-absolute top-0 text-capitalize start-100 translate-middle p-2 bg-danger border border-light rounded-circle"
               >
                 <span class="visually-hidden">New alerts</span>
               </span>
@@ -71,12 +71,12 @@
                   <button
                     type="button"
                     *ngIf="!context.getActiveTable()?.opened && (pageType === 'bartender' || context.isMobile)"
-                    class="d-flex justify-content-center align-items-center btn btn-primary rounded-2"
+                    class="d-flex justify-content-center align-items-center btn btn-primary rounded-2 text-capitalize"
                     style="font-size: 1rem"
                     [disabled]="!this.context.getActiveTable()?.status"
                     (click)="openNewCommand()"
                   >
-                    Criar Comanda
+                    {{ translate.text().create_order_slip }}
                   </button>
                   <button
                     type="button"
@@ -99,21 +99,21 @@
                     [disabled]="!context.getActiveTable()?.status"
                     type="button"
                     [ngClass]="pageType === 'pdv' ? 'ms-auto' : 'mx-auto mb-3'"
-                    class="btn btn-primary"
+                    class="btn btn-primary text-capitalize"
                     (click)="openNewCommand()"
                   >
-                    Criar Comanda
+                    {{ translate.text().create_order_slip }}
                   </button>
                 </ng-container>
                 <ng-container *ngIf="pageType === 'pdv'">
                   <ng-container *ngIf="context.getActiveTable()?.opened">
-                    <button type="button" class="btn btn-primary" (click)="openCommands()">Comandas</button>
-                    <button type="button" class="btn btn-primary" (click)="openSwitchTable()">Trocar de Mesa</button>
-                    <button type="button" class="btn btn-primary" (click)="printTable()">Imprimir Mesa</button>
-                    <button type="button" class="btn btn-primary" (click)="openPayment({ tableType: 'table' })">Encerrar Mesa</button>
+                    <button type="button" class="btn btn-primary text-capitalize" (click)="openCommands()">{{ translate.text().order_slip_s }}</button>
+                    <button type="button" class="btn btn-primary text-capitalize" (click)="openSwitchTable()">{{ translate.text().change_tables }}</button>
+                    <button type="button" class="btn btn-primary text-capitalize" (click)="printTable()">{{ translate.text().print_table }}</button>
+                    <button type="button" class="btn btn-primary text-capitalize" (click)="openPayment({ tableType: 'table' })">{{ translate.text().close_table }}</button>
                   </ng-container>
-                  <button type="button" class="btn btn-primary me-auto" (click)="tablesStatus()">
-                    {{ this.context.getActiveTable()?.status ? 'Pausar' : 'Despausar' }} Mesa
+                  <button type="button" class="btn btn-primary me-auto text-capitalize" (click)="tablesStatus()">
+                    {{ this.context.getActiveTable()?.status ? translate.text().pause_comment : translate.text().unpause_comment }} {{ translate.text().table }}
                   </button>
                 </ng-container>
               </div>
@@ -131,7 +131,7 @@
 
           <li *ngIf="pageType === 'bartender' && context.getActiveTable()?.haveCarts()" ngbNavItem="resume">
             <!-- [ngStyle]="{ visibility: context.activeTableId ? 'visible' : 'hidden', width: context.activeTableId ? 'auto' : 0 }" -->
-            <a ngbNavLink class="tab">Resumo</a>
+            <a ngbNavLink class="tab text-capitalize">{{ translate.text().summary }}</a>
             <ng-template ngbNavContent>
               <div class="d-flex flex-column" style="overflow: auto; max-height: 85vh">
                 <div *ngFor="let command of context.getActiveTable()?.opened?.commands; index as index; trackBy: trackBy">
@@ -144,8 +144,8 @@
                         [ngClass]="cart.status === 'canceled' ? 'text-bg-danger p-2' : ''"
                       >
                         <span style="flex-basis: 100%">WM{{ cart.code }}-T</span>
-                        <span style="flex-basis: 100%; text-align: end"
-                          >Pedido por {{ cart.bartenderId ? context.activeBartender?.name : 'Cliente' }} <br />
+                        <span class="text-capitalize" style="flex-basis: 100%; text-align: end"
+                          >  {{ translate.text().order_by }} {{ cart.bartenderId ? context.activeBartender?.name : translate.text().client_comment }} <br />
                           <span style="font-size: 0.85rem">{{ diffTime(cart.created_at) }}</span></span
                         >
                       </p>
@@ -183,7 +183,7 @@
                           [disabled]="cart.status === 'canceled'"
                           (click)="cancelCart(cart)"
                         >
-                          {{ cart.status !== 'canceled' ? 'Cancelar Pedido' : 'Pedido Cancelado' }}
+                          {{ cart.status !== 'canceled' ? translate.text().cancel_order : translate.text().order_canceled }}
                         </button>
                       </div>
                     </div>
@@ -213,8 +213,8 @@
       <ng-container *ngIf="activeTab === 'counter'">
         <form (submit)="getClientBy($event)" class="d-flex gap-2 align-items-center mx-3 my-2" ngNativeValidate>
           <select class="form-select" [(ngModel)]="filter" (change)="search = null" name="filter">
-            <option value="whatsapp">Telefone</option>
-            <option value="name">Nome</option>
+            <option class="text-capitalize" value="whatsapp">{{ translate.text().phone }}</option>
+            <option class="text-capitalize" value="name">{{ translate.text().name }}</option>
           </select>
           <div class="input-group" style="width: 100% !important">
             <fa-icon
@@ -226,10 +226,10 @@
               [(ngModel)]="search"
               type="text"
               class="form-control border-start-0 ps-1"
-              placeholder="Cliente"
+              [placeholder]="translate.text().client_comment"
               name="search"
               [type]="filter === 'whatsapp' ? 'tel' : 'text'"
-              [mask]="filter === 'whatsapp' && '(00) 00000-0000'"
+              [mask]="filter === 'whatsapp' && translate.masks().cell"
               id="clientSearchInput"
               required
             />
@@ -248,7 +248,7 @@
         </form>
 
         <app-accordion *ngIf="client" [border]="'#ff4757 solid 2px'">
-          <p><span class="fw-bold">Cliente:</span> {{ client.name }}</p>
+          <p><span class="fw-bold text-capitalize">{{ translate.text().client }}:</span> {{ client.name }}</p>
           <div class="d-flex align-items-center justify-content-between">
             <p>Fone/WhatsApp: {{ client.whatsapp }}</p>
             <div class="d-flex align-items-center gap-2">
@@ -281,23 +281,23 @@
                 </div>
               </ng-container>
               <div *ngIf="!client.addresses.length" class="p-5 fs-3 text-center">
-                <p>Nenhum endereço cadastrado</p>
-                <button class="btn btn-link p-0" (click)="openAddress()">Adicionar endereço</button>
+                <p class="text-capitalize">{{ translate.text().no_registred_address }}</p>
+                <button class="btn btn-link p-0 text-capitalize" (click)="openAddress()">{{ translate.text().add_address }}</button>
               </div>
               <div *ngIf="client.addresses.length" class="col-12 col-md-6 p-2">
                 <div class="client-address-option justify-content-center" style="padding-block: 1.125rem">
-                  <button class="btn btn-link p-0" (click)="openAddress()">Adicionar endereço</button>
+                  <button class="btn btn-link p-0 text-capitalize" (click)="openAddress()">{{ translate.text().add_address }}</button>
                 </div>
               </div>
             </div>
           </div>
           <ng-container *ngIf="client.last_requests?.length">
-            <h2 class="my-2">Últimos Pedidos</h2>
+            <h2 class="my-2 text-capitalize">{{ translate.text().last_orders }}</h2>
             <table class="table table-hover">
               <thead style="border-bottom: 2px solid var(--wm-gray-600); font-size: 1.25rem">
                 <tr>
                   <th *ngIf="deviceWidth > 600">Cód.</th>
-                  <th>Data</th>
+                  <th class="text-capitalize">{{ translate.text().date }}</th>
                   <th>Total</th>
                   <th></th>
                 </tr>
@@ -341,16 +341,16 @@
         </div>
         <hr />
         <div class="d-flex align-items-center justify-content-between mb-2">
-          <button type="button" class="btn" style="background-color: var(--wm-white)" (click)="clearCarts()">Limpar</button>
+          <button type="button" class="btn text-capitalize" style="background-color: var(--wm-white)" (click)="clearCarts()">{{ translate.text().clear }}</button>
           <button
             type="button"
-            class="btn"
-            style="background-color: var(--wm-green-700); color: var(--wm-white)"
+            class="btn text-capitalize"
+            style="background-color: var(--wm-green-700); color: var(--wm-white);"
             id="storeCartButton"
             [disabled]="(!cart.length && !cartPizza.length) || (cartRequest.type === 'T' && !context.activeCommandId)"
             (click)="openNewCart()"
           >
-            Pedir
+            {{ translate.text().order_buy }}
           </button>
         </div>
       </div>
@@ -390,25 +390,25 @@
         <div class="d-flex align-items-center gap-3 p-3 fs-5 w-100" (click)="drawer.toggle()">
           <fa-icon [icon]="faArrowLeft" style="cursor: pointer"></fa-icon>
           <p>Menu</p>
-          <p class="ms-auto">Usuário</p>
+          <p class="ms-auto text-capitalize">{{ translate.text().user }}</p>
         </div>
         <div class="border-top py-3 pe-3">
-          <button type="button" class="btn btn-link" (click)="openCommands()">Comandas</button>
+          <button type="button" class="btn btn-link text-capitalize" (click)="openCommands()">{{ translate.text().order_slip_s }}</button>
         </div>
         <div class="border-top py-3 pe-3">
-          <button type="button" class="btn btn-link" (click)="openSwitchTable()">Trocar de Mesa</button>
+          <button type="button" class="btn btn-link text-capitalize" (click)="openSwitchTable()">{{ translate.text().change_table }}</button>
         </div>
         <div class="border-top py-3 pe-3">
-          <button type="button" class="btn btn-link" (click)="printTable()">Imprimir Mesa</button>
+          <button type="button" class="btn btn-link text-capitalize" (click)="printTable()">{{ translate.text().print_table }}</button>
         </div>
         <div class="border-top py-3 pe-3">
-          <button type="button" class="btn btn-link" (click)="this.context.getActiveTable()?.haveCarts() ? openPayment({ tableType: 'table' }) : ''">
-            Encerrar Mesa
+          <button type="button" class="btn btn-link text-capitalize" (click)="this.context.getActiveTable()?.haveCarts() ? openPayment({ tableType: 'table' }) : ''">
+            {{ translate.text().close_table }}
           </button>
         </div>
         <div class="border-top py-3 pe-3">
-          <button type="button" class="btn btn-link" (click)="tablesStatus()">
-            {{ this.context.getActiveTable()?.status ? 'Pausar' : 'Despausar' }} Mesa
+          <button type="button" class="btn btn-link text-capitalize" (click)="tablesStatus()">
+            {{ this.context.getActiveTable()?.status ? translate.text().pause_comment : translate.text().unpause_comment }} {{ translate.text().table }}
           </button>
         </div>
       </mat-drawer>

@@ -1,22 +1,21 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-loading',
   templateUrl: './loading.component.html',
-  styleUrls: ['./loading.component.scss']
+  styleUrls: ['./loading.component.scss'],
 })
 export class LoadingComponent implements OnInit, AfterViewInit {
   @Input() backdrop: boolean
   @ViewChild('loading_container') container: ElementRef<HTMLInputElement>
-  constructor() { }
+  constructor(public translate: TranslateService) {}
 
-  ngOnInit(): void {
-  }
-  
+  ngOnInit(): void {}
+
   ngAfterViewInit(): void {
     if (this.backdrop) {
-      this.container.nativeElement.style.backgroundColor = "#0000000b"
+      this.container.nativeElement.style.backgroundColor = '#0000000b'
     }
   }
-  
 }

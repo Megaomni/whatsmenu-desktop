@@ -58,7 +58,7 @@ export const profile: unknown = {
     {
       key: {
         type: 'email',
-        value: 'sdasdasdasdasda',
+        value: '',
       },
       label: 'PicPay',
       status: false,

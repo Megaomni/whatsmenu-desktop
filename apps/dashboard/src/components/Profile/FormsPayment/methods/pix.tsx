@@ -15,7 +15,7 @@ type PixForm = ProfileFormPayment & {
   onlinePix: boolean
 }
 
-export interface OnlinePaymentSettingsProps extends PaymentSettingsProps {}
+export interface OnlinePaymentSettingsProps extends PaymentSettingsProps { }
 
 const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
   const { t } = useTranslation()
@@ -124,7 +124,7 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
         >
           <Card.Header className="text-dark d-flex justify-content-between">
             <h4 className="mb-0 text-sm">
-              <b>{pixSettings?.label}</b>
+              <b>{t(pixSettings!.payment as string)}</b>
             </h4>
             <div className="d-flex gap-5">
               <Form.Switch
@@ -158,7 +158,7 @@ const OnlinePaymentSettings = ({ formPayment }: PaymentSettingsProps) => {
                   >
                     {keyArray?.map((type) => (
                       <option value={type} key={type}>
-                        {type} asdasdas
+                        {type}
                       </option>
                     ))}
                   </Form.Select>
