@@ -105,22 +105,24 @@ export default function Integrations() {
             </p>
             <Row className="mt-4">
               <Col md={3} className="text-center">
-                <div
-                  className="d-flex justify-content-center align-items-center w-100 h-50 mt-2 border border-2 border-opacity-50"
-                  style={{ borderRadius: '15px' }}
-                >
-                  <Card.Body>
-                    <Image
-                      src="/images/GroveNFeLogo.svg"
-                      alt="GroveNFe"
-                      width={162}
-                      height={52}
-                    />
-                  </Card.Body>
-                </div>
-                <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
-                  {t('grove_nfe_description')}
-                </Card.Text>
+                <Link href="/dashboard/integrations/grovenfe">
+                  <div
+                    className="d-flex justify-content-center align-items-center w-100 h-50 mt-2 border border-2 border-opacity-50"
+                    style={{ borderRadius: '15px' }}
+                  >
+                    <Card.Body>
+                      <Image
+                        src="/images/GroveNFeLogo.svg"
+                        alt="GroveNFe"
+                        width={162}
+                        height={52}
+                      />
+                    </Card.Body>
+                  </div>
+                  <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
+                    {t('grove_nfe_description')}
+                  </Card.Text>
+                </Link>
               </Col>
             </Row>
           </Col>
