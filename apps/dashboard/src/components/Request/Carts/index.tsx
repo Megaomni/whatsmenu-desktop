@@ -24,11 +24,14 @@ import { useSession } from 'next-auth/react'
 import { HelpVideos } from '@components/Modals/HelpVideos'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18n'
+import Image from 'next/image'
+import { groveNfeApi } from 'src/lib/axios'
 
 export function Carts(data: any) {
   const { t } = useTranslation()
   const { data: session } = useSession()
 
+  const { profile } = useContext(AppContext)
   const { carts, motoboys, setCart, updateMotoboyId } = useContext(CartsContext)
 
   // const [selectedMotoboys, setSelectedMotoboys] = useState(Number)
@@ -100,6 +103,16 @@ export function Carts(data: any) {
     }
   }
 
+  const handleEmitNote = async (cart: Cart) => {
+    try {
+      const { data } = await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, {
+
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+ 
   // const handleMotoboyChange = (cartId: number, motoboyId: number, session: any) => {
   //   setSelectedMotoboys(motoboyId)
   //   updateMotoboyId(cartId, motoboyId, session)
@@ -237,6 +250,9 @@ export function Carts(data: any) {
                           </th>
                           <th className="fs-7 fw-600">
                             <span> {t('change')} </span>
+                          </th>
+                          <th className="fs-7 fw-600">
+                            <span> NFCe </span>
                           </th>
                           <th className="fs-7 fw-600">
                             <span> {t('delivery_person')} </span>
@@ -417,7 +433,13 @@ export function Carts(data: any) {
                                     : '-'}
                                 </span>
                               </td>
-
+                              <td>
+                                {cart.formsPayment.some((formPayment) => formPayment.payment === 'money') ? (
+                                  <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
+                                ) : (
+                                  <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30}  />
+                                )}
+                              </td>
                               <td
                                 className="setPrint align-text-left"
                                 width={100}
