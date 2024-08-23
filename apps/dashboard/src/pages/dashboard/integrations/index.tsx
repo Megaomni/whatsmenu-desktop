@@ -1,6 +1,12 @@
 import React from 'react'
-import { useSession } from 'next-auth/react'
-import { Row, Col, Card, Container, Button } from 'react-bootstrap'
+import {
+  Row,
+  Col,
+  Card,
+  Container,
+  CardHeader,
+  CardBody,
+} from 'react-bootstrap'
 import { HelpVideos } from '../../../components/Modals/HelpVideos'
 import { useTranslation } from 'react-i18next'
 import { t } from 'i18next'
@@ -9,67 +15,117 @@ import Link from 'next/link'
 
 export default function Integrations() {
   return (
-    <Container className="mt-4">
-      <h2 className="mb-4"> Integrações </h2>
-      <Row>
-        <Col md className="d-flex gap-3">
-          <h4 className="text-primary">Pagamentos Online</h4>
-          <div className="vr"></div>
-          <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
-        </Col>
-      </Row>
-      <Row>
-        <Col className="mt-3">
-          <b>
-            Evite golpes, erros e atrasos tendo que verificar comprovantes no app do banco, o pedido chega no painel e o pagamento com segurança
-            direto na sua conta.
-          </b>
-
-          <Row className="mt-4">
-            <Col md={3} className="text-center">
-            <Link href="/dashboard/profile/payment-methods">
-              <div style={{ border: '2px solid #CED9EA', borderRadius: '19px' }} className="mb-3">
-                <Card.Body>
-                  <Image src="/images/AsaasLogo.svg" alt="Asaas" width={200} height={200} />
-                </Card.Body>
-              </div>
-              <Card.Text className="mt-3 mb-3">Crédito Online</Card.Text>
-            </Link>
-            </Col>
-            <Col md={3} className="text-center">
-              <div style={{ border: '2px solid #CED9EA', borderRadius: '19px' }} className="mb-3">
-                <Card.Body>
-                  <Image src="/images/GrovePay.svg" alt="GrovePay" width={200} height={200} />
-                </Card.Body>
-              </div>
-              <Card.Text className="mt-3 mb-3">PIX automatizado no seu banco favorito</Card.Text>
+    <Container>
+      <Card>
+        <CardHeader>
+          <h2 className="fs-5 fw-semibold text-start text-black">
+            {t('integrations')}
+          </h2>
+        </CardHeader>
+        <CardBody className="color-white w-100 h-75 flex-shrink-0 p-4">
+          <Row>
+            <Col md className="d-flex gap-3">
+              <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
+                {t('online_payment_s')}
+              </h4>
+              <div
+                className="vr mt-4"
+                style={{ height: 'var(--dropdown-padding-x, 24px)' }}
+              ></div>
+              <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
             </Col>
           </Row>
-        </Col>
-      </Row>
-
-      <Row>
-        <Col className="d-flex gap-3">
-          <h4 className="text-primary">Emissor de NFe e NFCe</h4>
-          <div className="vr"></div>
-          <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
-        </Col>
-      </Row>
-      <Row>
-        <Col className="mt-3">
-          <b>Chega de perder tempo lançando notas fiscais na mão, Defina automações e configure limites de acordo com o seu enquadramento CNPJ.</b>
-          <Row className="mt-4">
-            <Col md={3} className="text-center">
-              <div style={{ border: '2px solid #CED9EA', borderRadius: '19px' }} className="mb-3">
-                <Card.Body>
-                  <Image src="/images/GroveNFeLogo.svg" alt="GroveNFe" width={200} height={200} />
-                </Card.Body>
-              </div>
-              <Card.Text className="mt-4">Emissão e Gestão Automática de Notas Fiscais</Card.Text>
+          <Row>
+            <Col>
+              <p className="fs-6 lh-base mt-2 text-black">
+                {t('online_payment_description')}
+              </p>
+              <Row className="mt-4">
+                <Col md={3} className="text-center">
+                  <Link href="/dashboard/profile#forms-payment">
+                    <div
+                      className="d-flex justify-content-center align-items-center w-100 h-50 mt-2 border border-2 border-opacity-50"
+                      style={{ borderRadius: '15px' }}
+                    >
+                      <Card.Body>
+                        <Image
+                          src="/images/AsaasLogo.svg"
+                          alt="Asaas"
+                          width={162}
+                          height={52}
+                        />
+                      </Card.Body>
+                    </div>
+                    <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
+                      {t('credit_online')}
+                    </Card.Text>
+                  </Link>
+                </Col>
+                {/* <Col md={3} className="text-center">
+                  <div
+                    className="d-flex justify-content-center align-items-center w-100 h-50 mt-2 border border-2 border-opacity-50"
+                    style={{ borderRadius: '15px' }}
+                  >
+                    <Card.Body>
+                      <Image
+                        src="/images/GrovePay.svg"
+                        alt="GrovePay"
+                        width={162}
+                        height={52}
+                      />
+                    </Card.Body>
+                  </div>
+                  <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
+                    PIX automatizado no seu banco favorito
+                  </Card.Text>
+                </Col> */}
+              </Row>
             </Col>
           </Row>
-        </Col>
-      </Row>
+        </CardBody>
+      </Card>
+
+      <Card className="color-white w-100 h-100 flex-shrink-0 p-4">
+        <Row>
+          <Col className="d-flex gap-3">
+            <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
+              {t('fiscal_note_issuer')}
+            </h4>
+            <div
+              className="vr mt-4 "
+              style={{ height: 'var(--dropdown-padding-x, 24px)' }}
+            ></div>
+            <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
+          </Col>
+        </Row>
+        <Row>
+          <Col className="mt-3">
+            <p className="fs-6 lh-base text-black">
+              {t('fiscal_note_issuer_description')}
+            </p>
+            <Row className="mt-4">
+              <Col md={3} className="text-center">
+                <div
+                  className="d-flex justify-content-center align-items-center w-100 h-50 mt-2 border border-2 border-opacity-50"
+                  style={{ borderRadius: '15px' }}
+                >
+                  <Card.Body>
+                    <Image
+                      src="/images/GroveNFeLogo.svg"
+                      alt="GroveNFe"
+                      width={162}
+                      height={52}
+                    />
+                  </Card.Body>
+                </div>
+                <Card.Text className="fs-7 fw-bolder lh-lg text-secondary mb-5 mt-3 text-center">
+                  {t('grove_nfe_description')}
+                </Card.Text>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Card>
     </Container>
   )
 }

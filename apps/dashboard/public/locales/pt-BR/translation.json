@@ -1185,7 +1185,6 @@
   "set_defaults_for_automatic_issuance_of_your_fiscal_notes": "Defina padrões para emissão automática de suas notas fiscais",
   "daily_average": "Media Diária",
   "credit_machine": "Crédito Maquininha",
-  "credit_online": "Crédito Online",
   "debit_machine": "Débito Maquininha",
   "debit_online": "Débito Online",
   "dont_miss_deadlines": "Não perca prazos",
@@ -1214,5 +1213,13 @@
   "unable_register_your_order_try_again": "Não foi possível registrar seu pedido tente novamente",
   "system_identified_you_are_outside": "O sistema identificou que você está fora da nossa área de cobertura, tente concluir o seu pedido novamente",
   "swiss_french": "Franco Suiço (Fr.)",
-  "swiss_french_chf": "Franco Suiço"
+  "swiss_french_chf": "Franco Suiço",
+  "integrations": "Integrações",
+  "online_payment_s": "Pagamentos Online",
+  "online_payment_description": "Evite golpes, erros e atrasos tendo que verificar comprovantes no app do banco, o pedido chega no painel e o pagamento com segurança direto na sua conta.",
+  "credit_online": "Crédito Online",
+  "fiscal_note_issuer": "Emissor de NFe e NFCe",
+  "fiscal_note_issuer_description": "Chega de perder tempo lançando notas fiscais na mão, Defina automações e configure limites de acordo com o seu enquadramento CNPJ.",
+  "grove_nfe_description": "Emissão e Gestão Automática de Notas Fiscais",
+  "automation_of_nfe": "Automação de Notas Ficais"
 }
