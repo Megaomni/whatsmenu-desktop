@@ -615,7 +615,7 @@ export class StatusComponent implements OnInit {
           message += `*${this.currencyNoSymbol(this.cart.taxDelivery)}*\n`
         }
       }
-      if (this.cart.formsPayment[0].addon?.status) {
+      if (this.taxDelivery() !== this.translate.text().to_consult && this.cart.formsPayment[0].addon?.status) {
         if (this.cart.formsPayment[0].addon.type === 'fee')
           message += `*${this.translate.text().free_comment_up}: + ${this.currencyNoSymbol(totalAddon)}*\n`
       }
