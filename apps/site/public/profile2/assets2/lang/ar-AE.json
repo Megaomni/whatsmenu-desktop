@@ -166,7 +166,7 @@
     "order_slip": "Order slip",
     "order_slip_s": "Order slips",
     "no_active_orders": "no active orders",
-    "order_sucess": "order placed sucessfully",
+    "order_sucess": "order placed successfully",
     "send_confirmation_whatsapp": "send confirmation via whatsapp",
     "select_delivery_date": "select a delivery date",
     "time_zone_is_different": "We have identified that your time zone is different from the establishment's time zone. Your corresponding receiving time will be shown next to the time",
@@ -472,6 +472,19 @@
 
   "calendar": {
     "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    "months": ["January", "February", "March", "April", "May", "June", "July", "Agust", "September", "October", "November", "December"]
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "Agust",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
   }
 }

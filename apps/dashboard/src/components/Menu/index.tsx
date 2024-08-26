@@ -248,7 +248,7 @@ export function MenuComponent() {
         show: true,
         type: 'success',
         title: 'category',
-        content: `${cat.name}, foi ${!cat.status ? t('pause') : t('unpause')} ${t('sucessfully')}.`,
+        content: `${cat.name}, foi ${!cat.status ? t('pause') : t('unpause')} ${t('successfully')}.`,
       })
     } catch (error) {
       console.error(error)
@@ -276,7 +276,7 @@ export function MenuComponent() {
         show: true,
         type: 'success',
         title: 'order',
-        content: `${productMap.name}, foi ${!productMap.status ? t('paused') : 'unpaused'} ${t('sucessfully')}.`,
+        content: `${productMap.name}, foi ${!productMap.status ? t('paused') : 'unpaused'} ${t('successfully')}.`,
       })
     } catch (error) {
       console.error(error)
@@ -323,7 +323,7 @@ export function MenuComponent() {
           show: true,
           type: 'success',
           title: titleMessage,
-          content: `${itemToPause.name}, foi ${itemToPause.status ? t('paused') : 'unpaused'} ${t('sucessfully')}.`,
+          content: `${itemToPause.name}, foi ${itemToPause.status ? t('paused') : 'unpaused'} ${t('successfully')}.`,
         })
       }
     } catch (error) {
@@ -435,42 +435,42 @@ export function MenuComponent() {
             <Row className="justify-content-between">
               {(plansCategory?.includes('basic') ||
                 plansCategory?.includes('package')) && (
-                <Col className="d-flex align-items-center col-6 gap-1">
-                  {editingFlavorsMassive &&
-                  categoryMenu.id === categoryMap.id ? (
-                    <Form.Control
-                      defaultValue={flavorMap.values[flavorSize.name] || 0}
-                      className={`${index > 0 ? 'mt-1' : ''}`}
-                      id={`flavor-${indexFlavor}-values-${index}`}
-                      onChange={(e) => {
-                        mask(e, 'currency')
-                        setValuesFlavorsMassive(flavorMap, 'values', {
-                          value: Number(e.target.value),
-                          sizeName: flavorSize.name,
-                        })
-                      }}
-                      onKeyDown={(e) =>
-                        alignPositionEditingMassive(e, categoryMap, {
-                          type: 'values',
-                          index: indexFlavor,
-                          indexSize: index,
-                        })
-                      }
-                      style={{ width: 75, border: '1px solid #2285d0' }}
-                    />
-                  ) : (
-                    <span style={{ padding: '.5px 1.5px', color: '#2285d0' }}>
-                      {currency({
-                        value: Number(flavorMap.values[flavorSize.name] || 0),
-                      })}
-                    </span>
-                  )}
-                </Col>
-              )}
+                  <Col className="d-flex align-items-center col-6 gap-1">
+                    {editingFlavorsMassive &&
+                      categoryMenu.id === categoryMap.id ? (
+                      <Form.Control
+                        defaultValue={flavorMap.values[flavorSize.name] || 0}
+                        className={`${index > 0 ? 'mt-1' : ''}`}
+                        id={`flavor-${indexFlavor}-values-${index}`}
+                        onChange={(e) => {
+                          mask(e, 'currency')
+                          setValuesFlavorsMassive(flavorMap, 'values', {
+                            value: Number(e.target.value),
+                            sizeName: flavorSize.name,
+                          })
+                        }}
+                        onKeyDown={(e) =>
+                          alignPositionEditingMassive(e, categoryMap, {
+                            type: 'values',
+                            index: indexFlavor,
+                            indexSize: index,
+                          })
+                        }
+                        style={{ width: 75, border: '1px solid #2285d0' }}
+                      />
+                    ) : (
+                      <span style={{ padding: '.5px 1.5px', color: '#2285d0' }}>
+                        {currency({
+                          value: Number(flavorMap.values[flavorSize.name] || 0),
+                        })}
+                      </span>
+                    )}
+                  </Col>
+                )}
               {plansCategory?.includes('table') && (
                 <Col className="d-flex align-items-center justify-content-end col-6 gap-1 p-0">
                   {editingFlavorsMassive &&
-                  categoryMenu.id === categoryMap.id ? (
+                    categoryMenu.id === categoryMap.id ? (
                     <Form.Control
                       defaultValue={flavorMap.valuesTable[flavorSize.name] || 0}
                       id={`flavor-${indexFlavor}-valuesTable-${index}`}
@@ -909,44 +909,44 @@ export function MenuComponent() {
             {((plansCategory.length === 2 &&
               !plansCategory.includes('table')) ||
               plansCategory.length === 3) && (
-              <FormGroup
-                onClick={(e) => {
-                  e.stopPropagation()
-                }}
-              >
-                {plansCategory.map((plan, index, arr) => {
-                  if (plan === 'basic' || plan === 'package') {
-                    const label =
-                      plan === 'basic'
-                        ? 'Delivery'
-                        : profile.options.package.label2
-                          ? t('appointments')
-                          : t('package')
-                    return (
-                      <Form.Check
-                        key={plan}
-                        type="radio"
-                        id={label}
-                        label={label}
-                        name="share"
-                        defaultChecked={
-                          plan === 'basic'
-                            ? 'delivery' === urlType
-                            : 'package' === urlType
-                        }
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            urlToShared = urlLink(
-                              plan === 'package' ? plan : 'delivery'
-                            )
+                <FormGroup
+                  onClick={(e) => {
+                    e.stopPropagation()
+                  }}
+                >
+                  {plansCategory.map((plan, index, arr) => {
+                    if (plan === 'basic' || plan === 'package') {
+                      const label =
+                        plan === 'basic'
+                          ? 'Delivery'
+                          : profile.options.package.label2
+                            ? t('appointments')
+                            : t('package')
+                      return (
+                        <Form.Check
+                          key={plan}
+                          type="radio"
+                          id={label}
+                          label={label}
+                          name="share"
+                          defaultChecked={
+                            plan === 'basic'
+                              ? 'delivery' === urlType
+                              : 'package' === urlType
                           }
-                        }}
-                      />
-                    )
-                  }
-                })}
-              </FormGroup>
-            )}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              urlToShared = urlLink(
+                                plan === 'package' ? plan : 'delivery'
+                              )
+                            }
+                          }}
+                        />
+                      )
+                    }
+                  })}
+                </FormGroup>
+              )}
             <div className="d-flex justify-content-center gap-3 ">
               <a
                 href={`${profile.options.linkWhatsapp ? 'whatsapp://' : 'https://api.whatsapp.com/'}send?text=${urlToShared}`}
@@ -1341,7 +1341,7 @@ export function MenuComponent() {
                         id="input-group-dropdown-4"
                         align="end"
                         className="d-md-block"
-                        // style={{display: window.innerWidth < 380 ? "block" : "inline-block"}}
+                      // style={{display: window.innerWidth < 380 ? "block" : "inline-block"}}
                       >
                         {[
                           { name: t('product'), value: 'products' },
@@ -1395,44 +1395,43 @@ export function MenuComponent() {
                         <Col sm>
                           <Card className="border-green">
                             <Card.Header
-                              className={`position-relative d-flex justify-content-start align-items-center overflow-auto ${
-                                categoryMap.status &&
-                                verifyAvailability(
-                                  categoryMap?.product as PizzaProductType
-                                )
+                              className={`position-relative d-flex justify-content-start align-items-center overflow-auto ${categoryMap.status &&
+                                  verifyAvailability(
+                                    categoryMap?.product as PizzaProductType
+                                  )
                                   ? verifyAvailability(
-                                      categoryMap?.product as PizzaProductType,
-                                      'alert'
-                                    )
+                                    categoryMap?.product as PizzaProductType,
+                                    'alert'
+                                  )
                                     ? ''
                                     : 'wm-warning'
                                   : 'wm-request-canceled'
-                              }`}
+                                }`}
                             >
                               {(plansCategory.includes('package') ||
                                 plansCategory.includes('basic')) && (
-                                <OverlayTrigger
-                                  rootClose
-                                  trigger={'click'}
-                                  placement="right"
-                                  overlay={linkShare(
-                                    categoryMap.name,
-                                    categoryMap
-                                  )}
-                                >
-                                  <Button
-                                    id={`product-share-${categoryMap.id}`}
-                                    variant="gray"
-                                    className="buttons-link-share"
-                                    style={{ marginRight: 5 }}
+                                  <OverlayTrigger
+                                    rootClose
+                                    trigger={'click'}
+                                    placement="right"
+                                    overlay={linkShare(
+                                      categoryMap.name,
+                                      categoryMap
+                                    )}
                                   >
-                                    <FaEllipsisV
-                                      size={15}
-                                      className="cursor-pointer"
-                                    />
-                                  </Button>
-                                </OverlayTrigger>
-                              )}
+                                    <Button
+                                      id={`product-share-${categoryMap.id}`}
+                                      variant="gray"
+                                      className="buttons-link-share"
+                                      style={{ marginRight: 5 }}
+                                    >
+                                      <FaEllipsisV
+                                        size={15}
+                                        className="cursor-pointer"
+                                      />
+                                    </Button>
+                                  </OverlayTrigger>
+                                )}
                               <span className="d-sm-inline d-block fs-5 fw-600 text-nowrap">
                                 <b>{categoryMap.name} | </b>
                                 {/* <b>{categoryMap.name} | </b> */}
@@ -1778,7 +1777,7 @@ export function MenuComponent() {
                                                 </Container>
 
                                                 {implementationMap.code ===
-                                                overlaySize.code ? (
+                                                  overlaySize.code ? (
                                                   <OverlaySpinner
                                                     show={true}
                                                     backgroundColor="rgba(0, 0, 0, .05)"
@@ -1858,19 +1857,18 @@ export function MenuComponent() {
                                         (complement) => (
                                           <tr
                                             key={complement.id}
-                                            className={`${
-                                              verifyPizzaComplementAvailability(
-                                                complement,
-                                                'absolute'
-                                              )
+                                            className={`${verifyPizzaComplementAvailability(
+                                              complement,
+                                              'absolute'
+                                            )
                                                 ? verifyPizzaComplementAvailability(
-                                                    complement,
-                                                    'alert'
-                                                  )
+                                                  complement,
+                                                  'alert'
+                                                )
                                                   ? ''
                                                   : 'wm-warning border-0'
                                                 : 'wm-request-canceled border-0'
-                                            }`}
+                                              }`}
                                           >
                                             <td>
                                               <Container fluid>
@@ -1983,7 +1981,7 @@ export function MenuComponent() {
                                         {t('flavors')}
                                       </span>
                                       {editingFlavorsMassive &&
-                                      categoryMap.id === categoryMenu.id ? (
+                                        categoryMap.id === categoryMenu.id ? (
                                         <Button
                                           variant="link"
                                           className="text-decoration-none fs-7 me-auto text-red-500"
@@ -2020,16 +2018,16 @@ export function MenuComponent() {
                                       {(plansCategory?.includes('basic') ||
                                         (plansCategory?.includes('package') &&
                                           plansCategory.length > 1)) && (
-                                        <>
-                                          <span className="rounded-circle d-inline-block wm-request-delivery ms-1 p-2 align-middle"></span>
-                                          <span style={{ color: '#2285d0' }}>
-                                            {textDeliveryOrPackage(
-                                              plansCategory,
-                                              profile.options.package.label2
-                                            )}
-                                          </span>
-                                        </>
-                                      )}
+                                          <>
+                                            <span className="rounded-circle d-inline-block wm-request-delivery ms-1 p-2 align-middle"></span>
+                                            <span style={{ color: '#2285d0' }}>
+                                              {textDeliveryOrPackage(
+                                                plansCategory,
+                                                profile.options.package.label2
+                                              )}
+                                            </span>
+                                          </>
+                                        )}
                                       {plansCategory?.includes('table') && (
                                         <>
                                           <span className="rounded-circle d-inline-block wm-request-table ms-2 p-2 align-middle"></span>
@@ -2067,7 +2065,7 @@ export function MenuComponent() {
                                     hover
                                     responsive
                                     className="last mb-0 text-nowrap align-middle"
-                                    // style={{ minWidth: window.innerWidth < 768 ? 850 : 0 }}
+                                  // style={{ minWidth: window.innerWidth < 768 ? 850 : 0 }}
                                   >
                                     <tbody>
                                       {categoryMap.product?.flavors.map(
@@ -2084,7 +2082,7 @@ export function MenuComponent() {
                                               return
                                             } else if (
                                               usedFilter.value ===
-                                                'description' &&
+                                              'description' &&
                                               !normalizeCaracter(
                                                 flavorMap.description || ''
                                               ).includes(
@@ -2105,17 +2103,16 @@ export function MenuComponent() {
                                               className={`position-relative ${flavorMap.status ? '' : 'wm-request-canceled border-0'}`}
                                             >
                                               <td
-                                                className={`${
-                                                  flavorMap.status &&
-                                                  verifyAvailability(flavorMap)
+                                                className={`${flavorMap.status &&
+                                                    verifyAvailability(flavorMap)
                                                     ? verifyAvailability(
-                                                        flavorMap,
-                                                        'alert'
-                                                      )
+                                                      flavorMap,
+                                                      'alert'
+                                                    )
                                                       ? ''
                                                       : 'wm-warning'
                                                     : 'wm-request-canceled'
-                                                }`}
+                                                  }`}
                                                 onClick={() => {
                                                   if (
                                                     window.innerWidth < 768 &&
@@ -2183,11 +2180,10 @@ export function MenuComponent() {
                                                           >
                                                             <label
                                                               htmlFor={`input-image-${flavorMap.code}`}
-                                                              className={`${
-                                                                editingFlavorsMassive
+                                                              className={`${editingFlavorsMassive
                                                                   ? 'position-relative cursor-pointer'
                                                                   : ''
-                                                              } zoom-in-image`}
+                                                                } zoom-in-image`}
                                                             >
                                                               <Figure.Image
                                                                 loading="lazy"
@@ -2276,11 +2272,11 @@ export function MenuComponent() {
                                                                 {flavorMap
                                                                   .description
                                                                   ?.length >=
-                                                                167
+                                                                  167
                                                                   ? flavorMap.description.slice(
-                                                                      0,
-                                                                      167
-                                                                    ) + '...'
+                                                                    0,
+                                                                    167
+                                                                  ) + '...'
                                                                   : flavorMap.description}
                                                               </span>
                                                             </div>
@@ -2289,7 +2285,7 @@ export function MenuComponent() {
                                                         <Col>
                                                           <div className="">
                                                             {editingFlavorsMassive &&
-                                                            categoryMenu.id ===
+                                                              categoryMenu.id ===
                                                               categoryMap.id ? (
                                                               <div className="d-flex align-items-center gap-2">
                                                                 <Form.Control
@@ -2388,8 +2384,8 @@ export function MenuComponent() {
                                                       {editingFlavorsMassive && (
                                                         <div className="d-flex w-100 align-items-center justify-content-center my-2">
                                                           {!flavorMap.bypass_amount &&
-                                                          profile.options
-                                                            .inventoryControl ? (
+                                                            profile.options
+                                                              .inventoryControl ? (
                                                             <InputGroup className="position-relative">
                                                               <Button
                                                                 variant="secondary"
@@ -2567,7 +2563,7 @@ export function MenuComponent() {
                                                   </Row>
                                                 </Container>
                                                 {overlaySize.code ===
-                                                flavorMap.code ? (
+                                                  flavorMap.code ? (
                                                   <OverlaySpinner
                                                     show={true}
                                                     backgroundColor="rgba(0, 0, 0, .05)"
@@ -2728,11 +2724,10 @@ export function MenuComponent() {
                             }}
                           >
                             <Card.Header
-                              className={`p-md-1 position-relative d-flex justify-content-between align-items-center overflow-auto p-0 ${
-                                categoryMap.status
+                              className={`p-md-1 position-relative d-flex justify-content-between align-items-center overflow-auto p-0 ${categoryMap.status
                                   ? ''
                                   : 'wm-request-canceled border-0'
-                              }`}
+                                }`}
                               style={{ minHeight: 50 }}
                             >
                               {editingProductsMassive && (
@@ -2840,7 +2835,7 @@ export function MenuComponent() {
                                         {i18n.t('edit')}
                                       </Button>
                                       {editingProductsMassive &&
-                                      categoryMenu.id === categoryMap.id ? (
+                                        categoryMenu.id === categoryMap.id ? (
                                         <Button
                                           variant="link"
                                           className="text-decoration-none fs-7 me-auto mt-1 text-red-500"
@@ -2881,16 +2876,16 @@ export function MenuComponent() {
                                     {(plansCategory?.includes('basic') ||
                                       (plansCategory?.includes('package') &&
                                         plansCategory.length > 1)) && (
-                                      <>
-                                        <span className="rounded-circle d-inline-block wm-request-delivery ms-1 p-2 align-middle"></span>
-                                        <span style={{ color: '#2285d0' }}>
-                                          {textDeliveryOrPackage(
-                                            plansCategory,
-                                            profile.options.package.label2
-                                          )}
-                                        </span>
-                                      </>
-                                    )}
+                                        <>
+                                          <span className="rounded-circle d-inline-block wm-request-delivery ms-1 p-2 align-middle"></span>
+                                          <span style={{ color: '#2285d0' }}>
+                                            {textDeliveryOrPackage(
+                                              plansCategory,
+                                              profile.options.package.label2
+                                            )}
+                                          </span>
+                                        </>
+                                      )}
                                     {plansCategory?.includes('table') && (
                                       <>
                                         <span className="rounded-circle d-inline-block wm-request-table ms-2 p-2 align-middle"></span>
@@ -2993,7 +2988,7 @@ export function MenuComponent() {
                                                           ) ||
                                                           normalizeCaracter(
                                                             item.description ||
-                                                              ''
+                                                            ''
                                                           ).includes(
                                                             normalizeCaracter(
                                                               searchValue
@@ -3042,17 +3037,16 @@ export function MenuComponent() {
                                           return (
                                             <tr
                                               key={productMap.id}
-                                              className={`position-relative ${
-                                                productMap.status &&
-                                                verifyAvailability(productMap)
+                                              className={`position-relative ${productMap.status &&
+                                                  verifyAvailability(productMap)
                                                   ? verifyAvailability(
-                                                      productMap,
-                                                      'alert'
-                                                    )
+                                                    productMap,
+                                                    'alert'
+                                                  )
                                                     ? ''
                                                     : 'wm-warning'
                                                   : 'wm-request-canceled'
-                                              }`}
+                                                }`}
                                             >
                                               <td
                                                 onClick={(e) => {
@@ -3132,11 +3126,10 @@ export function MenuComponent() {
                                                         >
                                                           <label
                                                             htmlFor={`input-image-${productMap.id}`}
-                                                            className={`${
-                                                              editingProductsMassive
+                                                            className={`${editingProductsMassive
                                                                 ? 'position-relative cursor-pointer'
                                                                 : ''
-                                                            } zoom-in-image`}
+                                                              } zoom-in-image`}
                                                           >
                                                             <Figure.Image
                                                               loading="lazy"
@@ -3154,7 +3147,7 @@ export function MenuComponent() {
                                                                   '75px',
                                                                 height:
                                                                   window.innerWidth <
-                                                                  768
+                                                                    768
                                                                     ? '75px'
                                                                     : '45px',
                                                               }}
@@ -3225,9 +3218,9 @@ export function MenuComponent() {
                                                                 .description
                                                                 ?.length >= 167
                                                                 ? productMap.description.slice(
-                                                                    0,
-                                                                    167
-                                                                  ) + '...'
+                                                                  0,
+                                                                  167
+                                                                ) + '...'
                                                                 : productMap.description}
                                                             </span>
                                                           </div>
@@ -3299,241 +3292,239 @@ export function MenuComponent() {
                                                             plansCategory?.includes(
                                                               'package'
                                                             )) && (
-                                                            <div
-                                                              className="d-flex align-items-center justify-content-center justify-content-md-end gap-2"
-                                                              style={{
-                                                                color:
-                                                                  '#2285d0',
-                                                              }}
-                                                            >
-                                                              <div>
-                                                                {catEdition ? (
-                                                                  <div className="position-relative">
-                                                                    {productMap.promoteStatus ? (
-                                                                      <MdOutlineWarning
-                                                                        title={t(
-                                                                          'you_changing_promotional_price'
-                                                                        )}
-                                                                        className="position-absolute cursor-pointer"
-                                                                        color="#FFA500"
+                                                              <div
+                                                                className="d-flex align-items-center justify-content-center justify-content-md-end gap-2"
+                                                                style={{
+                                                                  color:
+                                                                    '#2285d0',
+                                                                }}
+                                                              >
+                                                                <div>
+                                                                  {catEdition ? (
+                                                                    <div className="position-relative">
+                                                                      {productMap.promoteStatus ? (
+                                                                        <MdOutlineWarning
+                                                                          title={t(
+                                                                            'you_changing_promotional_price'
+                                                                          )}
+                                                                          className="position-absolute cursor-pointer"
+                                                                          color="#FFA500"
+                                                                          style={{
+                                                                            top: -9,
+                                                                            right:
+                                                                              -9,
+                                                                            zIndex: 9999,
+                                                                          }}
+                                                                        />
+                                                                      ) : null}
+                                                                      <Form.Control
                                                                         style={{
-                                                                          top: -9,
-                                                                          right:
-                                                                            -9,
-                                                                          zIndex: 9999,
+                                                                          width:
+                                                                            '90px',
+                                                                          border:
+                                                                            '1px solid #2285d0',
                                                                         }}
-                                                                      />
-                                                                    ) : null}
-                                                                    <Form.Control
-                                                                      style={{
-                                                                        width:
-                                                                          '90px',
-                                                                        border:
-                                                                          '1px solid #2285d0',
-                                                                      }}
-                                                                      disabled={
-                                                                        !editingProductsMassive
-                                                                      }
-                                                                      id={`product-value-${indexProd}`}
-                                                                      defaultValue={
-                                                                        productMap.promoteStatus
-                                                                          ? productMap.promoteValue
-                                                                          : productMap.value
-                                                                      }
-                                                                      data-editing-value={
-                                                                        productMap.id
-                                                                      }
-                                                                      onChange={(
-                                                                        e
-                                                                      ) => {
-                                                                        mask(
-                                                                          e,
-                                                                          'currency'
-                                                                        )
-                                                                        setValuesProductMassive(
-                                                                          productMap,
-                                                                          productMap.promoteStatus
-                                                                            ? 'promoteValue'
-                                                                            : 'value',
-                                                                          Number(
-                                                                            e
-                                                                              .target
-                                                                              .value ||
-                                                                              0
-                                                                          )
-                                                                        )
-                                                                      }}
-                                                                      onKeyDown={(
-                                                                        e
-                                                                      ) =>
-                                                                        alignPositionEditingMassive(
-                                                                          e,
-                                                                          categoryMap,
-                                                                          {
-                                                                            type: 'value',
-                                                                            index:
-                                                                              indexProd,
-                                                                          }
-                                                                        )
-                                                                      }
-                                                                    />
-                                                                  </div>
-                                                                ) : (
-                                                                  <div className="flex-grow-1">
-                                                                    <p
-                                                                      className={`zoom-in-image m-0 text-nowrap ${
-                                                                        productMap.promoteStatus &&
-                                                                        'text-decoration-line-through text-500 fs-8 text-end'
-                                                                      }`}
-                                                                    >
-                                                                      {currency(
-                                                                        {
-                                                                          value:
-                                                                            productMap.value,
+                                                                        disabled={
+                                                                          !editingProductsMassive
                                                                         }
-                                                                      )}
-                                                                    </p>
-                                                                    {productMap.promoteStatus &&
-                                                                    !editingProductsMassive ? (
-                                                                      <span className="zoom-in-image text-nowrap">
+                                                                        id={`product-value-${indexProd}`}
+                                                                        defaultValue={
+                                                                          productMap.promoteStatus
+                                                                            ? productMap.promoteValue
+                                                                            : productMap.value
+                                                                        }
+                                                                        data-editing-value={
+                                                                          productMap.id
+                                                                        }
+                                                                        onChange={(
+                                                                          e
+                                                                        ) => {
+                                                                          mask(
+                                                                            e,
+                                                                            'currency'
+                                                                          )
+                                                                          setValuesProductMassive(
+                                                                            productMap,
+                                                                            productMap.promoteStatus
+                                                                              ? 'promoteValue'
+                                                                              : 'value',
+                                                                            Number(
+                                                                              e
+                                                                                .target
+                                                                                .value ||
+                                                                              0
+                                                                            )
+                                                                          )
+                                                                        }}
+                                                                        onKeyDown={(
+                                                                          e
+                                                                        ) =>
+                                                                          alignPositionEditingMassive(
+                                                                            e,
+                                                                            categoryMap,
+                                                                            {
+                                                                              type: 'value',
+                                                                              index:
+                                                                                indexProd,
+                                                                            }
+                                                                          )
+                                                                        }
+                                                                      />
+                                                                    </div>
+                                                                  ) : (
+                                                                    <div className="flex-grow-1">
+                                                                      <p
+                                                                        className={`zoom-in-image m-0 text-nowrap ${productMap.promoteStatus &&
+                                                                          'text-decoration-line-through text-500 fs-8 text-end'
+                                                                          }`}
+                                                                      >
                                                                         {currency(
                                                                           {
                                                                             value:
-                                                                              productMap.promoteValue ??
-                                                                              0,
+                                                                              productMap.value,
                                                                           }
                                                                         )}
-                                                                      </span>
-                                                                    ) : null}
-                                                                  </div>
-                                                                )}
+                                                                      </p>
+                                                                      {productMap.promoteStatus &&
+                                                                        !editingProductsMassive ? (
+                                                                        <span className="zoom-in-image text-nowrap">
+                                                                          {currency(
+                                                                            {
+                                                                              value:
+                                                                                productMap.promoteValue ??
+                                                                                0,
+                                                                            }
+                                                                          )}
+                                                                        </span>
+                                                                      ) : null}
+                                                                    </div>
+                                                                  )}
+                                                                </div>
                                                               </div>
-                                                            </div>
-                                                          )}
+                                                            )}
                                                         </Col>
                                                         <Col className="col-4">
                                                           {plansCategory?.includes(
                                                             'table'
                                                           ) && (
-                                                            <div className="d-flex justify-content-center justify-content-md-end align-items-center gap-1">
-                                                              <div
-                                                                style={{
-                                                                  color:
-                                                                    '#a4673f',
-                                                                }}
-                                                              >
-                                                                {editingProductsMassive &&
-                                                                categoryMenu.id ===
-                                                                  categoryMap.id ? (
-                                                                  <div className="position-relative">
-                                                                    {productMap.promoteStatusTable ? (
-                                                                      <MdOutlineWarning
-                                                                        title={t(
-                                                                          'you_changing_promotional_price'
-                                                                        )}
-                                                                        className="position-absolute cursor-pointer"
-                                                                        color="#FFA500"
-                                                                        style={{
-                                                                          top: -9,
-                                                                          right:
-                                                                            -9,
-                                                                          zIndex: 9999,
-                                                                        }}
-                                                                      />
-                                                                    ) : null}
+                                                              <div className="d-flex justify-content-center justify-content-md-end align-items-center gap-1">
+                                                                <div
+                                                                  style={{
+                                                                    color:
+                                                                      '#a4673f',
+                                                                  }}
+                                                                >
+                                                                  {editingProductsMassive &&
+                                                                    categoryMenu.id ===
+                                                                    categoryMap.id ? (
+                                                                    <div className="position-relative">
+                                                                      {productMap.promoteStatusTable ? (
+                                                                        <MdOutlineWarning
+                                                                          title={t(
+                                                                            'you_changing_promotional_price'
+                                                                          )}
+                                                                          className="position-absolute cursor-pointer"
+                                                                          color="#FFA500"
+                                                                          style={{
+                                                                            top: -9,
+                                                                            right:
+                                                                              -9,
+                                                                            zIndex: 9999,
+                                                                          }}
+                                                                        />
+                                                                      ) : null}
 
-                                                                    <Form.Control
-                                                                      style={{
-                                                                        width:
-                                                                          '90px',
-                                                                        border:
-                                                                          '1px solid #a4673f',
-                                                                      }}
-                                                                      defaultValue={
-                                                                        productMap.promoteStatusTable
-                                                                          ? productMap.promoteValueTable
-                                                                          : productMap.valueTable
-                                                                      }
-                                                                      disabled={
-                                                                        !editingProductsMassive
-                                                                      }
-                                                                      id={`product-valueTable-${indexProd}`}
-                                                                      data-editing-value-table={
-                                                                        productMap.id
-                                                                      }
-                                                                      onChange={(
-                                                                        e
-                                                                      ) => {
-                                                                        mask(
-                                                                          e,
-                                                                          'currency'
-                                                                        )
-                                                                        setValuesProductMassive(
-                                                                          productMap,
+                                                                      <Form.Control
+                                                                        style={{
+                                                                          width:
+                                                                            '90px',
+                                                                          border:
+                                                                            '1px solid #a4673f',
+                                                                        }}
+                                                                        defaultValue={
                                                                           productMap.promoteStatusTable
-                                                                            ? 'promoteValueTable'
-                                                                            : 'valueTable',
-                                                                          Number(
-                                                                            e
-                                                                              .target
-                                                                              .value ||
-                                                                              0
-                                                                          )
-                                                                        )
-                                                                      }}
-                                                                      onKeyDown={(
-                                                                        e
-                                                                      ) =>
-                                                                        alignPositionEditingMassive(
-                                                                          e,
-                                                                          categoryMap,
-                                                                          {
-                                                                            type: 'valueTable',
-                                                                            index:
-                                                                              indexProd,
-                                                                          }
-                                                                        )
-                                                                      }
-                                                                    />
-                                                                  </div>
-                                                                ) : (
-                                                                  <div>
-                                                                    <p
-                                                                      className={`m-0 text-nowrap ${
-                                                                        productMap.promoteStatusTable &&
-                                                                        'text-decoration-line-through fs-8 text-500 text-end '
-                                                                      }`}
-                                                                    >
-                                                                      {currency(
-                                                                        {
-                                                                          value:
-                                                                            productMap.valueTable,
+                                                                            ? productMap.promoteValueTable
+                                                                            : productMap.valueTable
                                                                         }
-                                                                      )}
-                                                                    </p>
-                                                                    {productMap.promoteStatusTable &&
-                                                                    !editingProductsMassive ? (
-                                                                      <span className="text-nowrap">
+                                                                        disabled={
+                                                                          !editingProductsMassive
+                                                                        }
+                                                                        id={`product-valueTable-${indexProd}`}
+                                                                        data-editing-value-table={
+                                                                          productMap.id
+                                                                        }
+                                                                        onChange={(
+                                                                          e
+                                                                        ) => {
+                                                                          mask(
+                                                                            e,
+                                                                            'currency'
+                                                                          )
+                                                                          setValuesProductMassive(
+                                                                            productMap,
+                                                                            productMap.promoteStatusTable
+                                                                              ? 'promoteValueTable'
+                                                                              : 'valueTable',
+                                                                            Number(
+                                                                              e
+                                                                                .target
+                                                                                .value ||
+                                                                              0
+                                                                            )
+                                                                          )
+                                                                        }}
+                                                                        onKeyDown={(
+                                                                          e
+                                                                        ) =>
+                                                                          alignPositionEditingMassive(
+                                                                            e,
+                                                                            categoryMap,
+                                                                            {
+                                                                              type: 'valueTable',
+                                                                              index:
+                                                                                indexProd,
+                                                                            }
+                                                                          )
+                                                                        }
+                                                                      />
+                                                                    </div>
+                                                                  ) : (
+                                                                    <div>
+                                                                      <p
+                                                                        className={`m-0 text-nowrap ${productMap.promoteStatusTable &&
+                                                                          'text-decoration-line-through fs-8 text-500 text-end '
+                                                                          }`}
+                                                                      >
                                                                         {currency(
                                                                           {
                                                                             value:
-                                                                              productMap.promoteValueTable ??
-                                                                              0,
+                                                                              productMap.valueTable,
                                                                           }
                                                                         )}
-                                                                      </span>
-                                                                    ) : null}
-                                                                  </div>
-                                                                )}
+                                                                      </p>
+                                                                      {productMap.promoteStatusTable &&
+                                                                        !editingProductsMassive ? (
+                                                                        <span className="text-nowrap">
+                                                                          {currency(
+                                                                            {
+                                                                              value:
+                                                                                productMap.promoteValueTable ??
+                                                                                0,
+                                                                            }
+                                                                          )}
+                                                                        </span>
+                                                                      ) : null}
+                                                                    </div>
+                                                                  )}
+                                                                </div>
                                                               </div>
-                                                            </div>
-                                                          )}
+                                                            )}
                                                         </Col>
                                                         {editingProductsMassive && (
                                                           <Col className="col-4 d-flex align-items-center justify-content-center">
                                                             {!productMap.bypass_amount &&
-                                                            profile.options
-                                                              .inventoryControl ? (
+                                                              profile.options
+                                                                .inventoryControl ? (
                                                               <InputGroup className="position-relative">
                                                                 <Button
                                                                   variant="secondary"
@@ -3653,13 +3644,13 @@ export function MenuComponent() {
                                                           >
                                                             {window.innerWidth <
                                                               768 &&
-                                                            !editingProductsMassive ? (
+                                                              !editingProductsMassive ? (
                                                               shareButtonLink
                                                             ) : updateProductsMassive.find(
-                                                                (prod) =>
-                                                                  prod.id ===
-                                                                  productMap.id
-                                                              ) ? (
+                                                              (prod) =>
+                                                                prod.id ===
+                                                                productMap.id
+                                                            ) ? (
                                                               <div className="ps-2 text-center">
                                                                 <span
                                                                   title={t(
@@ -3694,14 +3685,13 @@ export function MenuComponent() {
                                                             <Button
                                                               size="sm"
                                                               variant="link"
-                                                              className={`text-decoration-none fs-7 flex-grow-1 ${
-                                                                productMap.status &&
-                                                                verifyAvailability(
-                                                                  productMap
-                                                                )
+                                                              className={`text-decoration-none fs-7 flex-grow-1 ${productMap.status &&
+                                                                  verifyAvailability(
+                                                                    productMap
+                                                                  )
                                                                   ? ''
                                                                   : 'link-danger'
-                                                              }`}
+                                                                }`}
                                                               tabIndex={
                                                                 editingProductsMassive
                                                                   ? -1
@@ -3734,14 +3724,13 @@ export function MenuComponent() {
                                                             <Button
                                                               size="sm"
                                                               variant="link"
-                                                              className={`text-decoration-none fs-7 flex-grow-1 ${
-                                                                productMap.status &&
-                                                                verifyAvailability(
-                                                                  productMap
-                                                                )
+                                                              className={`text-decoration-none fs-7 flex-grow-1 ${productMap.status &&
+                                                                  verifyAvailability(
+                                                                    productMap
+                                                                  )
                                                                   ? ''
                                                                   : 'link-danger'
-                                                              }`}
+                                                                }`}
                                                               tabIndex={
                                                                 editingProductsMassive
                                                                   ? -1
@@ -3764,14 +3753,13 @@ export function MenuComponent() {
                                                               disabled={
                                                                 editingProductsMassive
                                                               }
-                                                              className={`text-decoration-none fs-7 flex-grow-1 ${
-                                                                productMap.status &&
-                                                                verifyAvailability(
-                                                                  productMap
-                                                                )
+                                                              className={`text-decoration-none fs-7 flex-grow-1 ${productMap.status &&
+                                                                  verifyAvailability(
+                                                                    productMap
+                                                                  )
                                                                   ? ''
                                                                   : 'link-danger'
-                                                              }`}
+                                                                }`}
                                                               onClick={() => {
                                                                 handleEditProduct(
                                                                   productMap,
@@ -3786,7 +3774,7 @@ export function MenuComponent() {
                                                           </ButtonGroup>
                                                         </div>
                                                         {overlayProduct ===
-                                                        productMap.id ? (
+                                                          productMap.id ? (
                                                           <OverlaySpinner
                                                             show={true}
                                                             backgroundColor="transparent"
