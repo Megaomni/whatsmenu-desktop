@@ -399,7 +399,7 @@ class CartController {
           if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
             try {
               const companieId = integrations.grovenfe.companie_id
-              const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/create/${companieId}`, {
+              const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companieId}`, {
                 formPayment: data.formsPayment[0],
               }, {
                 headers: {
