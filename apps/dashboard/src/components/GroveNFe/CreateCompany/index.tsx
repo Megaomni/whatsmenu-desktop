@@ -41,15 +41,19 @@ const createCompanySchema = z.object({
     nome_responsavel: z.string().optional(),
     cpf_responsavel: z.string().optional(),
     cpf_cnpj_contabilidade: z.coerce.number().optional(),
-    habilita_nfce: z.boolean(),
+    habilita_nfce: z.boolean().refine((value) => value === true, {
+        message: 'Habilite para emitir NFCe',
+    }),
     serie_nfce_homologacao: z.coerce.number().optional(),
     proximo_numero_nfce_homologacao: z.coerce.number().optional(),
     id_token_nfce_homologacao: z.coerce.number().optional(),
     csc_nfce_homologacao: z.string().optional(),
     serie_nfce_producao : z.coerce.number().optional(),
     proximo_numero_nfce_producao: z.coerce.number().optional(),
-    id_token_nfce_producao : z.coerce.number().optional(),
-    csc_nfce_producao: z.string().optional(),
+    id_token_nfce_producao : z.coerce.number().min(1, 'Token do CSC obrigatório'),
+    csc_nfce_producao: z.string({
+        required_error: 'Código de Segurança do Contribuinte obrigatório',
+    }).min(1, 'Código de Segurança do Contribuinte obrigatório'),
     habilita_contingencia_offline_nfce: z.boolean().optional(),
     enviar_email_destinatario: z.boolean().optional(),
     enviar_email_homologacao: z.boolean().optional(),
@@ -122,7 +126,7 @@ export function CreateCompany() {
     }
 
     useEffect(() => {
-        if(profile.options.integrations.grovenfe.company_id) {
+        if(profile.options.integrations?.grovenfe.company_id) {
             axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
                 headers: {
                     Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
@@ -180,6 +184,9 @@ export function CreateCompany() {
             setTabKey('identification')
         }
     }, [errors])
+
+    console.log(errors);
+    
     
     const convertFileToBase64 = ({file, eventName}: {file: File, eventName: string} ) => {        
         if (file) {
@@ -304,10 +311,10 @@ export function CreateCompany() {
                                     <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'accounting' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='accounting'>
                                         {t('accounting')}</Nav.Link>
                                 </Nav.Item>
-                                <Nav.Item >
+                                {/* <Nav.Item >
                                     <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'tokens' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='tokens'>
                                         {t('tokens')}</Nav.Link>
-                                </Nav.Item>
+                                </Nav.Item> */}
                                 <Nav.Item >
                                     <Nav.Link className={`m-0 p-0 pb-1 mb-3 text-nowrap ${tabKey === 'docFiscal' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='docFiscal'>{t('tax_documents')}</Nav.Link>
                                 </Nav.Item>
@@ -520,18 +527,19 @@ export function CreateCompany() {
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
-                                <Tab.Pane eventKey='tokens'>
+                                {/* <Tab.Pane eventKey='tokens'>
                                     <Row>
                                         <Col md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">{t('production_token')}</Form.Label>
                                             <Form.Control></Form.Control>
                                         </Col>
                                     </Row>
-                                </Tab.Pane>
+                                </Tab.Pane> */}
                                 <Tab.Pane eventKey='docFiscal' style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
                                     <Form.Switch label='NFCe' {...register('habilita_nfce')} className="mt-3 mb-3"  onChange={(event) => {
                                         setNfce(event?.target.checked)
                                     }}></Form.Switch>
+                                    {errors.habilita_nfce && <span className="text-danger">{errors.habilita_nfce.message}</span>}
                                     {nfce &&
                                         <Row className="d-flex">
                                             <div className="mt-2">
@@ -545,12 +553,14 @@ export function CreateCompany() {
                                                         <Form.Control defaultValue="1" {...register('proximo_numero_nfce_producao')}></Form.Control>
                                                     </Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('id_production_token')}</Form.Label>
-                                                        <Form.Control {...register('id_token_nfce_producao', { required: 'Este campo é obrigatório' })}></Form.Control>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('security_code_production')}</Form.Label>
+                                                        <Form.Control {...register('csc_nfce_producao')}></Form.Control>
+                                                        {errors.csc_nfce_producao && <span className="text-danger">{errors.csc_nfce_producao.message}</span>}
                                                     </Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('security_code_production')}</Form.Label>
-                                                        <Form.Control {...register('csc_nfce_producao', { required: 'Este campo é obrigatório' })}></Form.Control>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('id_production_token')}</Form.Label>
+                                                        <Form.Control {...register('id_token_nfce_producao')}></Form.Control>
+                                                        {errors.id_token_nfce_producao && <span className="text-danger">{errors.id_token_nfce_producao.message}</span>}
                                                     </Col>
                                                 </Row>
                                             </div>
