@@ -129,7 +129,7 @@ export class ClientidComponent implements OnInit, AfterViewChecked {
 
   async getClientByWhatsapp(event?: KeyboardEvent) {
     if (!this.hasFetchedCostumer) {
-      if ((event && event.key !== 'Enter') || this.customer.whatsapp.length < 10) {
+      if ((event && event.key !== 'Enter') || this.customer.whatsapp.length < this.translate.masks().cell.replace(/\D/g, '').length) {
         return
       }
       try {
