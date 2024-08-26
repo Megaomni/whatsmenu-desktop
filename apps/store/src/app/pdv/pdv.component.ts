@@ -262,6 +262,9 @@ export class PdvComponent implements OnInit, AfterViewChecked {
             }
             switch (type) {
               case 'request':
+                if (this.context.activeCashier.id !== data.request.cashierId) {
+                  break
+                }
                 if (data.request.type !== 'T') {
                   if (
                     data.request.type === 'P' &&
