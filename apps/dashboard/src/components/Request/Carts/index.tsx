@@ -434,7 +434,7 @@ export function Carts(data: any) {
                                 </span>
                               </td>
                               <td>
-                                {cart.controls.grovenfe.fiscal_note ? (
+                                {cart.controls?.grovenfe?.fiscal_note ? (
                                   <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                 ) : (
                                   <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote(cart)} />
