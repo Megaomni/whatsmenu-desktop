@@ -91,7 +91,7 @@ export function CreateCompany() {
     const [certificateBase64, setCertificateBase64] = useState<string | null>(null)
     const [imageLogo, setImageLogo] = useState<string | undefined>(undefined)
 
-    const CreateCompany = async (company: any) => {
+    const createCompanyGroveNfe = async (company: any) => {
 
         company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
         company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
@@ -208,7 +208,7 @@ export function CreateCompany() {
 
     return (
         <>
-            <form id="createCompany" onSubmit={handleSubmit(CreateCompany)}>
+            <form id="createCompany" onSubmit={handleSubmit(createCompanyGroveNfe)}>
                 <Card>
                     <Card.Header className="m-2 p-2 fw-bold fs-5">
                         {t('new_company')}
