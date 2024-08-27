@@ -23,11 +23,11 @@ type EditEmissonFormData = z.infer<typeof EditEmissonSchema>
 export function ConfigEmission() { 
   const { t } = useTranslation()
   const { setProfile, profile } = useContext(AppContext)
-  const {register, setValue, getValues, handleSubmit, watch, formState: { errors }, reset} = useForm({
+  const { register, setValue, getValues, handleSubmit, watch } = useForm({
     resolver: zodResolver(EditEmissonSchema),
     defaultValues: {
-        day_limiter: profile.options.integrations?.grovenfe?.config.fiscal_notes.day_limiter,
-        forms_payment: profile.options.integrations?.grovenfe?.config.fiscal_notes.forms_payment ?? [],
+        day_limiter: profile.options.integrations?.grovenfe?.config?.fiscal_notes.day_limiter,
+        forms_payment: profile.options.integrations?.grovenfe?.config?.fiscal_notes.forms_payment ?? [],
     }
   })
 
