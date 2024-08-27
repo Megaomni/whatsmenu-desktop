@@ -141,7 +141,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
           position: 'middle-center',
           type: 'success',
           title: 'Categoria',
-          content: `${category.name} foi ${type === 'create' ? t('created') : t('updated')} ${t('sucessfully')}.`,
+          content: `${category.name} foi ${type === 'create' ? t('created') : t('updated')} ${t('successfully')}.`,
           show: true,
         })
       }, 5)
@@ -178,7 +178,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
             show: true,
             type: 'success',
             title: t('category'),
-            content: `${category.name}, ${t('sucessfully_deleted')}.`,
+            content: `${category.name}, ${t('successfully_deleted')}.`,
           })
           handleClose()
         } catch (e) {
@@ -197,11 +197,10 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
       title: `${t('category')} (${category.type === 'default' ? t('standard') : 'Pizza'})`,
       message: `${t('delete_category')}:
       ${category.name}
-      ${
-        category.type === 'default'
+      ${category.type === 'default'
           ? `${t('qty_product')}: ${category.products?.length} `
           : `${t('qty_flavors')}: ${category.product?.flavors.length}`
-      } ?`,
+        } ?`,
     })
   }
 
@@ -438,7 +437,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                                   ?.amount
                                                   ? 0
                                                   : category.product?.amount -
-                                                    1,
+                                                  1,
                                               }),
                                             })
                                           }}
@@ -512,7 +511,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                                   ?.amount_alert
                                                   ? 0
                                                   : category.product
-                                                      ?.amount_alert - 1,
+                                                    ?.amount_alert - 1,
                                               }),
                                             })
                                           }}
@@ -555,7 +554,7 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
                                                   ?.amount_alert
                                                   ? 1
                                                   : category.product
-                                                      .amount_alert + 1,
+                                                    .amount_alert + 1,
                                               }),
                                             })
                                           }}
@@ -707,9 +706,8 @@ export function CategoryModal({ show, handleClose, type }: CategoryProps) {
           </Tab.Container>
         </Modal.Body>
         <Modal.Footer
-          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${
-            modalFooterOpened ? 'show' : 'hidden'
-          }-buttons-modal-footer`}
+          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${modalFooterOpened ? 'show' : 'hidden'
+            }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
           <ActionsFooterButton

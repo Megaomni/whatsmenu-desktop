@@ -207,7 +207,7 @@ export function PizzaSize(props: PizzaSizeProps) {
         handleShowToast({
           show: true,
           title: t('size'),
-          content: `${size.name?.trim() || name}, foi ${type == 'create' ? t('created_o') : t('updated_o')} ${t('sucessfully')}.`,
+          content: `${size.name?.trim() || name}, foi ${type == 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
           type: 'success',
         })
         handleClose()
@@ -255,7 +255,7 @@ export function PizzaSize(props: PizzaSizeProps) {
             handleShowToast({
               show: true,
               title: t('size'),
-              content: `${size.name}, ${t('was_deleted_sucessfully')}.`,
+              content: `${size.name}, ${t('was_deleted_successfully')}.`,
               type: 'success',
             })
 
@@ -299,7 +299,7 @@ export function PizzaSize(props: PizzaSizeProps) {
           show: true,
           type: 'success',
           title: t('size'),
-          content: `${size.name}, foi ${size.status ? t('paused') : t('unpaused')} ${t('sucessfully')}.`,
+          content: `${size.name}, foi ${size.status ? t('paused') : t('unpaused')} ${t('successfully')}.`,
         })
       }
     } catch (error) {
@@ -622,9 +622,8 @@ export function PizzaSize(props: PizzaSizeProps) {
           </form>
         </Modal.Body>
         <Modal.Footer
-          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${
-            modalFooterOpened ? 'show' : 'hidden'
-          }-buttons-modal-footer`}
+          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${modalFooterOpened ? 'show' : 'hidden'
+            }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
           <ActionsFooterButton

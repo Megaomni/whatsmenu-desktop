@@ -256,7 +256,7 @@
               </span>
               <span
                 class="text-black-50 small text-capitalize"
-                *ngIf="(cart.cupom && cart.cupom.type === 'freight') || (cart.taxDelivery !== null && cart.taxDelivery <= 0)"
+                *ngIf="taxDelivery() !== translate.text().to_consult && ((cart.cupom && cart.cupom.type === 'freight') || (cart.taxDelivery !== null && cart.taxDelivery <= 0))"
                 >{{ translate.text().free }}</span
               >
             </div>

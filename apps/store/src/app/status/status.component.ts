@@ -596,6 +596,7 @@ export class StatusComponent implements OnInit {
       message += `*${this.translate.text().order_comment}: + ${this.currencyNoSymbol(
         this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart)
       )}*\n`
+      
       if (this.cart.addressId) {
         message += `*${this.translate.text().delivery}:* `
         if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === this.translate.text().to_consult) {
@@ -615,9 +616,9 @@ export class StatusComponent implements OnInit {
           message += `*${this.currencyNoSymbol(this.cart.taxDelivery)}*\n`
         }
       }
-      if (this.cart.formsPayment[0].addon?.status) {
+      if (this.taxDelivery() !== this.translate.text().to_consult && this.cart.formsPayment[0].addon?.status) {
         if (this.cart.formsPayment[0].addon.type === 'fee')
-          message += `*${this.translate.text().free_comment_up}: + ${this.currencyNoSymbol(totalAddon)}*\n`
+          message += `*${this.translate.text().fee_comment}: + ${this.currencyNoSymbol(totalAddon)}*\n`
       }
       if (this.cart.formsPayment[0].addon?.type === 'discount') {
         message += `*${this.translate.text().disc}. ${this.cart.formsPayment[0].label}: - ${this.currencyNoSymbol(Math.abs(totalAddon))}*\n`
