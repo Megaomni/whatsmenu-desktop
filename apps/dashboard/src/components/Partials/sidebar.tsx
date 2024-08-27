@@ -414,7 +414,7 @@ export function Sidebar() {
             </span>
           </Link>
         </li>
-        <li className="nav-item">
+        {/* <li className="nav-item">
           <Link
             href="/dashboard/invoiceGrove"
             className={`with-icon nav-link collapsed`}
@@ -428,7 +428,7 @@ export function Sidebar() {
               FaturasNFe
             </span>
           </Link>
-        </li>
+        </li> */}
 
         {profile.id &&
           ((profile.address.street && profile.taxDelivery.length > 0) ||
