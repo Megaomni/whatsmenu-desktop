@@ -560,7 +560,7 @@ importers:
         version: 2.5.2
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5)))
+        version: 1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5)))
       whatsapp-web.js:
         specifier: github:pedroslopez/whatsapp-web.js#webpack-exodus
         version: https://codeload.github.com/pedroslopez/whatsapp-web.js/tar.gz/f361cde7d4f50dcb0694b7d5bb571d16b7bf412f(encoding@0.1.13)
@@ -645,10 +645,10 @@ importers:
         version: 8.4.41
       tailwindcss:
         specifier: ^3.4.3
-        version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5))
+        version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5))
       ts-node:
         specifier: ^10.0.0
-        version: 10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5)
+        version: 10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5)
       typescript:
         specifier: ~4.5.4
         version: 4.5.5
@@ -732,7 +732,7 @@ importers:
         version: 3.5.0
       nativewind:
         specifier: ^2.0.11
-        version: 2.0.11(react@18.2.0)(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5)))
+        version: 2.0.11(react@18.2.0)(tailwindcss@3.4.10(ts-node@10.9.2(typescript@4.9.5)))
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -784,7 +784,7 @@ importers:
         version: 0.2.2
       tailwindcss:
         specifier: ^3.3.2
-        version: 3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5))
+        version: 3.4.10(ts-node@10.9.2(typescript@4.9.5))
       typescript:
         specifier: ^4.9.4
         version: 4.9.5
@@ -28364,7 +28364,7 @@ snapshots:
 
   napi-build-utils@1.0.2: {}
 
-  nativewind@2.0.11(react@18.2.0)(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5))):
+  nativewind@2.0.11(react@18.2.0)(tailwindcss@3.4.10(ts-node@10.9.2(typescript@4.9.5))):
     dependencies:
       '@babel/generator': 7.25.0
       '@babel/helper-module-imports': 7.18.6
@@ -28378,7 +28378,7 @@ snapshots:
       postcss-css-variables: 0.18.0(postcss@8.4.41)
       postcss-nested: 5.0.6(postcss@8.4.41)
       react-is: 18.3.1
-      tailwindcss: 3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5))
+      tailwindcss: 3.4.10(ts-node@10.9.2(typescript@4.9.5))
       use-sync-external-store: 1.2.2(react@18.2.0)
     transitivePeerDependencies:
       - react
@@ -29448,21 +29448,21 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.41
 
-  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5)):
+  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5)):
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.5.0
     optionalDependencies:
       postcss: 8.4.41
-      ts-node: 10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5)
+      ts-node: 10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5)
 
-  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5)):
+  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(typescript@4.9.5)):
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.5.0
     optionalDependencies:
       postcss: 8.4.41
-      ts-node: 10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5)
+      ts-node: 10.9.2(typescript@4.9.5)
 
   postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@8.3.0(typescript@4.9.5)):
     dependencies:
@@ -31696,11 +31696,11 @@ snapshots:
 
   tailwind-merge@2.5.2: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5))):
     dependencies:
-      tailwindcss: 3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5))
+      tailwindcss: 3.4.10(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5))
 
-  tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5)):
+  tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -31719,7 +31719,7 @@ snapshots:
       postcss: 8.4.41
       postcss-import: 15.1.0(postcss@8.4.41)
       postcss-js: 4.0.1(postcss@8.4.41)
-      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5))
+      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5))
       postcss-nested: 6.2.0(postcss@8.4.41)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.8
@@ -31727,7 +31727,7 @@ snapshots:
     transitivePeerDependencies:
       - ts-node
 
-  tailwindcss@3.4.10(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5)):
+  tailwindcss@3.4.10(ts-node@10.9.2(typescript@4.9.5)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -31746,7 +31746,7 @@ snapshots:
       postcss: 8.4.41
       postcss-import: 15.1.0(postcss@8.4.41)
       postcss-js: 4.0.1(postcss@8.4.41)
-      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5))
+      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(typescript@4.9.5))
       postcss-nested: 6.2.0(postcss@8.4.41)
       postcss-selector-parser: 6.1.2
       resolve: 1.22.8
@@ -32054,47 +32054,6 @@ snapshots:
       '@ts-morph/common': 0.23.0
       code-block-writer: 13.0.2
 
-  ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.5.5):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 20.14.14
-      acorn: 8.12.1
-      acorn-walk: 8.3.3
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 4.5.5
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.7.11(@swc/helpers@0.5.12)
-
-  ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@4.9.5):
-    dependencies:
-      '@cspotcode/source-map-support': 0.8.1
-      '@tsconfig/node10': 1.0.11
-      '@tsconfig/node12': 1.0.11
-      '@tsconfig/node14': 1.0.3
-      '@tsconfig/node16': 1.0.4
-      '@types/node': 20.14.14
-      acorn: 8.12.1
-      acorn-walk: 8.3.3
-      arg: 4.1.3
-      create-require: 1.1.1
-      diff: 4.0.2
-      make-error: 1.3.6
-      typescript: 4.9.5
-      v8-compile-cache-lib: 3.0.1
-      yn: 3.1.1
-    optionalDependencies:
-      '@swc/core': 1.7.11(@swc/helpers@0.5.12)
-    optional: true
-
   ts-node@10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@5.5.4):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
@@ -32114,6 +32073,44 @@ snapshots:
       yn: 3.1.1
     optionalDependencies:
       '@swc/core': 1.7.11(@swc/helpers@0.5.12)
+
+  ts-node@10.9.2(@swc/core@1.7.11)(@types/node@20.14.14)(typescript@4.5.5):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 20.14.14
+      acorn: 8.12.1
+      acorn-walk: 8.3.3
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 4.5.5
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.7.11(@swc/helpers@0.5.12)
+
+  ts-node@10.9.2(typescript@4.9.5):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.11
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      acorn: 8.12.1
+      acorn-walk: 8.3.3
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 4.9.5
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    optional: true
 
   ts-node@8.3.0(typescript@4.9.5):
     dependencies:
