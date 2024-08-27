@@ -30,9 +30,6 @@ export function ConfigEmission() {
         forms_payment: profile.options.integrations?.grovenfe?.config.fiscal_notes.forms_payment ?? [],
     }
   })
-  console.log(getValues());
-
-  const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
 //   forms_payment 
     const handleFormsPayment = ({checked, typePayment}: {checked: boolean, typePayment: string}) => {
@@ -51,15 +48,27 @@ export function ConfigEmission() {
         }
     }
 
-    const editEmission = async (fiscal_notes: any) => {
-        const body =  {
+    const editEmission = async (fiscal_notes: EditEmissonFormData) => {
+        const company =  {
             id: profile.options.integrations.grovenfe.company_id,
             controls: {
                 fiscal_notes
             }
         }
         try {
-            const {data} = await groveNfeApi.put('/v1/companies', {company: body})            
+            const {data} = await groveNfeApi.put('/v1/companies', { company })
+            setProfile(prevProfile => ({ 
+                ...prevProfile!,
+            options: {
+                ...prevProfile!.options,
+                integrations: {
+                    ...prevProfile!.options.integrations,
+                    grovenfe: {
+                        ...prevProfile!.options.integrations?.grovenfe,
+                        created_at: data.company.created_at
+                    }
+                }
+            } }))      
         } catch (error) {
             console.error(error);
             throw error
