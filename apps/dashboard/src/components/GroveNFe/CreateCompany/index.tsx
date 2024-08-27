@@ -94,8 +94,22 @@ export function CreateCompany() {
         company.cep = Number(company.cep.replace(/[^\d]/g, ''))
         company.certificado_base64 = certificateBase64
 
+        const body = {
+            ...company,
+            plan_id: 1,
+            external_id: profile.id
+        }
+
+        const haveIntegration = Boolean(profile?.options?.integrations?.grovenfe)
+        let url = '/v1/companies'
+        let method: 'put' | 'post' = 'post'
+        if (haveIntegration) {
+            url = `/v1/companies/${profile?.options?.integrations?.grovenfe?.company_id}`
+            method = 'put'
+        }
+
         try {
-            const { data } = await groveNfeApi.post('/v1/companies', { ...company, plan_id: 1, external_id: profile.id })
+            const { data } = await groveNfeApi[method](url, body)
          
             if (data) {
                 setProfile(prevProfile => ({ 
@@ -106,7 +120,7 @@ export function CreateCompany() {
                         ...prevProfile!.options.integrations,
                         grovenfe: {
                             ...prevProfile!.options.integrations?.grovenfe,
-                            created_at: data.company.grovenfe.created_at
+                            created_at: data.company.created_at
                         }
                     }
                 } }))
@@ -180,9 +194,6 @@ export function CreateCompany() {
         }
     }, [errors])
 
-    console.log(errors);
-    
-    
     const convertFileToBase64 = ({file, eventName}: {file: File, eventName: string} ) => {        
         if (file) {
             const reader = new FileReader();
@@ -206,7 +217,7 @@ export function CreateCompany() {
             <form id="createCompany" onSubmit={handleSubmit(createCompanyGroveNfe)}>
                 <Card>
                     <Card.Header className="m-2 p-2 fw-bold fs-5">
-                        {t('new_company')}
+                        {t('company')}
                     </Card.Header>
                     <Card.Body>
                         <Row>

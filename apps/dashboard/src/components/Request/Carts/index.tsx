@@ -1,7 +1,11 @@
 import { DateTime } from 'luxon'
 
+import { HelpVideos } from '@components/Modals/HelpVideos'
+import i18n from 'i18n'
+import { useSession } from 'next-auth/react'
+import Image from 'next/image'
 import Link from 'next/link'
-import { ChangeEvent, MouseEvent, useContext, useState, useRef } from 'react'
+import { MouseEvent, useContext, useRef, useState } from 'react'
 import {
   Badge,
   Button,
@@ -12,20 +16,14 @@ import {
   FormGroup,
   Row,
 } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 import { BsGearFill, BsPrinter } from 'react-icons/bs'
+import { groveNfeApi } from 'src/lib/axios'
 import { AppContext } from '../../../context/app.ctx'
 import { CartsContext } from '../../../context/cart.ctx'
 import { TableContext } from '../../../context/table.ctx'
 import Cart from '../../../types/cart'
-import { apiRoute } from '../../../utils/wm-functions'
 import { SendStatusMessageForm } from '../../SendStatusMessageForm'
-import axios from 'axios'
-import { useSession } from 'next-auth/react'
-import { HelpVideos } from '@components/Modals/HelpVideos'
-import { useTranslation } from 'react-i18next'
-import i18n from 'i18n'
-import Image from 'next/image'
-import { groveNfeApi } from 'src/lib/axios'
 
 export function Carts(data: any) {
   const { t } = useTranslation()
@@ -44,10 +42,6 @@ export function Carts(data: any) {
     lastRequestDate,
     currency,
   } = useContext(AppContext)
-
-  const waitMillis = localStorage.getItem('waitMillis')
-    ? Number(localStorage.getItem('waitMillis'))
-    : 7000
 
   const { tables } = useContext(TableContext)
   //Profile Enviroments
