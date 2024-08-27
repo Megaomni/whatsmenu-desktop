@@ -86,7 +86,6 @@ export function CreateCompany() {
     const [inputCertificateCompany, setInputCertificateCompany] = useState<File | null>(null)
     const [logoBase64, setLogoBase64] = useState<string | null>(null)
     const [certificateBase64, setCertificateBase64] = useState<string | null>(null)
-    const [imageLogo, setImageLogo] = useState<string | undefined>(undefined)
 
     const createCompanyGroveNfe = async (company: any) => {
 
@@ -96,7 +95,7 @@ export function CreateCompany() {
         company.certificado_base64 = certificateBase64
 
         try {
-            const {data} = await groveNfeApi.post('/v1/companies', { ...company, plan_id: 1, external_id: profile.id })
+            const { data } = await groveNfeApi.post('/v1/companies', { ...company, plan_id: 1, external_id: profile.id })
          
             if (data) {
                 setProfile(prevProfile => ({ 
@@ -107,7 +106,7 @@ export function CreateCompany() {
                         ...prevProfile!.options.integrations,
                         grovenfe: {
                             ...prevProfile!.options.integrations?.grovenfe,
-                            created_at: data.grovenfe.created_at
+                            created_at: data.company.grovenfe.created_at
                         }
                     }
                 } }))
