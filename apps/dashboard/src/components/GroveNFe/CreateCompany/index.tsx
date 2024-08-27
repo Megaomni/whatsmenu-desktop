@@ -96,7 +96,7 @@ export function CreateCompany() {
         company.certificado_base64 = certificateBase64
 
         try {
-            const {data} = await groveNfeApi.post('/v1/companies', { ...company, plan_id: 1 })
+            const {data} = await groveNfeApi.post('/v1/companies', { ...company, plan_id: 1, external_id: profile.id })
          
             if (data) {
                 setProfile(prevProfile => ({ 
