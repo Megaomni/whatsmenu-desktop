@@ -104,8 +104,11 @@ export function Carts(data: any) {
   }
 
   const handleEmitNote = async (cart: Cart) => {
+    if(!profile?.options?.integrations?.grovenfe) {
+      return
+    }
     try {
-      const { data } = await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, {
+      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, {
 
       })
     } catch (error) {
