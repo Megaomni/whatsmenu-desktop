@@ -30,7 +30,7 @@ const createCompanySchema = z.object({
     email: z.coerce.string().email('Formato de e-mail inválido'),
     telefone: z.string().min(10, 'Telefone inválido').optional(),
     cep: z.string().min(8, 'CEP inválido'),
-    Logradouro: z.string().min(5, 'Logradouro obrigatório'),
+    logradouro: z.string().min(5, 'Logradouro obrigatório'),
     numero: z.coerce.number().min(1, 'Número obrigatório'),
     complemento: z.string().optional(),
     bairro: z.string().min(1, 'Bairro obrigatório'),
@@ -157,7 +157,7 @@ export function CreateCompany() {
                         /^(\d{5})(\d)/g,
                         '$1-$2'
                       ),
-                    Logradouro: data.focus_company_data.logradouro,
+                    logradouro: data.focus_company_data.logradouro,
                     numero: data.focus_company_data.numero,
                     complemento: data.focus_company_data.complemento,
                     bairro: data.focus_company_data.bairro,
@@ -181,7 +181,7 @@ export function CreateCompany() {
     }, [])    
     
     useEffect(() => {
-        if (errors.cep || errors.Logradouro || errors.bairro || errors.municipio || errors.numero) {
+        if (errors.cep || errors.logradouro || errors.bairro || errors.municipio || errors.numero) {
             setTabKey('address')
         }
         
@@ -451,8 +451,8 @@ export function CreateCompany() {
                                         </Col>
                                         <Col md={4}> 
                                             <Form.Label className="m-0 p-0 mt-4">{t('street')}</Form.Label>
-                                            <Form.Control {...register('Logradouro')}></Form.Control>
-                                            {errors.Logradouro && <span className="text-danger">{errors.Logradouro.message}</span>}
+                                            <Form.Control {...register('logradouro')}></Form.Control>
+                                            {errors.logradouro && <span className="text-danger">{errors.logradouro.message}</span>}
 
                                         </Col>
                                         <Col xs={6} md={3}>
