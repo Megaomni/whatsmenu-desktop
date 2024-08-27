@@ -5,7 +5,6 @@ on:
     branches:
       - beta
       - feat/grove-nfe
-      
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
