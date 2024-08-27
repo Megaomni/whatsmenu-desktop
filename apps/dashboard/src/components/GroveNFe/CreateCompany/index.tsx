@@ -1,15 +1,13 @@
-import { CropModal } from "@components/Modals/CropModal";
 import { AppContext } from "@context/app.ctx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mask } from "@utils/wm-functions";
 import axios from "axios";
-import {  useContext, useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Figure, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Button, Card, Col, Form, FormGroup, Nav, Row, Tab } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { api, groveNfeApi } from "src/lib/axios";
-import Integrations from "src/pages/dashboard/integrations";
-import { z } from 'zod'
+import { groveNfeApi } from "src/lib/axios";
+import { z } from 'zod';
 
 
 const createCompanySchema = z.object({
@@ -85,7 +83,6 @@ export function CreateCompany() {
     const [cnpjMasked, setCnpjMasked] = useState('')
     const[phoneMasked, setPhoneMasked] = useState('')
     const [cepMasked, setCepMasked] = useState('')
-    const [inputLogoCompany, setInputLogoCompany] = useState<File | null>(null)
     const [inputCertificateCompany, setInputCertificateCompany] = useState<File | null>(null)
     const [logoBase64, setLogoBase64] = useState<string | null>(null)
     const [certificateBase64, setCertificateBase64] = useState<string | null>(null)
@@ -96,11 +93,10 @@ export function CreateCompany() {
         company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
         company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
         company.cep = Number(company.cep.replace(/[^\d]/g, ''))
-        // company.arquivo_logo_base64 = logoBase64
         company.certificado_base64 = certificateBase64
 
         try {
-            const {data} = await groveNfeApi.post('/v1/companies', company)
+            const {data} = await groveNfeApi.post('/v1/companies', { ...company, plan_id: 1 })
          
             if (data) {
                 setProfile(prevProfile => ({ 
