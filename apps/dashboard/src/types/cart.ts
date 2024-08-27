@@ -663,8 +663,8 @@ export default class Cart {
       total: 164.5,
       controls: {
         grovenfe: {
-          fiscal_note: null,
-        },
+          fiscal_note: {}
+        }
       },
       packageDate: null,
       created_at: '2023-07-19 14:58:54',

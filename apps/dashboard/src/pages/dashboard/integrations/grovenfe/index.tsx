@@ -197,33 +197,27 @@ export default function Grovenfe() {
             <h1 className="fw-bold" style={{ color: '#012970' }}>
                 {t('tax_settings')}
             </h1>
-            <Tab.Container activeKey={tabKey} onSelect={(key) => setTabKey(key)}>
+            <Tab.Container activeKey={tabKey} onSelect={(key) => setTabKey(key as string)}>
                 <Row>
                     <Col>
                         <Nav
                             variant="tabs"
                             className="tab-nav-flex flex-row">
-                            <Nav.Item
-                                eventKey="addCompany"
-                                className="position-relative"
-                            >
-                                <Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item
-                                eventKey="configEmission"
-                                className="position-relative"
-                            >
-                                <Nav.Link eventKey="configEmission" className="text-nowrap">
-                                    {t('configure_emission')}
-                                </Nav.Link>
-                            </Nav.Item>
+															<Nav.Item>
+																<Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
+															</Nav.Item>
+															<Nav.Item>
+																<Nav.Link eventKey="configEmission" className="text-nowrap">
+																	{t('configure_emission')}
+																</Nav.Link>
+															</Nav.Item>
                         </Nav>
                         <Tab.Content>
                             <Tab.Pane eventKey="addCompany">
-                                {<CreateCompany />}
+                              <CreateCompany />
                             </Tab.Pane>
                             <Tab.Pane eventKey="configEmission">
-                                {<ConfigEmission />}
+                              <ConfigEmission />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

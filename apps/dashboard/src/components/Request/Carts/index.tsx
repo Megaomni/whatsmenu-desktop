@@ -104,8 +104,11 @@ export function Carts(data: any) {
   }
 
   const handleEmitNote = async (cart: Cart) => {
+    if(!profile?.options?.integrations?.grovenfe) {
+      return
+    }
     try {
-      const { data } = await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, {
+      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, {
       })
     } catch (error) {
       throw error
@@ -433,8 +436,8 @@ export function Carts(data: any) {
                                 </span>
                               </td>
                               <td>
-                                {cart.controls.grovenfe.fiscal_note ? (
-                                  <Link href={cart.controls.grovenfe.fiscal_note.url_consulta_nf} target='_blank'>
+                                {cart.controls?.grovenfe?.fiscal_note ? (
+                                  <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
                                     <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30}  />
                                   </Link>
                                 ) : (
