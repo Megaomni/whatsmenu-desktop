@@ -13,6 +13,8 @@ export default class GroveNfeService {
    * @returns {Promise<void>}
    */
   async updateProfile({ company }: { company: any }): Promise<void> {
+    console.log('companyService', company)
+
     const profile = await Profile.find(company.external_id)
     if (profile) {
       profile.options.integrations = {

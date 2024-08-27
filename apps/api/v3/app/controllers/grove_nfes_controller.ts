@@ -13,6 +13,7 @@ export default class GroveNfesController {
         case 'COMPANY_CREATED':
         case 'COMPANY_UPDATED':
           const { company } = data
+          console.log('companyController', data)
           this.groveNfeService.updateProfile({ company })
           break
         case 'FISCAL_NOTE_CREATED':
