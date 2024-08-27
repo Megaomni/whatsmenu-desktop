@@ -109,7 +109,6 @@ export function Carts(data: any) {
     }
     try {
       await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, {
-
       })
     } catch (error) {
       throw error
@@ -438,7 +437,9 @@ export function Carts(data: any) {
                               </td>
                               <td>
                                 {cart.controls?.grovenfe?.fiscal_note ? (
-                                  <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
+                                  <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
+                                    <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30}  />
+                                  </Link>
                                 ) : (
                                   <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote(cart)} />
                                 )}
