@@ -8,6 +8,7 @@ export const generateProfileDefaultOptions = (profile: Profile): ProfileOptions 
     queues: {
       bartender: [],
     },
+    integrations: {},
     pdv: {
       cashierManagement: false,
       clientConfig: {

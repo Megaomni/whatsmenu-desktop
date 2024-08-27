@@ -38,8 +38,8 @@ test.group('Grove Nfe Service', (group) => {
         user.profile.options.integrations?.grovenfe?.config.fiscal_notes,
         company.controls.fiscal_notes
       )
-      assert.deepEqual(user.profile.options.integrations.grovenfe.company_id, company.id)
-      assert.deepEqual(user.profile.options.integrations.grovenfe.created_at, company.created_at)
+      assert.deepEqual(user.profile.options.integrations.grovenfe?.company_id, company.id)
+      assert.deepEqual(user.profile.options.integrations.grovenfe?.created_at, company.created_at)
     } catch (error) {
       throw error
     }
