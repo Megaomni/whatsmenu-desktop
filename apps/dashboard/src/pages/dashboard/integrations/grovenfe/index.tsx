@@ -203,27 +203,21 @@ export default function Grovenfe() {
                         <Nav
                             variant="tabs"
                             className="tab-nav-flex flex-row">
-                            <Nav.Link
-                                eventKey="addCompany"
-                                className="position-relative"
-                            >
-                                <Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
-                            </Nav.Link>
-                            <Nav.Link
-                                eventKey="configEmission"
-                                className="position-relative"
-                            >
-                                <Nav.Link eventKey="configEmission" className="text-nowrap">
-                                    {t('configure_emission')}
-                                </Nav.Link>
-                            </Nav.Link>
+															<Nav.Item>
+																<Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
+															</Nav.Item>
+															<Nav.Item>
+																<Nav.Link eventKey="configEmission" className="text-nowrap">
+																	{t('configure_emission')}
+																</Nav.Link>
+															</Nav.Item>
                         </Nav>
                         <Tab.Content>
                             <Tab.Pane eventKey="addCompany">
-                                {<CreateCompany />}
+                              <CreateCompany />
                             </Tab.Pane>
                             <Tab.Pane eventKey="configEmission">
-                                {<ConfigEmission />}
+                              <ConfigEmission />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>
