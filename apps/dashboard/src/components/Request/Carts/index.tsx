@@ -98,7 +98,7 @@ export function Carts(data: any) {
   }
 
   const handleEmitNote = async (cart: Cart) => {
-    if(!profile?.options?.integrations?.grovenfe) {
+    if (!profile?.options?.integrations?.grovenfe) {
       return
     }
     try {
@@ -108,7 +108,6 @@ export function Carts(data: any) {
       throw error
     }
   }
- 
   // const handleMotoboyChange = (cartId: number, motoboyId: number, session: any) => {
   //   setSelectedMotoboys(motoboyId)
   //   updateMotoboyId(cartId, motoboyId, session)
@@ -247,9 +246,11 @@ export function Carts(data: any) {
                           <th className="fs-7 fw-600">
                             <span> {t('change')} </span>
                           </th>
-                          <th className="fs-7 fw-600">
-                            <span> NFCe </span>
-                          </th>
+                          {profile.options.integrations.grovenfe && (
+                            <th className="fs-7 fw-600">
+                              <span> NFCe </span>
+                            </th>
+                          )}
                           <th className="fs-7 fw-600">
                             <span> {t('delivery_person')} </span>
                           </th>
@@ -429,15 +430,17 @@ export function Carts(data: any) {
                                     : '-'}
                                 </span>
                               </td>
-                              <td>
-                                {cart.controls?.grovenfe?.fiscal_note ? (
-                                  <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
-                                    <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30}  />
-                                  </Link>
-                                ) : (
-                                  <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote(cart)} />
-                                )}
-                              </td>
+                              {profile.options.integrations.grovenfe && (
+                                <td>
+                                  {cart.controls?.grovenfe?.fiscal_note ? (
+                                    <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
+                                      <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
+                                    </Link>
+                                  ) : (
+                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote(cart)} />
+                                  )}
+                                </td>
+                              )}
                               <td
                                 className="setPrint align-text-left"
                                 width={100}
