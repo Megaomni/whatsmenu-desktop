@@ -1,15 +1,13 @@
-import { CropModal } from "@components/Modals/CropModal";
 import { AppContext } from "@context/app.ctx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { mask } from "@utils/wm-functions";
 import axios from "axios";
-import {  useContext, useEffect, useRef, useState } from "react";
-import { Button, Card, Col, Figure, Form, FormGroup, Nav, Row, Tab, Tabs } from "react-bootstrap";
+import { useContext, useEffect, useRef, useState } from "react";
+import { Button, Card, Col, Form, FormGroup, Nav, Row, Tab } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { api } from "src/lib/axios";
-import Integrations from "src/pages/dashboard/integrations";
-import { z } from 'zod'
+import { groveNfeApi } from "src/lib/axios";
+import { z } from 'zod';
 
 
 const createCompanySchema = z.object({
@@ -32,7 +30,7 @@ const createCompanySchema = z.object({
     email: z.coerce.string().email('Formato de e-mail inválido'),
     telefone: z.string().min(10, 'Telefone inválido').optional(),
     cep: z.string().min(8, 'CEP inválido'),
-    Logradouro: z.string().min(5, 'Logradouro obrigatório'),
+    logradouro: z.string().min(5, 'Logradouro obrigatório'),
     numero: z.coerce.number().min(1, 'Número obrigatório'),
     complemento: z.string().optional(),
     bairro: z.string().min(1, 'Bairro obrigatório'),
@@ -41,15 +39,19 @@ const createCompanySchema = z.object({
     nome_responsavel: z.string().optional(),
     cpf_responsavel: z.string().optional(),
     cpf_cnpj_contabilidade: z.coerce.number().optional(),
-    habilita_nfce: z.boolean(),
+    habilita_nfce: z.boolean().refine((value) => value === true, {
+        message: 'Habilite para emitir NFCe',
+    }),
     serie_nfce_homologacao: z.coerce.number().optional(),
     proximo_numero_nfce_homologacao: z.coerce.number().optional(),
     id_token_nfce_homologacao: z.coerce.number().optional(),
     csc_nfce_homologacao: z.string().optional(),
     serie_nfce_producao : z.coerce.number().optional(),
     proximo_numero_nfce_producao: z.coerce.number().optional(),
-    id_token_nfce_producao : z.coerce.number().optional(),
-    csc_nfce_producao: z.string().optional(),
+    id_token_nfce_producao : z.coerce.number().min(1, 'Token do CSC obrigatório'),
+    csc_nfce_producao: z.string({
+        required_error: 'Código de Segurança do Contribuinte obrigatório',
+    }).min(1, 'Código de Segurança do Contribuinte obrigatório'),
     habilita_contingencia_offline_nfce: z.boolean().optional(),
     enviar_email_destinatario: z.boolean().optional(),
     enviar_email_homologacao: z.boolean().optional(),
@@ -69,10 +71,8 @@ export function CreateCompany() {
   const { setProfile, profile } = useContext(AppContext)
   const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
-    const [tabKey, setTabKey] = useState('identification')
-    
-    const [toggleNaturalPerson, setToggleNaturalPerson] = useState(false)
-    
+    const [tabKey, setTabKey] = useState<string | null>('identification')
+        
     const [advancedSettings, setAdvancedSettings] = useState(false)
     const toggleAdvancedSettings = () => setAdvancedSettings(!advancedSettings)
 
@@ -83,30 +83,34 @@ export function CreateCompany() {
     const [cnpjMasked, setCnpjMasked] = useState('')
     const[phoneMasked, setPhoneMasked] = useState('')
     const [cepMasked, setCepMasked] = useState('')
-    const [inputLogoCompany, setInputLogoCompany] = useState<File | null>(null)
     const [inputCertificateCompany, setInputCertificateCompany] = useState<File | null>(null)
     const [logoBase64, setLogoBase64] = useState<string | null>(null)
     const [certificateBase64, setCertificateBase64] = useState<string | null>(null)
-    const [imageLogo, setImageLogo] = useState<string | undefined>(undefined)
 
-    const CreateCompany = async (company: any) => {
+    const createCompanyGroveNfe = async (company: any) => {
 
         company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
         company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
         company.cep = Number(company.cep.replace(/[^\d]/g, ''))
-        // company.arquivo_logo_base64 = logoBase64
         company.certificado_base64 = certificateBase64
 
-        console.log('empresa',company);
-        try {
-            const {data} = await axios.post(`${process.env.GROVE_NFE_URL}/v1/companies`, company, {
-                headers: {
-                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-                }
-            })
-         
+        const body = {
+            ...company,
+            plan_id: 1,
+            external_id: profile.id
+        }
 
-            console.log('profile',data.grovenfe.created_at);
+        const haveIntegration = Boolean(profile?.options?.integrations?.grovenfe)
+        let url = '/v1/companies'
+        let method: 'put' | 'post' = 'post'
+        if (haveIntegration) {
+            url = `/v1/companies/${profile?.options?.integrations?.grovenfe?.company_id}`
+            method = 'put'
+        }
+
+        try {
+            const { data } = await groveNfeApi[method](url, body)
+         
             if (data) {
                 setProfile(prevProfile => ({ 
                     ...prevProfile!,
@@ -116,75 +120,68 @@ export function CreateCompany() {
                         ...prevProfile!.options.integrations,
                         grovenfe: {
                             ...prevProfile!.options.integrations?.grovenfe,
-                            created_at: data.grovenfe.created_at
+                            created_at: data.company.created_at
                         }
                     }
                 } }))
             }
                 company.cnpj = cnpjMasked
                 company.telefone = phoneMasked
-                company.cep = cepMasked
-            reset(company)            
+                company.cep = cepMasked        
         } catch (error) {
             console.error(error);
             throw error
         }
     }
-      
-    // arquivo_certificado_base64  ,  senha_certificado	
-    // console.log('valores', getValues());
 
-    // useEffect(() => {
-    //     if(profile.options.integrations.grovenfe.company_id) {
-    //         axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
-    //             headers: {
-    //                 Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
-    //             }
-    //         }).then(({data}) => {
-    //             console.log('useEfecct',data);
-    //             reset(({
-    //                 cnpj: data.company.docNumber.replace(/(\d{2})(\d)/, '$1.$2')
-    //                 .replace(/(\d{3})(\d)/, '$1.$2')
-    //                 .replace(/(\d{3})(\d)/, '$1/$2')
-    //                 .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
-    //                 nome: data.focus_company_data.nome,
-    //                 nome_fantasia: data.focus_company_data.nome_fantasia,
-    //                 inscricao_estadual: data.company.aditionalInfo.inscricao_estadual,
-    //                 inscricao_municipal: data.company.aditionalInfo.inscricao_municipal,
-    //                 regime_tributario: data.company.aditionalInfo.regime_tributario,
-    //                 email: data.focus_company_data.email,
-    //                 telefone: data.company.phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
-    //                 cep: data.company.address.zip_code.replace(
-    //                     /^(\d{5})(\d)/g,
-    //                     '$1-$2'
-    //                   ),
-    //                 Logradouro: data.focus_company_data.logradouro,
-    //                 numero: data.focus_company_data.numero,
-    //                 complemento: data.focus_company_data.complemento,
-    //                 bairro: data.focus_company_data.bairro,
-    //                 municipio: data.focus_company_data.municipio,
-    //                 uf: data.focus_company_data.uf,
-    //                 nome_responsavel: data.focus_company_data.nome_responsavel,
-    //                 cpf_responsavel: data.focus_company_data.cpf_responsavel,
-    //                 cpf_cnpj_contabilidade: data.company.aditionalInfo.cpf_cnpj_contabilidade,
-    //                 habilita_nfce: data.company.aditionalInfo.habilita_nfce,
-    //                 enviar_email_destinatario: data.focus_company_data.enviar_email_destinatario,
-    //                 discrimina_impostos: data.company.aditionalInfo.discrimina_impostos,
-    //                 habilita_contingencia_offline_nfce: data.focus_company_data.habilita_contingencia_offline_nfce,
-    //                 mostrar_danfse_badge: data.company.aditionalInfo.mostrar_danfse_badge,
-    //                 serie_nfce_producao: data.company.aditionalInfo.serie_nfce_producao,
-    //                 proximo_numero_nfce_producao: data.company.aditionalInfo.proximo_numero_nfce_producao,
-    //                 id_token_nfce_producao: data.company.aditionalInfo.id_token_nfce_producao,
-    //                 csc_nfce_producao: data.company.aditionalInfo.csc_nfce_producao,
-    //             }))
-    //         })
-    //     }
-    // }, [])    
-
-    console.log(errors);
+    useEffect(() => {
+        if(profile.options.integrations?.grovenfe.company_id) {
+            axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
+                headers: {
+                    Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+                }
+            }).then(({data}) => {
+                reset(({
+                    cnpj: data.company.docNumber.replace(/(\d{2})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1.$2')
+                    .replace(/(\d{3})(\d)/, '$1/$2')
+                    .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
+                    nome: data.focus_company_data.nome,
+                    nome_fantasia: data.focus_company_data.nome_fantasia,
+                    inscricao_estadual: data.company.aditionalInfo.inscricao_estadual,
+                    inscricao_municipal: data.company.aditionalInfo.inscricao_municipal,
+                    regime_tributario: data.company.aditionalInfo.regime_tributario,
+                    email: data.focus_company_data.email,
+                    telefone: data.company.phone.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3'),
+                    cep: data.company.address.zip_code.replace(
+                        /^(\d{5})(\d)/g,
+                        '$1-$2'
+                      ),
+                    logradouro: data.focus_company_data.logradouro,
+                    numero: data.focus_company_data.numero,
+                    complemento: data.focus_company_data.complemento,
+                    bairro: data.focus_company_data.bairro,
+                    municipio: data.focus_company_data.municipio,
+                    uf: data.focus_company_data.uf,
+                    nome_responsavel: data.focus_company_data.nome_responsavel,
+                    cpf_responsavel: data.focus_company_data.cpf_responsavel,
+                    cpf_cnpj_contabilidade: data.company.aditionalInfo.cpf_cnpj_contabilidade,
+                    habilita_nfce: data.company.aditionalInfo.habilita_nfce,
+                    enviar_email_destinatario: data.focus_company_data.enviar_email_destinatario,
+                    discrimina_impostos: data.company.aditionalInfo.discrimina_impostos,
+                    habilita_contingencia_offline_nfce: data.focus_company_data.habilita_contingencia_offline_nfce,
+                    mostrar_danfse_badge: data.company.aditionalInfo.mostrar_danfse_badge,
+                    serie_nfce_producao: data.company.aditionalInfo.serie_nfce_producao,
+                    proximo_numero_nfce_producao: data.company.aditionalInfo.proximo_numero_nfce_producao,
+                    id_token_nfce_producao: data.company.aditionalInfo.id_token_nfce_producao,
+                    csc_nfce_producao: data.company.aditionalInfo.csc_nfce_producao,
+                }))
+            })
+        }
+    }, [])    
     
     useEffect(() => {
-        if (errors.cep || errors.Logradouro || errors.bairro || errors.municipio || errors.numero) {
+        if (errors.cep || errors.logradouro || errors.bairro || errors.municipio || errors.numero) {
             setTabKey('address')
         }
         
@@ -196,7 +193,7 @@ export function CreateCompany() {
             setTabKey('identification')
         }
     }, [errors])
-    
+
     const convertFileToBase64 = ({file, eventName}: {file: File, eventName: string} ) => {        
         if (file) {
             const reader = new FileReader();
@@ -217,23 +214,17 @@ export function CreateCompany() {
 
     return (
         <>
-            <form id="createCompany" onSubmit={handleSubmit(CreateCompany)}>
+            <form id="createCompany" onSubmit={handleSubmit(createCompanyGroveNfe)}>
                 <Card>
                     <Card.Header className="m-2 p-2 fw-bold fs-5">
-                        {t('new_company')}
+                        {t('company')}
                     </Card.Header>
                     <Card.Body>
                         <Row>
-                            <Form.Switch className="ms-3 mb-3" label={t('natural_person')} 
-                            onChange={(event) => {
-                                setToggleNaturalPerson(event.target.checked)}
-                            }
-                            >
-                            </Form.Switch>
                             <Col md={4} className="mb-3">
                                 <FormGroup>
                                     <Form.Label>
-                                        {toggleNaturalPerson ? t('ssn') : t('ein')}
+                                        { t('ein')}
                                     </Form.Label>
                                     <Form.Control
                                     {...register('cnpj')}
@@ -248,7 +239,7 @@ export function CreateCompany() {
                             </Col>
                             <Col md={4}>
                                 <FormGroup>
-                                    <Form.Label>{toggleNaturalPerson ? t('name') : t('company_name')}</Form.Label>
+                                    <Form.Label>{ t('company_name')}</Form.Label>
                                     <Form.Control type="text" {...register('nome')}></Form.Control>
                                     {errors.nome && <span className="text-danger">{errors.nome.message}</span>}
 
@@ -294,7 +285,7 @@ export function CreateCompany() {
                 <Card>
                     <Card.Body>
                         <Tab.Container 
-                        activeKey={tabKey} 
+                        activeKey={tabKey as string}
                         onSelect={(key) => setTabKey(key)}>
                             <Nav className="tab-nav-flex m-0 p-0 gap-3">
                                 <Nav.Item>
@@ -326,10 +317,10 @@ export function CreateCompany() {
                                     <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'accounting' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='accounting'>
                                         {t('accounting')}</Nav.Link>
                                 </Nav.Item>
-                                <Nav.Item >
+                                {/* <Nav.Item >
                                     <Nav.Link className={`m-0 p-0 pb-1 mb-3 ${tabKey === 'tokens' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='tokens'>
                                         {t('tokens')}</Nav.Link>
-                                </Nav.Item>
+                                </Nav.Item> */}
                                 <Nav.Item >
                                     <Nav.Link className={`m-0 p-0 pb-1 mb-3 text-nowrap ${tabKey === 'docFiscal' ? 'active-mini-tab' : 'no-active-mini-tab'}`} eventKey='docFiscal'>{t('tax_documents')}</Nav.Link>
                                 </Nav.Item>
@@ -460,8 +451,8 @@ export function CreateCompany() {
                                         </Col>
                                         <Col md={4}> 
                                             <Form.Label className="m-0 p-0 mt-4">{t('street')}</Form.Label>
-                                            <Form.Control {...register('Logradouro')}></Form.Control>
-                                            {errors.Logradouro && <span className="text-danger">{errors.Logradouro.message}</span>}
+                                            <Form.Control {...register('logradouro')}></Form.Control>
+                                            {errors.logradouro && <span className="text-danger">{errors.logradouro.message}</span>}
 
                                         </Col>
                                         <Col xs={6} md={3}>
@@ -542,18 +533,19 @@ export function CreateCompany() {
                                         </Col>
                                     </Row>
                                 </Tab.Pane>
-                                <Tab.Pane eventKey='tokens'>
+                                {/* <Tab.Pane eventKey='tokens'>
                                     <Row>
                                         <Col md={4}>
                                             <Form.Label className="m-0 p-0 mt-4">{t('production_token')}</Form.Label>
                                             <Form.Control></Form.Control>
                                         </Col>
                                     </Row>
-                                </Tab.Pane>
+                                </Tab.Pane> */}
                                 <Tab.Pane eventKey='docFiscal' style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
                                     <Form.Switch label='NFCe' {...register('habilita_nfce')} className="mt-3 mb-3"  onChange={(event) => {
                                         setNfce(event?.target.checked)
                                     }}></Form.Switch>
+                                    {errors.habilita_nfce && <span className="text-danger">{errors.habilita_nfce.message}</span>}
                                     {nfce &&
                                         <Row className="d-flex">
                                             <div className="mt-2">
@@ -567,12 +559,14 @@ export function CreateCompany() {
                                                         <Form.Control defaultValue="1" {...register('proximo_numero_nfce_producao')}></Form.Control>
                                                     </Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('id_production_token')}</Form.Label>
-                                                        <Form.Control {...register('id_token_nfce_producao', { required: 'Este campo é obrigatório' })}></Form.Control>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('security_code_production')}</Form.Label>
+                                                        <Form.Control {...register('csc_nfce_producao')}></Form.Control>
+                                                        {errors.csc_nfce_producao && <span className="text-danger">{errors.csc_nfce_producao.message}</span>}
                                                     </Col>
                                                     <Col xs={6} md={3}>
-                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('security_code_production')}</Form.Label>
-                                                        <Form.Control {...register('csc_nfce_producao', { required: 'Este campo é obrigatório' })}></Form.Control>
+                                                        <Form.Label className="m-0 p-0 mt-2 pb-2 text-nowrap">{t('id_production_token')}</Form.Label>
+                                                        <Form.Control {...register('id_token_nfce_producao')}></Form.Control>
+                                                        {errors.id_token_nfce_producao && <span className="text-danger">{errors.id_token_nfce_producao.message}</span>}
                                                     </Col>
                                                 </Row>
                                             </div>

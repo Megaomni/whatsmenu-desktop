@@ -130,6 +130,8 @@ export class AddressComponent implements OnInit {
       const address: any = await this.api.getInfoByZipCode(this.address.zipcode)
 
       this.address.city = address.localidade
+      this.address.street = address.logradouro
+      this.address.neighborhood = address.bairro
       if (this.data.clientData.typeDelivery !== this.translate.masks().mi) {
         this.loadNeighborhoods()
       }

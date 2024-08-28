@@ -55,7 +55,11 @@ export interface CartFormPayment extends ProfileFormPayment {
   online?: boolean
 }
 
-interface Controls {}
+interface Controls {
+  grovenfe: {
+    fiscal_note: any
+  }
+}
 
 interface DefaultConfig {
   filterTypeDelivery?: {
@@ -657,7 +661,11 @@ export default class Cart {
       print: 1,
       tentatives: 0,
       total: 164.5,
-      controls: {},
+      controls: {
+        grovenfe: {
+          fiscal_note: {}
+        }
+      },
       packageDate: null,
       created_at: '2023-07-19 14:58:54',
       updated_at: '2023-07-19 15:08:03',

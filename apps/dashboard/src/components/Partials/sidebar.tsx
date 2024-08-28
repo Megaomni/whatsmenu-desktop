@@ -162,8 +162,7 @@ export function Sidebar() {
                     window.innerWidth < 1020 && setShowSidebar(false)
                   }}
                 >
-                  <FaReceipt className="fs-5" />
-                  <span className="text-center">Automação de Notas Ficais</span>
+                  <span>{t('automation_of_nfe')}</span>
                   <span className="badge bg-danger ms-3 inline">
                     {t('new')}
                   </span>
@@ -178,7 +177,7 @@ export function Sidebar() {
                     window.innerWidth < 1020 && setShowSidebar(false)
                   }}
                 >
-                  <span>Integrações</span>
+                  <span>{t('integrations')}</span>
                   <span className="badge bg-danger ms-3 inline">
                     {t('new')}
                   </span>
@@ -415,7 +414,7 @@ export function Sidebar() {
             </span>
           </Link>
         </li>
-        <li className="nav-item">
+        {/* <li className="nav-item">
           <Link
             href="/dashboard/invoiceGrove"
             className={`with-icon nav-link collapsed`}
@@ -429,7 +428,7 @@ export function Sidebar() {
               FaturasNFe
             </span>
           </Link>
-        </li>
+        </li> */}
 
         {profile.id &&
           ((profile.address.street && profile.taxDelivery.length > 0) ||
