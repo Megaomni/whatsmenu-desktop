@@ -178,6 +178,7 @@ export interface ProfileOptions {
   order: string
   integrations: {
     grovenfe:{
+      plan: any
       config:{
         fiscal_notes:{
           day_limiter: number | null
