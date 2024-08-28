@@ -33,8 +33,6 @@ export function ConfigEmission() {
 
 //   forms_payment 
     const handleFormsPayment = ({checked, typePayment}: {checked: boolean, typePayment: string}) => {
-        console.log(getValues());
-        console.log();
         
         let updatedPayments = getValues("forms_payment").filter(
             (payment) => payment.type !== typePayment
