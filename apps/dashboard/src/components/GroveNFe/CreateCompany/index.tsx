@@ -594,12 +594,6 @@ export function CreateCompany() {
                                     </div>
                                     <div className="mt-3">
                                         <p className="ms-3" onClick={() => toggleAdvancedSettings()} style={{ color: 'red', textDecoration: 'underline' }}>{t('advanced_settings')}</p>
-                                        {advancedSettings &&
-                                            <div className="d-flex align-itens-center">
-                                                <Form.Switch className="d-flex align-items-center" {...register('mostrar_danfse_badge')}></Form.Switch>
-                                                <Form.Label className="ms-3">{t('show_badge_focus_efn_on_adefn')}</Form.Label>
-                                            </div>
-                                        }
                                     </div>
                                 </Tab.Pane>
                             </Tab.Content>
