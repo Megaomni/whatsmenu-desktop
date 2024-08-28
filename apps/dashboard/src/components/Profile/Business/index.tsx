@@ -139,7 +139,8 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
           Authorization: `Bearer ${session?.accessToken}`,
         }
       )
-
+      
+      setProfile({ ...profile, ...data })
       setProfileContext(new Profile({ ...profile, ...data }))
       changeConfig.toRouter && changeConfig.toRouter()
       handleShowToast({
@@ -192,7 +193,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
       'description',
       encryptEmoji(getValues('description') ?? profile.description)
     )
-    dataProfile.set('whatsapp', DDI + superNormalize(getValues('whatsapp')))
+    dataProfile.set('whatsapp', layout ? profile.whatsapp : DDI + superNormalize(getValues('whatsapp')))
     dataProfile.set('color', bgInfoColor)
     dataProfile.set('options', JSON.stringify(profile.options))
     if (!watch('slug')) {
