@@ -464,7 +464,8 @@
     "enter_street_name": "Digite o nome da rua",
     "coupon_only_used_purchases": "Esse cupom só pode ser usado em vendas a partir de",
     "discount_coupon_greater_total": "O desconto no cupom é maior do que o valor total!",
-    "add_to_order": "Adicionar para encomenda"
+    "add_to_order": "Adicionar para encomenda",
+    "print": "Imprimir"
   },
 
   "alert": {
