@@ -8,13 +8,10 @@ import { Button, Card, Col, Form, Modal, ModalBody, Nav, Row, Tab, Tabs } from "
 import { useTranslation } from "react-i18next";
 
 export default function Grovenfe() {
-  const { t } = useTranslation()
-  const { profile } = useContext(AppContext)
-  const grovenfe = profile.options.integrations?.grovenfe?.created_at
+    const { t } = useTranslation()
+    const { profile } = useContext(AppContext)
+    const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
-    const [grovenfePlan, setGrovenfePlan] = useState('')
-    const [termsAccepted, setTermsAccepted] = useState(false)
-    const [modalCheckouGroveNfe, setModalCheckouGrovenfe] = useState(false)
     const [tabKey, setTabKey] = useState('addCompany')
 
     const aditional = (grovenfePlan: string) => {
@@ -203,21 +200,21 @@ export default function Grovenfe() {
                         <Nav
                             variant="tabs"
                             className="tab-nav-flex flex-row">
-															<Nav.Item>
-																<Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
-															</Nav.Item>
-															<Nav.Item>
-																<Nav.Link eventKey="configEmission" className="text-nowrap">
-																	{t('configure_emission')}
-																</Nav.Link>
-															</Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="configEmission" className="text-nowrap">
+                                    {t('configure_emission')}
+                                </Nav.Link>
+                            </Nav.Item>
                         </Nav>
                         <Tab.Content>
                             <Tab.Pane eventKey="addCompany">
-                              <CreateCompany />
+                                <CreateCompany />
                             </Tab.Pane>
                             <Tab.Pane eventKey="configEmission">
-                              <ConfigEmission />
+                                <ConfigEmission />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

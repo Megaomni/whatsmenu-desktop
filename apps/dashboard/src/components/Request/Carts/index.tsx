@@ -246,7 +246,7 @@ export function Carts(data: any) {
                           <th className="fs-7 fw-600">
                             <span> {t('change')} </span>
                           </th>
-                          {profile.options.integrations.grovenfe && (
+                          {profile.options.integrations?.grovenfe && (
                             <th className="fs-7 fw-600">
                               <span> NFCe </span>
                             </th>
@@ -430,7 +430,7 @@ export function Carts(data: any) {
                                     : '-'}
                                 </span>
                               </td>
-                              {profile.options.integrations.grovenfe && (
+                              {profile.options.integrations?.grovenfe && (
                                 <td>
                                   {cart.controls?.grovenfe?.fiscal_note ? (
                                     <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
