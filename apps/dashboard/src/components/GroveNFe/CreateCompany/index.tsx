@@ -570,17 +570,6 @@ export function CreateCompany() {
                                                     </Col>
                                                 </Row>
                                             </div>
-                                            <div>
-                                                <div className="mt-3">
-                                                    <p onClick={() => toggleAdvancedSettingsNfce()} style={{ color: 'red', textDecoration: 'underline' }}>{t('advanced_settings')}</p>
-                                                    {advancedSettingsNfce &&
-                                                        <div className="d-flex align-itens-center">
-                                                            <Form.Switch className="d-flex align-items-center" {...register('habilita_contingencia_offline_nfce')}></Form.Switch>
-                                                            <Form.Label className="ms-3">({t('electronic_consumer_invoice')}) {t('enable_offline_contingency')}</Form.Label>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            </div>
                                         </Row>}
                                 </Tab.Pane>
                                 <Tab.Pane eventKey='config'>
@@ -591,9 +580,6 @@ export function CreateCompany() {
                                     <div className="d-flex align-itens-center" style={{ borderBottom: '1px solid rgba(0, 0, 0, 0.1)' }}>
                                         <Form.Switch className="d-flex align-items-center" {...register('discrimina_impostos')}></Form.Switch>
                                         <Form.Label className="ms-3 mt-3">({t('electronic_fiscal_note')}, {t('electronic_consumer_fiscal_note')}) {t('discriminate_taxes')}</Form.Label>
-                                    </div>
-                                    <div className="mt-3">
-                                        <p className="ms-3" onClick={() => toggleAdvancedSettings()} style={{ color: 'red', textDecoration: 'underline' }}>{t('advanced_settings')}</p>
                                     </div>
                                 </Tab.Pane>
                             </Tab.Content>
