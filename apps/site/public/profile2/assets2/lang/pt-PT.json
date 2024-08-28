@@ -432,7 +432,8 @@
     "enter_street_name": "Insira o nome da rua",
     "coupon_only_used_purchases": "Este cupão só pode ser utilizado em compras a partir de",
     "discount_coupon_greater_total": "O desconto no cupão é superior ao valor total!",
-    "add_to_order": "Adicionar ao Pedido"
+    "add_to_order": "Adicionar ao Pedido",
+    "print": "Imprimir"
   },
 
   "alert": {
