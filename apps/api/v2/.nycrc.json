@@ -1,5 +1,0 @@
-{
-  "extension": [".js"],
-  "reporter": ["html", "text-summary"],
-  "all": true
-}
