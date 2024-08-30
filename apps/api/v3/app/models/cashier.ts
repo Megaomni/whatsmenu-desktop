@@ -16,7 +16,7 @@ export default class Cashier extends BaseModel {
   @column({ columnName: 'bartenderId', serializeAs: 'bartenderId' })
   declare bartenderId: number | null
 
-  @column({})
+  @column({ columnName: 'initialValue', serializeAs: 'initialValue' })
   declare initialValue: number
 
   @column({
