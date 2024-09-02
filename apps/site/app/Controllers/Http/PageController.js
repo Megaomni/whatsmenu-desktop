@@ -1042,7 +1042,7 @@ class PageController {
 
     try {
       const path = "site/webhook";
-      if (data.method !== "GET") {
+      if (data.method !== "GET" && data.body && data.body.fullCode !== "KEEPALIVE") {
         let file = await Drive.disk("s3").exists(`${path}/ifood.json`);
         if (!file) {
           await Drive.disk("s3").put(
