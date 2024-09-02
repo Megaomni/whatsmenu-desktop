@@ -273,11 +273,11 @@ export const mask = (
         }
         case 'fr-CH':
         case 'en-US': {
-            e.currentTarget.maxLength = 5
-            e.target.value = e.target.value.substring(0, 5)
-            e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
-            break
-          }
+          e.currentTarget.maxLength = 5
+          e.target.value = e.target.value.substring(0, 5)
+          e.target.value = e.target.value.replace(/^(\d{5})/, '$1')
+          break
+        }
         case 'ar-AE': {
           e.currentTarget.maxLength = 6
         }
@@ -357,10 +357,10 @@ export const mask = (
         }
         case 'ar-AE': {
           e.currentTarget.value = e.currentTarget.value
-              .replace(/(\d{3})(\d)/, '$1-$2')
-              .replace(/(\d{4})(\d)/, '$1-$2')
-              .replace(/(\d{7})(\d)$/, '$1-$2')
-              .replace(/(\d{1})(\d)$/, '$1-$2')
+            .replace(/(\d{3})(\d)/, '$1-$2')
+            .replace(/(\d{4})(\d)/, '$1-$2')
+            .replace(/(\d{7})(\d)$/, '$1-$2')
+            .replace(/(\d{1})(\d)$/, '$1-$2')
           return { type: 'Emirates ID', valid: cpf.isValid(e.currentTarget.value) }
         }
       }
@@ -413,12 +413,12 @@ export const mask = (
             break
           }
           case 'ar-AE': {
-            e.currentTarget.maxLength = 8
+            e.currentTarget.maxLength = 11
             e.currentTarget.value = e.currentTarget.value
               .replace(/\D/g, '') // Remove todos os caracteres não numéricos
-              .replace(/^(\d{1})(\d)/, '$1 $2')
-              .replace(/^(\d{3})(\d)/, '$1 $2')
-              .replace(/^(\d{4})(\d)/, '$1 $2')
+              .replace(/^(\d{2})(\d)/, '$1 $2')
+              .replace(/(\d{3})(\d)/, '$1 $2')
+              .replace(/(\d{4})(\d)$/, '$1 $2')
             break
           }
         }
@@ -500,8 +500,8 @@ export const scrollToElement = (
           window.scroll(
             0,
             element.getBoundingClientRect().y +
-              (window?.visualViewport?.pageTop ?? 0) -
-              (topbar?.clientHeight ?? 0)
+            (window?.visualViewport?.pageTop ?? 0) -
+            (topbar?.clientHeight ?? 0)
           )
         }
       }
@@ -577,7 +577,7 @@ export const normalizeCaracter = (
     .toString()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    [typeFunction]()
+  [typeFunction]()
 }
 
 type inputProps = {
@@ -599,48 +599,48 @@ export const inputFocus: (
     differTop,
   }: inputProps = {}
 ) => {
-  let tentatives = 0
+    let tentatives = 0
 
-  return new Promise((resolve, reject) => {
-    const interval = setInterval(() => {
-      const element = document.querySelector(querySelector) as HTMLInputElement
+    return new Promise((resolve, reject) => {
+      const interval = setInterval(() => {
+        const element = document.querySelector(querySelector) as HTMLInputElement
 
-      if (element) {
-        element.focus({
-          preventScroll: scroll,
-        })
+        if (element) {
+          element.focus({
+            preventScroll: scroll,
+          })
 
-        if (queryParentElement) {
-          element.focus({ preventScroll: true })
+          if (queryParentElement) {
+            element.focus({ preventScroll: true })
 
-          const parentElement = document.querySelector(queryParentElement)
+            const parentElement = document.querySelector(queryParentElement)
 
-          if (parentElement) {
-            // scroll && scrollToElement(querySelector, {
-            //   queryParentElement,
-            //   differTop
-            // });
+            if (parentElement) {
+              // scroll && scrollToElement(querySelector, {
+              //   queryParentElement,
+              //   differTop
+              // });
+            }
           }
+
+          if (selectText) {
+            element.select()
+          }
+          clearInterval(interval)
+          resolve(element)
         }
 
-        if (selectText) {
-          element.select()
+        if (tentatives >= 100) {
+          clearInterval(interval)
+          reject({
+            message: 'Input não encontrado',
+          })
         }
-        clearInterval(interval)
-        resolve(element)
-      }
 
-      if (tentatives >= 100) {
-        clearInterval(interval)
-        reject({
-          message: 'Input não encontrado',
-        })
-      }
-
-      tentatives++
-    }, 10)
-  })
-}
+        tentatives++
+      }, 10)
+    })
+  }
 
 /** Gera uma string dataURL do blob(IMAGEM) passado no parametro. */
 export const blobToBase64 = async (blob: any) => {
@@ -748,7 +748,7 @@ export const modifyFontValues = (
 /** Recebe o Event e copia o texto do Event.target */
 export const handleCopy = (
   e: any,
-  handleShowToast: ({}: WMToastProps) => void,
+  handleShowToast: ({ }: WMToastProps) => void,
   callback?: () => void
 ) => {
   const text =
@@ -814,27 +814,25 @@ export const handlePrintApp = (
         tableConfigs.opened.paid =
           tableConfigs.opened.getTotalValue('paid') || 0
         tableConfigs.opened.wsFormsPayment = tableConfigs.opened.formsPayment
-        tableConfigs.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.opened?.created_at as string).toFormat('HH:mm')}/${
-          report
-            ? DateTime.fromSQL(
-                tableConfigs.opened?.updated_at as string
-              ).toFormat('HH:mm')
-            : DateTime.local().toFormat('HH:mm')
-        } - ${
-          report
+        tableConfigs.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.opened?.created_at as string).toFormat('HH:mm')}/${report
+          ? DateTime.fromSQL(
+            tableConfigs.opened?.updated_at as string
+          ).toFormat('HH:mm')
+          : DateTime.local().toFormat('HH:mm')
+          } - ${report
             ? DateTime.fromSQL(tableConfigs.opened?.updated_at as string)
-                .diff(
-                  DateTime.fromSQL(tableConfigs.opened?.created_at as string),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
+              .diff(
+                DateTime.fromSQL(tableConfigs.opened?.created_at as string),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
             : DateTime.local()
-                .diff(
-                  DateTime.fromSQL(tableConfigs.opened?.created_at as string),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
-        }`
+              .diff(
+                DateTime.fromSQL(tableConfigs.opened?.created_at as string),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
+          }`
         tableConfigs.opened.updatedFees = tableConfigs.opened
           .getUpdatedFees(!report)
           .filter((fee) => fee.deleted_at === null)
@@ -854,31 +852,29 @@ export const handlePrintApp = (
           tableConfigs.table.opened.getTotalValue('paid') || 0
         tableConfigs.table.opened.wsFormsPayment =
           tableConfigs.table.opened.formsPayment
-        tableConfigs.table.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.table.opened?.created_at as string).toFormat('HH:mm')}/${
-          report
-            ? DateTime.fromSQL(
-                tableConfigs.table.opened?.updated_at as string
-              ).toFormat('HH:mm')
-            : DateTime.local().toFormat('HH:mm')
-        } - ${
-          report
+        tableConfigs.table.opened.wsPerm = `${DateTime.fromSQL(tableConfigs.table.opened?.created_at as string).toFormat('HH:mm')}/${report
+          ? DateTime.fromSQL(
+            tableConfigs.table.opened?.updated_at as string
+          ).toFormat('HH:mm')
+          : DateTime.local().toFormat('HH:mm')
+          } - ${report
             ? DateTime.fromSQL(tableConfigs.table.opened?.updated_at as string)
-                .diff(
-                  DateTime.fromSQL(
-                    tableConfigs.table.opened?.created_at as string
-                  ),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
+              .diff(
+                DateTime.fromSQL(
+                  tableConfigs.table.opened?.created_at as string
+                ),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
             : DateTime.local()
-                .diff(
-                  DateTime.fromSQL(
-                    tableConfigs.table.opened?.created_at as string
-                  ),
-                  'seconds'
-                )
-                .toFormat("hh'h'mm")
-        }`
+              .diff(
+                DateTime.fromSQL(
+                  tableConfigs.table.opened?.created_at as string
+                ),
+                'seconds'
+              )
+              .toFormat("hh'h'mm")
+          }`
         tableConfigs.table.opened.updatedFees = tableConfigs.table.opened
           .getUpdatedFees(!report)
           .filter((fee) => fee.deleted_at === null)
@@ -1006,7 +1002,7 @@ export const groupCart = (
                   item.productId === cartItem.productId &&
                   item.details.value === cartItem.details.value &&
                   item.details.complements.length ===
-                    cartItem.details.complements.length
+                  cartItem.details.complements.length
               )
               if (newItem) {
                 const allComplements = verifyEqualsComplements(
@@ -1028,11 +1024,11 @@ export const groupCart = (
                 (item) =>
                   item.pizzaId === cartItem.pizzaId &&
                   item.details.flavors.length ===
-                    cartItem.details.flavors.length &&
+                  cartItem.details.flavors.length &&
                   item.details.implementations.length ===
-                    cartItem.details.implementations.length &&
+                  cartItem.details.implementations.length &&
                   item.details.complements.length ===
-                    cartItem.details.complements.length
+                  cartItem.details.complements.length
               )
 
               const verificationOne = pizza?.details.flavors.every(

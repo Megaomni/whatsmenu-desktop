@@ -82,17 +82,17 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
   const labels = {
     basic:
       plansCategory.includes('basic') &&
-      plansCategory.some((plan) => plan !== 'basic')
+        plansCategory.some((plan) => plan !== 'basic')
         ? 'Delivery'
         : '',
     table:
       plansCategory.includes('table') &&
-      plansCategory.some((plan) => plan !== 'table')
+        plansCategory.some((plan) => plan !== 'table')
         ? t('table')
         : '',
     package:
       plansCategory.includes('package') &&
-      plansCategory.some((plan) => plan !== 'package')
+        plansCategory.some((plan) => plan !== 'package')
         ? profile.options.package.label2
           ? t('appointment')
           : t('package')
@@ -156,7 +156,7 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
           show: true,
           type: 'success',
           title: t('flavors'),
-          content: `${flavor.name}, foi ${type === 'create' ? t('created_o') : t('updated')} ${t('sucessfully')}.`,
+          content: `${flavor.name}, foi ${type === 'create' ? t('created_o') : t('updated')} ${t('successfully')}.`,
         })
         handleClose()
       }
@@ -194,7 +194,7 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
               show: true,
               type: 'success',
               title: t('flavors'),
-              content: `${flavor.name}, ${t('was_deleted_sucessfully')}.`,
+              content: `${flavor.name}, ${t('was_deleted_successfully')}.`,
             })
             handleClose()
           }
@@ -238,7 +238,7 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
           show: true,
           type: 'success',
           title: t('flavors'),
-          content: `${flavor.name}, foi ${flavor.status ? t('paused') : t('unpaused')} ${t('sucessfully')}.`,
+          content: `${flavor.name}, foi ${flavor.status ? t('paused') : t('unpaused')} ${t('successfully')}.`,
         })
       }
     } catch (e) {
@@ -633,65 +633,65 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
                             <Row className="mt-4">
                               {(plansCategory.includes('basic') ||
                                 plansCategory.includes('package')) && (
-                                <Col
-                                  sm="12"
-                                  md={
-                                    plansCategory.length > 1 &&
-                                    plansCategory.includes('table')
-                                      ? '6'
-                                      : '12'
-                                  }
-                                  className={`${plansCategory.includes('table') ? 'border-end' : ''}`}
-                                >
-                                  <>
-                                    <h5>
-                                      <b>
-                                        {plansCategory.includes('basic') &&
-                                        plansCategory.includes('package')
-                                          ? `${labels.basic}/${labels.package}`
-                                          : plansCategory.includes('basic')
-                                            ? labels.basic
-                                            : labels.package}
-                                      </b>
-                                    </h5>
+                                  <Col
+                                    sm="12"
+                                    md={
+                                      plansCategory.length > 1 &&
+                                        plansCategory.includes('table')
+                                        ? '6'
+                                        : '12'
+                                    }
+                                    className={`${plansCategory.includes('table') ? 'border-end' : ''}`}
+                                  >
+                                    <>
+                                      <h5>
+                                        <b>
+                                          {plansCategory.includes('basic') &&
+                                            plansCategory.includes('package')
+                                            ? `${labels.basic}/${labels.package}`
+                                            : plansCategory.includes('basic')
+                                              ? labels.basic
+                                              : labels.package}
+                                        </b>
+                                      </h5>
 
-                                    <Row className="">
-                                      {sizes.map((size, index) => (
-                                        <Col
-                                          sm="12"
-                                          md="4"
-                                          key={size.code}
-                                          className={`d-flex flex-column justify-content-between mt-md-0 mt-3 ${index > 2 ? 'mt-md-2' : ''}`}
-                                        >
-                                          <Form.Label>{size.name}</Form.Label>
-                                          <InputGroup className="flex-nowrap">
-                                            <InputGroup.Text>
-                                              {currency({
-                                                value: 0,
-                                                symbol: true,
-                                              })}
-                                            </InputGroup.Text>
-                                            <Form.Control
-                                              required
-                                              value={flavor.values[size.name]}
-                                              onChange={(e) => {
-                                                mask(e, 'currency')
-                                                setFlavor({
-                                                  ...flavor,
-                                                  values: {
-                                                    ...flavor.values,
-                                                    [size.name]: e.target.value,
-                                                  },
-                                                })
-                                              }}
-                                            />
-                                          </InputGroup>
-                                        </Col>
-                                      ))}
-                                    </Row>
-                                  </>
-                                </Col>
-                              )}
+                                      <Row className="">
+                                        {sizes.map((size, index) => (
+                                          <Col
+                                            sm="12"
+                                            md="4"
+                                            key={size.code}
+                                            className={`d-flex flex-column justify-content-between mt-md-0 mt-3 ${index > 2 ? 'mt-md-2' : ''}`}
+                                          >
+                                            <Form.Label>{size.name}</Form.Label>
+                                            <InputGroup className="flex-nowrap">
+                                              <InputGroup.Text>
+                                                {currency({
+                                                  value: 0,
+                                                  symbol: true,
+                                                })}
+                                              </InputGroup.Text>
+                                              <Form.Control
+                                                required
+                                                value={flavor.values[size.name]}
+                                                onChange={(e) => {
+                                                  mask(e, 'currency')
+                                                  setFlavor({
+                                                    ...flavor,
+                                                    values: {
+                                                      ...flavor.values,
+                                                      [size.name]: e.target.value,
+                                                    },
+                                                  })
+                                                }}
+                                              />
+                                            </InputGroup>
+                                          </Col>
+                                        ))}
+                                      </Row>
+                                    </>
+                                  </Col>
+                                )}
                               {plansCategory.includes('table') && (
                                 <Col>
                                   <Row className="mt-md-0 mt-4">
@@ -848,9 +848,8 @@ export function PizzaFlavorModal(props: PizzaFlavorProps) {
           </form>
         </Modal.Body>
         <Modal.Footer
-          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${
-            modalFooterOpened ? 'show' : 'hidden'
-          }-buttons-modal-footer`}
+          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${modalFooterOpened ? 'show' : 'hidden'
+            }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
           <ActionsFooterButton

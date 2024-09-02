@@ -5,8 +5,8 @@
   "showLocale": false,
   "masks": {
     "mi": "KM",
-    "phone": "0 000 0000",
-    "cell": "0 000 0000",
+    "phone": "00 000 0000",
+    "cell": "00 000 0000",
     "secret_number": "784-####-#######-#",
     "ssn_mask": "000-0000-0000000-0",
     "zipcode": "000099",
@@ -30,7 +30,6 @@
     "add": "Add",
     "add_comment": "+Add",
     "obs": "Observations",
-    "place_example": "E.g.: No mayonnaise, no salad, etc.",
     "whatsapp": "Phone Number",
     "my_orders": "my orders",
     "tax_and_time_of_shipping": "tax and time of shipping",
@@ -166,7 +165,7 @@
     "order_slip": "Order slip",
     "order_slip_s": "Order slips",
     "no_active_orders": "no active orders",
-    "order_sucess": "order placed sucessfully",
+    "order_sucess": "order placed successfully",
     "send_confirmation_whatsapp": "send confirmation via whatsapp",
     "select_delivery_date": "select a delivery date",
     "time_zone_is_different": "We have identified that your time zone is different from the establishment's time zone. Your corresponding receiving time will be shown next to the time",
@@ -432,7 +431,8 @@
     "enter_street_name": "Enter the street name",
     "coupon_only_used_purchases": "This coupon can only be used on purchases starting from",
     "discount_coupon_greater_total": "The discount on the coupon is greater than the total amount!",
-    "add_to_order": "Add to Order"
+    "add_to_order": "Add to Order",
+    "print": "Print"
   },
 
   "alert": {
