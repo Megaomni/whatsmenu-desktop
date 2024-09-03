@@ -38,7 +38,11 @@ const createCompanySchema = z.object({
     uf: z.string().min(2, 'UF obrigatório'),
     nome_responsavel: z.string().optional(),
     cpf_responsavel: z.string().optional(),
-    cpf_cnpj_contabilidade: z.coerce.number().optional(),
+    cpf_cnpj_contabilidade: z.coerce.string().optional().transform((value) => {
+			if (value) {
+				return Number(value.replace(/\D+/g, ''))
+			}
+		}),
     habilita_nfce: z.boolean().refine((value) => value === true, {
         message: 'Habilite para emitir NFCe',
     }),
