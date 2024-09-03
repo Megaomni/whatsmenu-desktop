@@ -17,6 +17,7 @@ import { NeighborhoodType, TaxDeliveryType } from '../tax-delivery-type'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 import { TranslateService } from '../translate.service'
+import { PlatformLocation } from '@angular/common'
 
 @Component({
   selector: 'app-status',
@@ -61,8 +62,17 @@ export class StatusComponent implements OnInit {
     public cartService: CartService,
     public context: ContextService,
     public toastService: ToastService,
-    private websocket: WebsocketService
+    private websocket: WebsocketService,
   ) {
+    window.onpopstate = function() {
+      alert('onPopState triggered')
+    }
+
+    // window.onpopstate = (e) => {
+    //   e.alert('onPopState triggered')
+    //   this.goBack() 
+    // }
+
     this.router.params.subscribe(({ code, slug }) => {
       this.code = code
       this.slug = slug
