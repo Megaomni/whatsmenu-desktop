@@ -4,32 +4,33 @@ import { BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 import db from '@adonisjs/lucid/services/db'
 import { DateTime } from 'luxon'
-import CashireService from '#services/cashier_service'
 export default class OpenCashierForPackagedates extends BaseCommand {
   static commandName = 'open:cashier-for-packagedates'
   static description = ''
 
   static options: CommandOptions = {
     startApp: true,
+    staysAlive: false,
   }
 
   async run() {
     let page = 1
     let profiles
-    const cashierService = new CashireService()
 
     try {
       do {
         profiles = await db
           .from('profiles')
           .whereJson('options', { package: { cashierDate: 'deliveryDate' } })
-          .debug(true)
           .paginate(page, 100)
         for await (const profile of profiles) {
           const carts = await Cart.query()
             .where({ profileId: profile.id })
             .whereNull('cashierId')
-            .where('packageDate', 'like', `%${DateTime.local().toFormat('yyyy-MM-dd')}%`)
+            .whereBetween('packageDate', [
+              DateTime.local().toFormat('yyyy-MM-dd'),
+              DateTime.local().plus({ day: 1 }).toFormat('yyyy-MM-dd'),
+            ])
 
           if (carts.length) {
             let cashier = await Cashier.query()
