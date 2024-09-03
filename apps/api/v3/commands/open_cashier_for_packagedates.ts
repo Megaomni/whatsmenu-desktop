@@ -63,6 +63,8 @@ export default class OpenCashierForPackagedates extends BaseCommand {
       } while (page <= profiles.lastPage)
     } catch (error) {
       console.error(error)
+    } finally {
+      process.exit()
     }
   }
 }
