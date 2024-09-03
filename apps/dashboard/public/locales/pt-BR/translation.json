@@ -861,7 +861,7 @@
   "allow_each_flavor": "Permitir complementos para cada sabor",
   "stock_options": "Opções de Estoque",
   "display_out_of_stock_product_addons": "Exibir status de 'esgotado' em produtos e complementos pausados",
-  "hide_ssn_receipt": "Ocultar opção de CPF na nota",
+  "hide_ssn_receipt": "Ocultar opção de CPF/CNPJ na nota",
   "description_top_product_page": "Exibir foto e descrição do produto no topo da página do produto",
   "activate_catalog_mode_delivery": "Ativar modo Catalogo no Delivery",
   "activate_catalog_the_table": "Ativar modo Catalogo na Mesa",

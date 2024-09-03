@@ -167,7 +167,9 @@
     [(formsPayment)]="data.cartRequest.formsPayment"
   />
   <div class="card mt-3 p-3 border-0 d-flex flex-column align-items-center">
-    <p #paymentStep2 class="fw-bold text-black fs-5 mb-3 text-capitalize">{{ translate.text().payment_in }} {{ translate.text()[formPaymentSelected.payment] }}</p>
+    <p #paymentStep2 class="fw-bold text-black fs-5 mb-3 text-capitalize">
+      {{ translate.text().payment_in }} {{ translate.text()[formPaymentSelected.payment] }}
+    </p>
     <div [ngSwitch]="formPaymentSelected.payment" class="d-flex flex-column w-100 gap-3">
       <ng-container *ngSwitchCase="'money'">
         <div class="d-flex flex-column">
@@ -253,9 +255,9 @@
         *ngIf="!data.clientData.options.hideSecretNumber && formPaymentSelected.payment !== 'picpay' && formPaymentSelected.payment !== 'pix'"
         [ngClass]="formPaymentSelected.payment === 'money' || formPaymentSelected.flags?.length ? 'border-top' : ''"
       >
-        <label class="form-label fw-semibold m-0" for="secretNumber-input" style="font-size: 0.75rem"
-          >{{ translate.text().cpf_on_the_receipt }}?</label
-        >
+        <label class="form-label fw-semibold m-0" for="secretNumber-input" style="font-size: 0.75rem">
+          {{ translate.text().cpf_on_the_receipt }}?
+        </label>
         <input
           type="text"
           class="form-control"
