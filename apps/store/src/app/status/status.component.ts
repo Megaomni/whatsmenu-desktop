@@ -17,7 +17,6 @@ import { NeighborhoodType, TaxDeliveryType } from '../tax-delivery-type'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 import { TranslateService } from '../translate.service'
-import { PlatformLocation } from '@angular/common'
 
 @Component({
   selector: 'app-status',
@@ -64,14 +63,6 @@ export class StatusComponent implements OnInit {
     public toastService: ToastService,
     private websocket: WebsocketService,
   ) {
-    window.onpopstate = function() {
-      alert('onPopState triggered')
-    }
-
-    // window.onpopstate = (e) => {
-    //   e.alert('onPopState triggered')
-    //   this.goBack() 
-    // }
 
     this.router.params.subscribe(({ code, slug }) => {
       this.code = code
@@ -96,6 +87,18 @@ export class StatusComponent implements OnInit {
       const result = await this.api.getCartStatus({ slug: this.profile.slug, cartId: this.cart.id })
       this.cart.status = result.status
     }, 1000 * 60)
+
+
+    window.addEventListener('popstate', (e) => {
+      e.preventDefault()
+
+      window.location.reload()
+    })
+
+    window.onpopstate = (e)  => {
+      e.preventDefault()
+      alert('onPopState triggered')
+    }
   }
 
   taxDelivery() {
