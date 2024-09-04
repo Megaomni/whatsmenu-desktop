@@ -156,7 +156,7 @@ export class InfoModalComponent implements OnInit, AfterViewChecked {
     }
 
     if (!checkProductDisponibility.disponibility) {
-      const message = `<h2 style="text-align: center;">Produto Indisponível</h2>${checkProductDisponibility.message}`
+      const message = `<h2 style="text-align: center;">Produto Indisponível</h2>${checkProductDisponibility.message ?? this.product.name}`
       this.matDialog.open(AlertComponent, {
         data: {
           message,
