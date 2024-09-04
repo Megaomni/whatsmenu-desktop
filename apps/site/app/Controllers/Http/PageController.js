@@ -116,7 +116,7 @@ class PageController {
         valueBase: valueBase,
         ambient: ambient,
         page: "WhatsMenu",
-        showValue: locale !== "pt-BR" ? false : true,
+        showValue: false, // locale !== "pt-BR" ? false : true,
         isIphone: userAgent.includes("iphone"),
       })
     );
