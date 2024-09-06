@@ -40,7 +40,7 @@ export const polling = async ({
       throw new Error("Loja ifood não encontrada!");
     }
     const { data } = await axios.get(
-      "https://merchant-api.ifood.com.br/events/v1.0/events:polling?groups=ORDER_STATUS",
+      "https://merchant-api.ifood.com.br/events/v1.0/events:polling",
       {
         headers: {
           Authorization: `Bearer ${merchant.token}`,
@@ -53,17 +53,16 @@ export const polling = async ({
     if (pollingData.length > 0) {
       const returnOrders = await whatsmenu_api_v3.post("ifood/polling", {
         pollingData,
-        token : merchant.token,
+        token: merchant.token,
       });
-      console.log('returnOrders', returnOrders.data)
       returnOrders.data.orders.forEach((order: any) => {
-        if(order.orderStatus === 'PLACED') {
-          io.to(`ifood:${profile.slug}`).emit("newOrderIfood", order)
+        if (order.orderStatus === "PLACED") {
+          io.to(`ifood:${profile.slug}`).emit("newOrderIfood", order);
         }
-        if (order.orderStatus !== 'PLACED') {
-          io.to(`ifood:${profile.slug}`).emit("processedOrderIfood", order)
+        if (order.orderStatus !== "PLACED") {
+          io.to(`ifood:${profile.slug}`).emit("processedOrderIfood", order);
         }
-      })
+      });
       await axios.post(
         "https://merchant-api.ifood.com.br/events/v1.0/events/acknowledgment",
         pollingData,
