@@ -300,6 +300,10 @@ export const ProfileFactory = factory
         tracking: {
           pixel: '1',
           google: '',
+          googleAds: {
+            id: '',
+            label: '',
+          },
         },
         hoursBlock: [],
         activeCupom: true,

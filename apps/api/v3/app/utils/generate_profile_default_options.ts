@@ -16,7 +16,14 @@ export const generateProfileDefaultOptions = (profile: Profile): ProfileOptions 
         required: false,
       },
     },
-    tracking: { pixel: '', google: '' },
+    tracking: {
+      pixel: '',
+      google: '',
+      googleAds: {
+        id: '',
+        label: '',
+      },
+    },
     activeCupom: true,
     pizza: { higherValue: true, multipleBorders: false, multipleComplements: false },
     delivery: { enableKm: false, disableDelivery: false },
