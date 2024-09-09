@@ -1,39 +1,91 @@
-import React from 'react'
-import {
-  Row,
-  Col,
-  Card,
-  Container,
-  CardHeader,
-  CardBody,
-} from 'react-bootstrap'
-import { HelpVideos } from '../../../components/Modals/HelpVideos'
-import { useTranslation } from 'react-i18next'
+import { IntegrationCard, IntegrationCardContainer } from '@components/IntegrationCard'
 import { t } from 'i18next'
 import Image from 'next/image'
 import Link from 'next/link'
-import { IntegrationCard, IntegrationCardContainer } from '@components/IntegrationCard'
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Container,
+  Row,
+} from 'react-bootstrap'
 
 export default function Integrations() {
   return (
-    <Container>
+    <Container fluid>
+      <h1
+        className="fw-bold mb-3"
+        style={{
+          color: "#012970"
+        }}
+      >
+        {t('integrations')}
+      </h1>
       <Card>
-        <CardHeader>
-          <h2 className="fs-5 fw-semibold text-start text-black">
-            {t('integrations')}
-          </h2>
-        </CardHeader>
+        <CardBody className="color-white w-100 h-75 flex-shrink-0 p-4">
+          <Row>
+            <Col md className="d-flex gap-3">
+              <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
+                Marketing e Vendas
+              </h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <p className="fs-6 lh-base mt-2 text-black">
+                Integramos sua loja as maiores ferramentas de marketing e vendas
+                do mercado, atraia mais clientes e venda muito mais com menos trabalho.
+              </p>
+              <IntegrationCardContainer>
+                <Link href="/dashboard/integrations/google-tag-manager">
+                  <IntegrationCard
+                    legend={"Google Tag Manager"}
+                  >
+                    <Image
+                      src="/images/google-tag-manager-logo.svg"
+                      alt="Google Tag Manager"
+                      width={150}
+                      height={150}
+                    />
+                  </IntegrationCard>
+                </Link>
+                <Link href="/dashboard/integrations/google-ads">
+                  <IntegrationCard
+                    legend={"Google Ads"}
+                  >
+                    <Image
+                      src="/images/google-ads-logo.svg"
+                      alt="google-ads-logo"
+                      width={90}
+                      height={90}
+                    />
+                  </IntegrationCard>
+                </Link>
+                <Link href="/dashboard/integrations/facebook-pixel">
+                  <IntegrationCard
+                    legend={"Facebook Pixel"}
+                  >
+                    <Image
+                      src="/images/facebook-pixel-logo.svg"
+                      alt="facebook-pixel-logo"
+                      width={90}
+                      height={90}
+                    />
+                  </IntegrationCard>
+                </Link>
+              </IntegrationCardContainer>
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+      <Card>
         <CardBody className="color-white w-100 h-75 flex-shrink-0 p-4">
           <Row>
             <Col md className="d-flex gap-3">
               <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
                 {t('online_payment_s')}
               </h4>
-              <div
-                className="vr mt-4"
-                style={{ height: 'var(--dropdown-padding-x, 24px)' }}
-              ></div>
-              <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
             </Col>
           </Row>
           <Row>
@@ -76,11 +128,6 @@ export default function Integrations() {
             <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
               {t('fiscal_note_issuer')}
             </h4>
-            <div
-              className="vr mt-4 "
-              style={{ height: 'var(--dropdown-padding-x, 24px)' }}
-            ></div>
-            <HelpVideos.Trigger urls={[{ src: '', title: t('') }]} />
           </Col>
         </Row>
         <Row>

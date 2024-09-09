@@ -116,6 +116,10 @@ export interface ProfileOptions {
   tracking: {
     pixel: string
     google: string
+    googleAds: {
+      label: string
+      id: string
+    }
   }
   legacyPix: boolean
   onlinePix: boolean

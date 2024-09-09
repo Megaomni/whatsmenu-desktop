@@ -749,14 +749,14 @@ export default function Settings() {
                             ...profileOptions.print,
                             textOnly:
                               e.target.value === 'bluetooth' ||
-                              e.target.value === 'usb' ||
-                              e.target.value === 'app'
+                                e.target.value === 'usb' ||
+                                e.target.value === 'app'
                                 ? true
                                 : copy(e.target.value, 'parse'),
                             app: e.target.value === 'app' ? true : false,
                             web:
                               e.target.value === 'bluetooth' ||
-                              e.target.value === 'usb'
+                                e.target.value === 'usb'
                                 ? e.target.value
                                 : '',
                           },
@@ -1207,7 +1207,7 @@ export default function Settings() {
             </Col>
             <Col sm="12" md="4" className="mb-4">
               {!('isElectron' in window) &&
-              navigator.userAgent.includes('Windows NT 10') ? (
+                navigator.userAgent.includes('Windows NT 10') ? (
                 <Card className="h-100">
                   <Card.Header>
                     <h4>WhatsMenu Desktop</h4>
@@ -1262,136 +1262,6 @@ export default function Settings() {
         </Col>
       </Row>
 
-      {defaultDomain && (
-        <>
-          <Row>
-            <Card>
-              <Card.Header>
-                <h4>Facebook</h4>
-              </Card.Header>
-              <Card.Body>
-                <Row>
-                  <Col>
-                    <Form>
-                      <Form.Group>
-                        <Form.Label className="fs-7">
-                          Facebook Pixel - {t('only_indentification')}
-                        </Form.Label>
-                        <Form.Control
-                          value={profileOptions?.tracking?.pixel ?? ''}
-                          onChange={(e) => {
-                            setProfileOptions({
-                              ...profileOptions,
-                              tracking: {
-                                ...profileOptions.tracking,
-                                pixel: e.target.value.replace(/\D/g, ''),
-                              },
-                            })
-                          }}
-                        />
-                      </Form.Group>
-                    </Form>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Row>
-
-          <Row>
-            <Card>
-              <Card.Header>
-                <h4>Google Tag Manager</h4>
-              </Card.Header>
-              <Card.Body>
-                <Row>
-                  <Col>
-                    <Form>
-                      <Form.Group>
-                        <Form.Label className="fs-7">
-                          Google Tag Manager - {t('only_indentification')}
-                        </Form.Label>
-                        <Form.Control
-                          value={profileOptions?.tracking?.google ?? ''}
-                          onChange={(e) => {
-                            setProfileOptions({
-                              ...profileOptions,
-                              tracking: {
-                                ...profileOptions.tracking,
-                                google: e.target.value,
-                              },
-                            })
-                          }}
-                        />
-                      </Form.Group>
-                    </Form>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Row>
-          <Row>
-            <Card>
-              <Card.Header>
-                <h4>Google AdWords</h4>
-              </Card.Header>
-              <Card.Body>
-                <Row>
-                  <Col>
-                    <Form>
-                      <Form.Group>
-                        <Form.Label className="fs-7">ID</Form.Label>
-                        <Form.Control
-                          value={profileOptions?.tracking?.googleAds?.id ?? ''}
-                          onChange={(e) => {
-                            const googleAds = {
-                              id: e.target.value,
-                              label:
-                                profileOptions?.tracking?.googleAds?.label ??
-                                '',
-                            }
-                            setProfileOptions({
-                              ...profileOptions,
-                              tracking: {
-                                ...profileOptions.tracking,
-                                googleAds,
-                              },
-                            })
-                          }}
-                        />
-                      </Form.Group>
-                    </Form>
-                  </Col>
-                  <Col>
-                    <Form>
-                      <Form.Group>
-                        <Form.Label className="fs-7">{t('label')}</Form.Label>
-                        <Form.Control
-                          value={
-                            profileOptions?.tracking?.googleAds?.label ?? ''
-                          }
-                          onChange={(e) => {
-                            const googleAds = {
-                              id: profileOptions?.tracking?.googleAds?.id ?? '',
-                              label: e.target.value,
-                            }
-                            setProfileOptions({
-                              ...profileOptions,
-                              tracking: {
-                                ...profileOptions.tracking,
-                                googleAds,
-                              },
-                            })
-                          }}
-                        />
-                      </Form.Group>
-                    </Form>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Row>
-        </>
-      )}
       <Row className="justify-content-end">
         <Col md="1" className="d-flex p-0">
           <Button
