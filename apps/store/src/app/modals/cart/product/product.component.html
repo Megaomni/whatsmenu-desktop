@@ -58,8 +58,11 @@
                   </div>
 
                   <div class="ms-auto py-2 col-auto ps-0">
-                    <span *ngIf="!cartService.checkInventoryDisponibility({ item })" style="color: var(--red); opacity: 0.3" class="fw-500"
-                      >INDISPONÍVEL</span
+                    <span
+                      *ngIf="!cartService.checkInventoryDisponibility({ item })"
+                      style="color: var(--red); opacity: 0.3"
+                      class="fw-500 text-uppercase"
+                      >{{ translate.text().unavilable }}</span
                     >
 
                     <div *ngIf="item.status" class="quantityFooter">
@@ -143,7 +146,7 @@
 
             <button
               *ngIf="!table && viewContentAlternate === 'P' && verifyAvailableQuantity()"
-              title="Adicionar para encomenda"
+              title="{{ translate.text().add_to_order }}"
               (click)="
                 clientData.options.package.active
                   ? product.status
@@ -167,11 +170,11 @@
                 {{
                   clientData.options.package.active
                     ? clientData.options.package.label2 === false || !clientData.options.package.label2
-                      ? 'Encomendar'
-                      : 'Agendar'
+                      ? translate.text().order_comment
+                      : translate.text().schedule
                     : clientData.options.package.label2 === false || !clientData.options.package.label2
-                    ? 'Fechado Encomendas'
-                    : 'Agendamento Fechado'
+                    ? translate.text().closed_orders
+                    : translate.text().scheduling_closed
                 }}
               </div>
               <div *ngIf="clientData.options.package.active" class="float-right">
@@ -200,7 +203,11 @@
             >
               <span class="text-capitalize">
                 {{
-                  disponibility || table ? (editProduct ? 'Salvar' : translate.text().add) : translate.text().closed + ' ' + translate.text().delivery
+                  disponibility || table
+                    ? editProduct
+                      ? translate.text().save
+                      : translate.text().add
+                    : translate.text().closed + ' ' + translate.text().delivery
                 }}
               </span>
 

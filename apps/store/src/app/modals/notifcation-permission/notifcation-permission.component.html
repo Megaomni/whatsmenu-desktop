@@ -4,8 +4,8 @@
     <div class="p-3 rounded-3 opacity-5 bg-warning bg-opacity-50">
       <fa-icon [icon]="faTriangleExclamation" size="2x" class="text-warning" ></fa-icon>
     </div>
-    <h3 class="fw-bold" style="color: #9D5425;">Atenção!</h3>
-    <p>Para receber notificações é necessário aceitar a permissão de notificações em seu dispositivo.</p>
+    <h3 class="fw-bold" style="color: #9D5425;">{{ translate.text().attention }}!</h3>
+    <p class="text-capitalize">{{ translate.text().notification_permissions }}</p>
   </mat-dialog-content>
   <mat-dialog-actions class="d-flex justify-content-end" >
     <button class="btn btn-success flex-grow-1 flex-md-grow-0 px-3" (click)="requestPermission()" [disabled]="loading">OK</button>

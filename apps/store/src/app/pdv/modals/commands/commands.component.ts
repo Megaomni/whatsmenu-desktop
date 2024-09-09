@@ -8,6 +8,7 @@ import { PrintService } from 'src/app/services/print/print.service';
 import Command from 'src/classes/command';
 import Table from 'src/classes/table';
 import { CommandResumeComponent } from '../command-resume/command-resume.component';
+import { TranslateService } from 'src/app/translate.service';
 
 @Component({
   selector: 'app-commands',
@@ -26,7 +27,8 @@ export class CommandsComponent implements OnInit {
     public api: ApiService,
     public context: ContextService,
     public toastService: ToastService,
-    public printService: PrintService
+    public printService: PrintService,
+    public translate: TranslateService,
     ) { }
 
   async ngOnInit(): Promise<void> {

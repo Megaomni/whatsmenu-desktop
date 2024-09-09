@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core'
 import { faArrowLeft, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import { CartRequestType } from 'src/app/cart-request-type'
 import { CartService } from 'src/app/services/cart/cart.service'
+import { TranslateService } from 'src/app/translate.service'
 
 @Component({
   selector: 'app-total-form-payment',
@@ -15,7 +16,7 @@ export class TotalFormPaymentComponent implements OnInit {
 
   totalModal: boolean = false
 
-  constructor(public cartService: CartService) {}
+  constructor(public cartService: CartService, public translate: TranslateService) {}
   @Input() cartRequest: CartRequestType
 
   ngOnInit(): void {}

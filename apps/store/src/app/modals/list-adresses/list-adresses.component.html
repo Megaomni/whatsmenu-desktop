@@ -1,15 +1,15 @@
 <div class="d-flex flex-column justify-content-between bg-5" [ngStyle]="{ height: '100%' }">
   <div dialog-title>
     <div class="modal-header">
-      <h5 class="modal-title pe-2" id="exampleModalLabel">Editar Endereços</h5>
+      <h5 class="modal-title pe-2 text-capitalize" id="exampleModalLabel">{{ translate.text().edit_addresses }}</h5>
       <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
     </div>
   </div>
   <mat-dialog-content class="flex-fill">
     <div>
-      <p>Crie um novo endereço ou use a lista abaixo</p>
+      <p class="text-capitalize">{{ translate.text().create_address_or_use_list_below }}</p>
       <hr />
-      <a class="text-red" (click)="addAddress()">Cadastrar novo endereço</a>
+      <a class="text-red text-capitalize" (click)="addAddress()">{{ translate.text().add_new_addresses }}</a>
       <form action="">
         <ul class="list-group list-group-flush small mt-3" *ngIf="customer.addresses">
           <li class="list-group-item d-flex justify-content-between" *ngFor="let address of customer.addresses.sort(); let index = index">
@@ -23,7 +23,9 @@
                 [(ngModel)]="data.clientInfo.defaultAddressId"
                 [checked]="index === selectedAddressIndex"
               />
-              <label class="form-check-label fw-bold ms-2" [for]="'address-' + index">Endereço {{ index + 1 }}</label>
+              <label class="form-check-label fw-bold ms-2 text-capitalize" [for]="'address-' + index"
+                >{{ translate.text().address }} {{ index + 1 }}</label
+              >
               <p class="address-text">
                 {{ address.street }}. {{ address.number }} • {{ address.neighborhood === 'others' ? 'Outros' : address.neighborhood }} •
                 {{ address.city === 'others' ? 'Outros' : address.city }}/{{ address.uf }}
@@ -55,8 +57,8 @@
                   class="dropdown-menu show position-absolute"
                   style="right: 0; bottom: 0px; text-align: center"
                 >
-                  <li class="dropdown-item" href="#" (click)="editAddress(address.id)">Editar</li>
-                  <li class="dropdown-item" href="#" (click)="deleteAddress(address.id)">Excluir</li>
+                  <li class="dropdown-item text-capitalize" href="#" (click)="editAddress(address.id)">{{ translate.text().edit }}</li>
+                  <li class="dropdown-item text-capitalize" href="#" (click)="deleteAddress(address.id)">{{ translate.text().remove }}</li>
                 </ul>
               </div>
             </div>
@@ -66,6 +68,6 @@
     </div>
   </mat-dialog-content>
   <mat-dialog-actions class="align-items-center justify-content-end p-2">
-    <button class="btn btn-primary" (click)="saveAddress()">Salvar</button>
+    <button class="btn btn-primary" (click)="saveAddress()">{{ translate.text().save }}</button>
   </mat-dialog-actions>
 </div>

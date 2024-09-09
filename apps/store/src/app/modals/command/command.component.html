@@ -14,11 +14,11 @@
   <button mat-dialog-close m4-button btn-style="link">
     <m4-icon icon="chevron-thin-left" color="red" size="2"></m4-icon>
   </button>
-  <h3 [ngStyle]='{ "display": "inline-block", "font-weight": "bold", "margin": "unset"}'>Comanda: {{ command.name }}</h3>
+  <h3 [ngStyle]='{ "display": "inline-block", "font-weight": "bold", "margin": "unset"}' class="text-capitalize">{{ translate.text().order_slip }}: {{ command.name }}</h3>
 </div>
 
 <ul class="inline-list choice-dish requests-container">
-    <h1 *ngIf="!command || command.requests.length < 1" class="mt-6 mb-6">Sem pedidos ativos</h1>
+    <h1 *ngIf="!command || command.requests.length < 1" class="mt-6 mb-6 text-capitalize">{{ translate.text().no_active_orders }}</h1>
   <div class="requests">
     <li
       *ngFor="let request of command && command.requests; let index = index"
@@ -33,7 +33,7 @@
             <p class="dots">
               <span
                 >{{ item.quantity }}x {{ item.size }} {{ item.flavors.length }}
-                {{ item.flavors.length === 1 ? "sabor" : "sabores" }}</span
+                {{ item.flavors.length === 1 ? translate.text().flavor : translate.text().flavors }}</span
               >
             </p>
           </div>
@@ -48,7 +48,7 @@
             <p class="dots">
               <span
                 >{{ item.quantity }}x {{ item.size }} {{ item.flavors.length }}
-                {{ item.flavors.length === 1 ? "sabor" : "sabores" }}</span
+                {{ item.flavors.length === 1 ? translate.text().flavor : translate.text().flavors }}</span
               >
             </p>
           </div>

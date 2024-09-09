@@ -33,7 +33,7 @@
         type="text"
         class="form-control border-end-0"
         [(ngModel)]="search"
-        [placeholder]="filter === 'default' ? 'Buscar por nome' : 'Buscar por sabor'"
+        [placeholder]="filter === 'default' ?  translate.text().search_name_comment : translate.text().search_flavor_comment"
       />
       <fa-icon
         class="border border-start-0 rounded-end p-2 ps-3"
@@ -42,7 +42,7 @@
       ></fa-icon>
     </div>
     <select class="form-select" [(ngModel)]="filter">
-      <option value="default">Padrão</option>
+      <option value="default">{{ translate.text().standard}}</option>
       <option value="pizza">Pizza</option>
     </select>
   </div>

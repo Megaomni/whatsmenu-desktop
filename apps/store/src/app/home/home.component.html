@@ -75,12 +75,14 @@
               >
                 <div [ngbNavItem]="'D'">
                   <!-- [ngStyle]="{ 'background-color': viewContentAlternate === 'delivery' ?  context.Luminosity(clientData.color).background : '', color : viewContentAlternate === 'delivery' ? context.Luminosity(clientData.color).color : ''}" -->
-                  <a ngbNavLink (click)="alternateButton('D')" style="font-size: 1rem" class="p-1 pt-0 text-capitalize">{{ translate.text().delivery }}</a>
+                  <a ngbNavLink (click)="alternateButton('D')" style="font-size: 1rem" class="p-1 pt-0 text-capitalize">{{
+                    translate.text().delivery
+                  }}</a>
                 </div>
                 <div *ngIf="clientData.options.package.active" [ngbNavItem]="'P'">
                   <!-- [ngStyle]="{ 'background-color': viewContentAlternate === 'package' ? context.Luminosity(clientData.color, true).background : '', color: viewContentAlternate === 'package' ? context.Luminosity(clientData.color).color : ''}" -->
                   <a ngbNavLink (click)="alternateButton('P')" style="font-size: 1rem" class="p-1 pt-0 text-capitalize">{{
-                    clientData.options.package.label2 ? translate.text().scheduling2  : translate.text().scheduling
+                    clientData.options.package.label2 ? translate.text().scheduling2 : translate.text().scheduling
                   }}</a>
                 </div>
               </nav>
@@ -264,12 +266,16 @@
                             (click)="updatePackageDate()"
                             class="py-2 m-0 d-flex flex-column gap-1 justfy-content-center align-items-center"
                           >
-                            <span *ngIf="packageDate !== null" style="font-size: 1rem"> Data de Entrega </span>
-                            <span *ngIf="packageDate === null" style="font-size: 1rem"> Escolher uma data </span>
-                            <span *ngIf="taxDeliveryValue !== null && packageDate !== null">
-                              {{ returnLuxonDate(packageDate, 'dd/MM') }} às {{ returnLuxonDate(packageDate, 'HH:mm') }}
+                            <span *ngIf="packageDate !== null" class="text-cpaitalize" style="font-size: 1rem">
+                              {{ translate.text().delivery_date }}
                             </span>
-                            <span *ngIf="taxDeliveryValue === null"> Fora da área de cobertura </span>
+                            <span *ngIf="packageDate === null" class="text-capitalize" style="font-size: 1rem">
+                              {{ translate.text().choose_date }}
+                            </span>
+                            <span *ngIf="taxDeliveryValue !== null && packageDate !== null">
+                              {{ returnLuxonDate(packageDate, translate.masks().date_mask_two) }} às {{ returnLuxonDate(packageDate, 'HH:mm') }}
+                            </span>
+                            <span class="text-capitalize" *ngIf="taxDeliveryValue === null"> {{ translate.text().out_coverage_area }} </span>
                           </div>
                           <span *ngIf="!clientData.options.delivery.disableDelivery && timeDelivery">{{ timeFreightText() }}</span>
                         </div>
@@ -368,7 +374,7 @@
                                     </h5>
                                   </div>
                                   <p style="word-break: break-word" class="lh-sm fs-6 mt-2 descrProduct multi-line-truncate">
-                                    {{ item }} {{ item === 1 ? 'Sabor' : 'Sabores' }}
+                                    {{ item }} {{ item === 1 ? translate.text().flavor_comment : translate.text().flavors_comment }}
                                   </p>
                                 </div>
                                 <div
@@ -408,18 +414,21 @@
             <div *ngIf="filter.length" class="container">
               <div class="cell-12">
                 <h4 *ngIf="filter.length && filterProducts().length">
-                  Itens encontrados: {{ filterProducts().length }} {{ filterProducts().length != 1 ? 'itens encontrados' : 'item encontrado' }}
+                  {{ translate.text().items_found }}: {{ filterProducts().length }}
+                  {{ filterProducts().length != 1 ? 'itens encontrados' : 'item encontrado' }}
                 </h4>
                 <div *ngIf="filterProducts().length === 0" style="height: 500px; width: 100%; text-align: center">
-                  <h1 style="font-size: 3rem; margin-top: 100px; line-height: 58px">Nenhum produto encontrado</h1>
+                  <h1 class="text-capitalize" style="font-size: 3rem; margin-top: 100px; line-height: 58px">
+                    {{ translate.text().no_product_found }}
+                  </h1>
                   <span style="cursor: pointer; color: #777">
-                    <p (click)="clearSearchFilter()">Clique aqui para ver a lista completa de produtos</p>
+                    <p class="text-capitalize" (click)="clearSearchFilter()">{{ translate.text().see_full_list }}</p>
                   </span>
                 </div>
               </div>
 
               <div class="row">
-                <div *ngFor="let product of filterProducts()" class="col-6">
+                <div *ngFor="let product of filterProducts()" class="col-md-6">
                   <div>
                     <div *ngTemplateOutlet="productCard; context: { product, category: product.category }"></div>
                   </div>
@@ -434,10 +443,13 @@
                 <div class="row">
                   <div class="col-md-12 text-center position-relative">
                     <p class="m-0 fw-medium">{{ clientData.name }}</p>
-                    <p class="m-0 small">Fone: {{ formatPhone(clientData.whatsapp) }}</p>
-                    <p *ngIf="this.clientData.deliveryLocal" class="m-0 small">Endereço: {{ takeOutAddress() }}</p>
+                    <p class="m-0 small">{{ translate.text().phone_footer }}: {{ formatPhone(clientData.whatsapp) }}</p>
+                    <p *ngIf="this.clientData.deliveryLocal" class="m-0 small text-capitalize">
+                      {{ translate.text().address }}: {{ takeOutAddress() }}
+                    </p>
                     <p class="m-0 mb-0 small">
-                      Tecnologia: <a class="text-decoration-none text-white fw-medium" href="https://www.whatsmenu.com.br">www.whatsmenu.com.br</a>
+                      {{ translate.text().technology }}:
+                      <a class="text-decoration-none text-white fw-medium" href="https://www.whatsmenu.com.br">www.whatsmenu.com.br</a>
                     </p>
                   </div>
                 </div>
@@ -460,7 +472,7 @@
                   >
                 </p>
                 <p *ngIf="viewContentAlternate === 'D'" class="text-capitalize">{{ translate.text().close_order }}</p>
-                <p *ngIf="viewContentAlternate === 'P'">Fechar Agendamento</p>
+                <p class="text-capitalize" *ngIf="viewContentAlternate === 'P'">{{ translate.text().finalize_appointment }}</p>
                 <p>{{ cartService.totalCartValue(cart, cartPizza, cartRequest) | currency }}</p>
               </div>
             </div>

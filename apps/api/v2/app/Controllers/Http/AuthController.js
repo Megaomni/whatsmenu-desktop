@@ -59,7 +59,6 @@ class AuthController {
         .join('')
         .trim()
       user.sellerId = data.sellerId
-
       user.password = data.password
 
       user.due = data.controls.disableInvoice ? moment().format('DD') : moment().add(1, 'days').format('DD')

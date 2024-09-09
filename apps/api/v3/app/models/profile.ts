@@ -306,14 +306,16 @@ export default class Profile extends BaseModel {
     if (profile.options.asaas) {
       profile.minval = Math.max(Number(profile.minval), env.get('ASAAS_MIN_VALUE'))
       profile.minvalLocal = Math.max(Number(profile.minvalLocal), env.get('ASAAS_MIN_VALUE'))
-      profile.options.package.minValue = Math.max(
-        Number(profile.options.package.minValue),
-        env.get('ASAAS_MIN_VALUE')
-      )
-      profile.options.package.minValueLocal = Math.max(
-        Number(profile.options.package.minValueLocal),
-        env.get('ASAAS_MIN_VALUE')
-      )
+      if (profile.options.package) {
+        profile.options.package.minValue = Math.max(
+          Number(profile.options.package?.minValue || 0),
+          env.get('ASAAS_MIN_VALUE')
+        )
+        profile.options.package.minValueLocal = Math.max(
+          Number(profile.options.package?.minValueLocal || 0),
+          env.get('ASAAS_MIN_VALUE')
+        )
+      }
     }
   }
 
@@ -340,12 +342,14 @@ export default class Profile extends BaseModel {
 
   @beforeSave()
   static packageMinValuesToFloat(profile: Profile) {
-    profile.options.package.minValue = Number.parseFloat(
-      profile.options.package.minValue.toFixed(2)
-    )
-    profile.options.package.minValueLocal = Number.parseFloat(
-      profile.options.package.minValueLocal.toFixed(2)
-    )
+    if (profile.options.package) {
+      profile.options.package.minValue = Number.parseFloat(
+        profile.options.package.minValue.toFixed(2)
+      )
+      profile.options.package.minValueLocal = Number.parseFloat(
+        profile.options.package.minValueLocal.toFixed(2)
+      )
+    }
   }
 
   @afterFind()
@@ -425,22 +429,32 @@ export default class Profile extends BaseModel {
   @afterFind()
   @afterFetch()
   @afterPaginate()
-  static async catalogModeOptions(result: Profile | Profile[]) {
+  static async storeOptions(result: Profile | Profile[]) {
     if (Array.isArray(result)) {
       for (const profile of result) {
-        if (!profile.options.store.catalogMode) {
-          profile.options.store.catalogMode = {
-            delivery: false,
-            table: false,
+        if (!profile.options.store) {
+          profile.options.store = {
+            catalogMode: {
+              delivery: false,
+              table: false,
+            },
+            productModal: {
+              infoPosition: 'last',
+            },
           }
         }
         profile.save()
       }
     } else {
-      if (!result.options.store.catalogMode) {
-        result.options.store.catalogMode = {
-          delivery: false,
-          table: false,
+      if (!result.options.store?.catalogMode) {
+        result.options.store = {
+          catalogMode: {
+            delivery: false,
+            table: false,
+          },
+          productModal: {
+            infoPosition: 'last',
+          },
         }
         result.save()
       }

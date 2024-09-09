@@ -16,6 +16,7 @@ import { ContextService } from '../services/context/context.service'
 import { NeighborhoodType, TaxDeliveryType } from '../tax-delivery-type'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
+import { TranslateService } from '../translate.service'
 
 @Component({
   selector: 'app-status',
@@ -54,6 +55,7 @@ export class StatusComponent implements OnInit {
   @ViewChild('generatePixButton') generatePixButton: ElementRef<HTMLButtonElement>
 
   constructor(
+    public translate: TranslateService,
     private router: ActivatedRoute,
     private api: ApiService,
     public cartService: CartService,
@@ -121,7 +123,7 @@ export class StatusComponent implements OnInit {
   }
 
   formatDate(date: string) {
-    return DateTime.fromSQL(date).toFormat('dd/MM/yyyy HH:mm:ss')
+    return DateTime.fromSQL(date).toFormat(`${this.translate.masks().date_mask} HH:mm:ss`)
   }
 
   returnAllFormsPayment() {
@@ -464,7 +466,9 @@ export class StatusComponent implements OnInit {
       const formattedDate = DateTime.fromISO(this.cart.packageDate)
 
       message += `*Data de entrega: ${
-        verifyHour ? formattedDate.toFormat('dd/MM/yyyy') + '(SEM HORÁRIO)' : formattedDate.toFormat('dd/MM/yyyy HH:mm')
+        verifyHour
+          ? formattedDate.toFormat(this.translate.masks().date_mask) + '(SEM HORÁRIO)'
+          : formattedDate.toFormat(`${this.translate.masks().date_mask} HH:mm`)
       }*\n\n`
     }
 
@@ -589,30 +593,38 @@ export class StatusComponent implements OnInit {
     if (this.profile.showTotal && this.cart) {
       let value = this.currencyNoSymbol(totalCart)
 
-      message += `*Pedido: + ${this.currencyNoSymbol(this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart))}*\n`
+      message += `*${this.translate.text().order_comment}: + ${this.currencyNoSymbol(
+        this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart)
+      )}*\n`
+      
       if (this.cart.addressId) {
-        message += `*Entrega:* `
-        if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === 'À Consultar') {
+        message += `*${this.translate.text().delivery}:* `
+        if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === this.translate.text().to_consult) {
           message += `*${this.taxDelivery()}*\n`
         }
         if (
-          this.taxDelivery() !== 'À Consultar' &&
+          this.taxDelivery() !== this.translate.text().to_consult &&
           ((this.cart.cupomId && this.cart.cupom?.type === 'freight') || (this.cart.addressId && this.cart.taxDelivery === 0))
         ) {
-          message += `*GRÁTIS*\n`
+          message += `*${this.translate.text().free_comment_up}*\n`
         }
-        if (this.taxDelivery() !== 'À Consultar' && (!this.cart.cupom || this.cart.cupom?.type !== 'freight') && this.cart.addressId) {
+        if (
+          this.taxDelivery() !== this.translate.text().to_consult &&
+          (!this.cart.cupom || this.cart.cupom?.type !== 'freight') &&
+          this.cart.addressId
+        ) {
           message += `*${this.currencyNoSymbol(this.cart.taxDelivery)}*\n`
         }
       }
-      if (this.cart.formsPayment[0].addon?.status) {
-        if (this.cart.formsPayment[0].addon.type === 'fee') message += `*Taxa: + ${this.currencyNoSymbol(totalAddon)}*\n`
+      if (this.taxDelivery() !== this.translate.text().to_consult && this.cart.formsPayment[0].addon?.status) {
+        if (this.cart.formsPayment[0].addon.type === 'fee')
+          message += `*${this.translate.text().fee_comment}: + ${this.currencyNoSymbol(totalAddon)}*\n`
       }
       if (this.cart.formsPayment[0].addon?.type === 'discount') {
-        message += `*Desc. ${this.cart.formsPayment[0].label}: - ${this.currencyNoSymbol(Math.abs(totalAddon))}*\n`
+        message += `*${this.translate.text().disc}. ${this.cart.formsPayment[0].label}: - ${this.currencyNoSymbol(Math.abs(totalAddon))}*\n`
       }
       if (this.cart.cupomId && this.cart.cupom?.type !== 'freight') {
-        message += `*Cupom: - ${this.currencyNoSymbol(cupomValue)}*\n`
+        message += `*${this.translate.text().coupon}: - ${this.currencyNoSymbol(cupomValue)}*\n`
       }
       if (this.cashback()) {
         message += `*${this.cashback().label}: - ${this.currencyNoSymbol(this.cashback().value)}*\n`
@@ -626,11 +638,11 @@ export class StatusComponent implements OnInit {
         ? `${this.cart.formsPayment[0].label}(${this.cart.formsPayment[0].flag?.name || 'Online'})`
         : this.cart.formsPayment[0].label
 
-    message += `\n*Pagamento em:      ${formPayment}${
-      this.cart.paymentType === 'online' && this.cart.statusPayment !== 'offline' ? ' - Pago Online' : ''
+    message += `\n*${this.translate.text().payment_in_comment}:      ${formPayment}${
+      this.cart.paymentType === 'online' && this.cart.statusPayment !== 'offline' ? ` - ${this.translate.text().paid_online_comment}` : ''
     }*\n`
 
-    if (this.cart.formsPayment[0].change && formPayment === 'Dinheiro') {
+    if (this.cart.formsPayment[0].change && formPayment === this.translate.text().money) {
       const transshipmentVal = parseFloat(this.cart.formsPayment[0].change.toString().replace(',', '.').trim())
       const transshipment = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(transshipmentVal)
 
