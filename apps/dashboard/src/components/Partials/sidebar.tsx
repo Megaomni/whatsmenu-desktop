@@ -23,6 +23,7 @@ import {
   BsGear,
   BsMegaphone,
   BsPerson,
+  BsReceipt,
 } from 'react-icons/bs'
 import {
   FaBarcode,
@@ -32,6 +33,7 @@ import {
   FaMedal,
   FaMoneyBillWave,
   FaMotorcycle,
+  FaReceipt,
 } from 'react-icons/fa'
 import { GiRoundTable } from 'react-icons/gi'
 import { GoPackage } from 'react-icons/go'
@@ -153,7 +155,7 @@ export function Sidebar() {
               </li>
               <li className="nav-item">
                 <Link
-                  href="/dashboard/nfe"
+                  href="/dashboard/integrations/grovenfe"
                   className="with-icon nav-link collapsed"
                   onClick={(e) => {
                     verificationStateRouter(e)
@@ -412,6 +414,21 @@ export function Sidebar() {
             </span>
           </Link>
         </li>
+        {/* <li className="nav-item">
+          <Link
+            href="/dashboard/invoiceGrove"
+            className={`with-icon nav-link collapsed`}
+            onClick={(e) => {
+              verificationStateRouter(e)
+              window.innerWidth < 1020 && setShowSidebar(false)
+            }}
+          >
+            <FaBarcode />
+            <span className="d-flex justify-content-between align-items-center w-100">
+              FaturasNFe
+            </span>
+          </Link>
+        </li> */}
 
         {profile.id &&
           ((profile.address.street && profile.taxDelivery.length > 0) ||

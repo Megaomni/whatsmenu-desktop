@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - beta
+      - feat/grove-nfe
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
@@ -22,9 +23,9 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+    # env:
+    #   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+    #   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
     strategy:
       matrix:
@@ -56,7 +57,7 @@ jobs:
       - name: Package application
         run: |
           tar -czf deploy.tar.gz -C out/apps/api/v3 build
-
+          
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
           EC2_USER: ${{ vars.EC2_USER_2 }}
@@ -84,6 +85,7 @@ jobs:
             pnpm install
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
             cd build
+            rm .env
             ln -s ../.env .env
             pm2 start ${{ env.BRANCH == 'beta' && '../ecosystem_beta.config.cjs' || '../ecosystem.config.cjs' }}
           EOF

@@ -1,5 +1,4 @@
 import { IntegrationCard, IntegrationCardContainer } from '@components/IntegrationCard'
-import { t } from 'i18next'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -10,8 +9,10 @@ import {
   Container,
   Row,
 } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 export default function Integrations() {
+  const { t } = useTranslation()
   return (
     <Container fluid>
       <h1
@@ -86,8 +87,8 @@ export default function Integrations() {
               <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
                 {t('online_payment_s')}
               </h4>
-            </Col>
-          </Row>
+            </Col >
+          </Row >
           <Row>
             <Col>
               <p className="fs-6 lh-base mt-2 text-black">
@@ -119,8 +120,8 @@ export default function Integrations() {
               </IntegrationCardContainer>
             </Col>
           </Row>
-        </CardBody>
-      </Card>
+        </CardBody >
+      </Card >
 
       <Card className="color-white w-100 h-100 flex-shrink-0 p-4">
         <Row>
@@ -128,8 +129,8 @@ export default function Integrations() {
             <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
               {t('fiscal_note_issuer')}
             </h4>
-          </Col>
-        </Row>
+          </Col >
+        </Row >
         <Row>
           <Col className="mt-3">
             <p className="fs-6 lh-base text-black">
@@ -149,7 +150,7 @@ export default function Integrations() {
             </IntegrationCardContainer>
           </Col>
         </Row>
-      </Card>
-    </Container>
+      </Card >
+    </Container >
   )
 }

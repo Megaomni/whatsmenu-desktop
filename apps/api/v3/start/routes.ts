@@ -16,6 +16,7 @@ const CronsController = () => import('#controllers/crons_controller')
 const ClientsController = () => import('#controllers/clients_controller')
 const CartsController = () => import('#controllers/carts_controller')
 const IntegrationsController = () => import('#controllers/integrations_controller')
+const GroveNfesController = () => import('#controllers/grove_nfes_controller')
 
 import swagger from '#config/swagger'
 import router from '@adonisjs/core/services/router'
@@ -155,3 +156,9 @@ router
     router.get('/closeCashiers', [CronsController, 'closeCashiers'])
   })
   .prefix('cron')
+
+router
+  .group(() => {
+    router.post('/webhook', [GroveNfesController, 'webhook'])
+  })
+  .prefix('grovenfe')

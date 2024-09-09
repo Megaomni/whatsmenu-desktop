@@ -47,17 +47,17 @@ const dbConfig = defineConfig({
       },
       // debug: env.get('DB_DEBUG', false),
     },
-    mysql2: {
-      client: 'mysql2',
-      connection: {
-        host: env.get('DB_HOST2', '0.0.0.0'),
-        port: env.get('DB_PORT2'),
-        user: env.get('DB_USER2', 'root'),
-        password: env.get('DB_PASSWORD2', ''),
-        database: env.get('DB_DATABASE2', 'adonis'),
-      },
-      // debug: env.get('DB_DEBUG', false),
-    },
+    // mysql2: {
+    //   client: 'mysql2',
+    //   connection: {
+    //     host: env.get('DB_HOST2', '0.0.0.0'),
+    //     port: env.get('DB_PORT2'),
+    //     user: env.get('DB_USER2', 'root'),
+    //     password: env.get('DB_PASSWORD2', ''),
+    //     database: env.get('DB_DATABASE2', 'adonis'),
+    //   },
+    //   // debug: env.get('DB_DEBUG', false),
+    // },
     mysql_pooling: {
       client: 'mysql2',
       connection: {
