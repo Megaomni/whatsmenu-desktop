@@ -112,6 +112,7 @@ class CommandController {
       let profileFees = await Fee.query().where('profileId', profile.id).where('deleted_at', null).fetch()
       profileFees = profileFees.toJSON()
       const command = await Command.query().where('id', params.commandId).with('carts').first()
+      
       let table = await TableOpened.query()
         .where('id', command.tableOpenedId)
         .with('commands', (query) => {
@@ -182,7 +183,7 @@ class CommandController {
       const profile = await Profile.findBy('slug', slug)
       let profileFees = await Fee.query().where('profileId', profile.id).where('deleted_at', null).fetch()
       profileFees = profileFees.toJSON()
-      const command = await Command.query().where('id', params.commandId).with('carts.command').first()
+      const command = await Command.query().where('id', params.commandId).with('carts', (cartsQuery) => {cartsQuery.with('command').with('itens')}).first()
       let opened = await TableOpened.query()
         .where('id', command.tableOpenedId)
         .with('commands', (query) => {
@@ -217,7 +218,7 @@ class CommandController {
         opened.status = 0
         command.tableEmpty = true
         try {
-          const cashier = await Cashier.query().where({ id: cashierId }).with('openeds').with('carts').first()
+          const cashier = await Cashier.query().where({ id: cashierId }).with('openeds').with('carts.itens').first()
           if (cashier && cashier.transactions) {
             cashier.transactions.push({
               obs: `Encerramento mesa ${table.name}`,

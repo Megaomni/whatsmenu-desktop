@@ -8,7 +8,7 @@
     "phone": "(00) 0000-00009",
     "cell": "(00) 00000-0000",
     "secret_number": "###.###.###-##",
-    "ssn_mask": "000.000.000-00",
+    "ssn_mask": "CPF_CNPJ",
     "zipcode": "00000-000",
     "date_mask": "dd/MM/yyyy",
     "date_mask_format_m": "DD/MM/YYYY",
@@ -104,7 +104,7 @@
     "payment_credit_card": "pagamento em cartão de crédito",
     "i_need_transhipment": "preciso de troco para",
     "i_not_need_transhipment": "Não preciso de troco",
-    "secret_number_on_note": "CPF na nota",
+    "secret_number_on_note": "CPF/CNPJ na nota",
     "search_products_by_name_or_description": "Pesquisar Produtos por Nome ou descrição",
     "outside_the_coverage_area": "fora da área de cobertura",
     "unavilable": "indisponível",
@@ -144,7 +144,7 @@
     "select_the_flag": "Selecione a bandeira",
     "select_the_flag_comment": "Selecione uma Bandeira",
     "select": "Selecione",
-    "cpf_on_the_receipt": "CPF na nota",
+    "cpf_on_the_receipt": "CPF/CNPJ na nota",
     "how_to_pay_with_pix": "Como pagar no PIX",
     "enter_cpf_generate_pix": "Digite seu CPF para gerar uma chave PIX",
     "enter_cpf": "Digite seu CPF",
@@ -464,7 +464,8 @@
     "enter_street_name": "Digite o nome da rua",
     "coupon_only_used_purchases": "Esse cupom só pode ser usado em vendas a partir de",
     "discount_coupon_greater_total": "O desconto no cupom é maior do que o valor total!",
-    "add_to_order": "Adicionar para encomenda"
+    "add_to_order": "Adicionar para encomenda",
+    "print": "Imprimir"
   },
 
   "alert": {

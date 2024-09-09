@@ -19,7 +19,7 @@ const { createHash } = require("crypto");
 const axios = require("axios");
 const fs = use("fs");
 const moment = require("moment");
-const version = "49.4.6";
+const version = "49.5.0";
 const valueBase = "79,90";
 const GoogleProvider = use("GoogleProvider");
 const View = use("View");
@@ -116,7 +116,7 @@ class PageController {
         valueBase: valueBase,
         ambient: ambient,
         page: "WhatsMenu",
-        showValue: locale !== "pt-BR" ? false : true,
+        showValue: false, // locale !== "pt-BR" ? false : true,
         isIphone: userAgent.includes("iphone"),
       })
     );
@@ -1042,7 +1042,7 @@ class PageController {
 
     try {
       const path = "site/webhook";
-      if (data.method !== "GET") {
+      if (data.method !== "GET" && data.body && data.body.fullCode !== "KEEPALIVE") {
         let file = await Drive.disk("s3").exists(`${path}/ifood.json`);
         if (!file) {
           await Drive.disk("s3").put(

@@ -431,7 +431,8 @@
     "enter_street_name": "Enter the street name",
     "coupon_only_used_purchases": "This coupon can only be used on purchases starting from",
     "discount_coupon_greater_total": "The discount on the coupon is greater than the total amount!",
-    "add_to_order": "Add to Order"
+    "add_to_order": "Add to Order",
+    "print": "Print"
   },
 
   "alert": {
