@@ -15,6 +15,8 @@ export const create_dashboard_tab = () => {
     },
   });
 
+  let pollingInterval: NodeJS.Timeout | null = null;
+
   tab.webContents.on("did-finish-load", () => {
     const profile = getProfile();
     let merchant: MerchantType;
@@ -47,7 +49,6 @@ export const create_dashboard_tab = () => {
         console.log("FECHADO");
       }
 
-      let pollingInterval: NodeJS.Timeout | null = null;
       store.onDidAnyChange((newValue, oldValue) => {
         console.log(
           oldValue.configs.profile.options.integrations,
@@ -56,7 +57,10 @@ export const create_dashboard_tab = () => {
         if (newValue.configs.profile.options.integrations) {
           getMerchantApi({ profile });
           merchant = getMerchant();          
-          if (open && merchant && !pollingInterval) {
+          if (open && merchant) {
+            if (pollingInterval) {
+              clearInterval(pollingInterval);
+            }
             pollingInterval = setInterval(() => polling({ merchant, profile }), 30 * 1000);
           }
         }
