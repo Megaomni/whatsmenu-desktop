@@ -524,13 +524,23 @@ class ApiController {
       }
 
       profile = profile.toJSON()
-      const now = DateTime.local().setZone(profile.timeZone)
+      const now = packageType ? DateTime.fromISO(packageDate).setZone(profile.timeZone) : DateTime.local().setZone(profile.timeZone)
       const forceCloseDate = DateTime.fromISO(profile.options.forceClose).setZone(profile.timeZone)
 
-      if (forceCloseDate !== null && forceCloseDate > now) {
+      // Verifica se a data do pedido é na data e hora do fechamento forçado
+      if (now < forceCloseDate) {
         return response.status(401).json({
           disponibility: false,
-          message: 'Desculpe nos o transtorno, mas esta loja no momento se encontra fechada.',
+          message: `Desculpe o transtorno, mas esta loja está fechada. O próximo pedido pode ser feito a partir de ${forceCloseDate.toFormat('dd/MM HH:mm')}.`,
+          profile,
+        })
+      }
+
+      // Verifica se a data do pedido é depois da data e hora do fechamento forçado
+      if (now >= forceCloseDate) {
+        return response.json({
+          disponibility: true,
+          message: `Loja aberta para o dia ${now.toFormat('dd/MM/yyyy')}.`,
           profile,
         })
       }
