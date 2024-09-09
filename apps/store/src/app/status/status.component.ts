@@ -1,5 +1,5 @@
-import { Component, ElementRef, ViewChild, OnInit } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
+import { Component, ElementRef, ViewChild, OnInit, HostListener } from '@angular/core'
+import { ActivatedRoute, Router } from '@angular/router'
 import { ToastService } from 'src/app/services/ngb-toast/toast.service'
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { faArrowLeft, faPaste, faRotate } from '@fortawesome/free-solid-svg-icons'
@@ -17,12 +17,14 @@ import { NeighborhoodType, TaxDeliveryType } from '../tax-delivery-type'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 import { TranslateService } from '../translate.service'
+import { PlatformLocation, Location } from '@angular/common'
 
 @Component({
   selector: 'app-status',
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.scss', '../home/home.component.scss'],
 })
+
 export class StatusComponent implements OnInit {
   code: string
   slug: string
@@ -62,6 +64,8 @@ export class StatusComponent implements OnInit {
     public context: ContextService,
     public toastService: ToastService,
     private websocket: WebsocketService,
+    private location: Location,
+    private platformLocation: PlatformLocation
   ) {
 
     this.router.params.subscribe(({ code, slug }) => {
@@ -89,17 +93,25 @@ export class StatusComponent implements OnInit {
     }, 1000 * 60)
 
 
-    window.addEventListener('popstate', (e) => {
-      e.preventDefault()
-
-      window.location.reload()
-    })
-
-    window.onpopstate = (e)  => {
-      e.preventDefault()
+    this.platformLocation.onPopState(() => {
+      // this.location.replaceState('/' + this.profile.slug)
       alert('onPopState triggered')
-    }
-  }
+      window.location.href = `${window.location.protocol}//${window.location.host}/${this.profile.slug}`
+    })
+    // this.location.replaceState('/' + this.profile.slug)
+
+//   window.onpopstate = (e)  => {
+//     e.preventDefault()
+//     alert('onPopState triggered')
+//   }
+// this.location.replaceState('/' + this.profile.slug)
+
+
+// this.location.onUrlChange(() => {
+//   window.location.href = ${window.location.protocol}//${window.location.host}/${this.profile.slug};
+//   this.location.replaceState('/' + this.profile.slug)
+// })
+}
 
   taxDelivery() {
     let verifyNeighborood: NeighborhoodType[][]
