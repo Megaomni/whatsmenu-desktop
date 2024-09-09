@@ -190,8 +190,8 @@ importers:
         specifier: ^11.18.0
         version: 11.18.0
       uuid:
-        specifier: ^10.0.0
-        version: 10.0.0
+        specifier: 3.4.0
+        version: 3.4.0
       web-push:
         specifier: ^3.6.7
         version: 3.6.7
@@ -199,6 +199,15 @@ importers:
       '@faker-js/faker':
         specifier: ^8.4.0
         version: 8.4.1
+      '@whatsmenu/eslint-config':
+        specifier: workspace:*
+        version: link:../../../config/eslint-config
+      '@whatsmenu/prettier':
+        specifier: workspace:*
+        version: link:../../../config/prettier
+      '@whatsmenu/typescript-config':
+        specifier: workspace:*
+        version: link:../../../config/typescript-config
       eslint-plugin-jsdoc:
         specifier: ^46.8.2
         version: 46.10.1(eslint@8.57.0)
@@ -560,7 +569,7 @@ importers:
         version: 2.5.1
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5)))
+        version: 1.0.7(tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5)))
       whatsapp-web.js:
         specifier: github:pedroslopez/whatsapp-web.js#webpack-exodus
         version: https://codeload.github.com/pedroslopez/whatsapp-web.js/tar.gz/f361cde7d4f50dcb0694b7d5bb571d16b7bf412f(encoding@0.1.13)
@@ -645,10 +654,10 @@ importers:
         version: 8.4.41
       tailwindcss:
         specifier: ^3.4.3
-        version: 3.4.7(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5))
+        version: 3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5))
       ts-node:
         specifier: ^10.0.0
-        version: 10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5)
+        version: 10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5)
       typescript:
         specifier: ~4.5.4
         version: 4.5.5
@@ -732,7 +741,7 @@ importers:
         version: 3.5.0
       nativewind:
         specifier: ^2.0.11
-        version: 2.0.11(react@18.2.0)(tailwindcss@3.4.7(ts-node@10.9.2(typescript@4.9.5)))
+        version: 2.0.11(react@18.2.0)(tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5)))
       react:
         specifier: 18.2.0
         version: 18.2.0
@@ -784,7 +793,7 @@ importers:
         version: 0.2.2
       tailwindcss:
         specifier: ^3.3.2
-        version: 3.4.7(ts-node@10.9.2(typescript@4.9.5))
+        version: 3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5))
       typescript:
         specifier: ^4.9.4
         version: 4.9.5
@@ -7141,6 +7150,11 @@ packages:
 
   electron@31.3.1:
     resolution: {integrity: sha512-9fiuWlRhBfygtcT+auRd/WdBK/f8LZZcrpx0RjpXhH2DPTP/PfnkC4JB1PW55qCbGbh4wAgkYbf4ExIag8oGCA==}
+    engines: {node: '>= 12.20.55'}
+    hasBin: true
+
+  electron@32.0.2:
+    resolution: {integrity: sha512-nmZblq8wW3HZ17MAyaUuiMI9Mb0Cgc7UR3To85h/rVopbfyF5s34NxtK4gvyRfYPxpDGP4k+HoQIPniPPrdE3w==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
 
@@ -14151,10 +14165,6 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
-  uuid@10.0.0:
-    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
-    hasBin: true
-
   uuid@3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
     deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
@@ -20510,7 +20520,7 @@ snapshots:
 
   '@types/electron-prompt@1.6.5':
     dependencies:
-      electron: 31.3.1
+      electron: 32.0.2
     transitivePeerDependencies:
       - supports-color
 
@@ -23667,6 +23677,14 @@ snapshots:
     optional: true
 
   electron@31.3.1:
+    dependencies:
+      '@electron/get': 2.0.3
+      '@types/node': 20.14.14
+      extract-zip: 2.0.1(supports-color@8.1.1)
+    transitivePeerDependencies:
+      - supports-color
+
+  electron@32.0.2:
     dependencies:
       '@electron/get': 2.0.3
       '@types/node': 20.14.14
@@ -28256,7 +28274,7 @@ snapshots:
 
   napi-build-utils@1.0.2: {}
 
-  nativewind@2.0.11(react@18.2.0)(tailwindcss@3.4.7(ts-node@10.9.2(typescript@4.9.5))):
+  nativewind@2.0.11(react@18.2.0)(tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5))):
     dependencies:
       '@babel/generator': 7.25.0
       '@babel/helper-module-imports': 7.18.6
@@ -28270,7 +28288,7 @@ snapshots:
       postcss-css-variables: 0.18.0(postcss@8.4.41)
       postcss-nested: 5.0.6(postcss@8.4.41)
       react-is: 18.3.1
-      tailwindcss: 3.4.7(ts-node@10.9.2(typescript@4.9.5))
+      tailwindcss: 3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5))
       use-sync-external-store: 1.2.2(react@18.2.0)
     transitivePeerDependencies:
       - react
@@ -29340,21 +29358,21 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.41
 
-  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5)):
+  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5)):
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.5.0
     optionalDependencies:
       postcss: 8.4.41
-      ts-node: 10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5)
+      ts-node: 10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5)
 
-  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(typescript@4.9.5)):
+  postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5)):
     dependencies:
       lilconfig: 3.1.2
       yaml: 2.5.0
     optionalDependencies:
       postcss: 8.4.41
-      ts-node: 10.9.2(typescript@4.9.5)
+      ts-node: 10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5)
 
   postcss-load-config@4.0.2(postcss@8.4.41)(ts-node@8.3.0(typescript@4.9.5)):
     dependencies:
@@ -31588,11 +31606,11 @@ snapshots:
 
   tailwind-merge@2.5.1: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5))):
     dependencies:
-      tailwindcss: 3.4.7(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5))
+      tailwindcss: 3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5))
 
-  tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5)):
+  tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -31611,7 +31629,7 @@ snapshots:
       postcss: 8.4.41
       postcss-import: 15.1.0(postcss@8.4.41)
       postcss-js: 4.0.1(postcss@8.4.41)
-      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5))
+      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5))
       postcss-nested: 6.2.0(postcss@8.4.41)
       postcss-selector-parser: 6.1.1
       resolve: 1.22.8
@@ -31619,7 +31637,7 @@ snapshots:
     transitivePeerDependencies:
       - ts-node
 
-  tailwindcss@3.4.7(ts-node@10.9.2(typescript@4.9.5)):
+  tailwindcss@3.4.7(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -31638,7 +31656,7 @@ snapshots:
       postcss: 8.4.41
       postcss-import: 15.1.0(postcss@8.4.41)
       postcss-js: 4.0.1(postcss@8.4.41)
-      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(typescript@4.9.5))
+      postcss-load-config: 4.0.2(postcss@8.4.41)(ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5))
       postcss-nested: 6.2.0(postcss@8.4.41)
       postcss-selector-parser: 6.1.1
       resolve: 1.22.8
@@ -31966,7 +31984,7 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.7.6(@swc/helpers@0.5.12)
 
-  ts-node@10.9.2(@swc/core@1.7.6)(@types/node@22.1.0)(typescript@4.5.5):
+  ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.5.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
@@ -31986,13 +32004,14 @@ snapshots:
     optionalDependencies:
       '@swc/core': 1.7.6(@swc/helpers@0.5.12)
 
-  ts-node@10.9.2(typescript@4.9.5):
+  ts-node@10.9.2(@swc/core@1.7.6(@swc/helpers@0.5.12))(@types/node@22.1.0)(typescript@4.9.5):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.11
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
+      '@types/node': 22.1.0
       acorn: 8.12.1
       acorn-walk: 8.3.3
       arg: 4.1.3
@@ -32002,6 +32021,8 @@ snapshots:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
+    optionalDependencies:
+      '@swc/core': 1.7.6(@swc/helpers@0.5.12)
     optional: true
 
   ts-node@8.3.0(typescript@4.9.5):
@@ -32455,8 +32476,6 @@ snapshots:
       which-typed-array: 1.1.15
 
   utils-merge@1.0.1: {}
-
-  uuid@10.0.0: {}
 
   uuid@3.4.0: {}
 
