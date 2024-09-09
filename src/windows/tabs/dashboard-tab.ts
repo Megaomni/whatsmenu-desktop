@@ -43,17 +43,7 @@ export const create_dashboard_tab = () => {
         open = true;
       }
 
-      if (open) {
-        console.log("ABERTO");
-      } else {
-        console.log("FECHADO");
-      }
-
-      store.onDidAnyChange((newValue, oldValue) => {
-        console.log(
-          oldValue.configs.profile.options.integrations,
-          newValue.configs.profile.options.integrations
-        );
+      store.onDidAnyChange((newValue) => {
         if (newValue.configs.profile.options.integrations) {
           getMerchantApi({ profile });
           merchant = getMerchant();          
