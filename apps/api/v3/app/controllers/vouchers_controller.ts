@@ -3,6 +3,7 @@ import Voucher from '#models/voucher'
 import Client from '#models/client'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
+import Profile from '#models/profile'
 
 export default class VouchersController {
   /**
@@ -171,6 +172,34 @@ export default class VouchersController {
       return response.json({ message: 'Voucher atualizado com sucesso.', voucher })
     } catch (error) {
       console.error('Erro ao atualizar o voucher:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Busca todos os vouchers de um perfil com um status específico.
+   *
+   * @param {Object} ctx
+   * @param {import('@adonisjs/core/http').Request} ctx.request
+   * @param {import('@adonisjs/core/http').Response} ctx.response
+   * @param {import('@adonisjs/auth').AuthenticatedUser} ctx.auth.user
+   *
+   * @throws {HttpException} Se o perfil não for encontrado ou for inválido.
+   *
+   * @returns {Promise<import('@adonisjs/core/http').Response>}
+   */
+  async getByStatus({ params, response, auth }: HttpContext) {
+    const { status, profileId } = params
+    try {
+      const profile = await Profile.find(profileId)
+      if (!profile) {
+        return response.status(404).json({ message: 'Perfil não encontrado ou inválido.' })
+      }
+      await profile.load('vouchers', (qb) => qb.where('status', status))
+
+      return response.json({ vouchers: profile.vouchers })
+    } catch (error) {
+      console.error(error)
       throw error
     }
   }

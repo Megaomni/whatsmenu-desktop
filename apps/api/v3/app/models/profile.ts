@@ -32,6 +32,7 @@ import Motoboy from './motoboy.js'
 import Table from './table.js'
 import User from './user.js'
 import { jsonSerialize } from '#utils/json_serialize'
+import Voucher from './voucher.js'
 
 export default class Profile extends BaseModel {
   @column({ isPrimary: true })
@@ -225,6 +226,11 @@ export default class Profile extends BaseModel {
     foreignKey: 'profileId',
   })
   declare fees: HasMany<typeof Fee>
+
+  @hasMany(() => Voucher, {
+    foreignKey: 'profileId',
+  })
+  declare vouchers: HasMany<typeof Voucher>
 
   @beforeCreate()
   static setDefaultProps(profile: Profile) {
