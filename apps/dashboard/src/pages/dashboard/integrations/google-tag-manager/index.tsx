@@ -1,3 +1,4 @@
+import { Title } from '@components/Partials/title';
 import { AppContext } from '@context/app.ctx';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image'
@@ -37,14 +38,12 @@ export default function GoogleTagManager() {
 
   return (
     <>
-      <h1
-        className="fw-bold"
-        style={{
-          color: "#012970"
-        }}
-      >
-        Google Tag Manager
-      </h1>
+      <Title
+        title={'Integrações'}
+        componentTitle={'Google Tag Manager'}
+        className="mb-4"
+        child={['Google Tag Manager']}
+      />
       <Card>
         <Card.Header className="d-flex gap-3">
           <h4>Google Tag Manager</h4>
@@ -98,10 +97,6 @@ export default function GoogleTagManager() {
           className='flex-grow-1 flex-md-grow-0'
           variant='success'
           disabled={!isValid}
-          style={{
-            background: "#13C296",
-            border: "none",
-          }}
         >
           Salvar
         </Button>

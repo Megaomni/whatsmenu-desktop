@@ -1,3 +1,4 @@
+import { Title } from '@components/Partials/title';
 import { AppContext } from '@context/app.ctx';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image'
@@ -43,14 +44,12 @@ export default function GoogleAds() {
 
   return (
     <>
-      <h1
-        className="fw-bold"
-        style={{
-          color: "#012970"
-        }}
-      >
-        Google AdWords
-      </h1>
+      <Title
+        title={'Integrações'}
+        componentTitle={'Google AdWords'}
+        className="mb-4"
+        child={['Google AdWords']}
+      />
       <Card>
         <Card.Header className="d-flex gap-3">
           <h4>Google AdWords</h4>
@@ -72,7 +71,7 @@ export default function GoogleAds() {
           <h4>Configurações</h4>
         </Card.Header>
         <Card.Body>
-          <Form id='google-tag-manager-form' onSubmit={handleSubmit(handleUpdateGoogleAds)}>
+          <Form id='google-tag-manager-form' onSubmit={handleSubmit(handleUpdateGoogleAds)} className='d-flex flex-column gap-3'>
             <Form.Label className='d-flex flex-column gap-3 col-12 col-md-4'>
               <span className='fw-bold'>ID</span>
               <div className='position-relative'>
@@ -118,10 +117,6 @@ export default function GoogleAds() {
           className='flex-grow-1 flex-md-grow-0'
           variant='success'
           disabled={!isValid}
-          style={{
-            background: "#13C296",
-            border: "none",
-          }}
         >
           Salvar
         </Button>

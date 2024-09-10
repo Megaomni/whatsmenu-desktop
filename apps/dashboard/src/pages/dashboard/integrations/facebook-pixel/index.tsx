@@ -1,3 +1,4 @@
+import { Title } from '@components/Partials/title';
 import { AppContext } from '@context/app.ctx';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image'
@@ -39,14 +40,12 @@ export default function FacebookPixel() {
 
   return (
     <>
-      <h1
-        className="fw-bold"
-        style={{
-          color: "#012970"
-        }}
-      >
-        Facebook Pixel
-      </h1>
+      <Title
+        title={'Integrações'}
+        componentTitle={'Facebook Pixel'}
+        className="mb-4"
+        child={['Facebook Pixel']}
+      />
       <Card>
         <Card.Header className="d-flex gap-3">
           <h4>Facebook Pixel</h4>
@@ -112,10 +111,6 @@ export default function FacebookPixel() {
           className='flex-grow-1 flex-md-grow-0'
           variant='success'
           disabled={!isValid}
-          style={{
-            background: "#13C296",
-            border: "none",
-          }}
         >
           Salvar
         </Button>

@@ -1,4 +1,5 @@
 import { IntegrationCard, IntegrationCardContainer } from '@components/IntegrationCard'
+import { Title } from '@components/Partials/title'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -15,14 +16,11 @@ export default function Integrations() {
   const { t } = useTranslation()
   return (
     <Container fluid>
-      <h1
-        className="fw-bold mb-3"
-        style={{
-          color: "#012970"
-        }}
-      >
-        {t('integrations')}
-      </h1>
+      <Title
+        title={'Integrações'}
+        componentTitle={'Integrações'}
+        className="mb-4"
+      />
       <Card>
         <CardBody className="color-white w-100 h-75 flex-shrink-0 p-4">
           <Row>
