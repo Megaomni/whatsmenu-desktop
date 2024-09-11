@@ -11,7 +11,7 @@ import {
   removeDuplicateVouchers,
   store,
   updateVoucherToNotify,
-} from "./../main/store";
+} from "../main/store";
 
 import { EventEmitter } from "node:events";
 import { ClientType } from "../@types/client";

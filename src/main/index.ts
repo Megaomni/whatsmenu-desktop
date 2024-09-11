@@ -2,17 +2,17 @@ import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
-import "../main/auto-update";
-import "../main/ipc";
-import "../main/menu";
-import "../main/tray";
+import "./auto-update";
+import "./ipc";
+import "./menu";
+import "./tray";
 
 import { WhatsApp } from "../services/whatsapp";
 import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";
 import { TabBrowser } from "../extends/tab-browser";
 
-export let mainWindow: TabBrowser
+export let mainWindow: TabBrowser;
 
 if (require("electron-squirrel-startup")) {
   app.quit();
@@ -20,16 +20,16 @@ if (require("electron-squirrel-startup")) {
 export const whatsAppService = new WhatsApp();
 const main = () => {
   mainWindow = tabsWindow.createWindow();
-  const printers = getPrinters()
+  const printers = getPrinters();
   if (printers.length > 0) {
     printers.forEach((printer) => {
       if (!printer.margins) {
-        updatePrinter({ id: printer.id, margins: { marginType: 'none' } })
+        updatePrinter({ id: printer.id, margins: { marginType: "none" } });
       }
       if (!printer.scaleFactor) {
-        updatePrinter({ id: printer.id, scaleFactor: 100 })
+        updatePrinter({ id: printer.id, scaleFactor: 100 });
       }
-    })
+    });
   }
 };
 

@@ -7,6 +7,7 @@ import path from "node:path";
 import {
   deleteVoucherToNotify,
   getProfile,
+  getVoucherToNotifyList,
   setCacheContactByWhatsapp,
   store,
   storeVoucherToNotify,
@@ -14,6 +15,8 @@ import {
 import { Printer } from "../@types/store";
 import { DateTime } from "luxon";
 import { VoucherType } from "../@types/voucher";
+import { whatsmenu_api_v3 } from "../lib/axios";
+import { vouchersToNotifyQueue } from "../lib/queue";
 
 ipcMain.on(
   "send-message",
@@ -72,10 +75,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
     const { printTypeMode = "whatsmenu", ...payload } =
       JSON.parse(serializedPayload);
-      
-      if (printTypeMode === "html") {
-        
-        win.webContents.executeJavaScript(`
+    if (printTypeMode === "html") {
+      win.webContents.executeJavaScript(`
           const printBody = document.body
           if (${isGeneric}) {
             let link = document.getElementById('bootstrap-link')
@@ -86,9 +87,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
           printBody.innerHTML = ${JSON.stringify(payload.html)}
           
           `);
-        }
-          
-    if (printTypeMode === 'whatsmenu') {
+    }
+    if (printTypeMode === "whatsmenu") {
       try {
         payload.profile.options.print.width =
           paperSize !== 58 ? "302px" : "219px";
@@ -165,6 +165,18 @@ ipcMain.on("storeProfile", (_, profile) => {
 
 ipcMain.on("getProfile", (event) => {
   const profile = getProfile();
+  vouchersToNotifyQueue.push(async () => {
+    const { data } = await whatsmenu_api_v3.get(
+      `/vouchers/${profile.id}/getByStatus/avaliable`
+    );
+    const vouchers = getVoucherToNotifyList().filter(
+      (voucher) =>
+        !data.vouchers.flatMap((v: VoucherType) => v.id).includes(voucher.id)
+    );
+
+    store.set("configs.voucherToNotify", vouchers);
+  });
+
   event.reply("onProfileChange", profile);
 });
 

@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, Menu, MenuItem } from "electron";
 import prompt from "electron-prompt";
-import { Printer } from "./../@types/store";
+import { Printer } from "../@types/store";
 import {
   addPrinter,
   deletePrinter,
