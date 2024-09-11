@@ -10,7 +10,7 @@
   "scripts": {
     "setup": "chmod +x setup.sh && ./setup.sh",
     "start": "node bin/server.js",
-    "build": "chmod +x build.sh && ./build.sh",
+    "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
     "test:watch": "node ace test --watch",

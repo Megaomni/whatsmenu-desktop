@@ -505,6 +505,7 @@ class CartController {
       }
 
       if (data.type === 'T') {
+        data.addressId = null
         const haveTable = plans.some((plan) => plan.category === 'table')
         if (!haveTable) {
           return response.status(401).json({ message: 'A Loja não aceita pedidos para mesas' })
@@ -733,7 +734,7 @@ class CartController {
             }
 
             if (requestTopic && cart && cart.statusPayment !== 'pending' && cart.statusPayment !== 'cancelled') {
-              ;(async () => {
+              ; (async () => {
                 requestTopic.broadcast(`request:${slug}`, [{ ...cart.toJSON() }])
                 requestTopic.broadcast(`menu:${slug}`, { menu: 'update' })
               })()

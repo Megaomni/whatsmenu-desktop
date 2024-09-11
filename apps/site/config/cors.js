@@ -27,7 +27,8 @@ module.exports = {
     'https://emporiocasaverde.com',
     'http://localhost:4200',
     'http://200.100.243.128:4200',
-    'http://54.202.113.112'
+    'http://54.202.113.112',
+    'https://scoppiainsalate.com.br'
   ],
 
   /*

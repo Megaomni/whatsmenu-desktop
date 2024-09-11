@@ -145,6 +145,7 @@ router
     router
       .group(() => {
         router.get('/findClient', [ClientsController, 'findClient'])
+        router.get('/vouchers/:profileId/getByStatus/:status', [VouchersController, 'getByStatus'])
       })
       .prefix('desktop')
   })
