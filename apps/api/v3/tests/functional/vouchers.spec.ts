@@ -2,9 +2,11 @@ import { ClientFactory } from '#database/factories/client_factory'
 import { UserFactory } from '#database/factories/user_factory'
 import { VoucherFactory } from '#database/factories/voucher_factory'
 import Client from '#models/client'
+import Profile from '#models/profile'
 import User from '#models/user'
 import Voucher from '#models/voucher'
 import { test } from '@japa/runner'
+import sinon from 'sinon'
 
 test.group('Vouchers', (group) => {
   let user: User | null
@@ -162,5 +164,57 @@ test.group('Vouchers', (group) => {
     const response = await client.patch(`/api/v3/vouchers/update/${voucher!.id}`).json(body)
     response.assertStatus(403)
     response.assertBody({ message: 'Não é possível criar um voucher zerado.' })
+  })
+
+  test('Deve ser possível buscar vouchers por status', async ({ client, assert }) => {
+    const status = 'cancelled'
+    await VoucherFactory.merge({
+      status,
+      profileId: user?.profile.id,
+      clientId: clientTest!.id,
+    }).create()
+
+    try {
+      const response = await client.get(
+        `/api/v3/desktop/vouchers/${user?.profile.id}/getByStatus/${status}`
+      )
+
+      response.assertStatus(200)
+      assert.isArray(response.body().vouchers)
+    } catch (error) {
+      throw error
+    }
+  })
+
+  test('Deve retornar uma exceção ao buscar vouchers por status em um perfil inexistente', async ({
+    client,
+  }) => {
+    const status = 'cancelled'
+
+    let result
+    try {
+      result = await client.get(`/api/v3/desktop/vouchers/${0}/getByStatus/${status}`)
+    } catch (error) {
+      result?.assertStatus(404)
+      result?.assertBody({ message: 'Perfil não encontrado ou inválido.' })
+    }
+  })
+
+  test('Deve retornar uma exceção ao buscar vouchers por status caso algo inesperado aconteça', async ({
+    client,
+    assert,
+  }) => {
+    const status = 'cancelled'
+
+    const profileStub = sinon.stub(Profile, 'find')
+    profileStub.throws(new Error('Erro inesperado'))
+
+    try {
+      await client.get(`/api/v3/desktop/vouchers/${0}/getByStatus/${status}`)
+    } catch (error) {
+      assert.exists(error)
+    } finally {
+      profileStub.restore()
+    }
   })
 })

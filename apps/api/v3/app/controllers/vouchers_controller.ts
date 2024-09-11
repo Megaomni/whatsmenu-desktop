@@ -3,8 +3,19 @@ import Voucher from '#models/voucher'
 import Client from '#models/client'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
+import Profile from '#models/profile'
 
 export default class VouchersController {
+  /**
+   * Atualiza as configura es de cashback para o perfil do usu rio logado.
+   *
+   * @param {Object} ctx
+   * @param {import('@adonisjs/auth').AuthenticatedUser} ctx.auth.user
+   * @param {import('@adonisjs/core/http').Request} ctx.request
+   * @param {import('@adonisjs/core/http').Response} ctx.response
+   *
+   * @returns {Promise<import('@adonisjs/core/http').Response>}
+   */
   async config({ auth, request, response }: HttpContext) {
     const user = auth.user
     if (!user) {
@@ -35,6 +46,15 @@ export default class VouchersController {
     })
   }
 
+  /**
+   * Ativa ou desativa o cashback para o perfil do usu rio logado.
+   *
+   * @param {Object} ctx
+   * @param {import('@adonisjs/core/http').Response} ctx.response
+   * @param {import('@adonisjs/auth').AuthenticatedUser} ctx.auth.user
+   *
+   * @returns {Promise<import('@adonisjs/core/http').Response>}
+   */
   async toggleCashback({ response, auth }: HttpContext) {
     try {
       const user = auth.user
@@ -60,7 +80,18 @@ export default class VouchersController {
       throw error
     }
   }
-
+  /**
+   * Cria um novo voucher.
+   *
+   * @param {Object} ctx
+   * @param {import('@adonisjs/core/http').Request} ctx.request
+   * @param {import('@adonisjs/core/http').Response} ctx.response
+   *
+   * @throws {HttpException} Se o valor do voucher for igual a 0.
+   * @throws {HttpException} Se o cliente não for encontrado ou for inválido.
+   *
+   * @returns {Promise<import('@adonisjs/core/http').Response>}
+   */
   async create({ request, response }: HttpContext) {
     try {
       const { clientId, profileId, expirationDays, value, status } = request.all()
@@ -96,6 +127,19 @@ export default class VouchersController {
       throw error
     }
   }
+  /**
+   * Atualiza um voucher existente.
+   *
+   * @param {import('@adonisjs/core/http').HttpContext} ctx
+   * @param {import('@adonisjs/core/http').Request} ctx.request
+   * @param {import('@adonisjs/core/http').Response} ctx.response
+   *
+   * @throws {HttpException} Se o voucher não for encontrado ou for inválido.
+   * @throws {HttpException} Se o valor do voucher for igual a 0.
+   * @throws {HttpException} Se nenhum dado for informado.
+   *
+   * @returns {Promise<import('@adonisjs/core/http').Response>}
+   */
   async update({ request, response }: HttpContext) {
     try {
       const { id } = request.params()
@@ -128,6 +172,34 @@ export default class VouchersController {
       return response.json({ message: 'Voucher atualizado com sucesso.', voucher })
     } catch (error) {
       console.error('Erro ao atualizar o voucher:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Busca todos os vouchers de um perfil com um status específico.
+   *
+   * @param {Object} ctx
+   * @param {import('@adonisjs/core/http').Request} ctx.request
+   * @param {import('@adonisjs/core/http').Response} ctx.response
+   * @param {import('@adonisjs/auth').AuthenticatedUser} ctx.auth.user
+   *
+   * @throws {HttpException} Se o perfil não for encontrado ou for inválido.
+   *
+   * @returns {Promise<import('@adonisjs/core/http').Response>}
+   */
+  async getByStatus({ params, response, auth }: HttpContext) {
+    const { status, profileId } = params
+    try {
+      const profile = await Profile.find(profileId)
+      if (!profile) {
+        return response.status(404).json({ message: 'Perfil não encontrado ou inválido.' })
+      }
+      await profile.load('vouchers', (qb) => qb.where('status', status))
+
+      return response.json({ vouchers: profile.vouchers })
+    } catch (error) {
+      console.error(error)
       throw error
     }
   }
