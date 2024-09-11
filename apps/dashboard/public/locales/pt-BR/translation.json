@@ -1137,7 +1137,7 @@
   "natural_person": "Pessoa Física",
   "company_name": "Razão Social",
   "certificate": "Certificado",
-  "attach_certificate": "Anexar Certificado",
+  "attach_certificate": "Anexar Certificado Modelo A1",
   "identification": "Identificação",
   "responsable": "Responsável",
   "accounting": "Contabilidade",
@@ -1220,6 +1220,6 @@
   "fiscal_note_issuer": "Emissor de NFe e NFCe",
   "fiscal_note_issuer_description": "Chega de perder tempo lançando notas fiscais na mão, Defina automações e configure limites de acordo com o seu enquadramento CNPJ.",
   "grove_nfe_description": "Emissão e Gestão Automática de Notas Fiscais",
-  "automation_of_nfe": "Automação de Notas Ficais",
-  "certificate_password": "Senha do Certificado"
+  "automation_of_nfe": "Automação NFC-e",
+  "certificate_password": "Senha Do Seu Certificado Certificado Modelo A1"
 }
