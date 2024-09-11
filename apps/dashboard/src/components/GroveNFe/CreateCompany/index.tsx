@@ -125,7 +125,7 @@ export function CreateCompany() {
     company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
     company.telefone = Number(company.telefone.replace(/[^\d]/g, ''))
     company.cep = Number(company.cep.replace(/[^\d]/g, ''))
-    company.certificado_base64 = certificateBase64
+    company.arquivo_certificado_base64 = certificateBase64
 
     const body = {
       ...company,
