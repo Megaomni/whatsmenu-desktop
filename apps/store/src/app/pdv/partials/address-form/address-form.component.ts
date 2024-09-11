@@ -79,7 +79,13 @@ export class AddressFormComponent implements OnInit {
 
   public setNeighborhoodList() {
     const city = this.context.profile.taxDelivery.find((c) => c.city === this.address.city)
-    this.neighborhoods = city.neighborhoods
-    this.address.neighborhood = city.neighborhoods[0].name
+    if (city) {
+      this.neighborhoods = city.neighborhoods
+
+      // Usar setTimeout para evitar o erro de expressão
+      setTimeout(() => {
+        this.address.neighborhood = city.neighborhoods[0]?.name
+      })
+    }
   }
 }
