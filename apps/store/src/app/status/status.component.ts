@@ -17,6 +17,7 @@ import { NeighborhoodType, TaxDeliveryType } from '../tax-delivery-type'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 import { TranslateService } from '../translate.service'
+import { ProfileOptionsType } from '../profile-type'
 
 @Component({
   selector: 'app-status',
