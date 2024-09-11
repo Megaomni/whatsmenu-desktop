@@ -39,7 +39,7 @@ export default NextAuth({
       } else {
         // if (!token.login && token.accessToken) {
         //   try {
-        //     const { data: dataUser } = await apiRoute(`${process.env.WHATSMENU_API}/dashboard/user/getUser`, (token as Session));
+        //     const { data: dataUser } = await apiRoute(`${process.env.NEXT_PUBLIC_WHATSMENU_API}/dashboard/user/getUser`, (token as Session));
         //     token.user = dataUser;
         //   } catch (error) {
         //     console.error(error);
@@ -77,7 +77,7 @@ export default NextAuth({
 
         try {
           const { data } = await axios.post(
-            `${process.env.WHATSMENU_API}/login`,
+            `${process.env.NEXT_PUBLIC_WHATSMENU_API}/login`,
             {
               email: credentials?.username,
               password: credentials?.password,

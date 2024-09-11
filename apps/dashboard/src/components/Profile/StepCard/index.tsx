@@ -59,7 +59,7 @@ export function PaymentCard({
     callback: Function
   }>({
     show: false,
-    callback: () => {},
+    callback: () => { },
   })
 
   const [invoicesId] = useState(new Set())
@@ -187,8 +187,8 @@ export function PaymentCard({
             const stripeCheckoutData = generateCheckout({
               gateway: 'stripe',
               method: allAddons ? 'payment' : 'subscription',
-              success_url: `${process.env.BASE_URL}/dashboard/profile`,
-              cancel_url: `${process.env.BASE_URL}/dashboard/invoices`,
+              success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/profile`,
+              cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/invoices`,
               line_items: generateLineItemsStripe(),
             })
 
@@ -208,7 +208,7 @@ export function PaymentCard({
               const pagarmeCheckoutData = generateCheckout({
                 gateway: 'pagarme',
                 method: 'checkout',
-                success_url: `${process.env.BASE_URL}/dashboard/profile`,
+                success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/profile`,
                 line_items: generateLineItemsPagarme(),
               })
               const { data } =
@@ -331,7 +331,7 @@ export function PaymentCard({
       }
     }
 
-    setCollectCard({ show: false, callback: () => {} })
+    setCollectCard({ show: false, callback: () => { } })
   }
 
   const disabledPayButtonInvoice = (invoice: Invoice) => {
@@ -392,7 +392,7 @@ export function PaymentCard({
         const value =
           period === 'yearly' && discount
             ? item.quantity * item.value -
-              (item.quantityDiscount ?? 0) * item.value
+            (item.quantityDiscount ?? 0) * item.value
             : item.quantity * item.value
         return {
           amount: parseInt(value.toString()),
@@ -529,7 +529,7 @@ export function PaymentCard({
   }
 
   const modalHidden = (...props: any): any => {
-    setCollectCard({ show: false, callback: () => {} })
+    setCollectCard({ show: false, callback: () => { } })
   }
 
   useEffect(() => {

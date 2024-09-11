@@ -346,7 +346,7 @@ export default function Settings() {
                         <p className="mt-3">
                           {t('message_currently_open_cash')}{' '}
                           <a
-                            href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
+                            href={`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >

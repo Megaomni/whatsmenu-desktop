@@ -94,7 +94,7 @@ export function Topbar(props: TopbarProps) {
                   variant="outline-success"
                   size="sm"
                   className={`text-nowrap`}
-                  href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}`}
+                  href={`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}`}
                   target="_blank"
                 >
                   <span className="with-icon">
@@ -109,7 +109,7 @@ export function Topbar(props: TopbarProps) {
                   variant="outline-success"
                   size="sm"
                   className={`text-nowrap`}
-                  href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
+                  href={`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
                   target="_blank"
                 >
                   <span className="with-icon">
@@ -128,7 +128,7 @@ export function Topbar(props: TopbarProps) {
                           .length
                       ) {
                         window.open(
-                          `${process.env.WHATSMENU_BASE_URL}/${profile.slug}/mesas`,
+                          `${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}/mesas`,
                           '_blank'
                         )
                       } else {
@@ -210,15 +210,14 @@ export function Topbar(props: TopbarProps) {
                         <div key={cartMap.code}>
                           <Dropdown.Divider />
                           <Dropdown.Item
-                            className={`wm-request-${
-                              cartMap.status === 'canceled'
+                            className={`wm-request-${cartMap.status === 'canceled'
                                 ? 'canceled'
                                 : cartMap.type === 'D'
                                   ? 'delivery'
                                   : cartMap.type === 'T'
                                     ? 'table'
                                     : 'package'
-                            }-text border-top fs-8`}
+                              }-text border-top fs-8`}
                             onClick={() => {
                               setRequestsToPrint({
                                 carts: [cartMap],

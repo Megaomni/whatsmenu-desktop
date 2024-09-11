@@ -327,7 +327,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const [user, dispatchUser] = useReducer<Reducer<any, any>>(userReducer, {})
 
-  const baseUrl = process.env.WHATSMENU_BASE_URL
+  const baseUrl = process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -339,7 +339,7 @@ export function AppProvider({ children }: AppProviderProps) {
   //   addEventListener('message', (event: MessageEvent<{ profile?: Profile, action?: string, data?: any }>) => {
   //     const { profile, action, data } = parseFunctions(event.data)
 
-  //     const url = `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.WS_SOCKET_API}/adonis-ws`
+  //     const url = `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.NEXT_PUBLIC_WS_SOCKET_API}/adonis-ws`
   //     let ws: WebSocket | null = null
   //     ws = new WebSocket(url)
 
@@ -375,7 +375,7 @@ export function AppProvider({ children }: AppProviderProps) {
   //       src="/js/Ws.browser.js"
   //       onLoad={(e) => {
   //         const ws = adonis.Ws(
-  //           `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.WS_SOCKET_API}`
+  //           `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.NEXT_PUBLIC_WS_SOCKET_API}`
   //         );
   //         setWsConnection(ws);
 
@@ -579,7 +579,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const getUser = useCallback(async () => {
     if (session) {
       const { data: dataUser } = (await apiRoute(
-        `${process.env.WHATSMENU_API}/dashboard/user/getUser`,
+        `${process.env.NEXT_PUBLIC_WHATSMENU_API}/dashboard/user/getUser`,
         session
       )) as AxiosResponse<UserType>
 
@@ -767,7 +767,7 @@ export function AppProvider({ children }: AppProviderProps) {
               new Gateway(
                 new StrategyPagarme(
                   session,
-                  process.env.PAGARME_PUBLIC_KEY as string
+                  process.env.NEXT_PUBLIC_PAGARME_PUBLIC_KEY as string
                 )
               )
             )

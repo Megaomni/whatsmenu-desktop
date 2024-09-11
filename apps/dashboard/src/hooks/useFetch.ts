@@ -6,7 +6,7 @@ export function useFetch<T>(route: string) {
   const { data: session } = useSession()
 
   const api = axios.create({
-    baseURL: process.env.WHATSMENU_API,
+    baseURL: process.env.NEXT_PUBLIC_WHATSMENU_API,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${session?.accessToken}`,

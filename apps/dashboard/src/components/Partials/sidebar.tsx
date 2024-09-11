@@ -208,19 +208,19 @@ export function Sidebar() {
         {(user?.controls?.paymentInfo?.gateway
           ? user.controls.paymentInfo?.subscription?.status === 'active'
           : true) && (
-          <li className="nav-item">
-            <Link
-              href="/dashboard/profile"
-              className="with-icon nav-link collapsed"
-              onClick={(e) => {
-                verificationStateRouter(e)
-              }}
-            >
-              <BsPerson />
-              <span>{t('my_profile')}</span>
-            </Link>
-          </li>
-        )}
+            <li className="nav-item">
+              <Link
+                href="/dashboard/profile"
+                className="with-icon nav-link collapsed"
+                onClick={(e) => {
+                  verificationStateRouter(e)
+                }}
+              >
+                <BsPerson />
+                <span>{t('my_profile')}</span>
+              </Link>
+            </li>
+          )}
         {profile.id &&
           ((profile.address.street && profile.taxDelivery.length > 0) ||
             plansCategory.every((plan) => plan === 'table')) && (
@@ -241,7 +241,7 @@ export function Sidebar() {
                 !('isElectron' in window) && (
                   <li className="nav-item">
                     <Link
-                      href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}/mesas`}
+                      href={`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}/mesas`}
                       className="with-icon nav-link collapsed"
                       onClick={(e) => {
                         if (
@@ -273,7 +273,7 @@ export function Sidebar() {
               {!('isElectron' in window) && (
                 <li className="nav-item">
                   <Link
-                    href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
+                    href={`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}/pdv`}
                     className="with-icon nav-link collapsed"
                     onClick={(e) => {
                       verificationStateRouter(e)
@@ -544,10 +544,10 @@ export function Sidebar() {
           user?.controls?.type === 'manager' ||
           user?.controls?.type === 'seller' ||
           user?.controls?.type === 'support') && (
-          <>
-            <li className="nav-heading">{t('administrator')}</li>
+            <>
+              <li className="nav-heading">{t('administrator')}</li>
 
-            {/* <li className="nav-item">
+              {/* <li className="nav-item">
               <Link href="/adm/release-block">
                 <Link className="with-icon nav-link collapsed"
                   onClick={e => {
@@ -560,93 +560,93 @@ export function Sidebar() {
               </Link>
             </li> */}
 
-            <li className="nav-item">
-              <Link
-                href="/adm/products"
-                className="with-icon nav-link collapsed"
-                onClick={(e) => {
-                  verificationStateRouter(e)
-                }}
-              >
-                <FaFileInvoiceDollar />
-                <span>{t('products')}</span>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Link
-                href="/adm/client"
-                className="with-icon nav-link collapsed"
-                onClick={(e) => {
-                  verificationStateRouter(e)
-                }}
-              >
-                <BsPerson />
-                <span>{t('client')}</span>
-              </Link>
-            </li>
-
-            <li className="nav-item">
-              <Accordion id="relatorioAdm-nav" defaultActiveKey="0" flush>
-                <Accordion.Header
-                  as="a"
-                  bsPrefix="with-icon nav-link collapsed"
-                  style={{ color: 'white !important' }}
+              <li className="nav-item">
+                <Link
+                  href="/adm/products"
+                  className="with-icon nav-link collapsed"
+                  onClick={(e) => {
+                    verificationStateRouter(e)
+                  }}
                 >
-                  <BsClipboardData />
-                  <span>{t('reports')}</span>
-                </Accordion.Header>
-                <Accordion.Body
-                  className="p-0"
-                  style={{ marginLeft: '1.2rem', color: 'white' }}
+                  <FaFileInvoiceDollar />
+                  <span>{t('products')}</span>
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  href="/adm/client"
+                  className="with-icon nav-link collapsed"
+                  onClick={(e) => {
+                    verificationStateRouter(e)
+                  }}
                 >
-                  <Link
-                    href="/adm/report/support"
-                    className="with-icon nav-link collapsed"
-                    onClick={(e) => {
-                      verificationStateRouter(e)
-                    }}
+                  <BsPerson />
+                  <span>{t('client')}</span>
+                </Link>
+              </li>
+
+              <li className="nav-item">
+                <Accordion id="relatorioAdm-nav" defaultActiveKey="0" flush>
+                  <Accordion.Header
+                    as="a"
+                    bsPrefix="with-icon nav-link collapsed"
+                    style={{ color: 'white !important' }}
                   >
-                    <BsBullseye />
-                    <span>{t('support_bonus')}</span>
-                  </Link>
-                  <Link
-                    href="/adm/report/registers"
-                    className="with-icon nav-link collapsed"
-                    onClick={(e) => {
-                      verificationStateRouter(e)
-                    }}
+                    <BsClipboardData />
+                    <span>{t('reports')}</span>
+                  </Accordion.Header>
+                  <Accordion.Body
+                    className="p-0"
+                    style={{ marginLeft: '1.2rem', color: 'white' }}
                   >
-                    <BsFilePerson />
-                    <span>{t('salesperson_report')}</span>
-                  </Link>
-                  {user?.controls?.type === 'adm' && (
                     <Link
-                      href="/adm/report/financial"
+                      href="/adm/report/support"
                       className="with-icon nav-link collapsed"
                       onClick={(e) => {
                         verificationStateRouter(e)
                       }}
                     >
-                      <BsCalendar3 />
-                      <span>{t('annual_report')}</span>
+                      <BsBullseye />
+                      <span>{t('support_bonus')}</span>
                     </Link>
-                  )}
-                  <Link
-                    href="/adm/report/leads"
-                    className="with-icon nav-link collapsed"
-                    onClick={(e) => {
-                      verificationStateRouter(e)
-                    }}
-                  >
-                    <BsFunnel />
-                    <span>Leads</span>
-                  </Link>
-                </Accordion.Body>
-              </Accordion>
-            </li>
+                    <Link
+                      href="/adm/report/registers"
+                      className="with-icon nav-link collapsed"
+                      onClick={(e) => {
+                        verificationStateRouter(e)
+                      }}
+                    >
+                      <BsFilePerson />
+                      <span>{t('salesperson_report')}</span>
+                    </Link>
+                    {user?.controls?.type === 'adm' && (
+                      <Link
+                        href="/adm/report/financial"
+                        className="with-icon nav-link collapsed"
+                        onClick={(e) => {
+                          verificationStateRouter(e)
+                        }}
+                      >
+                        <BsCalendar3 />
+                        <span>{t('annual_report')}</span>
+                      </Link>
+                    )}
+                    <Link
+                      href="/adm/report/leads"
+                      className="with-icon nav-link collapsed"
+                      onClick={(e) => {
+                        verificationStateRouter(e)
+                      }}
+                    >
+                      <BsFunnel />
+                      <span>Leads</span>
+                    </Link>
+                  </Accordion.Body>
+                </Accordion>
+              </li>
 
-            {/* <li className="nav-item">
+              {/* <li className="nav-item">
               <Link href="/adm/report/users/card">
                 <Link className="with-icon nav-link collapsed" href="ativos.html"
                   onClick={e => {
@@ -657,8 +657,8 @@ export function Sidebar() {
                 </Link>
               </Link>
             </li> */}
-          </>
-        )}
+            </>
+          )}
         <li className="nav-item">
           <Link
             href="/dashboard/updates"

@@ -427,7 +427,7 @@ export function TablesProvider({ children }: TablesProviderProps) {
     setCommandInfo(false)
   }, [activeTableId])
 
-  const baseUrl = process.env.WHATSMENU_BASE_URL
+  const baseUrl = process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL
   const haveFees = !!(
     profile?.fees?.filter((f) => f.status).length ||
     (typeModal === 'command'
@@ -470,13 +470,12 @@ export function TablesProvider({ children }: TablesProviderProps) {
           confirmButton={`${!command?.fullPaid() && typeModal === 'command' ? 'OK' : 'Sim'}`}
           cancelButton={`${!command?.fullPaid() && typeModal === 'command' ? 'none' : 'Não'}`}
           title="Impressão"
-          message={`${
-            !command?.fullPaid() && typeModal === 'command'
+          message={`${!command?.fullPaid() && typeModal === 'command'
               ? `Esta comanda ainda possui um valor de: ${currency({
-                  value: command?.getTotalValue('lack') || 0,
-                })} em aberto, a comanda ${command?.name ?? ''} não será encerrada até que o valor faltante seja pago.`
+                value: command?.getTotalValue('lack') || 0,
+              })} em aberto, a comanda ${command?.name ?? ''} não será encerrada até que o valor faltante seja pago.`
               : `Deseja realizar a impressão da ${typeModal === 'command' ? 'comanda' : 'mesa'} ?`
-          }`}
+            }`}
           actionConfirm={() => {
             if (typeModal === 'command' && command && command.fullPaid()) {
               setRequestsToPrint({

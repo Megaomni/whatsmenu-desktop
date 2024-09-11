@@ -141,9 +141,9 @@ export function CreateCompany() {
 
 	useEffect(() => {
 		if (profile.options.integrations?.grovenfe.company_id) {
-			axios.get(`${process.env.GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
+			axios.get(`${process.env.NEXT_PUBLIC_GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`, {
 				headers: {
-					Authorization: `Bearer ${process.env.GROVE_NFE_TOKEN}`,
+					Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROVE_NFE_TOKEN}`,
 				}
 			}).then(({ data }) => {
 				reset(({
