@@ -134,18 +134,20 @@ export default function Integrations() {
             <p className="fs-6 lh-base text-black">
               {t('fiscal_note_issuer_description')}
             </p>
-            <IntegrationCardContainer>
-              <IntegrationCard
-                legend={t('grove_nfe_description')}
-              >
-                <Image
-                  src="/images/GroveNFeLogo.svg"
-                  alt="GroveNFe"
-                  width={162}
-                  height={52}
-                />
-              </IntegrationCard>
-            </IntegrationCardContainer>
+            <Link href="/dashboard/integrations/grovenfe">
+              <IntegrationCardContainer>
+                <IntegrationCard
+                  legend={t('grove_nfe_description')}
+                >
+                  <Image
+                    src="/images/GroveNFeLogo.svg"
+                    alt="GroveNFe"
+                    width={162}
+                    height={52}
+                  />
+                </IntegrationCard>
+              </IntegrationCardContainer>
+            </Link>
           </Col>
         </Row>
       </Card >
