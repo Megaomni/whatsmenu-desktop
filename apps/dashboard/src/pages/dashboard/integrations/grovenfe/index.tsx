@@ -1,49 +1,59 @@
-import { ConfigEmission } from "@components/GroveNFe/ConfigEmission";
-import { CreateCompany } from "@components/GroveNFe/CreateCompany";
-import { ProfileOpeningHours } from "@components/Profile/OpeningHours";
-import { AppContext } from "@context/app.ctx";
-import Image from "next/image";
-import { useContext, useState } from "react";
-import { Button, Card, Col, Form, Modal, ModalBody, Nav, Row, Tab, Tabs } from "react-bootstrap";
-import { useTranslation } from "react-i18next";
+import { ConfigEmission } from '@components/GroveNFe/ConfigEmission'
+import { CreateCompany } from '@components/GroveNFe/CreateCompany'
+import { Title } from '@components/Partials/title'
+import { ProfileOpeningHours } from '@components/Profile/OpeningHours'
+import { AppContext } from '@context/app.ctx'
+import Image from 'next/image'
+import { useContext, useState } from 'react'
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Modal,
+  ModalBody,
+  Nav,
+  Row,
+  Tab,
+  Tabs,
+} from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 export default function Grovenfe() {
-    const { t } = useTranslation()
-    const { profile } = useContext(AppContext)
-    const grovenfe = profile.options.integrations?.grovenfe?.created_at
+  const { t } = useTranslation()
+  const { profile } = useContext(AppContext)
+  const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
-    const [tabKey, setTabKey] = useState('addCompany')
+  const [tabKey, setTabKey] = useState('addCompany')
 
-    const aditional = (grovenfePlan: string) => {
-        let value
-        switch (grovenfePlan) {
-            case 'plan100':
-                value = 'R$ 0,78'
-                break;
-            case 'plan500':
-                value = 'R$ 0,46'
-                break;
-            case 'plan1500':
-                value = 'R$ 0,34'
-                break;
-            case 'plan5000':
-                value = 'R$ 0,00'
-            default:
-                break;
-        }
-        return value
+  const aditional = (grovenfePlan: string) => {
+    let value
+    switch (grovenfePlan) {
+      case 'plan100':
+        value = 'R$ 0,78'
+        break
+      case 'plan500':
+        value = 'R$ 0,46'
+        break
+      case 'plan1500':
+        value = 'R$ 0,34'
+        break
+      case 'plan5000':
+        value = 'R$ 0,00'
+      default:
+        break
     }
+    return value
+  }
 
-    const signPlan = () => {
-        try {
+  const signPlan = () => {
+    try {
+    } catch (error) {}
+  }
 
-        } catch (error) {
-        }
-    }
-
-    return (
-        <>
-            {/* <Card>
+  return (
+    <>
+      {/* <Card>
                 <Card.Header className="ms-2 fw-bold fs-5">GroveNFE</Card.Header>
                 <Card.Body >
                     <Row>
@@ -190,36 +200,40 @@ export default function Grovenfe() {
                 </Modal.Footer>
 
             </ Modal> */}
-
-            <h1 className="fw-bold" style={{ color: '#012970' }}>
-                {t('tax_settings')}
-            </h1>
-            <Tab.Container activeKey={tabKey} onSelect={(key) => setTabKey(key as string)}>
-                <Row>
-                    <Col>
-                        <Nav
-                            variant="tabs"
-                            className="tab-nav-flex flex-row">
-                            <Nav.Item>
-                                <Nav.Link eventKey="addCompany" className="text-nowrap">{grovenfe ? t('edit_company') : t('add_company')}</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="configEmission" className="text-nowrap">
-                                    {t('configure_emission')}
-                                </Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="addCompany">
-                                <CreateCompany />
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="configEmission">
-                                <ConfigEmission />
-                            </Tab.Pane>
-                        </Tab.Content>
-                    </Col>
-                </Row>
-            </Tab.Container>
-        </>
-    )
+      <Title
+        title="Configurações NFe"
+        componentTitle="Configurações NFe"
+        className="mb-3"
+      />
+      <Tab.Container
+        activeKey={tabKey}
+        onSelect={(key) => setTabKey(key as string)}
+      >
+        <Row>
+          <Col>
+            <Nav variant="tabs" className="tab-nav-flex flex-row">
+              <Nav.Item>
+                <Nav.Link eventKey="addCompany" className="text-nowrap">
+                  {grovenfe ? t('edit_company') : t('add_company')}
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="configEmission" className="text-nowrap">
+                  {t('configure_emission')}
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+            <Tab.Content>
+              <Tab.Pane eventKey="addCompany">
+                <CreateCompany />
+              </Tab.Pane>
+              <Tab.Pane eventKey="configEmission">
+                <ConfigEmission />
+              </Tab.Pane>
+            </Tab.Content>
+          </Col>
+        </Row>
+      </Tab.Container>
+    </>
+  )
 }
