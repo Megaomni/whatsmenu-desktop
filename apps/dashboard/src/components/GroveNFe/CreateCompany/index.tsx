@@ -451,7 +451,7 @@ export function CreateCompany() {
                                       }}
                                     />
                                   </Figure>
-                                    <Button style={{ backgroundColor: '#13C296', border: 'none', position: 'relative' }}>
+                                    <Button style={{ position: 'relative' }} variant="success">
                                         {t('attach_company_logo')}
                                         <input
                                       type="file"
@@ -863,10 +863,7 @@ export function CreateCompany() {
           className="flex-grow-1 flex-md-grow-0"
           type="submit"
           form="createCompany"
-          style={{
-            backgroundColor: '#13C296',
-            border: 'none',
-          }}
+          variant="success"
         >
           {grovenfe ? t('update') : t('create')}
         </Button>

@@ -202,10 +202,7 @@ export function ConfigEmission() {
           className="flex-grow-1 flex-md-grow-0"
           type="submit"
           form="editEmission"
-          style={{
-            backgroundColor: '#13C296',
-            border: 'none',
-          }}
+          variant="success"
         >
           {t('save')}
         </Button>

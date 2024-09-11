@@ -121,11 +121,7 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
           <Col md={2} className="d-flex ms-auto">
             <Button
               className="fw-bold w-100 mb-3 p-3 text-end"
-              style={{
-                backgroundColor: '#13c296',
-                color: 'white',
-                border: 'none',
-              }}
+              variant="success"
             >
               Pagar Agora
             </Button>
@@ -177,10 +173,7 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                       <td className="col-1">
                         {invoice.transactions[0]?.status === 'paid' ? (
                           <span
-                            className="fw-bolder d-block rounded px-2 py-2 text-center text-end text-white"
-                            style={{
-                              backgroundColor: '#13c296',
-                            }}
+                            className="fw-bolder d-block rounded px-2 py-2 text-center text-end text-white bg-success"
                           >
                             Pago
                           </span>
@@ -228,10 +221,7 @@ export default function InvoicesGroveNFe({}: InvoicesProps) {
                         </div>
                         {invoice.transactions[0]?.status === 'paid' ? (
                           <span
-                            className="fw-bolder ms-1 rounded px-4 py-2 text-center text-white"
-                            style={{
-                              backgroundColor: '#13c296',
-                            }}
+                            className="fw-bolder ms-1 rounded px-4 py-2 text-center text-white bg-success"
                           >
                             Pago
                           </span>

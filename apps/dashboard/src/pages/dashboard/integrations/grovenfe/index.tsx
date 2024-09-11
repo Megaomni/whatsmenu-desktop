@@ -144,7 +144,7 @@ export default function Grovenfe() {
                 <footer className="d-flex flex-column align-items-center">
                     <p>*caso ultrapasse o limite do plano selecionado, cada nota adicional será cobrada {aditional(grovenfePlan)} na próxima fatura.</p>
                     <Form.Check label="Li e aceito os Termos de uso GroveNFe" inline onChange={(event) => setTermsAccepted(event?.target.checked)}></Form.Check>
-                    <Button className="mt-3 p-2 px-3" style={{ backgroundColor: '#13c296', border: 'none' }} disabled={!termsAccepted} onClick={() => setModalCheckouGrovenfe(true)}>Quero Contratar</Button>
+                    <Button variant="success" className="mt-3 p-2 px-3"  disabled={!termsAccepted} onClick={() => setModalCheckouGrovenfe(true)}>Quero Contratar</Button>
                 </footer>
             }
             < Modal show={modalCheckouGroveNfe} onHide={() => setModalCheckouGrovenfe(false)} centered>
@@ -160,7 +160,7 @@ export default function Grovenfe() {
                                 <Form.Check type="radio" label='Mensal' inline></Form.Check>
                             </Col>
                             <Col md={6} className="d-flex flex-column">
-                                <span className="m-0 p-0 text-center" style={{ backgroundColor: '#13C296', color: 'white', borderRadius: '10px' }}>Recomendado</span>
+                                <span className="m-0 p-0 text-center bg-success" style={{  color: 'white', borderRadius: '10px' }}>Recomendado</span>
                                 <Form.Check type="radio" label='Anual' inline></Form.Check>
                             </Col>
                         </Row>
