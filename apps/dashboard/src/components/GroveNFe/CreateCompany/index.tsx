@@ -315,8 +315,8 @@ export function CreateCompany() {
               <Col md={4}>
                 <p>{t('certificate')}:</p>
                 <Button
+                  className="bg-success text-white"
                   style={{
-                    backgroundColor: '#13C296',
                     border: 'none',
                     position: 'relative',
                   }}
