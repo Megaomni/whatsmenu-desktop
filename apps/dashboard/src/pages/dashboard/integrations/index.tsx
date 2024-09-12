@@ -5,10 +5,9 @@ import Link from 'next/link'
 import {
   Card,
   CardBody,
-  CardHeader,
   Col,
   Container,
-  Row,
+  Row
 } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 

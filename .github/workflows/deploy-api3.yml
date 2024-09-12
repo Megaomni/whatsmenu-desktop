@@ -6,7 +6,6 @@ on:
       - beta
       - feat/grove-nfe
       - main
-      - feat/dashboard/integrations
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
