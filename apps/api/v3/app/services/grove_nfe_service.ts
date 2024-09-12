@@ -40,11 +40,26 @@ export default class GroveNfeService {
    *
    * @returns {Promise<void>}
    */
-  async addFiscalNoteToCart({ fiscal_note }: { fiscal_note: any }): Promise<void> {
+  async addFiscalNoteToCart({ fiscal_note }: { fiscal_note: any }): Promise<boolean> {
     try {
       const cart = await Cart.find(fiscal_note.externalId)
       if (cart) {
         cart.controls = { grovenfe: { fiscal_note } }
+        await cart.save()
+        return true
+      } else {
+        return false
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async deleteFiscalNoteFromCart({ fiscal_note }: { fiscal_note: any }): Promise<void> {
+    try {
+      const cart = await Cart.find(fiscal_note.externalId)
+      if (cart && cart.controls?.grovenfe?.fiscal_note) {
+        cart.controls.grovenfe.fiscal_note = null
         await cart.save()
       }
     } catch (error) {
