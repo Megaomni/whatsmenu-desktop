@@ -72,6 +72,18 @@ export default function Integrations() {
                     />
                   </IntegrationCard>
                 </Link>
+                <Link href="/dashboard/settings/domains">
+                  <IntegrationCard
+                    legend={"Domínios"}
+                  >
+                    <Image
+                      src="/images/registro-br-logo.svg"
+                      alt="registro-br-logo"
+                      width={140}
+                      height={50}
+                    />
+                  </IntegrationCard>
+                </Link>
               </IntegrationCardContainer>
             </Col>
           </Row>
