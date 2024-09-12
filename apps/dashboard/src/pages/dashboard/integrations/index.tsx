@@ -124,7 +124,7 @@ export default function Integrations() {
         <Row>
           <Col className="d-flex gap-3">
             <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
-              {t('fiscal_note_issuer')}
+              {t('fiscal_note_issuer').replace('NFe e', '')}
             </h4>
           </Col >
         </Row >
@@ -133,20 +133,20 @@ export default function Integrations() {
             <p className="fs-6 lh-base text-black">
               {t('fiscal_note_issuer_description')}
             </p>
-            <Link href="/dashboard/integrations/grovenfe">
-              <IntegrationCardContainer>
-                <IntegrationCard
-                  legend={t('grove_nfe_description')}
-                >
-                  <Image
-                    src="/images/GroveNFeLogo.svg"
-                    alt="GroveNFe"
-                    width={162}
-                    height={52}
-                  />
-                </IntegrationCard>
-              </IntegrationCardContainer>
-            </Link>
+            {/* <Link href="/dashboard/integrations/grovenfe"> */}
+            <IntegrationCardContainer>
+              <IntegrationCard
+                legend={t('grove_nfe_description')}
+              >
+                <Image
+                  src="/images/GroveNFeLogo.svg"
+                  alt="GroveNFe"
+                  width={162}
+                  height={52}
+                />
+              </IntegrationCard>
+            </IntegrationCardContainer>
+            {/* </Link> */}
           </Col>
         </Row>
       </Card >
