@@ -30,7 +30,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_USER: Env.schema.string(),
   DB_PASSWORD: Env.schema.string(),
   DB_DATABASE: Env.schema.string(),
-  // DB_HOST_POOLING: Env.schema.string(),
+  DB_HOST_POOLING: Env.schema.string(),
 
   ASAAS_MIN_VALUE: Env.schema.number(),
 
