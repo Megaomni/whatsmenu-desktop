@@ -1159,5 +1159,13 @@
   "unable_register_your_order_try_again": "Unable to register your order. Please try again.",
   "system_identified_you_are_outside": "The system has identified that you are outside our coverage area. Please try to complete your order again.",
   "swiss_french": "Swiss French (Fr.)",
-  "swiss_french_chf": "Swiss French "
+  "swiss_french_chf": "Swiss French ",
+  "integrations": "Integrations",
+  "online_payment_s": "Online Payments",
+  "online_payment_description": "Avoid fraud, errors, and delays by verifying receipts in the bank app; the order arrives on the panel, and the payment is securely processed directly to your account.",
+  "credit_online": "Online Credit",
+  "fiscal_note_issuer": "NFe and NFCe Issuer",
+  "fiscal_note_issuer_description": "Stop wasting time manually issuing invoices. Set up automations and configure limits according to your CNPJ classification.",
+  "grove_nfe_description": "Automatic Invoice Issuance and Management",
+  "automation_of_nfe": "Invoice automation"
 }

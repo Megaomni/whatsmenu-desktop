@@ -42,7 +42,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { FaDownload, FaGooglePlay } from 'react-icons/fa'
 import { IoVolumeMuteSharp } from 'react-icons/io5'
-import { api } from 'src/lib/axios'
+import { api, groveNfeApi } from 'src/lib/axios'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { Invoice } from '../pages/dashboard/invoices'
 import StrategyPagarme from '../payment/pagarme'
@@ -67,8 +67,8 @@ type ChangeType = {
   // setChangeState: Dispatch<SetStateAction<boolean>>;
   // setConfirmSave: Dispatch<SetStateAction<boolean | undefined>>;
 }
-//
 
+//
 export type PackagePages = {
   data: Request[]
   total: number
@@ -178,6 +178,7 @@ interface AppContextData {
     symbol?: boolean
     withoutSymbol?: boolean
   }) => string
+  groveNfeCompany: any
 }
 
 type RequestsToPrintType = {
@@ -295,6 +296,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const [wsCommand, setWsCommand] = useState<CommandType | null>(null)
   const [wsPrint, setWsPrint] = useState<Subscription | null>(null)
   const [prevent, setPrevent] = useState<boolean>(false)
+  const [groveNfeCompany, setGroveNfeCompany] = useState<any>()
 
   const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
     'defaultDomain',
@@ -328,7 +330,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const [user, dispatchUser] = useReducer<Reducer<any, any>>(userReducer, {})
 
-  const baseUrl = process.env.WHATSMENU_BASE_URL
+  const baseUrl = process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL
 
   const audioRef = useRef<HTMLAudioElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -340,7 +342,7 @@ export function AppProvider({ children }: AppProviderProps) {
   //   addEventListener('message', (event: MessageEvent<{ profile?: Profile, action?: string, data?: any }>) => {
   //     const { profile, action, data } = parseFunctions(event.data)
 
-  //     const url = `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.WS_SOCKET_API}/adonis-ws`
+  //     const url = `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.NEXT_PUBLIC_WS_SOCKET_API}/adonis-ws`
   //     let ws: WebSocket | null = null
   //     ws = new WebSocket(url)
 
@@ -376,7 +378,7 @@ export function AppProvider({ children }: AppProviderProps) {
   //       src="/js/Ws.browser.js"
   //       onLoad={(e) => {
   //         const ws = adonis.Ws(
-  //           `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.WS_SOCKET_API}`
+  //           `${process.env.NODE_ENV === "development" ? "ws" : "wss"}://${process.env.NEXT_PUBLIC_WS_SOCKET_API}`
   //         );
   //         setWsConnection(ws);
 
@@ -580,7 +582,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const getUser = useCallback(async () => {
     if (session) {
       const { data: dataUser } = (await apiRoute(
-        `${process.env.WHATSMENU_API}/dashboard/user/getUser`,
+        `${process.env.NEXT_PUBLIC_WHATSMENU_API}/dashboard/user/getUser`,
         session
       )) as AxiosResponse<UserType>
 
@@ -768,7 +770,7 @@ export function AppProvider({ children }: AppProviderProps) {
               new Gateway(
                 new StrategyPagarme(
                   session,
-                  process.env.PAGARME_PUBLIC_KEY as string
+                  process.env.NEXT_PUBLIC_PAGARME_PUBLIC_KEY as string
                 )
               )
             )
@@ -995,11 +997,21 @@ export function AppProvider({ children }: AppProviderProps) {
     }
   }, [profile])
 
+  useEffect(() => {
+    if (profile && Boolean(profile?.options?.integrations?.grovenfe) && !groveNfeCompany) {
+      groveNfeApi.get(`/v1/companies/${profile.options.integrations.grovenfe.company_id}`).then(({ data }) => {
+        setGroveNfeCompany(data.company)
+        console.log(data.company);
+      })
+    }
+    
+  }, [profile])
+
   const showInvoiceAlertMessage = user?.controls?.alertInvoiceDayBefore
     ? Interval.fromDateTimes(
-        DateTime.local(),
-        DateTime.fromISO(invoicePending.invoice?.expiration)
-      ).count('days') <= user?.controls?.alertInvoiceDayBefore
+      DateTime.local(),
+      DateTime.fromISO(invoicePending.invoice?.expiration)
+    ).count('days') <= user?.controls?.alertInvoiceDayBefore
     : true
 
   return (
@@ -1075,6 +1087,7 @@ export function AppProvider({ children }: AppProviderProps) {
             setShowNewFeatureModal,
             setWhatsmenuDesktopDownloaded,
             currency,
+            groveNfeCompany,
             // overlaySpinnerConfig,
             // setOverlaySpinnerConfig,
           }}
@@ -1151,10 +1164,10 @@ export function AppProvider({ children }: AppProviderProps) {
                   ) : null}
 
                   {navigator.userAgent.includes('Windows NT 10') &&
-                  parseInt(getBrowserVersion()) > 109 &&
-                  !whatsmenuDesktopDownloaded &&
-                  !('isElectron' in window) &&
-                  !possibleMobile ? (
+                    parseInt(getBrowserVersion()) > 109 &&
+                    !whatsmenuDesktopDownloaded &&
+                    !('isElectron' in window) &&
+                    !possibleMobile ? (
                     <>
                       <div className="bd-callout bd-callout-warning bg-warning bg-opacity-25">
                         <h2 className="mb-3">
@@ -1261,7 +1274,7 @@ export function AppProvider({ children }: AppProviderProps) {
                     </span>
                   </Alert>
                 )}
-                {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
+                {/* {invoicePending.invoice !== null && showInvoiceAlertMessage ? (
                   <Alert
                     variant={`${invoicePending.invoice?.overdue ? 'danger' : 'warning'}`}
                     className="position-fixed w-100 m-0 text-center"
@@ -1283,7 +1296,7 @@ export function AppProvider({ children }: AppProviderProps) {
                         : t('message_menu_locked')}
                     </a>
                   </Alert>
-                ) : null}
+                ) : null} */}
                 <Footer
                   sideOpen={showSidebar}
                   haveInvoice={invoicePending.invoice}
@@ -1381,11 +1394,11 @@ export function AppProvider({ children }: AppProviderProps) {
                           ],
                           day: user.controls?.migrationMessage
                             ? DateTime.fromFormat(
-                                user.controls?.migrationMessage,
-                                `${t('date_format')}`
-                              )
-                                .setLocale(`${t('language')}`)
-                                .toFormat(`cccc ${t('date_format_v2')}`)
+                              user.controls?.migrationMessage,
+                              `${t('date_format')}`
+                            )
+                              .setLocale(`${t('language')}`)
+                              .toFormat(`cccc ${t('date_format_v2')}`)
                             : '',
                         }}
                       />
@@ -1418,7 +1431,7 @@ export function AppProvider({ children }: AppProviderProps) {
         ref={audioRef}
         src="/audio/pedido.mp3"
         id="voiceRequest"
-        onPlay={() => {}}
+        onPlay={() => { }}
         onEnded={() => {
           setPlayCount((prevCount) => --prevCount)
         }}

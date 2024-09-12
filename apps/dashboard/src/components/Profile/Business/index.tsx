@@ -139,7 +139,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
           Authorization: `Bearer ${session?.accessToken}`,
         }
       )
-      
+
       setProfile({ ...profile, ...data })
       setProfileContext(new Profile({ ...profile, ...data }))
       changeConfig.toRouter && changeConfig.toRouter()
@@ -368,7 +368,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                         className="fw-bold fs-7"
                         style={{ wordBreak: 'break-all' }}
                       >
-                        {process.env.WHATSMENU_BASE_URL}/
+                        {process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/
                         {watch('slug') ?? profile.slug ?? ''}
                       </Form.Label>
                       <Form.Control
@@ -403,7 +403,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                               setValue('whatsapp', e.currentTarget.value)
                             },
                           })}
-                          // name="whatsapp"
+                        // name="whatsapp"
                         />
                       </InputGroup>
                       <Form.Text as="p" className="fs-7 m-0 mt-2">
@@ -782,7 +782,7 @@ export function ProfileBusiness({ steps, layout }: ProfileBusinessProps) {
                                       <p className="fs-8">
                                         {maskedPhone(
                                           profile?.whatsapp?.substring(2) ||
-                                            '00000000000'
+                                          '00000000000'
                                         )}
                                       </p>
                                     </div>

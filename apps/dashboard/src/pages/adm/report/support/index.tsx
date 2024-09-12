@@ -149,7 +149,7 @@ export default function AdmReportBonusSupport({
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   const session = await getSession({ req })
   const { data: supports } = await apiRoute(
-    `${process.env.WHATSMENU_API}/administrator-api/report/support`,
+    `${process.env.NEXT_PUBLIC_WHATSMENU_API}/administrator-api/report/support`,
     session
   )
   return {

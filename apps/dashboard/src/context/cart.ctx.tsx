@@ -159,7 +159,7 @@ export function CartsProvider({ children }: CartProviderProps) {
     if (profile.id) {
       wsConnect(
         {
-          url: `${process.env.NODE_ENV === 'development' ? 'ws' : 'wss'}://${process.env.WS_SOCKET_API}/adonis-ws`,
+          url: `${process.env.NODE_ENV === 'development' ? 'ws' : 'wss'}://${process.env.NEXT_PUBLIC_WS_SOCKET_API}/adonis-ws`,
           attemptsInterval: 1000 * 10,
           reconnectAttempts: 10,
         },
@@ -183,7 +183,7 @@ export function CartsProvider({ children }: CartProviderProps) {
             })
           })
           wsSubscribe('command', profile.slug, (subscription) => {
-            subscription.on('command', (command) => {})
+            subscription.on('command', (command) => { })
           })
           if (profile.options?.print.app) {
             wsSubscribe('print', profile.slug, (subscription) => {
@@ -225,15 +225,15 @@ export function CartsProvider({ children }: CartProviderProps) {
             perPage: 30,
             total: 0,
           },
-          setCarts: () => {},
-          setPackageCarts: () => {},
-          setShowLostRequestsModal: () => {},
+          setCarts: () => { },
+          setPackageCarts: () => { },
+          setShowLostRequestsModal: () => { },
           showLostRequestsModal: false,
           cartEvents,
-          setCart: () => {},
+          setCart: () => { },
           setMotoboys,
           motoboys: [],
-          updateMotoboyId: () => {},
+          updateMotoboyId: () => { },
         }}
       >
         {children}

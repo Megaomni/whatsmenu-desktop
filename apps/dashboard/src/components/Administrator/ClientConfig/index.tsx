@@ -1135,7 +1135,7 @@ export function ClientConfig({
                 <Button
                   onClick={() =>
                     window.open(
-                      `${process.env.WHATSMENU_BASE_URL}/${user.profile?.slug}`,
+                      `${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${user.profile?.slug}`,
                       '_blank'
                     )
                   }

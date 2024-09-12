@@ -214,7 +214,7 @@ export default function Invoices({
                             {invoice.itens
                               ?.map(
                                 (item) =>
-                                  `${invoice.type !== 'addon' ? 'Plano ' : ''}${typeof item === 'string' ? item : item.name}`
+                                  `${invoice.type !== 'addon' ? t('plan') : ''}${typeof item === 'string' ? item : item.name}`
                               )
                               .join(', ')}
                           </td>
