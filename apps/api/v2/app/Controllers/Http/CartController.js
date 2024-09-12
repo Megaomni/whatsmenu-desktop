@@ -396,11 +396,12 @@ class CartController {
       if (integrations && integrations.grovenfe) {
         try {
           const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
+          const nfce = convertToFocusNfce({profile, cart: data, user})
           if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
             try {
               const companieId = integrations.grovenfe.companie_id
               const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companieId}`, {
-                formPayment: data.formsPayment[0],
+                nfce
               }, {
                 headers: {
                   Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
