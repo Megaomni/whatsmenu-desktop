@@ -23,20 +23,18 @@
         <div class="col-md-12">
           <div class="d-flex py-2 align-items-center border-bottom">
             <div class="order-info me-3">
-              <h3 class="fw-bold mb-0 pb-0 text-capitalize">
-                {{ translate.text().order }} {{ cart.code }}
-              </h3>
-              <div class="small mt-n2">
+              <h3 class="fw-bold mb-0 pb-0 text-capitalize">{{ translate.text().order }} {{ cart.code }}</h3>
+              <div class="small">
                 {{ formatDate(cart.created_at) }}
               </div>
             </div>
-            
-            <div *ngif="">
-              <div class="vr "></div>
-            
-              <div class="image-container m-2">
+
+            <div class="mx-3">
+              <div class="vr mx-3"></div>
+
+              <div class="image-container m-2 mb-2">
                 <a href="" target="_blank">
-                  <img src="assets2/icons/nfce.png" alt="nfce" class="img-fluid" style="width: 60px;" />
+                  <img src="assets2/icons/nfce.png" alt="nfce" class="img-fluid" style="width: 60px" />
                 </a>
               </div>
             </div>
@@ -268,7 +266,10 @@
               </span>
               <span
                 class="text-black-50 small text-capitalize"
-                *ngIf="taxDelivery() !== translate.text().to_consult && ((cart.cupom && cart.cupom.type === 'freight') || (cart.taxDelivery !== null && cart.taxDelivery <= 0))"
+                *ngIf="
+                  taxDelivery() !== translate.text().to_consult &&
+                  ((cart.cupom && cart.cupom.type === 'freight') || (cart.taxDelivery !== null && cart.taxDelivery <= 0))
+                "
                 >{{ translate.text().free }}</span
               >
             </div>
