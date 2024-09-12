@@ -60,6 +60,7 @@ import { WmFunctions, apiRoute, getMobileOS } from '../utils/wm-functions'
 import { CartsProvider } from './cart.ctx'
 import { PaymentMethodProvider } from './paymentMethod.ctx'
 import { TablesProvider } from './table.ctx'
+//
 type ChangeType = {
   changeState?: boolean
   confirmSave?: boolean
@@ -1004,7 +1005,7 @@ export function AppProvider({ children }: AppProviderProps) {
         console.log(data.company);
       })
     }
-    
+
   }, [profile])
 
   const showInvoiceAlertMessage = user?.controls?.alertInvoiceDayBefore
