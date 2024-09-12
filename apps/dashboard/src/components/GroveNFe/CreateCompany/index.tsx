@@ -261,11 +261,12 @@ export function CreateCompany() {
       const reader = new FileReader()
       reader.onloadend = () => {
         if (reader.result) {
+          let base64 = String(reader.result).split(',')[1]
           if (eventName === 'inputLogoCompany') {
-            setLogoBase64(reader.result as string)
+            setLogoBase64(base64 as string)
           }
           if (eventName === 'certificateCompany') {
-            setCertificateBase64(reader.result as string)
+            setCertificateBase64(base64 as string)
           }
         }
       }
