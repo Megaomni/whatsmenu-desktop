@@ -4,17 +4,16 @@ import { DateTime } from 'luxon'
 /**
  * Converte um carrinho para um objeto NFC-e para uso com o banco de dados da Focus
  * 
- * @param {object} profile - Perfil do estabelecimento
  * @param {object} cart - Carrinho de compras (Pedido)
- * @param {object} user - Usuário do sistema
+ * @param {object} groveNfeCompany - Empresa que irá emitir a nota
  * @returns {NFCeType} - Objeto NFC-e
  */
-export const convertToFocusNfce =({profile, cart, user}: {profile?: any, cart: any, user: any}): NFCeType => {
+export const convertToFocusNfce =({ cart, groveNfeCompany}: { cart: any, groveNfeCompany: any}): NFCeType => {
     return {
         natureza_operacao: 'VENDA AO CONSUMIDOR',
         data_emissao: DateTime.local().toISO(),
         presenca_comprador: cart.address ? '4' : '1',
-        cnpj_emitente: user.secretNumber,
+        cnpj_emitente: groveNfeCompany.doc_number,
         modalidade_frete: '9',
         local_destino: '1',
         items: cart.itens.map((item: any, index: number) => ({
