@@ -29,11 +29,11 @@
               </div>
             </div>
 
-            <div *ngIf="cart.controls.grovenfe" class="mx-3 d-flex">
+            <div *ngIf="cart.controls?.grovenfe?.fiscal_note.url_consulta_nf" class="mx-3 d-flex">
               <div class="vr mx-3"></div>
 
               <div class="image-container m-2 mb-2">
-                <a href="https://google.com.br" target="_blank">
+                <a href="cart.controls?.grovenfe?.fiscal_note.url_consulta_nf" target="_blank">
                   <img src="assets2/icons/nfce.png" alt="nfce" class="img-fluid" style="width: 60px" />
                 </a>
               </div>
