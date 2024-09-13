@@ -265,7 +265,6 @@ export function CreateCompany() {
       return
     }
   }, [errors])
-  console.log(errors)
 
   const convertFileToBase64 = ({
     file,
