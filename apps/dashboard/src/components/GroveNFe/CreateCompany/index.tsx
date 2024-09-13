@@ -887,12 +887,12 @@ export function CreateCompany() {
         </Card>
       </form>
 
-      <div
+      <footer
         ref={buttonFooter}
-        className={`${formState.dirtyFields.nome ? 'btn-footer-show' : 'btn-footer'} d-flex justify-content-end position-fixed w-100 bottom-0 m-0 p-3`}
+        className={`btn-footer-show d-flex justify-content-end position-fixed w-100 bottom-0 m-0 p-3`}
         style={{
-          left: '0 ',
-          right: '0 ',
+          left: '0',
+          right: '0',
         }}
       >
         <Button
@@ -903,7 +903,7 @@ export function CreateCompany() {
         >
           {grovenfe ? t('update') : t('create')}
         </Button>
-      </div>
+      </footer>
     </>
   )
 }
