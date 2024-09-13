@@ -24,17 +24,12 @@ import { CartsContext } from '../../../context/cart.ctx'
 import { TableContext } from '../../../context/table.ctx'
 import Cart from '../../../types/cart'
 import { SendStatusMessageForm } from '../../SendStatusMessageForm'
-import { convertToFocusNfce } from "@whatsmenu/utils/src/convert-to-focus-nfce"
+import { convertToFocusNfce } from "@whatsmenu/utils"
 
 export function Carts(data: any) {
   const { t } = useTranslation()
   const { data: session } = useSession()
-  const { user } = useContext(AppContext)
-
   const { profile, groveNfeCompany } = useContext(AppContext)
-  console.log(
-    groveNfeCompany
-  );
   
   const { carts, motoboys, setCart, updateMotoboyId } = useContext(CartsContext)
 
@@ -103,12 +98,12 @@ export function Carts(data: any) {
     }
   }
 
-  const handleEmitNote = async ({cart, user}: {cart: Cart, user: any}) => {
+  const handleEmitNote = async ({cart, groveNfeCompany}: {cart: Cart, groveNfeCompany: any}) => {
     if (!profile?.options?.integrations?.grovenfe) {
       return
     }
     try {
-      const nfce = convertToFocusNfce({cart, user})
+      const nfce = convertToFocusNfce({cart, groveNfeCompany})
       await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id } )
     } catch (error) {
       throw error
@@ -443,7 +438,7 @@ export function Carts(data: any) {
                                       <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                     </Link>
                                   ) : (
-                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({cart, user})} />
+                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({cart, groveNfeCompany})} />
                                   )}
                                 </td>
                               )}
