@@ -1,7 +1,7 @@
 import GroveNfeService from '#services/grove_nfe_service'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
-import { convertToFocusNfce } from '@whatsmenu/utils/src/convert-to-focus-nfce.js'
+import { convertToFocusNfce } from '@whatsmenu/utils'
 
 @inject()
 export default class GroveNfesController {
@@ -29,12 +29,12 @@ export default class GroveNfesController {
   }
 
   async convertToFocusNote({ request, response }: HttpContext) {
-    const { cart, user } = request.all()
+    const { cart, company } = request.all()
 
     try {
-      const focusNote = convertToFocusNfce({ cart, user })
+      const focus_note = convertToFocusNfce({ cart, groveNfeCompany: company })
 
-      return response.json({ focusNote })
+      return response.json({ focus_note })
     } catch (error) {
       console.error(error)
       throw error
