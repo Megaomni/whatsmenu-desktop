@@ -243,16 +243,29 @@ export function CreateCompany() {
       errors.numero
     ) {
       setTabKey('address')
+      return
     }
-
-    if (errors.email || errors.telefone || errors.email_contabilidade) {
+    if (errors.email || errors.telefone) {
       setTabKey('contact')
+      return
     }
 
     if (errors.nome_fantasia || errors.inscricao_estadual) {
       setTabKey('identification')
+      return
+    }
+
+    if (errors.email_contabilidade) {
+      setTabKey('accounting')
+      return
+    }
+
+    if (errors.habilita_nfce) {
+      setTabKey('docFiscal')
+      return
     }
   }, [errors])
+  console.log(errors)
 
   const convertFileToBase64 = ({
     file,
