@@ -161,5 +161,6 @@ router
 router
   .group(() => {
     router.post('/webhook', [GroveNfesController, 'webhook'])
+    router.post('/convertToFocusNote', [GroveNfesController, 'convertToFocusNote'])
   })
   .prefix('grovenfe')

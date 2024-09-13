@@ -24,10 +24,12 @@ import { CartsContext } from '../../../context/cart.ctx'
 import { TableContext } from '../../../context/table.ctx'
 import Cart from '../../../types/cart'
 import { SendStatusMessageForm } from '../../SendStatusMessageForm'
+import { convertToFocusNfce } from "@whatsmenu/utils/src/convert-to-focus-nfce"
 
 export function Carts(data: any) {
   const { t } = useTranslation()
   const { data: session } = useSession()
+  const { user } = useContext(AppContext)
 
   const { profile, groveNfeCompany } = useContext(AppContext)
   console.log(
@@ -101,49 +103,13 @@ export function Carts(data: any) {
     }
   }
 
-  const handleEmitNote = async (cart: Cart) => {
+  const handleEmitNote = async ({cart, user}: {cart: Cart, user: any}) => {
     if (!profile?.options?.integrations?.grovenfe) {
       return
     }
     try {
-      const nfce = {
-        "cnpj_emitente":"44058219000117",
-        "data_emissao":"2015-11-19T13:54:31-02:00",
-        "indicador_inscricao_estadual_destinatario":"9",
-        "modalidade_frete":"9",
-        "local_destino":"1",
-        "presenca_comprador":"1",
-        "natureza_operacao":"VENDA AO CONSUMIDOR",
-        "items":[
-           {
-              "numero_item":"1",
-              "codigo_ncm":"62044200",
-              "quantidade_comercial":"1.00",
-              "quantidade_tributavel":"1.00",
-              "cfop":"5102",
-              "valor_unitario_tributavel":"79.00",
-              "valor_unitario_comercial":"79.00",
-              "valor_desconto":"0.00",
-              "descricao":"NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL",
-              "codigo_produto":"251887",
-              "icms_origem":"0",
-              "icms_situacao_tributaria":"102",
-              "unidade_comercial":"un",
-              "unidade_tributavel":"un",
-              "valor_total_tributos":"24.29"
-           }
-        ],
-        "formas_pagamento":[
-           {
-              "forma_pagamento":"03",
-              "valor_pagamento":"79.00",
-              "nome_credenciadora":"Cielo",
-              "bandeira_operadora":"02",
-              "numero_autorizacao":"R07242"
-           }
-        ]
-     }
-      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce } )
+      const nfce = convertToFocusNfce({cart, user})
+      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id } )
     } catch (error) {
       throw error
     }
@@ -477,7 +443,7 @@ export function Carts(data: any) {
                                       <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                     </Link>
                                   ) : (
-                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote(cart)} />
+                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({cart, user})} />
                                   )}
                                 </td>
                               )}

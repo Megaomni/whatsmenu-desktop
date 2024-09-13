@@ -59,6 +59,8 @@
     "prettier": "^3.2.4",
     "sinon": "^17.0.1",
     "ts-node": "^10.9.2",
+    "@whatsmenu/types": "workspace:*",
+    "@whatsmenu/utils": "workspace:*",
     "typescript": "^5.3.3"
   },
   "dependencies": {
@@ -74,6 +76,8 @@
     "luxon": "^3.4.4",
     "mysql2": "^3.9.2",
     "reflect-metadata": "^0.2.1",
+    "@whatsmenu/types": "workspace:*",
+    "@whatsmenu/utils": "workspace:*",
     "socket.io": "^4.7.5"
   },
   "eslintConfig": {
