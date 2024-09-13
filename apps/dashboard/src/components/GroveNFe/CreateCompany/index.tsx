@@ -27,7 +27,7 @@ const createCompanySchema = z.object({
     })
     .min(10, 'CNPJ inválido'),
   nome: z.string().min(1, 'Digite um nome'),
-  arquivo_certificado_base64: z.object({}).optional(),
+  arquivo_certificado_base64: z.string(),
   senha_certificado: z.string().min(1, 'Senha obrigatória').optional(),
   arquivo_logo_base64: z.object({}).optional(),
   nome_fantasia: z
@@ -94,9 +94,7 @@ export function CreateCompany() {
     register,
     handleSubmit,
     formState: { errors },
-    formState,
     reset,
-    watch,
   } = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
   })
@@ -335,7 +333,7 @@ export function CreateCompany() {
                   className="d-flex justify-content-center align-items-center my-2 rounded"
                   style={{ border: '1px dashed #ccc', height: '120px' }}
                 >
-                  {!watch('arquivo_certificado_base64') ? (
+                  {!certificateName.length ? (
                     <p className="m-0 p-3 text-center">
                       Carregue seu certificado na extensão PFX ou P12!
                     </p>
