@@ -17,6 +17,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { groveNfeApi } from 'src/lib/axios'
 import { z } from 'zod'
+import { BsCheckCircle } from 'react-icons/bs'
 
 const createCompanySchema = z.object({
   cnpj: z
@@ -95,6 +96,7 @@ export function CreateCompany() {
     formState: { errors },
     formState,
     reset,
+    watch,
   } = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
   })
@@ -120,6 +122,8 @@ export function CreateCompany() {
   const [certificateBase64, setCertificateBase64] = useState<string | null>(
     null
   )
+
+  const [certificateName, setCertificateName] = useState('')
 
   const createCompanyGroveNfe = async (company: any) => {
     company.cnpj = Number(company.cnpj.replace(/[^\d]/g, ''))
@@ -314,12 +318,42 @@ export function CreateCompany() {
             </Row>
             <Row className="mt-4 gap-3">
               <Col md={4}>
-                <p>{t('certificate')}:</p>
+                <span>{t('certificate')}:</span>
+                <div
+                  className="d-flex justify-content-center align-items-center my-2 rounded"
+                  style={{ border: '1px dashed #ccc', height: '120px' }}
+                >
+                  {!watch('arquivo_certificado_base64') ? (
+                    <p className="m-0 p-3 text-center">
+                      Carregue seu certificado na extensão PFX ou P12!
+                    </p>
+                  ) : (
+                    <div className="text-center">
+                      <BsCheckCircle
+                        className="mt-2 text-green-500"
+                        style={{ height: '2rem', width: '2rem' }}
+                      />
+                      <p className="text-success">
+                        Certificado carregado com sucesso
+                      </p>
+                      <p
+                        className="text-sm text-gray-600"
+                        style={{
+                          fontSize: '0.70rem',
+                          color: '#4a5568',
+                        }}
+                      >
+                        {certificateName}
+                      </p>
+                    </div>
+                  )}
+                </div>
                 <Button
                   className="bg-success text-white"
                   style={{
                     border: 'none',
                     position: 'relative',
+                    width: '100%',
                   }}
                 >
                   {t('attach_certificate')}
@@ -334,6 +368,7 @@ export function CreateCompany() {
                           file: e.target.files[0],
                           eventName: e.target.name,
                         })
+                        setCertificateName(e.target.files[0].name)
                       }
                     }}
                     style={{
@@ -346,7 +381,7 @@ export function CreateCompany() {
                     }}
                   />
                 </Button>
-                <p className="fs-7">
+                <p className="fs-7 mt-1">
                   *Caso não tenha o arquivo, solicite ao seu contador
                 </p>
               </Col>
