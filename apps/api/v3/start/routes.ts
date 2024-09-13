@@ -23,6 +23,7 @@ import router from '@adonisjs/core/services/router'
 
 import AutoSwagger from 'adonis-autoswagger'
 import { middleware } from './kernel.js'
+import ProductsController from '#controllers/products_controller'
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -69,6 +70,13 @@ router
         router.get('/', [ProfilesController, 'userProfile'])
       })
       .prefix('profile')
+
+    // PRODUCTS
+    router
+      .group(() => {
+        router.post('/', [ProductsController, 'store'])
+      })
+      .prefix('products')
 
     // CUPOM
     router

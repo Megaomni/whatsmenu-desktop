@@ -42,6 +42,7 @@ import { ActionsFooterButton } from '../../ModalFooter/Actions'
 import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
 import { HelpVideos } from '@components/Modals/HelpVideos'
 import { useTranslation } from 'react-i18next'
+import { api } from 'src/lib/axios'
 
 interface ProductProps {
   show: boolean
@@ -265,16 +266,24 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       dataProducts.set('name', encryptEmoji(product.name))
       dataProducts.set('description', encryptEmoji(product.description))
 
-      const response = await Product.API({
-        type: type === 'create' ? 'CREATE' : 'UPDATE',
-        session,
-        data: dataProducts,
-        product: productMenu,
-        categories,
-        recicle: recicledComplements,
-        setCategories,
-      })
-      if ('inventory' in response) setLowInventoryItems(response.inventory)
+      if (type === 'update') {
+        const response = await Product.API({
+          type: 'UPDATE',
+          session,
+          data: dataProducts,
+          product: productMenu,
+          categories,
+          recicle: recicledComplements,
+          setCategories,
+        })
+        if ('inventory' in response) setLowInventoryItems(response.inventory)
+      }
+
+      if (type === 'create') {
+        const { data } = await api.post('/dashboard/products', dataProducts)
+        console.log(data);
+
+      }
 
       handleShowToast({
         position: 'middle-center',

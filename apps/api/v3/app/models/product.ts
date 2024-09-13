@@ -39,19 +39,19 @@ export default class Product extends BaseModel implements InventoryType {
   @column()
   declare value: number
 
-  @column()
+  @column({ columnName: 'promoteValue' })
   declare promoteValue: number
 
-  @column()
+  @column({ columnName: 'promoteStatus' })
   declare promoteStatus: boolean
 
-  @column()
+  @column({ columnName: 'valueTable' })
   declare valueTable: number
 
-  @column()
+  @column({ columnName: 'promoteValueTable' })
   declare promoteValueTable: number
 
-  @column()
+  @column({ columnName: 'promoteStatusTable' })
   declare promoteStatusTable: boolean
 
   @column()
@@ -65,6 +65,9 @@ export default class Product extends BaseModel implements InventoryType {
     consume: (value) => jsonSerialize(value),
   })
   declare disponibility: ProductDisponibility
+
+  @column()
+  declare ncm_code: string
 
   @column.dateTime({ autoCreate: false, columnName: 'deleted_at', serializeAs: 'deleted_at' })
   declare deleted_at: DateTime | null
