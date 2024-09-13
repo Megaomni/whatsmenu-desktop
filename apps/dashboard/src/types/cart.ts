@@ -7,7 +7,6 @@ import Command from './command'
 import Cupom, { CupomType } from './cupom'
 import { ProfileFormPayment, ProfileOptions } from './profile'
 import i18n from 'i18n'
-
 //
 export interface CartType {
   id: number
@@ -664,8 +663,8 @@ export default class Cart {
       total: 164.5,
       controls: {
         grovenfe: {
-          fiscal_note: {}
-        }
+          fiscal_note: {},
+        },
       },
       packageDate: null,
       created_at: '2023-07-19 14:58:54',
