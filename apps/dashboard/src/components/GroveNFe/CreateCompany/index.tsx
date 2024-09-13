@@ -15,11 +15,11 @@ import {
   Row,
   Tab,
 } from 'react-bootstrap'
-import { CheckCircle } from 'react-bootstrap-icons'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { groveNfeApi } from 'src/lib/axios'
 import { z } from 'zod'
+import { BsCheckCircle } from 'react-icons/bs'
 
 const createCompanySchema = z.object({
   cnpj: z
@@ -331,7 +331,7 @@ export function CreateCompany() {
                     </p>
                   ) : (
                     <div className="text-center">
-                      <CheckCircle
+                      <BsCheckCircle
                         className="mt-2 text-green-500"
                         style={{ height: '2rem', width: '2rem' }}
                       />
