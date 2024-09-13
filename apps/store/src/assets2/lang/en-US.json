@@ -15,6 +15,7 @@
     "mi": "MI"
   },
   "text": {
+    "coin": "$",
     "favorite_card_comment": "Ex: My favorite card",
     "finalize_order_comment": "Finalize Order",
     "welcome": "welcome",

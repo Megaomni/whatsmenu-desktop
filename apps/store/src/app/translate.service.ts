@@ -97,6 +97,7 @@ export interface TranslateType {
     date_mask_two: string
   }
   text: {
+    coin: string
     add_to_order: string
     enter_street_name: string
     place_example: string
