@@ -21,7 +21,6 @@ export default class ProductsController {
         profile: user!.profile,
         data: data as any,
         complements: JSON.parse(complements),
-        recicle: JSON.parse(recicle),
       })
 
       return response.json({ product })

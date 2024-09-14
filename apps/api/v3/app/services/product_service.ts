@@ -7,16 +7,17 @@ import { MultipartFile } from '@adonisjs/core/types/bodyparser'
 import drive from '@adonisjs/drive/services/main'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
+type NewComplement = ModelAttributes<Complement>
+type VinculatedComplement = ModelAttributes<Omit<Complement, 'id'>>
 interface CreateProductPayload {
   image: MultipartFile | null
   profile: Profile
-  complements: ModelAttributes<Complement>[]
-  recicle: ModelAttributes<Complement & { link: boolean }>[]
+  complements: NewComplement[]
   data: ModelAttributes<Product>
 }
 
 export class ProductService {
-  async createProduct({ image, profile, complements, recicle, data }: CreateProductPayload) {
+  async createProduct({ image, profile, complements, data }: CreateProductPayload) {
     try {
       const product = await Product.create({
         name: data.name,
@@ -44,7 +45,19 @@ export class ProductService {
         product.image = await drive.use('s3').getUrl(imageKey)
       }
 
-      let newComplements: Array<Complement> = []
+      let [newComplements, vinculatedComplements] = complements.reduce<
+        [NewComplement[], VinculatedComplement[]]
+      >(
+        ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
+          if (complement.id) {
+            vinculatedComps.push(complement)
+          } else {
+            newComps.push(complement)
+          }
+          return [newComplements, vinculatedComplements]
+        },
+        [[], []]
+      )
 
       if (complements) {
         newComplements = await product.related('complements').createMany(
