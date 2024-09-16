@@ -165,13 +165,15 @@ class CartController {
               nestedBuilder.whereNull('status')
             })
         })
+        .where((whereBuilder) => {
+          whereBuilder
+            .where('statusPayment', 'offline')
+            .orWhere('statusPayment', 'paid')
+        })
         .whereBetween('carts.created_at', [startDate, endDate])
         .groupBy('name', 'pizzaId', 'productId', 'profileId', Database.raw('CAST(details->"$.value" AS DECIMAL(10,2))'))
         .orderBy('quantity', 'desc')
-        .on('query', console.log)
         .paginate(page, 50)
-
-        console.log('BEST SELLER',results);
         
       return response.json({ results })
     } catch (error) {
