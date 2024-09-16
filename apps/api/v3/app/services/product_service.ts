@@ -8,8 +8,8 @@ import drive from '@adonisjs/drive/services/main'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
 type NewComplement = ModelAttributes<Complement>
-type VinculatedComplement = ModelAttributes<Omit<Complement, 'id'>>
-interface CreateProductPayload {
+type VinculatedComplement = ModelAttributes<Complement>
+export interface CreateProductPayload<Partial> {
   image?: MultipartFile | null
   profile: Profile
   complements: NewComplement[]
@@ -17,7 +17,7 @@ interface CreateProductPayload {
 }
 
 export class ProductService {
-  async createProduct({ image, profile, complements, data }: CreateProductPayload) {
+  async createProduct({ profile, complements, data }: CreateProductPayload<Partial<Product>>) {
     try {
       const product = await Product.create({
         name: data.name,
@@ -43,55 +43,49 @@ export class ProductService {
           visibility: 'public',
         })
 
-        // await image.moveToDisk(imageKey, 's3', {
-        //   contentType: image.headers['content-type'],
-        //   visibility: 'public',
-        // })
-
         product.image = await drive.use('s3').getUrl(imageKey)
-        console.log(product.image)
 
         await product.save()
       }
 
-      // let [newComplements, vinculatedComplements] = complements.reduce<
-      //   [NewComplement[], VinculatedComplement[]]
-      // >(
-      //   ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
-      //     if (complement.id) {
-      //       vinculatedComps.push(complement)
-      //     } else {
-      //       newComps.push(complement)
-      //     }
-      //     return [newComplements, vinculatedComplements]
-      //   },
-      //   [[], []]
-      // )
+      // Separando complementos novos dos complementos vinculados já existentes
+      let [newComplements, vinculatedComplements] = complements.reduce<
+        [NewComplement[], VinculatedComplement[]]
+      >(
+        ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
+          if (complement.id) {
+            vinculatedComps.push(complement)
+          } else {
+            newComps.push(complement)
+          }
+          return [newComps, vinculatedComps]
+        },
+        [[], []]
+      )
 
-      // if (complements) {
-      //   newComplements = await product.related('complements').createMany(
-      //     complements.map(({ id, ...complement }) => ({
-      //       ...complement,
-      //       itens: complement.itens.map((item) => ({
-      //         ...item,
-      //         code: encryption.encrypt(item.name).substring(0, 6),
-      //       })),
-      //     }))
-      //   )
-      // }
+      // Criando novos complementos
+      if (newComplements.length) {
+        newComplements = await product.related('complements').createMany(
+          newComplements.map(({ id, ...complement }) => ({
+            ...complement,
+            itens:
+              complement.itens.map((item) => ({
+                ...item,
+                code: encryption.encrypt(item.name).substring(0, 6),
+              })) || [],
+          }))
+        )
+      }
 
-      // if (recicle) {
-      //   for (const complement of recicle) {
-      //     if (complement.link) {
-      //       const pivot = await product.related('complements').attach([])
-      //       const newRecicledComplement = await Complement.find(complement.id)
-      //       newRecicledComplement.pivot = pivot
-      //       complementsRecicleds.push(newRecicledComplement)
-      //     }
-      //   }
-      // }
+      // Vinculando complementos já existentes (reutilizados)
+      if (vinculatedComplements.length) {
+        await product
+          .related('complements')
+          .attach(vinculatedComplements.map((complement) => complement.id))
+      }
 
-      return { product: { ...product } }
+      // Retornando o produto criado junto com os complementos associados
+      return { product: { ...product, complements: [...newComplements, ...vinculatedComplements] } }
     } catch (error) {
       throw error
     }
