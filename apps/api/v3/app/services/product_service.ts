@@ -54,31 +54,31 @@ export class ProductService {
         await product.save()
       }
 
-      // let [newComplements, vinculatedComplements] = complements.reduce<
-      //   [NewComplement[], VinculatedComplement[]]
-      // >(
-      //   ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
-      //     if (complement.id) {
-      //       vinculatedComps.push(complement)
-      //     } else {
-      //       newComps.push(complement)
-      //     }
-      //     return [newComplements, vinculatedComplements]
-      //   },
-      //   [[], []]
-      // )
+      let [newComplements, vinculatedComplements] = complements.reduce<
+        [NewComplement[], VinculatedComplement[]]
+      >(
+        ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
+          if (complement.id) {
+            vinculatedComps.push(complement)
+          } else {
+            newComps.push(complement)
+          }
+          return [newComps, vinculatedComps]
+        },
+        [[], []]
+      )
 
-      // if (complements) {
-      //   newComplements = await product.related('complements').createMany(
-      //     complements.map(({ id, ...complement }) => ({
-      //       ...complement,
-      //       itens: complement.itens.map((item) => ({
-      //         ...item,
-      //         code: encryption.encrypt(item.name).substring(0, 6),
-      //       })),
-      //     }))
-      //   )
-      // }
+      if (complements) {
+        newComplements = await product.related('complements').createMany(
+          newComplements.map(({ id, ...complement }) => ({
+            ...complement,
+            itens: complement.itens.map((item) => ({
+              ...item,
+              code: encryption.encrypt(item.name).substring(0, 6),
+            })),
+          }))
+        )
+      }
 
       // if (recicle) {
       //   for (const complement of recicle) {

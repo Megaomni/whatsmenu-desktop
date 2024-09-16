@@ -36,13 +36,44 @@ import { AppContext } from '../../../../context/app.ctx'
 import { HelpVideos } from '../../HelpVideos'
 import { useSession } from 'next-auth/react'
 import { useTranslation } from 'react-i18next'
+import { useFieldArray, useFormContext } from 'react-hook-form'
+import { z } from 'zod'
+import { ComplementItems } from './ComplementItems'
+
+export const ComplementFormSchema = z.object({
+  id: z.string().transform((value) => {
+    const parsedId = Number(value)
+    if (isNaN(parsedId)) {
+      return undefined
+    }
+    return parsedId
+  }).optional(),
+  name: z
+    .string()
+    .min(3, 'O nome deve ter pelo menos 3 caracteres')
+    .max(50, 'O nome deve ter no maúximo 50 caracteres'),
+  required: z.boolean(),
+  type: z.enum(['default', 'pizza']),
+  min: z.string().min(1).max(10000).transform((value) => parseInt(value)),
+  max: z.string().min(1).max(10000).transform((value) => parseInt(value)),
+  order: z.number(),
+  itens: z
+    .array(
+      z.object({
+        id: z.string().optional(),
+        name: z
+          .string()
+          .min(3, 'O nome deve ter pelo menos 3 caracteres')
+          .max(70, 'O nome deve ter no maúximo 70 caracteres'),
+        description: z.string().max(100, 'A descrição deve ter no maúximo 100 caracteres').nullable(),
+        value: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+      })
+    ),
+})
+
+type ComplementFormData = z.infer<typeof ComplementFormSchema>
 
 type ComplementProps = {
-  complements: Complement[]
-  recicled?: { id?: number; link?: boolean }[]
-  saveComplements: (...props: any[]) => void
-  saveRecicledComplements?: (...props: any[]) => void
-  saveRemovedComplements?: (...props: any[]) => void
   showVinculateComplement?: boolean
   typeModal: 'massive' | 'product'
   autoFocusElement?: number
@@ -50,17 +81,18 @@ type ComplementProps = {
   complementType: 'default' | 'pizza'
 }
 export function ComponentComplement({
-  complements: complementsProps,
-  recicled,
-  saveComplements,
-  saveRecicledComplements,
-  saveRemovedComplements,
   typeModal,
   showVinculateComplement,
   invalidComplement,
   complementType,
   autoFocusElement,
 }: ComplementProps) {
+  const { watch, control, register, formState } = useFormContext<{ complements: Complement[] }>()
+  const { append: appendComplement, remove: removeComplement, fields: complements, update: updateComplement } = useFieldArray({
+    control,
+    name: 'complements',
+  })
+
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { handleConfirmModal, profile, currency } = useContext(AppContext)
@@ -73,10 +105,6 @@ export function ComponentComplement({
     setFocusId,
   } = useContext(MenuContext)
 
-  const [complements, setComplements] = useState<Complement[]>(complementsProps)
-  const [recicledComplements, setRecicledComplements] = useState<
-    { id?: number; link?: boolean }[]
-  >(recicled || [])
   const [removeComplements, setRemoveComplements] = useState<number[]>([])
 
   const [invalidComplementName, setInvalidComplementName] =
@@ -91,43 +119,37 @@ export function ComponentComplement({
   let allComplements =
     complementType === 'default' ? productComplements : pizzaComplements
 
-  useEffect(() => {
-    setComplements(complementsProps)
-  }, [complementsProps])
 
   useEffect(() => {
     setInvalidComplementName(!!invalidComplement)
   }, [invalidComplement])
 
-  useEffect(() => {
-    if (!compareItems(complementsProps, complements)) {
-      complements.forEach((complement) => {
-        if (complement.min > complement.max) {
-          complement.min = complement.max
-        } else if (complement.min < 1) {
-          complement.min = 1
-        }
+  // useEffect(() => {
+  //   if (!compareItems(complementsProps, complements)) {
+  //     complements.forEach((complement) => {
+  //       if (complement.min > complement.max) {
+  //         complement.min = complement.max
+  //       } else if (complement.min < 1) {
+  //         complement.min = 1
+  //       }
 
-        if (complement.max < complement.min) {
-          complement.max = complement.min
-        } else if (complement.max < 1) {
-          complement.max = 1
-        }
-      })
+  //       if (complement.max < complement.min) {
+  //         complement.max = complement.min
+  //       } else if (complement.max < 1) {
+  //         complement.max = 1
+  //       }
+  //     })
+  //   }
 
-      saveComplements && saveComplements([...complements])
-    }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [complements])
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [complements, saveComplements])
-
-  useEffect(() => {
-    saveRecicledComplements && saveRecicledComplements([...recicledComplements])
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recicledComplements])
+  // useEffect(() => {
+  //   saveRecicledComplements && saveRecicledComplements([...recicledComplements])
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [recicledComplements])
 
   useEffect(() => {
-    saveRemovedComplements && saveRemovedComplements([...removeComplements])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [removeComplements])
 
@@ -139,167 +161,36 @@ export function ComponentComplement({
       }
     })
 
-    setFilteredComplementsSet(Array.from(setComplements) as number[])
   }, [allComplements, removeComplements])
 
-  useEffect(() => {
-    if (!showVinculateComplement) {
-      complements.forEach((comp) => {
-        if (comp.vinculate) {
-          comp.vinculate.link = false
-        }
-      })
-    }
-  }, [showVinculateComplement, complements])
+  // useEffect(() => {
+  //   if (!showVinculateComplement) {
+  //     complements.forEach((comp) => {
+  //       if (comp.vinculate) {
+  //         comp.vinculate.link = false
+  //       }
+  //     })
+  //   }
+  // }, [showVinculateComplement, complements])
 
-  useEffect(() => {
-    if (autoFocusElement) {
-      const complementRef = document.getElementById(
-        `complement-${autoFocusElement}`
-      )
-      const arrayIndex = complements.findIndex((c) => c.id === autoFocusElement)
-      const input = document.getElementById(
-        `complement-name-${autoFocusElement}`
-      )
+  // useEffect(() => {
+  //   if (autoFocusElement) {
+  //     const complementRef = document.getElementById(
+  //       `complement-${autoFocusElement}`
+  //     )
+  //     const arrayIndex = complements.findIndex((c) => c.id === autoFocusElement)
+  //     const input = document.getElementById(
+  //       `complement-name-${autoFocusElement}`
+  //     )
 
-      if (complementRef && arrayIndex) {
-        complementRef?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
+  //     if (complementRef && arrayIndex) {
+  //       complementRef?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  //     }
 
-      input?.focus()
-      setFocusId(undefined)
-    }
-  }, [autoFocusElement, complements, setFocusId])
-  const handleAddComplementCategory = (
-    type: 'default' | 'recicle' = 'default',
-    id?: number
-  ) => {
-    if (type === 'default') {
-      if (
-        verifyEmptyNameLength(complements, 'id', {
-          partialQuery: `#complement-name-`,
-          queryParentElement: `#create-product-modal`,
-          differTop: 200,
-        }) ||
-        verifyEmptyNameLength(
-          complements.flatMap((comp) => comp.itens.flat()),
-          'code',
-          {
-            partialQuery: `#complement-item-`,
-            queryParentElement: `#create-product-modal`,
-            differTop: -250,
-          }
-        )
-      ) {
-        setInvalidComplementName(true)
-        return
-      }
-
-      const prodComplements: Complement[] = []
-      let complementId: number
-      let complementToAdd: Complement | null = null
-
-      if (!id) {
-        complementToAdd = new Complement({
-          id: parseInt(String(Math.random() * (100 - 1) + 1)),
-          name: '',
-          type: complementType,
-          order: complements.length || 0,
-          min: 0,
-          max: 1,
-          required: false,
-          itens: [],
-        })
-
-        if (typeModal === 'massive') {
-          complementToAdd.vinculate = {
-            link: false,
-            code: hash(10),
-          }
-        }
-        complementId = complementToAdd.id as number
-      } else {
-        const complement = allComplements.find((compl) => compl.id === id)
-
-        if (complement) {
-          complementToAdd = new Complement({
-            id: parseInt(String(Math.random() * (100 - 1) + 1)),
-            name: complement.name,
-            type: complementType,
-            order: complements.length + 1 || 0,
-            min: complement.min,
-            max: complement.max,
-            required: complement.required,
-            itens: complement.itens,
-          })
-
-          complementId = complementToAdd.id as number
-        }
-      }
-
-      if (complementToAdd) {
-        prodComplements.push(complementToAdd)
-        setComplements([...complements, ...prodComplements])
-
-        setTimeout(() => {
-          const input = document.getElementById(
-            `complement-name-${complementId}`
-          )
-
-          if (input) {
-            input.focus()
-          }
-        }, 20)
-      }
-    } else {
-      if (allComplements.length) {
-        const firstDifferentComplement = allComplements.find((compl) =>
-          recicledComplements.every((c) => c.id !== compl.id)
-        )
-
-        if (firstDifferentComplement) {
-          setRecicledComplements([
-            ...recicledComplements,
-            {
-              id: firstDifferentComplement.id,
-              link: false,
-            },
-          ])
-        }
-      }
-    }
-  }
-
-  const handleRemoveComplementCategory = (
-    id: number,
-    type: 'default' | 'recicle' = 'default'
-  ) => {
-    if (type === 'default') {
-      const newComplements = complements.filter(
-        (complement) => complement.id !== id
-      )
-
-      setComplements([...newComplements])
-      const complementExist = complements.find(
-        (complement) => complement.id === id
-      )
-      if (complementExist && complementExist.pivot) {
-        setRemoveComplements([...removeComplements, id])
-      }
-
-      setRecicledComplements(
-        recicledComplements.filter(
-          (recicledComplement) => recicledComplement.id !== id
-        )
-      )
-    } else {
-      setRecicledComplements(
-        recicledComplements.filter(
-          (recicledComplement) => recicledComplement.id !== id
-        )
-      )
-    }
-  }
+  //     input?.focus()
+  //     setFocusId(undefined)
+  //   }
+  // }, [autoFocusElement, complements, setFocusId])
 
   const handleAddItemComplement = (
     complement: ComplementType,
@@ -353,18 +244,34 @@ export function ComponentComplement({
     }, 20)
   }
 
-  const handleRemoveItemComplement = (id: number, code: string) => {
-    if (complements.length) {
-      const newComplements = complements.map((comp) => {
-        if (id === comp.id) {
-          comp.itens = comp.itens.filter((item) => item.code !== code)
-        }
-
-        return comp
-      })
-      setComplements(newComplements)
-    }
+  const handleAddComplement = () => {
+    appendComplement(new Complement({
+      name: '',
+      itens: [],
+      max: 0,
+      min: 0,
+      required: false,
+      order: 0,
+      type: complementType,
+    }))
   }
+
+  const handleRemoveComplement = (index: number) => {
+    removeComplement(index)
+  }
+
+  // const handleRemoveItemComplement = (id: number, code: string) => {
+  //   if (complements.length) {
+  //     const newComplements = complements.map((comp) => {
+  //       if (id === comp.id) {
+  //         comp.itens = comp.itens.filter((item) => item.code !== code)
+  //       }
+
+  //       return comp
+  //     })
+  //     setComplements(newComplements)
+  //   }
+  // }
 
   const handleChange = (
     e: any,
@@ -400,7 +307,7 @@ export function ComponentComplement({
             <Button
               variant="dark"
               className="text-wrap p-2"
-              onClick={() => handleAddComplementCategory()}
+              onClick={handleAddComplement}
             >
               + {t('category')}
             </Button>
@@ -408,9 +315,6 @@ export function ComponentComplement({
               variant="dark"
               className="text-wrap p-2"
               disabled={!allComplements.length}
-              onClick={() => {
-                handleAddComplementCategory('recicle')
-              }}
             >
               <FaSyncAlt />
               {t('use_addons_another_item')}
@@ -431,7 +335,7 @@ export function ComponentComplement({
         </div>
       </Card.Header>
       <Card.Body>
-        {recicledComplements.map((recicledComplement, index, arrRecicled) => {
+        {/* {recicledComplements.map((recicledComplement, index, arrRecicled) => {
           return (
             <Card
               className="wm-default text-dark"
@@ -477,17 +381,16 @@ export function ComponentComplement({
                               key={`${complement.id}-${complement}`}
                               value={`${complement.id}`}
                             >
-                              {`${complement.name} - [${
-                                complementType === 'default'
+                              {`${complement.name} - [${complementType === 'default'
                                   ? products.find(
-                                      (prod) => prod.id === productPrincipal
-                                    )?.name
+                                    (prod) => prod.id === productPrincipal
+                                  )?.name
                                   : categories.find((cat) =>
-                                      cat.product?.complements.some(
-                                        (comp) => comp.id === complement.id
-                                      )
-                                    )?.name
-                              }]`}
+                                    cat.product?.complements.some(
+                                      (comp) => comp.id === complement.id
+                                    )
+                                  )?.name
+                                }]`}
                             </option>
                           )
                         }
@@ -564,8 +467,8 @@ export function ComponentComplement({
               </Card.Body>
             </Card>
           )
-        })}
-        {complements?.map((complement, index) => (
+        })} */}
+        {complements.map((complement, index) => (
           <Card
             id={`complement-${complement.id}`}
             key={`complement-${complement.id}`}
@@ -599,13 +502,13 @@ export function ComponentComplement({
                           <Form.Switch
                             id="Vincular"
                             label="Vincular Todos Produtos"
-                            defaultChecked={complement.vinculate?.link}
+                            {...register(`complements.${index}.vinculate.link`)}
                             className="flex-grow-1"
-                            onChange={(e) => {
-                              if (complement.vinculate) {
-                                complement.vinculate.link = e.target.checked
-                              }
-                            }}
+                          // onChange={(e) => {
+                          //   if (complement.vinculate) {
+                          //     complement.vinculate.link = e.target.checked
+                          //   }
+                          // }}
                           />
                         </div>
                       </OverlayTrigger>
@@ -651,22 +554,22 @@ export function ComponentComplement({
                       <div className="position-relative ">
                         <Form.Control
                           placeholder={t('name')}
-                          defaultValue={complement.name}
+                          // defaultValue={complement.name}
                           id={`complement-name-${complement.id}`}
                           className={`mb-2 ${index === 0 ? 'first-complement-focus' : ''}`}
-                          isInvalid={
-                            !complement.name.length && invalidComplementName
-                          }
+                          {...register(`complements.${index}.name`)}
+                          // isInvalid={
+                          //   !complement.name.length && invalidComplementName
+                          // }
                           maxLength={50}
-                          onChange={(e) => {
-                            handleChange(e, index, 'name')
-                            setComplements([...complements])
-                            invalidComplementName &&
-                              setInvalidComplementName(false)
-                          }}
-                          onKeyDown={(e) =>
-                            modifyFontValues(e, { prop: complement.name })
-                          }
+                        // onChange={(e) => {
+                        //   handleChange(e, index, 'name')
+                        //   invalidComplementName &&
+                        //     setInvalidComplementName(false)
+                        // }}
+                        // onKeyDown={(e) =>
+                        //   modifyFontValues(e, { prop: complement.name })
+                        // }
                         />
                         <Form.Control.Feedback
                           tooltip
@@ -679,11 +582,11 @@ export function ComponentComplement({
                       <div className="d-flex justify-content-end">
                         <p
                           className={
-                            complement.name.length >= 50 ? 'text-red-500' : ''
+                            watch(`complements.${index}.name`).length >= 50 ? 'text-red-500' : ''
                           }
                           data-name-length={complement.id}
                         >
-                          {complement.name.length}/50 {t('characters')}
+                          {watch(`complements.${index}.name`).length}/50 {t('characters')}
                         </p>
                       </div>
                     </div>
@@ -691,11 +594,7 @@ export function ComponentComplement({
                       <Button
                         variant="danger"
                         className="mb-auto px-5"
-                        onClick={() => {
-                          if (complement.id) {
-                            handleRemoveComplementCategory(complement.id)
-                          }
-                        }}
+                        onClick={() => handleRemoveComplement(index)}
                       >
                         {t('delete')}
                       </Button>
@@ -713,23 +612,8 @@ export function ComponentComplement({
                       <InputGroup className="mt-1">
                         <InputGroup.Text>Min.</InputGroup.Text>
                         <Form.Control
-                          defaultValue={complement.min || 0}
                           type="number"
-                          min={0}
-                          max={10000}
-                          required
-                          isInvalid={complement.min > complement.max}
-                          onChange={(e) => {
-                            e.currentTarget.value =
-                              e.currentTarget.value.replace(/\D/g, '')
-
-                            const targetValue = Number(e.currentTarget.value)
-                            e.currentTarget.value = String(
-                              Math.min(Math.abs(targetValue), 10000)
-                            )
-
-                            handleChange(e, index, 'min')
-                          }}
+                          {...register(`complements.${index}.min`)}
                         />
                         <Form.Control.Feedback type="invalid">
                           {t('min_greater_max')}
@@ -740,23 +624,7 @@ export function ComponentComplement({
                       <InputGroup className="mt-1">
                         <InputGroup.Text>Máx.</InputGroup.Text>
                         <Form.Control
-                          defaultValue={complement.max || 0}
-                          required
-                          min={1}
-                          max={10000}
-                          type="number"
-                          isInvalid={complement.max < complement.min}
-                          onChange={(e) => {
-                            e.currentTarget.value =
-                              e.currentTarget.value.replace(/\D/g, '')
-
-                            const targetValue = Number(e.currentTarget.value)
-                            e.currentTarget.value = String(
-                              Math.min(Math.abs(targetValue), 10000)
-                            )
-
-                            handleChange(e, index, 'max')
-                          }}
+                          {...register(`complements.${index}.max`)}
                         />
                         <Form.Control.Feedback type="invalid">
                           {t('max_less_min')}
@@ -770,14 +638,14 @@ export function ComponentComplement({
                   md
                   className="d-flex justify-content-end mb-2 mt-auto gap-2"
                 >
-                  <Form.Check
-                    defaultChecked={complement.required}
-                    id={`complemento-obrigatorio-${complement.id}`}
-                    label={t('mandatory_addon')}
-                    onChange={(e) => {
-                      handleChange(e, index, 'required')
-                    }}
-                  />
+                  <Form.Label className='d-flex gap-3'>
+                    <Form.Check
+                      defaultChecked={complement.required}
+                      id={`complemento-obrigatorio-${complement.id}`}
+                      {...register(`complements.${index}.required`)}
+                    />
+                    <span>{t('mandatory_addon')}</span>
+                  </Form.Label>
                 </Col>
               </Row>
               <hr />
@@ -798,202 +666,7 @@ export function ComponentComplement({
                   {t('options')}
                 </Col>
               </Row>
-              {complement.itens.map((item) => (
-                <div key={item.code}>
-                  <br />
-                  <Row>
-                    <Col sm="3" lg="3">
-                      <div className="position-relative">
-                        <Form.Control
-                          className={item.code}
-                          id={`complement-item-${item.code}`}
-                          placeholder={t('complements')}
-                          defaultValue={item.name}
-                          isInvalid={
-                            !item.name.trim().length && invalidComplementName
-                          }
-                          maxLength={70}
-                          onChange={(e) => {
-                            item.name = encryptEmoji(e.target.value.trim())
-                            setComplements([...complements])
-                            invalidComplementName &&
-                              setInvalidComplementName(false)
-                          }}
-                          onKeyDown={(e) =>
-                            modifyFontValues(e, { prop: item.name })
-                          }
-                        />
-                        <Form.Control.Feedback
-                          tooltip
-                          type="invalid"
-                          style={{ zIndex: 0 }}
-                        >
-                          {t('invalid_name')}
-                        </Form.Control.Feedback>
-                      </div>
-                      <div className="d-flex justify-content-end">
-                        <p
-                          id={`itemComplement-${item.code}`}
-                          className={
-                            item.name.length >= 70 ? 'text-red-500' : ''
-                          }
-                        >
-                          {item.name.length}/70 {t('characters')}
-                        </p>
-                      </div>
-                    </Col>
-                    <Col sm="3" lg="3">
-                      <Form.Control
-                        placeholder={t('description')}
-                        defaultValue={item.description}
-                        maxLength={100}
-                        onChange={(e) => {
-                          item.description = encryptEmoji(e.target.value)
-                          setComplements([...complements])
-                        }}
-                        onKeyDown={(e) =>
-                          modifyFontValues(e, { prop: item.description })
-                        }
-                      />
-                      <div className="d-flex justify-content-end">
-                        <p
-                          id={`itemDescription-${item.code}`}
-                          className={
-                            item.description.length >= 100 ? 'text-red-500' : ''
-                          }
-                        >
-                          {item.description.length}/100 {t('characters')}
-                        </p>
-                      </div>
-                    </Col>
-                    <Col sm="3" lg="2">
-                      <InputGroup className="mb-2">
-                        <InputGroup.Text>
-                          {currency({ value: 0, symbol: true })}
-                        </InputGroup.Text>
-                        <Form.Control
-                          required
-                          min="0"
-                          defaultValue={(item.value ?? Number(0)).toFixed(2)}
-                          onChange={(e) => {
-                            mask(e, 'currency')
-                            item.value = Number(e.target.value)
-                          }}
-                        />
-                      </InputGroup>
-                    </Col>
-                    {profile.options.inventoryControl ? (
-                      item.amount && item.amount > 0 ? (
-                        <Col sm="3" lg="2">
-                          <InputGroup className="position-relative mb-2">
-                            <Button
-                              style={{ minWidth: '48.79px' }}
-                              onClick={() => {
-                                if (
-                                  typeof item.amount === 'number' &&
-                                  item.amount > 0
-                                ) {
-                                  item.amount--
-                                }
-                                setComplements([...complements])
-                              }}
-                            >
-                              -
-                            </Button>
-
-                            <Form.Control
-                              value={item.amount || 0}
-                              onChange={(e) => {
-                                const newAmount = Number(e.target.value)
-                                item.amount = newAmount || undefined
-                                setComplements([...complements])
-                              }}
-                            />
-
-                            <Button
-                              className="rounded-end"
-                              style={{ minWidth: '48.79px' }}
-                              onClick={() => {
-                                if (typeof item.amount !== 'number')
-                                  item.amount = 0
-                                item.amount++
-                                setComplements([...complements])
-                              }}
-                            >
-                              +
-                            </Button>
-                            <Form.Control.Feedback tooltip type="invalid">
-                              {t('please_enter_valid_value')}!
-                            </Form.Control.Feedback>
-                            <div className="d-flex w-100 justify-content-end">
-                              <Form.Check
-                                id={`bypass-${item.code}`}
-                                label={t('always_available')}
-                                onClick={() => {
-                                  item.amount = 0
-                                  item.bypass_amount = true
-                                  setComplements([...complements])
-                                }}
-                              />
-                            </div>
-                          </InputGroup>
-                        </Col>
-                      ) : (
-                        <Col sm="3" lg="2">
-                          <Button
-                            className="rounded-end w-100 my-sm-0 my-2"
-                            style={{ minWidth: '48.79px' }}
-                            onClick={() => {
-                              if (typeof item.amount !== 'number')
-                                item.amount = 0
-                              item.amount++
-                              item.bypass_amount = false
-                              setComplements([...complements])
-                            }}
-                          >
-                            {t('enable_stock')}
-                          </Button>
-                        </Col>
-                      )
-                    ) : null}
-                    <Col sm="12" lg className="mb-auto">
-                      <Row className="justify-content-end gap-2">
-                        <Col sm md lg className="d-flex">
-                          <Button
-                            className={`${!item.status ? 'complement-item-button' : ''} `}
-                            variant={`${!item.status ? 'outline-orange text-orange' : 'orange text-white'} `}
-                            style={{ flex: '1 1 150px' }}
-                            tabIndex={-1}
-                            onClick={() => {
-                              item.status = !item.status
-                              setUpdateHTML(updateHTML + 1)
-                            }}
-                          >
-                            {item.status ? t('pause') : t('paused')}
-                          </Button>
-                        </Col>
-                        <Col sm md lg className="d-flex">
-                          <Button
-                            variant="danger"
-                            style={{ flex: '1 1 150px' }}
-                            tabIndex={-1}
-                            onClick={() => {
-                              if (complement.id) {
-                                handleRemoveItemComplement(
-                                  complement.id,
-                                  item.code
-                                )
-                              }
-                            }}
-                          >
-                            {t('delete')}
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Row>
-                </div>
-              ))}
+              <ComplementItems complementIndex={index} />
               <Row className="mt-2">
                 <Col sm="12" md="2" lg="2" className="d-flex">
                   <Button
@@ -1001,9 +674,18 @@ export function ComponentComplement({
                     className="flex-grow-1"
                     id={`btn-addItemComplement-${index}`}
                     onClick={() => {
-                      if (complement.id) {
-                        handleAddItemComplement(complement, index)
-                      }
+                      complement.itens.push({
+                        name: '',
+                        description: '',
+                        amount: 0,
+                        bypass_amount: false,
+                        code: hash(6),
+                        status: true,
+                        value: 0,
+                        amount_alert: 0,
+                        quantity: 1
+                      })
+                      updateComplement(index, complement)
                     }}
                   >
                     + {t('add_item')}

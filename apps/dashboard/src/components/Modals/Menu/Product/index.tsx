@@ -37,11 +37,12 @@ import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
 import { OverlaySpinner } from '../../../OverlaySpinner'
 import { CropModal } from '../../CropModal'
 import { ActionsFooterButton } from '../../ModalFooter/Actions'
-import { ComponentComplement } from '../Complements'
-import { useForm } from 'react-hook-form'
+import { ComplementFormSchema, ComponentComplement } from '../Complements'
+import { FormProvider, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { api } from 'src/lib/axios'
+import Complement from '../../../../types/complements'
 
 const ProductFormSchema = z.object({
   // id: z.string().optional(),
@@ -54,7 +55,7 @@ const ProductFormSchema = z.object({
     .string()
     .min(3, 'A descrição deve ter pelo menos 3 caracteres')
     .max(100, 'A descrição deve ter no maúximo 100 caracteres')
-    .optional(),
+    .nullable(),
   value: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
   promoteValue: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
   valueTable: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
@@ -65,7 +66,10 @@ const ProductFormSchema = z.object({
   image: z.string().transform((value) => value.split(',')[1]).optional(),
   bypass_amount: z.boolean().default(true),
   amount: z.string().transform((value) => parseInt(value)),
-  amount_alert: z.string().transform((value) => parseInt(value))
+  amount_alert: z.string().transform((value) => parseInt(value)),
+  ncm_code: z.string().optional(),
+  disponibility: z.object({ week: z.object<any>({}) }),
+  complements: ComplementFormSchema.array()
 })
 
 type ProductFormData = z.infer<typeof ProductFormSchema>
@@ -96,9 +100,21 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     typeModal: type,
   } = useContext(MenuContext)
 
-  const { register, handleSubmit, watch, setValue } = useForm<ProductFormData>({
+
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
+    defaultValues: {
+      amount: 0,
+      amount_alert: 0,
+      description: null,
+      disponibility: {
+        week: new Week(),
+      },
+      complements: [],
+    }
   })
+
+  const { register, handleSubmit, watch, setValue, reset, formState } = form
 
   const [recicledComplements, setRecicledComplements] = useState<
     { id: number; link: boolean }[]
@@ -191,7 +207,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const resetState = () => {
     setNameInvalid(false)
-    setProductMenu(Product.newProduct(category))
+    // setProductMenu(Product.newProduct(category))
     setEventKeyTab('details')
   }
 
@@ -384,9 +400,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const handleSendForm = async (body: ProductFormData) => {
     if (type === 'create') {
+      body.disponibility.week = new Week()
       const { data } = await api.post('/dashboard/products', body)
       console.log(data);
-      
+
     }
   }
 
@@ -440,7 +457,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       {modalCrop}
       <Modal
         show={show}
-        onHide={handleClose}
+        onHide={() => {
+          reset()
+          handleClose()
+        }}
         onExit={() => {
           setRecicledComplements([])
           setInvalidComplementName(false)
@@ -615,6 +635,18 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   </Col>
                                   <Col sm>
                                     <Form.Label>
+                                      <b>Código NCM</b>
+                                    </Form.Label>
+                                    <Form.Select
+                                      {...register('ncm_code')}
+                                    >
+                                      <option disabled value={''}>
+                                        Selecione
+                                      </option>
+                                    </Form.Select>
+                                  </Col>
+                                  <Col sm>
+                                    <Form.Label>
                                       <b>{t('category')}</b>
                                     </Form.Label>
                                     <Form.Select
@@ -715,7 +747,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           variant="secondary"
                                           disabled={!watch('bypass_amount')}
                                           onClick={() => {
-                                            setValue('amount', Number(watch('amount')) - 1)
+                                            setValue('amount', Number(watch('amount')) <= 0 ? 0 : Number(watch('amount')) - 1)
                                           }}
                                         >
                                           -
@@ -754,7 +786,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           variant="secondary"
                                           disabled={!watch('bypass_amount')}
                                           onClick={() => {
-                                            setValue('amount_alert', watch('amount_alert') - 1)
+                                            setValue('amount_alert', Number(watch('amount_alert')) <= 0 ? 0 : watch('amount_alert') - 1)
                                           }}
                                         >
                                           -
@@ -836,25 +868,27 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                     </Tab.Pane>
                     <Tab.Pane eventKey="complements">
                       <br />
-                      <ComponentComplement
-                        typeModal="product"
-                        complementType="default"
-                        complements={product?.complements || []}
-                        recicled={recicledComplements}
-                        saveComplements={(newComplements) => {
-                          setProduct({
-                            ...product,
-                            complements: newComplements,
-                          })
-                        }}
-                        saveRecicledComplements={(recicled) =>
-                          setRecicledComplements([...recicled])
-                        }
-                        saveRemovedComplements={(removeds) =>
-                          setRemoveComplements([...removeds])
-                        }
-                        invalidComplement={invalidComplementName}
-                      />
+                      <FormProvider {...form}>
+                        <ComponentComplement
+                          typeModal="product"
+                          complementType="default"
+                          // complements={product?.complements || []}
+                          // recicled={recicledComplements}
+                          // saveComplements={(newComplements) => {
+                          //   setProduct({
+                          //     ...product,
+                          //     complements: newComplements,
+                          //   })
+                          // }}
+                          // saveRecicledComplements={(recicled) =>
+                          //   setRecicledComplements([...recicled])
+                          // }
+                          // saveRemovedComplements={(removeds) =>
+                          //   setRemoveComplements([...removeds])
+                          // }
+                          invalidComplement={invalidComplementName}
+                        />
+                      </FormProvider>
                     </Tab.Pane>
                     <Tab.Pane eventKey="promotion">
                       <Card className="wm-default text-dark mt-4">
