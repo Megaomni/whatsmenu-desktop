@@ -10,7 +10,7 @@ import { ModelAttributes } from '@adonisjs/lucid/types/model'
 type NewComplement = ModelAttributes<Complement>
 type VinculatedComplement = ModelAttributes<Omit<Complement, 'id'>>
 interface CreateProductPayload {
-  image: MultipartFile | null
+  image?: MultipartFile | null
   profile: Profile
   complements: NewComplement[]
   data: ModelAttributes<Product>
@@ -24,52 +24,61 @@ export class ProductService {
         order: data.order,
         categoryId: data.categoryId,
         description: data.description,
-        promoteStatus: JSON.parse(data.promoteStatus as any),
-        promoteStatusTable: JSON.parse(data.promoteStatusTable as any),
-        value: Number(data.value) || 0,
-        promoteValue: Number(data.promoteValue) || 0,
-        valueTable: Number(data.valueTable) || 0,
-        promoteValueTable: Number(data.promoteValueTable) || 0,
+        promoteStatus: data.promoteStatus,
+        promoteStatusTable: data.promoteStatusTable,
+        value: data.value,
+        promoteValue: data.promoteValue,
+        valueTable: data.valueTable,
+        promoteValueTable: data.promoteValueTable,
         disponibility: data.disponibility,
         ncm_code: data.ncm_code,
         status: true,
       })
 
-      if (image) {
-        const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${image.clientName}`
-        await image.moveToDisk(imageKey, 's3', {
-          contentType: image.headers['content-type'],
+      if (data.image) {
+        const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${'teste'}`
+        const buffer = Buffer.from(data.image, 'base64')
+        await drive.use('s3').put(imageKey, buffer, {
+          contentType: 'image/webp',
           visibility: 'public',
         })
 
+        // await image.moveToDisk(imageKey, 's3', {
+        //   contentType: image.headers['content-type'],
+        //   visibility: 'public',
+        // })
+
         product.image = await drive.use('s3').getUrl(imageKey)
+        console.log(product.image)
+
+        await product.save()
       }
 
-      let [newComplements, vinculatedComplements] = complements.reduce<
-        [NewComplement[], VinculatedComplement[]]
-      >(
-        ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
-          if (complement.id) {
-            vinculatedComps.push(complement)
-          } else {
-            newComps.push(complement)
-          }
-          return [newComplements, vinculatedComplements]
-        },
-        [[], []]
-      )
+      // let [newComplements, vinculatedComplements] = complements.reduce<
+      //   [NewComplement[], VinculatedComplement[]]
+      // >(
+      //   ([newComps, vinculatedComps], complement): [NewComplement[], VinculatedComplement[]] => {
+      //     if (complement.id) {
+      //       vinculatedComps.push(complement)
+      //     } else {
+      //       newComps.push(complement)
+      //     }
+      //     return [newComplements, vinculatedComplements]
+      //   },
+      //   [[], []]
+      // )
 
-      if (complements) {
-        newComplements = await product.related('complements').createMany(
-          complements.map(({ id, ...complement }) => ({
-            ...complement,
-            itens: complement.itens.map((item) => ({
-              ...item,
-              code: encryption.encrypt(item.name).substring(0, 6),
-            })),
-          }))
-        )
-      }
+      // if (complements) {
+      //   newComplements = await product.related('complements').createMany(
+      //     complements.map(({ id, ...complement }) => ({
+      //       ...complement,
+      //       itens: complement.itens.map((item) => ({
+      //         ...item,
+      //         code: encryption.encrypt(item.name).substring(0, 6),
+      //       })),
+      //     }))
+      //   )
+      // }
 
       // if (recicle) {
       //   for (const complement of recicle) {
@@ -82,7 +91,7 @@ export class ProductService {
       //   }
       // }
 
-      return { product: { ...product, complements: newComplements } }
+      return { product: { ...product } }
     } catch (error) {
       throw error
     }

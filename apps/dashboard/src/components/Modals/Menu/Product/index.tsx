@@ -1,3 +1,5 @@
+import { HelpVideos } from '@components/Modals/HelpVideos'
+import { useSession } from 'next-auth/react'
 import { FormEvent, useContext, useEffect, useState } from 'react'
 import {
   Button,
@@ -6,43 +8,67 @@ import {
   Container,
   Figure,
   Form,
+  FormGroup,
+  InputGroup,
   Modal,
   Nav,
   Row,
-  Tab,
-  InputGroup,
   Spinner,
-  FormGroup,
+  Tab,
 } from 'react-bootstrap'
-import { Dates } from '../../../Dates'
-import Complement, { ComplementType } from '../../../../types/complements'
-import { CropModal } from '../../CropModal'
+import { useTranslation } from 'react-i18next'
+import {
+  BsExclamationCircle
+} from 'react-icons/bs'
+import { AppContext } from '../../../../context/app.ctx'
+import { MenuContext } from '../../../../context/menu.ctx'
 import Week from '../../../../types/dates'
+import Product, { ProductType } from '../../../../types/product'
 import {
   copy,
   encryptEmoji,
   hash,
   mask,
   modifyFontValues,
-  scrollToElement,
-  verifyEmptyNameLength,
+  verifyEmptyNameLength
 } from '../../../../utils/wm-functions'
-import { useSession } from 'next-auth/react'
-import { OverlaySpinner } from '../../../OverlaySpinner'
-import { AppContext } from '../../../../context/app.ctx'
-import Product, { ProductType } from '../../../../types/product'
-import { MenuContext } from '../../../../context/menu.ctx'
-import {
-  BsExclamationCircle,
-  BsFillArrowDownCircleFill,
-  BsFillArrowUpCircleFill,
-} from 'react-icons/bs'
-import { ComponentComplement } from '../Complements'
-import { ActionsFooterButton } from '../../ModalFooter/Actions'
+import { Dates } from '../../../Dates'
 import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
-import { HelpVideos } from '@components/Modals/HelpVideos'
-import { useTranslation } from 'react-i18next'
+import { OverlaySpinner } from '../../../OverlaySpinner'
+import { CropModal } from '../../CropModal'
+import { ActionsFooterButton } from '../../ModalFooter/Actions'
+import { ComponentComplement } from '../Complements'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { api } from 'src/lib/axios'
+
+const ProductFormSchema = z.object({
+  // id: z.string().optional(),
+  categoryId: z.string().transform((value) => parseInt(value)),
+  name: z
+    .string()
+    .min(3, 'O nome deve ter pelo menos 3 caracteres')
+    .max(50, 'O nome deve ter no maúximo 50 caracteres'),
+  description: z
+    .string()
+    .min(3, 'A descrição deve ter pelo menos 3 caracteres')
+    .max(100, 'A descrição deve ter no maúximo 100 caracteres')
+    .optional(),
+  value: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValue: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+  valueTable: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValueTable: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteStatus: z.boolean().default(false),
+  promoteStatusTable: z.boolean().default(false),
+  // order: z.number(),
+  image: z.string().transform((value) => value.split(',')[1]).optional(),
+  bypass_amount: z.boolean().default(true),
+  amount: z.string().transform((value) => parseInt(value)),
+  amount_alert: z.string().transform((value) => parseInt(value))
+})
+
+type ProductFormData = z.infer<typeof ProductFormSchema>
 
 interface ProductProps {
   show: boolean
@@ -58,7 +84,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     handleConfirmModal,
     plansCategory,
     modalFooterOpened,
-    user,
     setLowInventoryItems,
     currency,
   } = useContext(AppContext)
@@ -71,19 +96,21 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     typeModal: type,
   } = useContext(MenuContext)
 
+  const { register, handleSubmit, watch, setValue } = useForm<ProductFormData>({
+    resolver: zodResolver(ProductFormSchema),
+  })
+
   const [recicledComplements, setRecicledComplements] = useState<
     { id: number; link: boolean }[]
   >([])
   const [removeComplements, setRemoveComplements] = useState<number[]>([])
 
   //PROPRIEDADES DO PRODUTO
-
   const [product, setProduct] = useState<Product | ProductType>(productMenu)
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
   const [invalidComplementName, setInvalidComplementName] =
     useState<boolean>(false)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
-  const [invalidItemName, setInvalidItemName] = useState<boolean>(false)
   const [nameInvalid, setNameInvalid] = useState<boolean>(false)
   const [valueInvalid, setValueInvalid] = useState<boolean>(false)
   const [valueTableInvalid, setValueTableInvalid] = useState<boolean>(false)
@@ -153,7 +180,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         if (image) {
           image.src = url
         }
-        setImageCroped(blob)
+        setValue('image', url)
       }}
       onHide={() => {
         setInputFileImage(undefined)
@@ -168,147 +195,147 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     setEventKeyTab('details')
   }
 
-  const createOrUpdateProduct = async (e: FormEvent) => {
-    e.preventDefault()
-    const inputName = document.getElementById(
-      `productName-${product?.id}`
-    ) as HTMLInputElement
-    const form = document.getElementById('form-products') as HTMLFormElement
-    try {
-      if (invalidWeek) {
-        handleShowToast({
-          type: `alert`,
-          content: `${t('message_cannot_invalid_times')}.`,
-          title: t('operating_hours'),
-          size: 35,
-        })
-        return
-      }
+  // const createOrUpdateProduct = async (e: FormEvent) => {
+  //   e.preventDefault()
+  //   const inputName = document.getElementById(
+  //     `productName-${product?.id}`
+  //   ) as HTMLInputElement
+  //   const form = document.getElementById('form-products') as HTMLFormElement
+  //   try {
+  //     if (invalidWeek) {
+  //       handleShowToast({
+  //         type: `alert`,
+  //         content: `${t('message_cannot_invalid_times')}.`,
+  //         title: t('operating_hours'),
+  //         size: 35,
+  //       })
+  //       return
+  //     }
 
-      const dataProducts = new FormData(form)
+  //     const dataProducts = new FormData(form)
 
-      if (!product?.name.trim().length) {
-        setEventKeyTab('details')
-        setNameInvalid(true)
-        setTimeout(() => {
-          inputName.focus()
-        }, 20)
-        return
-      }
+  //     if (!product?.name.trim().length) {
+  //       setEventKeyTab('details')
+  //       setNameInvalid(true)
+  //       setTimeout(() => {
+  //         inputName.focus()
+  //       }, 20)
+  //       return
+  //     }
 
-      if (product?.complements?.length) {
-        if (
-          verifyEmptyNameLength(product.complements, 'id', {
-            partialQuery: `#complement-name-`,
-            queryParentElement: `#create-product-modal`,
-            differTop: 200,
-          }) ||
-          verifyEmptyNameLength(
-            product.complements.flatMap((comp) => comp.itens.flat()),
-            'code',
-            {
-              partialQuery: `#complement-item-`,
-              queryParentElement: `#create-product-modal`,
-              differTop: -200,
-            }
-          )
-        ) {
-          handleShowToast({
-            type: 'alert',
-            title: t('complements'),
-            content: `${t('review_not_allowed')}.`,
-          })
-          setInvalidComplementName(true)
-          return
-        }
+  //     if (product?.complements?.length) {
+  //       if (
+  //         verifyEmptyNameLength(product.complements, 'id', {
+  //           partialQuery: `#complement-name-`,
+  //           queryParentElement: `#create-product-modal`,
+  //           differTop: 200,
+  //         }) ||
+  //         verifyEmptyNameLength(
+  //           product.complements.flatMap((comp) => comp.itens.flat()),
+  //           'code',
+  //           {
+  //             partialQuery: `#complement-item-`,
+  //             queryParentElement: `#create-product-modal`,
+  //             differTop: -200,
+  //           }
+  //         )
+  //       ) {
+  //         handleShowToast({
+  //           type: 'alert',
+  //           title: t('complements'),
+  //           content: `${t('review_not_allowed')}.`,
+  //         })
+  //         setInvalidComplementName(true)
+  //         return
+  //       }
 
-        // const complFindFather = product?.complements?.find(
-        //   (compl) => compl.name.trim() === ""
-        // );
-        // const complFind = product?.complements?.find(
-        //   (compl) =>
-        //     compl.itens.filter((item) => item.name.trim() === "").length
-        // );
-        // if (complFindFather) {
-        //   setInvalidComplementName(true);
+  //       // const complFindFather = product?.complements?.find(
+  //       //   (compl) => compl.name.trim() === ""
+  //       // );
+  //       // const complFind = product?.complements?.find(
+  //       //   (compl) =>
+  //       //     compl.itens.filter((item) => item.name.trim() === "").length
+  //       // );
+  //       // if (complFindFather) {
+  //       //   setInvalidComplementName(true);
 
-        //   return;
-        // }
-        // if (complFind) {
-        //   setInvalidItemName(true);
-        //   return;
-        // }
-      }
+  //       //   return;
+  //       // }
+  //       // if (complFind) {
+  //       //   setInvalidItemName(true);
+  //       //   return;
+  //       // }
+  //     }
 
-      imageCropped && dataProducts.append('image', imageCropped)
-      dataProducts.append('complements', copy(product.complements, 'json'))
-      dataProducts.append('recicle', copy(recicledComplements, 'json'))
-      dataProducts.append('disponibility', copy(product.disponibility, 'json'))
-      dataProducts.append('promoteStatus', copy(product.promoteStatus, 'json'))
-      dataProducts.append(
-        'promoteStatusTable',
-        copy(product.promoteStatusTable, 'json')
-      )
-      dataProducts.append('bypass_amount', copy(product.bypass_amount, 'json'))
+  //     imageCropped && dataProducts.append('image', imageCropped)
+  //     dataProducts.append('complements', copy(product.complements, 'json'))
+  //     dataProducts.append('recicle', copy(recicledComplements, 'json'))
+  //     dataProducts.append('disponibility', copy(product.disponibility, 'json'))
+  //     dataProducts.append('promoteStatus', copy(product.promoteStatus, 'json'))
+  //     dataProducts.append(
+  //       'promoteStatusTable',
+  //       copy(product.promoteStatusTable, 'json')
+  //     )
+  //     dataProducts.append('bypass_amount', copy(product.bypass_amount, 'json'))
 
-      setShowSaveSpinner(true)
+  //     setShowSaveSpinner(true)
 
-      if (type === 'update') {
-        dataProducts.append('order', String(product.order))
-        dataProducts.append(
-          'removeComplements',
-          copy(removeComplements, 'json')
-        )
-      } else {
-        dataProducts.append('order', String(category?.products?.length ?? 0))
-      }
+  //     if (type === 'update') {
+  //       dataProducts.append('order', String(product.order))
+  //       dataProducts.append(
+  //         'removeComplements',
+  //         copy(removeComplements, 'json')
+  //       )
+  //     } else {
+  //       dataProducts.append('order', String(category?.products?.length ?? 0))
+  //     }
 
-      dataProducts.set('name', encryptEmoji(product.name))
-      dataProducts.set('description', encryptEmoji(product.description))
+  //     dataProducts.set('name', encryptEmoji(product.name))
+  //     dataProducts.set('description', encryptEmoji(product.description))
 
-      if (type === 'update') {
-        const response = await Product.API({
-          type: 'UPDATE',
-          session,
-          data: dataProducts,
-          product: productMenu,
-          categories,
-          recicle: recicledComplements,
-          setCategories,
-        })
-        if ('inventory' in response) setLowInventoryItems(response.inventory)
-      }
+  //     if (type === 'update') {
+  //       const response = await Product.API({
+  //         type: 'UPDATE',
+  //         session,
+  //         data: dataProducts,
+  //         product: productMenu,
+  //         categories,
+  //         recicle: recicledComplements,
+  //         setCategories,
+  //       })
+  //       if ('inventory' in response) setLowInventoryItems(response.inventory)
+  //     }
 
-      if (type === 'create') {
-        const { data } = await api.post('/dashboard/products', dataProducts)
-        console.log(data);
+  //     if (type === 'create') {
+  //       const { data } = await api.post('/dashboard/products', dataProducts)
+  //       console.log(data);
 
-      }
+  //     }
 
-      handleShowToast({
-        position: 'middle-center',
-        title: t('product'),
-        content: `${product.name}, ${type === 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
-        type: 'success',
-        show: true,
-        delay: 1000,
-      })
-      setImageCroped(undefined)
-      handleClose()
-    } catch (e) {
-      console.error(e)
-      handleShowToast({
-        position: 'middle-center',
-        title: 'Produto',
-        content: `${t('could_not')} ${type === 'create' ? t('create') : t('update')} ${t('the_product')}, ${product.name}.`,
-        type: 'erro',
-        show: true,
-        delay: 1000,
-      })
-    } finally {
-      setShowSaveSpinner(false)
-    }
-  }
+  //     handleShowToast({
+  //       position: 'middle-center',
+  //       title: t('product'),
+  //       content: `${product.name}, ${type === 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
+  //       type: 'success',
+  //       show: true,
+  //       delay: 1000,
+  //     })
+  //     setImageCroped(undefined)
+  //     handleClose()
+  //   } catch (e) {
+  //     console.error(e)
+  //     handleShowToast({
+  //       position: 'middle-center',
+  //       title: 'Produto',
+  //       content: `${t('could_not')} ${type === 'create' ? t('create') : t('update')} ${t('the_product')}, ${product.name}.`,
+  //       type: 'erro',
+  //       show: true,
+  //       delay: 1000,
+  //     })
+  //   } finally {
+  //     setShowSaveSpinner(false)
+  //   }
+  // }
 
   const deleteProduct = () => {
     setShowSaveSpinner(true)
@@ -355,6 +382,14 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     })
   }
 
+  const handleSendForm = async (body: ProductFormData) => {
+    if (type === 'create') {
+      const { data } = await api.post('/dashboard/products', body)
+      console.log(data);
+      
+    }
+  }
+
   useEffect(() => {
     let interval
     if (show && window.innerWidth < 450) {
@@ -374,6 +409,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     }
   })
 
+  console.log(watch())
+
   return (
     <div
       onKeyDown={(e) => {
@@ -381,7 +418,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           switch (e.code) {
             case 'Enter':
               if (!invalidWeek) {
-                createOrUpdateProduct(e)
+                // createOrUpdateProduct(e)
               }
               break
             case 'Digit1':
@@ -431,7 +468,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           className={`position-relative`}
           style={{ height: '80vmin' }}
         >
-          <form id="form-products" onSubmit={createOrUpdateProduct}>
+          <form id="form-product" onSubmit={handleSubmit(handleSendForm)}>
             {showSpinner && (
               <div
                 className="position-absolute d-flex justify-content-center align-items-center bottom-0 end-0 start-0 top-0"
@@ -549,26 +586,11 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     </Form.Label>
                                     <div className="position-relative">
                                       <Form.Control
-                                        defaultValue={product?.name}
                                         id={`productName-${product?.id}`}
                                         autoFocus
                                         isInvalid={nameInvalid}
                                         maxLength={55}
-                                        name="name"
-                                        onChange={(e) => {
-                                          if (nameInvalid) {
-                                            setNameInvalid(false)
-                                          }
-                                          setProduct({
-                                            ...product,
-                                            name: e.target.value,
-                                          })
-                                        }}
-                                        onKeyDown={(e) =>
-                                          modifyFontValues(e, {
-                                            prop: product.name,
-                                          })
-                                        }
+                                        {...register('name')}
                                       />
                                       <Form.Control.Feedback
                                         tooltip
@@ -581,12 +603,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <div className="d-flex justify-content-end">
                                       <p
                                         className={
-                                          (product.name.length || 0) >= 55
+                                          (watch('name')?.length || 0) >= 55
                                             ? 'text-red-500'
                                             : ''
                                         }
                                       >
-                                        {product.name.length || 0}/55{' '}
+                                        {watch('name')?.length || 0}/55{' '}
                                         {t('characters')}
                                       </p>
                                     </div>
@@ -596,21 +618,15 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <b>{t('category')}</b>
                                     </Form.Label>
                                     <Form.Select
-                                      value={product.categoryId || category?.id}
-                                      name="categoryId"
-                                      onChange={(e) => {
-                                        setProduct({
-                                          ...product,
-                                          categoryId: parseInt(e.target.value),
-                                        })
-                                      }}
+                                      value={watch('categoryId')}
+                                      {...register('categoryId')}
                                     >
                                       {categories
                                         .filter((c) => c.type === 'default')
                                         .map((category) => (
                                           <option
                                             key={`${category.id}-${hash()}`}
-                                            value={category.id}
+                                            value={String(category.id)}
                                           >
                                             {category.name}
                                           </option>
@@ -643,23 +659,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                             defaultValue={(
                                               product?.value ?? 0
                                             ).toFixed(2)}
-                                            name="value"
-                                            isInvalid={valueInvalid}
-                                            onBlur={(e) => {
-                                              e.target.value.length
-                                                ? setValueInvalid(false)
-                                                : setValueInvalid(true)
-                                            }}
-                                            onFocus={() => {
-                                              setValueInvalid(false)
-                                            }}
-                                            onChange={(e) => {
-                                              mask(e, 'currency')
-                                              setProduct({
-                                                ...product,
-                                                value: Number(e.target.value),
-                                              })
-                                            }}
+                                            {...register('value', {
+                                              onChange: (e) => mask(e, 'currency')
+                                            })}
                                           />
                                           <Form.Control.Feedback
                                             tooltip
@@ -685,25 +687,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           defaultValue={(
                                             product?.valueTable ?? 0
                                           ).toFixed(2)}
-                                          name="valueTable"
-                                          isInvalid={valueTableInvalid}
-                                          onBlur={(e) => {
-                                            e.target.value.length
-                                              ? setValueTableInvalid(false)
-                                              : setValueTableInvalid(true)
-                                          }}
-                                          onFocus={() => {
-                                            setValueTableInvalid(false)
-                                          }}
-                                          onChange={(e) => {
-                                            mask(e, 'currency')
-                                            setProduct({
-                                              ...product,
-                                              valueTable: Number(
-                                                e.target.value
-                                              ),
-                                            })
-                                          }}
+                                          {...register('valueTable', {
+                                            onChange: (e) => mask(e, 'currency')
+                                          })}
                                         />
                                         <Form.Control.Feedback
                                           tooltip
@@ -727,46 +713,24 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={!watch('bypass_amount')}
                                           onClick={() => {
-                                            if (
-                                              typeof product.amount !== 'number'
-                                            )
-                                              return
-                                            setProduct({
-                                              ...product,
-                                              amount:
-                                                product.amount === 0
-                                                  ? 0
-                                                  : product.amount - 1,
-                                            })
+                                            setValue('amount', Number(watch('amount')) - 1)
                                           }}
                                         >
                                           -
                                         </Button>
                                         <Form.Control
-                                          value={product.amount || 0}
-                                          disabled={product.bypass_amount}
-                                          name="amount"
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              amount: Number(e.target.value),
-                                            })
-                                          }}
+                                          disabled={!watch('bypass_amount')}
+                                          {...register('amount')}
                                         />
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={!watch('bypass_amount')}
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
-                                            setProduct({
-                                              ...product,
-                                              amount: !product.amount
-                                                ? 1
-                                                : product.amount + 1,
-                                            })
+                                            setValue('amount', Number(watch('amount')) + 1)
                                           }}
                                         >
                                           +
@@ -788,50 +752,24 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={!watch('bypass_amount')}
                                           onClick={() => {
-                                            if (
-                                              typeof product.amount_alert !==
-                                              'number'
-                                            )
-                                              return
-                                            setProduct({
-                                              ...product,
-                                              amount_alert:
-                                                product.amount_alert === 0
-                                                  ? 0
-                                                  : product.amount_alert - 1,
-                                            })
+                                            setValue('amount_alert', watch('amount_alert') - 1)
                                           }}
                                         >
                                           -
                                         </Button>
                                         <Form.Control
-                                          value={product.amount_alert || 0}
-                                          name="amount_alert"
-                                          disabled={product.bypass_amount}
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              amount_alert: Number(
-                                                e.target.value
-                                              ),
-                                            })
-                                          }}
+                                          disabled={!watch('bypass_amount')}
+                                          {...register('amount_alert')}
                                         />
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={!watch('bypass_amount')}
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
-                                            setProduct({
-                                              ...product,
-                                              amount_alert:
-                                                !product.amount_alert
-                                                  ? 1
-                                                  : product.amount_alert + 1,
-                                            })
+                                            setValue('amount_alert', Number(watch('amount_alert')) + 1)
                                           }}
                                         >
                                           +
@@ -849,22 +787,17 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       className="d-flex align-items-end my-2"
                                     >
                                       <FormGroup>
-                                        <Form.Check
-                                          type="switch"
-                                          id="amount_bypass"
-                                          name="amount_bypass"
-                                          label={t('always_available')}
-                                          className="fs-6 text-nowrap"
-                                          defaultChecked={
-                                            !!product.bypass_amount
-                                          }
-                                          onClick={(e: any) => {
-                                            setProduct({
-                                              ...product,
-                                              bypass_amount: e.target?.checked,
-                                            })
-                                          }}
-                                        />
+                                        <Form.Label className='d-flex align-items-center'>
+                                          <Form.Check
+                                            type="switch"
+                                            className="fs-6 text-nowrap"
+                                            defaultChecked={
+                                              !!product.bypass_amount
+                                            }
+                                            {...register('bypass_amount')}
+                                          />
+                                          <span>{t('always_available')}</span>
+                                        </Form.Label>
                                       </FormGroup>
                                     </Col>
                                   </Row>
@@ -879,19 +812,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       as="textarea"
                                       rows={5}
                                       maxLength={500}
-                                      defaultValue={product?.description}
-                                      name="description"
-                                      onChange={(e) => {
-                                        setProduct({
-                                          ...product,
-                                          description: e.target.value,
-                                        })
-                                      }}
-                                      onKeyDown={(e) =>
-                                        modifyFontValues(e, {
-                                          prop: product.description,
-                                        })
-                                      }
+                                      {...register('description')}
                                     />
                                     <div className="d-flex justify-content-end">
                                       <p
@@ -973,13 +894,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     </Form.Label>
                                     <Form.Switch
                                       id="promotion"
-                                      checked={product?.promoteStatus}
-                                      onChange={(e) => {
-                                        setProduct({
-                                          ...product,
-                                          promoteStatus: e.target.checked,
-                                        })
-                                      }}
+                                      {...register('promoteStatus')}
                                     />
                                   </div>
                                 </Col>
@@ -988,7 +903,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <Card.Body>
                                       <p>
                                         {t('original_price')}:{' '}
-                                        {currency({ value: product.value })}
+                                        {currency({ value: watch('value') })}
                                       </p>
                                       <div className="d-flex align-items-baseline gap-3">
                                         <Form.Label>
@@ -997,19 +912,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           </b>
                                         </Form.Label>
                                         <Form.Control
-                                          defaultValue={(
-                                            product.promoteValue ?? 0
-                                          ).toFixed(2)}
-                                          name="promoteValue"
-                                          onChange={(e) => {
-                                            mask(e, 'currency')
-                                            setProduct({
-                                              ...product,
-                                              promoteValue: Number(
-                                                e.target.value
-                                              ),
-                                            })
-                                          }}
+                                          {...register('promoteValue', {
+                                            onChange: (e) => mask(e, 'currency')
+                                          })}
                                           className="w-75"
                                         />
                                       </div>
@@ -1039,13 +944,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   </Form.Label>
                                   <Form.Switch
                                     id="promotionTable"
-                                    checked={product?.promoteStatusTable}
-                                    onChange={(e) => {
-                                      setProduct({
-                                        ...product,
-                                        promoteStatusTable: e.target.checked,
-                                      })
-                                    }}
+                                    {...register('promoteStatusTable')}
                                   />
                                 </div>
                               </Col>
@@ -1064,19 +963,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       </Form.Label>
                                       <Form.Control
                                         className="w-75"
-                                        name="promoteValueTable"
-                                        defaultValue={(
-                                          product.promoteValueTable ?? 0
-                                        ).toFixed(2)}
-                                        onChange={(e) => {
-                                          mask(e, 'currency')
-                                          setProduct({
-                                            ...product,
-                                            promoteValueTable: Number(
-                                              e.target.value
-                                            ),
-                                          })
-                                        }}
+                                        {...register('promoteValueTable', {
+                                          onChange: (e) => mask(e, 'currency')
+                                        })}
                                       />
                                     </div>
                                   </Card.Body>
@@ -1205,15 +1094,16 @@ export function ProductModal({ show, handleClose }: ProductProps) {
             }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
-          {showActionsButton && (
+          <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>
+          {/* {showActionsButton && (
             <ActionsFooterButton
               type={type}
               disabledButtonSave={nameInvalid}
-              createOrUpdate={createOrUpdateProduct}
+              // createOrUpdate={createOrUpdateProduct}
               deleteFunction={deleteProduct}
               handleClose={handleClose}
             />
-          )}
+          )} */}
         </Modal.Footer>
         <OverlaySpinner
           show={showSaveSpinner}

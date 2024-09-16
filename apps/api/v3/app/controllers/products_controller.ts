@@ -11,16 +11,10 @@ export default class ProductsController {
       const user = auth.user
       await user?.load('profile')
 
-      const image = request.file('image', {
-        extnames: ['png', 'jpg', 'jpeg', 'webp'],
-        size: '8mb',
-      })
-
       const { product } = await this.productService.createProduct({
-        image,
         profile: user!.profile,
         data: data as any,
-        complements: JSON.parse(complements),
+        complements,
       })
 
       return response.json({ product })
