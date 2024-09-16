@@ -171,6 +171,8 @@ class CartController {
         .on('query', console.log)
         .paginate(page, 50)
 
+        console.log('BEST SELLER',results);
+        
       return response.json({ results })
     } catch (error) {
       console.error(error)
