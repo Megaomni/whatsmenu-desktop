@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - beta
-      - main
+      - feat/grove-nfe
       
     paths:
       - "apps/api/v2/**"
