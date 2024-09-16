@@ -41,7 +41,7 @@ import { z } from 'zod'
 import { ComplementItems } from './ComplementItems'
 
 export const ComplementFormSchema = z.object({
-  id: z.string().transform((value) => {
+  id: z.number().transform((value) => {
     const parsedId = Number(value)
     if (isNaN(parsedId)) {
       return undefined
@@ -54,8 +54,8 @@ export const ComplementFormSchema = z.object({
     .max(50, 'O nome deve ter no maúximo 50 caracteres'),
   required: z.boolean(),
   type: z.enum(['default', 'pizza']),
-  min: z.string().min(1).max(10000).transform((value) => parseInt(value)),
-  max: z.string().min(1).max(10000).transform((value) => parseInt(value)),
+  min: z.number().min(1).max(10000),
+  max: z.number().min(1).max(10000),
   order: z.number(),
   itens: z
     .array(
@@ -66,7 +66,7 @@ export const ComplementFormSchema = z.object({
           .min(3, 'O nome deve ter pelo menos 3 caracteres')
           .max(70, 'O nome deve ter no maúximo 70 caracteres'),
         description: z.string().max(100, 'A descrição deve ter no maúximo 100 caracteres').nullable(),
-        value: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+        value: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
       })
     ),
 })
