@@ -24,6 +24,7 @@ export function ProfileOpeningHours() {
   const [now, setNow] = useState(DateTime.now().toFormat('HH:mm:ss'))
   const [fuso, setFuso] = useState(profile.timeZone)
   const [count, setCount] = useState(0)
+  const timezones = t('timezones', { returnObjects: true }) as any[]
 
   const [nextDate, setNextDate] = useState('')
   const [forceClose, setForceClose] = useState(profile.options.forceClose)
@@ -244,53 +245,55 @@ export function ProfileOpeningHours() {
         </Card>
       )}
       <br />
-      <Card>
-        <Card.Header className="text-dark">
-          <h4 className="mb-0">
-            <b>{t('time_zone')}</b>
-          </h4>
-        </Card.Header>
-        <Card.Body>
-          <Container className="mx-0 px-0">
-            <Row>
-              <Col md className="mb-2">
-                <Form.Label>{t('select_time_zone')}</Form.Label>
-                <Form.Select
-                  value={fuso}
-                  onChange={(e) => {
-                    setFuso(e.target.value)
-                  }}
-                >
-                  {(t('timezones', { returnObjects: true }) as any[]).map(
-                    (fuso) => (
-                      <option key={fuso.label} value={fuso.value}>
-                        {fuso.label}
-                      </option>
-                    )
-                  )}
-                </Form.Select>
-              </Col>
-              <Col md className="d-flex mb-2">
-                <div className="flex-grow-1 mt-auto">
-                  <Form.Label>{t('now')}</Form.Label>
-                  <Form.Control readOnly value={now} />
-                </div>
-              </Col>
-              <Col md="2" className="d-flex mb-2">
-                <Button
-                  variant="success"
-                  className="flex-grow-1 mt-auto"
-                  onClick={() => {
-                    handleFuso()
-                  }}
-                >
-                  {t('save')}
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        </Card.Body>
-      </Card>
+      {timezones.length > 1 && (
+        <>
+          <Card>
+            <Card.Header className="text-dark">
+              <h4 className="mb-0">
+                <b>{t('time_zone')}</b>
+              </h4>
+            </Card.Header>
+            <Card.Body>
+              <Container className="mx-0 px-0">
+                <Row>
+                  <Col md className="mb-2">
+                    <Form.Label>{t('select_time_zone')}</Form.Label>
+                    <Form.Select
+                      value={fuso}
+                      onChange={(e) => {
+                        setFuso(e.target.value)
+                      }}
+                    >
+                      {timezones.map((fuso) => (
+                        <option key={fuso.label} value={fuso.value}>
+                          {fuso.label}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  </Col>
+                  <Col md className="d-flex mb-2">
+                    <div className="flex-grow-1 mt-auto">
+                      <Form.Label>{t('now')}</Form.Label>
+                      <Form.Control readOnly value={now} />
+                    </div>
+                  </Col>
+                  <Col md="2" className="d-flex mb-2">
+                    <Button
+                      variant="success"
+                      className="flex-grow-1 mt-auto"
+                      onClick={() => {
+                        handleFuso()
+                      }}
+                    >
+                      {t('save')}
+                    </Button>
+                  </Col>
+                </Row>
+              </Container>
+            </Card.Body>
+          </Card>
+        </>
+      )}
       <br />
       {profile && (
         <Dates
