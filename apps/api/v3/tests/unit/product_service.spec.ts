@@ -135,6 +135,120 @@ test.group('Product service', (group) => {
     }
   })
 
+  // test('Deve ser possível criar um produto com imagem', async ({ assert }) => {
+  //   const category = await Category.create({
+  //     name: 'Teste',
+  //     profileId: profile.id,
+  //     type: 'default',
+  //     status: true,
+  //   })
+
+  //   const mockImageBase64 =
+  //     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/gg4FFsAAAAASUVORK5CYII='
+
+  //   const body = {
+  //     image: mockImageBase64,
+  //     complements: [],
+  //     data: {
+  //       amount: 1,
+  //       countRequests: 0,
+  //       order: 1,
+  //       bypass_amount: false,
+  //       amount_alert: 0,
+  //       description: 'Teste',
+  //       name: 'Teste',
+  //       disponibility: {
+  //         store: {
+  //           delivery: true,
+  //           table: true,
+  //           package: true,
+  //         },
+  //         week: {
+  //           sunday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 7,
+  //               active: true,
+  //             },
+  //           ],
+  //           monday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 1,
+  //               active: true,
+  //             },
+  //           ],
+  //           tuesday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 2,
+  //               active: true,
+  //             },
+  //           ],
+  //           wednesday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 3,
+  //               active: true,
+  //             },
+  //           ],
+  //           thursday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 4,
+  //               active: true,
+  //             },
+  //           ],
+  //           friday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 5,
+  //               active: true,
+  //             },
+  //           ],
+  //           saturday: [
+  //             {
+  //               code: '123456',
+  //               open: '00:00',
+  //               close: '23:59',
+  //               weekDay: 6,
+  //               active: true,
+  //             },
+  //           ],
+  //         },
+  //       },
+  //       promoteValue: 0,
+  //       promoteStatus: false,
+  //       promoteStatusTable: false,
+  //       promoteValueTable: 0,
+  //       valueTable: 0,
+  //       value: 0,
+  //       status: true,
+  //       categoryId: category.id,
+  //     },
+  //     profile,
+  //   }
+
+  //   try {
+  //     const response = await productService.createProduct(body)
+  //     assert.exists(response.product.image, 'Imagem associada ao produto não foi encontrada')
+  //   } catch (error) {
+  //     throw error
+  //   }
+  // })
+
   test('Deve ser possível criar complementos novos junto com o produto', async ({ assert }) => {
     const category = await Category.create({
       name: 'Teste',
