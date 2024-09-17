@@ -9,7 +9,7 @@ import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
 type NewComplement = ModelAttributes<Complement>
 type VinculatedComplement = ModelAttributes<Complement>
-export interface CreateProductPayload<Partial> {
+export interface CreateProductPayload {
   image?: MultipartFile | null
   profile: Profile
   complements: NewComplement[]
@@ -17,7 +17,7 @@ export interface CreateProductPayload<Partial> {
 }
 
 export class ProductService {
-  async createProduct({ profile, complements, data }: CreateProductPayload<Partial<Product>>) {
+  async createProduct({ profile, complements, data }: CreateProductPayload) {
     try {
       const product = await Product.create({
         name: data.name,
@@ -44,7 +44,6 @@ export class ProductService {
         })
 
         product.image = await drive.use('s3').getUrl(imageKey)
-
         await product.save()
       }
 

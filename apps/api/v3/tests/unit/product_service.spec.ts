@@ -1,89 +1,23 @@
 import { test } from '@japa/runner'
-import { CreateProductPayload, ProductService } from '../../app/services/product_service.js'
-import Product from '#models/product'
-import Complement from '#models/complement'
-import Profile from '#models/profile'
-import { ProfileFactory } from '#database/factories/profile_factory'
 import sinon from 'sinon'
-import drive from '@adonisjs/drive/services/main'
-import { DateTime } from 'luxon'
+import { ProductService } from '../../app/services/product_service.js'
+import Profile from '#models/profile'
+import { UserFactory } from '#database/factories/user_factory'
+import Category from '#models/category'
+import User from '#models/user'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 test.group('Product service', (group) => {
   const productService = new ProductService()
+  let user: User
   let profile: Profile
-  let productStub: sinon.SinonStub
-  let complementStub: sinon.SinonStub
-  let drivePutStub: sinon.SinonStub
-  let driveGetUrlStub: sinon.SinonStub
-
-  // Simulação de dados do produto e complementos
-  const data: CreateProductPayload = {
-    name: 'Pizza Margherita',
-    description: 'Uma deliciosa pizza de Margherita.',
-    value: 50.0,
-    status: true,
-    order: 1,
-    categoryId: 1,
-    ncm_code: '12345678',
-    promoteValue: 45.0,
-    promoteStatus: true,
-    disponibility: {
-      store: { delivery: true, table: true, package: false },
-      week: [], // Defina os dados da semana conforme necessário
-    },
-  }
-
-  const complements = [
-    {
-      id: 1,
-      name: 'Extra queijo',
-      type: 'default',
-      order: 1,
-      min: 0,
-      max: 3,
-      required: false,
-      itens: [{ name: 'Queijo Muçarela' }],
-      created_at: DateTime.local(),
-      updated_at: DateTime.local(),
-    },
-  ]
-
-  // Configura os stubs
-  async function setupStubs() {
-    profile = await ProfileFactory.create()
-
-    productStub = sinon.stub(Product, 'create').resolves({
-      id: 1,
-      name: data.name,
-      order: data.order,
-      categoryId: data.categoryId,
-      description: data.description,
-      value: data.value,
-      status: data.status,
-    } as Product)
-
-    complementStub = sinon.stub(Product.prototype.related('complements'), 'createMany').resolves([
-      {
-        id: 1,
-        name: 'Extra queijo',
-        type: 'default',
-        order: 1,
-        min: 0,
-        max: 3,
-        required: false,
-        itens: [{ name: 'Queijo Muçarela' }],
-        created_at: DateTime.local(),
-        updated_at: DateTime.local(),
-      } as Complement,
-    ])
-  }
-
-  // Configura os stubs de drive
-  drivePutStub = sinon.stub(drive.use('s3'), 'put').resolves()
-  driveGetUrlStub = sinon.stub(drive.use('s3'), 'getUrl').resolves('http://mock-url.com')
 
   group.setup(async () => {
-    await setupStubs()
+    user = await UserFactory.with('profile', 1).create()
+    await user.load('profile')
+    profile = user.profile
   })
 
   group.teardown(() => {
@@ -91,23 +25,230 @@ test.group('Product service', (group) => {
   })
 
   test('Deve ser possível criar um novo produto', async ({ assert }) => {
-    const result = await productService.createProduct({
+    // Arrange
+    const category = await Category.create({
+      name: 'Teste',
+      profileId: profile.id,
+      type: 'default',
+      status: true,
+    })
+    const body = {
+      complements: [],
+      data: {
+        amount: 1,
+        countRequests: 0,
+        order: 1,
+        bypass_amount: false,
+        amount_alert: 0,
+        description: 'Teste',
+        name: 'Teste',
+        disponibility: {
+          store: {
+            delivery: true,
+            table: true,
+            package: true,
+          },
+          week: {
+            sunday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 7,
+                active: true,
+              },
+            ],
+            monday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 1,
+                active: true,
+              },
+            ],
+            tuesday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 2,
+                active: true,
+              },
+            ],
+            wednesday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 3,
+                active: true,
+              },
+            ],
+            thursday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 4,
+                active: true,
+              },
+            ],
+            friday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 5,
+                active: true,
+              },
+            ],
+            saturday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 6,
+                active: true,
+              },
+            ],
+          },
+        },
+        promoteValue: 0,
+        promoteStatus: false,
+        promoteStatusTable: false,
+        promoteValueTable: 0,
+        valueTable: 0,
+        value: 0,
+        status: true,
+        categoryId: category.id,
+      },
       profile,
-      data,
-      complements,
-      image: null, // Nenhuma imagem sendo passada
+    }
+
+    try {
+      const response = await productService.createProduct(body)
+      assert.exists(response.product)
+      assert.equal(response.product.name, 'Teste')
+      assert.equal(response.product.description, 'Teste')
+      assert.equal(response.product.categoryId, category.id)
+      assert.deepEqual(response.product.disponibility, body.data.disponibility)
+    } catch (error) {
+      throw error
+    }
+  })
+
+  test('Deve ser possível criar um produto com imagem', async ({ assert }) => {
+    const category = await Category.create({
+      name: 'Teste',
+      profileId: profile.id,
+      type: 'default',
+      status: true,
     })
 
-    // Verificar se o método Product.create foi chamado com os dados corretos
-    assert.isTrue(productStub.calledOnce)
-    assert.isTrue(productStub.calledWith(sinon.match(data)))
+    const mockImageBase64 =
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/gg4FFsAAAAASUVORK5CYII='
 
-    // Verificar se o método `createMany` foi chamado para os complementos
-    assert.isTrue(complementStub.calledOnce)
-    assert.deepEqual(result.product.complements.length, 1)
+    const body = {
+      image: mockImageBase64,
+      complements: [],
+      data: {
+        amount: 1,
+        countRequests: 0,
+        order: 1,
+        bypass_amount: false,
+        amount_alert: 0,
+        description: 'Teste',
+        name: 'Teste',
+        disponibility: {
+          store: {
+            delivery: true,
+            table: true,
+            package: true,
+          },
+          week: {
+            sunday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 7,
+                active: true,
+              },
+            ],
+            monday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 1,
+                active: true,
+              },
+            ],
+            tuesday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 2,
+                active: true,
+              },
+            ],
+            wednesday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 3,
+                active: true,
+              },
+            ],
+            thursday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 4,
+                active: true,
+              },
+            ],
+            friday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 5,
+                active: true,
+              },
+            ],
+            saturday: [
+              {
+                code: '123456',
+                open: '00:00',
+                close: '23:59',
+                weekDay: 6,
+                active: true,
+              },
+            ],
+          },
+        },
+        promoteValue: 0,
+        promoteStatus: false,
+        promoteStatusTable: false,
+        promoteValueTable: 0,
+        valueTable: 0,
+        value: 0,
+        status: true,
+        categoryId: category.id,
+      },
+      profile,
+    }
 
-    // Verificar se o drive.put e drive.getUrl não foram chamados (já que não há imagem)
-    assert.isTrue(drivePutStub.notCalled)
-    assert.isTrue(driveGetUrlStub.notCalled)
+    try {
+      const response = await productService.createProduct(body)
+      assert.exists(response.product.image, 'Imagem associada ao produto não foi encontrada')
+    } catch (error) {
+      throw error
+    }
   })
 })
