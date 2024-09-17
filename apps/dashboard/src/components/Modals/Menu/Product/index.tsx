@@ -1,6 +1,6 @@
 import { HelpVideos } from '@components/Modals/HelpVideos'
-import { useSession } from 'next-auth/react'
-import { FormEvent, useContext, useEffect, useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useContext, useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -16,56 +16,58 @@ import {
   Spinner,
   Tab,
 } from 'react-bootstrap'
+import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import {
   BsExclamationCircle
 } from 'react-icons/bs'
+import { api } from 'src/lib/axios'
+import { z } from 'zod'
 import { AppContext } from '../../../../context/app.ctx'
 import { MenuContext } from '../../../../context/menu.ctx'
 import Week from '../../../../types/dates'
-import Product, { ProductType } from '../../../../types/product'
 import {
-  copy,
-  encryptEmoji,
   hash,
-  mask,
-  modifyFontValues,
-  verifyEmptyNameLength
+  mask
 } from '../../../../utils/wm-functions'
 import { Dates } from '../../../Dates'
 import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
 import { OverlaySpinner } from '../../../OverlaySpinner'
 import { CropModal } from '../../CropModal'
-import { ActionsFooterButton } from '../../ModalFooter/Actions'
-import { ComponentComplement } from '../Complements'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { api } from 'src/lib/axios'
+import { ComplementFormSchema, ComponentComplement } from '../Complements'
 
 const ProductFormSchema = z.object({
-  // id: z.string().optional(),
-  categoryId: z.string().transform((value) => parseInt(value)),
+  id: z.number().optional(),
+  categoryId: z.number(),
   name: z
     .string()
     .min(3, 'O nome deve ter pelo menos 3 caracteres')
-    .max(50, 'O nome deve ter no maúximo 50 caracteres'),
+    .max(55, 'O nome deve ter no máximo 55 caracteres'),
   description: z
     .string()
-    .min(3, 'A descrição deve ter pelo menos 3 caracteres')
-    .max(100, 'A descrição deve ter no maúximo 100 caracteres')
-    .optional(),
-  value: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
-  promoteValue: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
-  valueTable: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
-  promoteValueTable: z.string().transform((value) => parseFloat(Number(value).toFixed(2))),
+    .max(100, 'A descrição deve ter no máximo 100 caracteres')
+    .nullable(),
+  value: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValue: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  valueTable: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValueTable: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
   promoteStatus: z.boolean().default(false),
   promoteStatusTable: z.boolean().default(false),
-  // order: z.number(),
-  image: z.string().transform((value) => value.split(',')[1]).optional(),
+  order: z.number(),
+  image: z.string().nullable().transform((value) => value && value.split(',')[1]),
   bypass_amount: z.boolean().default(true),
-  amount: z.string().transform((value) => parseInt(value)),
-  amount_alert: z.string().transform((value) => parseInt(value))
+  amount: z.number(),
+  amount_alert: z.number(),
+  ncm_code: z.string().optional(),
+  disponibility: z.object({ 
+    week: z.any(),
+    store: z.object({
+      delivery: z.boolean(),
+      package: z.boolean(),
+      table: z.boolean()
+    })
+   }),
+  complements: ComplementFormSchema.array()
 })
 
 type ProductFormData = z.infer<typeof ProductFormSchema>
@@ -80,60 +82,59 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const { t } = useTranslation()
   const {
     profile,
-    handleShowToast,
-    handleConfirmModal,
     plansCategory,
     modalFooterOpened,
-    setLowInventoryItems,
     currency,
   } = useContext(AppContext)
   const {
-    product: productMenu,
-    setProduct: setProductMenu,
+    product,
     category,
     categories,
-    setCategories,
     typeModal: type,
   } = useContext(MenuContext)
 
-  const { register, handleSubmit, watch, setValue } = useForm<ProductFormData>({
+
+  const form = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
+    defaultValues: {
+      amount: product?.amount || 0,
+      amount_alert: product?.amount_alert || 0,
+      description: product?.description || null,
+      complements: product?.complements || [],
+      order: product.order || (category?.products?.length || 0 + 1),
+      value: product?.value || 0,
+      valueTable: product?.valueTable || 0,
+      promoteValue: product?.promoteValue || 0,
+      promoteValueTable: product?.promoteValueTable || 0,
+      promoteStatus: Boolean(product?.promoteStatus) || false,
+      promoteStatusTable: Boolean(product?.promoteStatusTable) || false,
+      bypass_amount: Boolean(product?.bypass_amount) || true,
+      name: product?.name || 'teste',
+      disponibility: {
+        store: {
+          delivery: product?.disponibility?.store?.delivery || true,
+          table: product?.disponibility?.store?.table || true,
+          package: product?.disponibility?.store?.package || true,
+        }
+      }
+    }
   })
 
-  const [recicledComplements, setRecicledComplements] = useState<
-    { id: number; link: boolean }[]
-  >([])
-  const [removeComplements, setRemoveComplements] = useState<number[]>([])
+  const { register, handleSubmit, watch, setValue, reset, formState } = form
 
   //PROPRIEDADES DO PRODUTO
-  const [product, setProduct] = useState<Product | ProductType>(productMenu)
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
-  const [invalidComplementName, setInvalidComplementName] =
-    useState<boolean>(false)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
-  const [nameInvalid, setNameInvalid] = useState<boolean>(false)
-  const [valueInvalid, setValueInvalid] = useState<boolean>(false)
-  const [valueTableInvalid, setValueTableInvalid] = useState<boolean>(false)
   const [showSpinner, setShowSpinner] = useState<boolean>(false)
-  const [showActionsButton, setShowActionsButton] = useState<boolean>(true)
 
   const [eventKeyTab, setEventKeyTab] = useState<
     'details' | 'complements' | 'promotion' | 'disponibility'
   >('details')
   const [week, setWeek] = useState<Week>(
-    new Week(productMenu.disponibility.week)
+    new Week(product.disponibility.week)
   )
-  const [imageCropped, setImageCroped] = useState<Blob>()
 
-  /** Input tipo file, se input crop modal aparece */
   const [inputFileImage, setInputFileImage] = useState<HTMLInputElement>()
-
-  const { data: session } = useSession()
-
-  const setProductState = (prod: ProductType) => {
-    const { category, ...productState } = prod
-    setProduct(new Product(copy(productState), category))
-  }
 
   // LABELS
 
@@ -157,260 +158,37 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         : '',
   }
 
-  useEffect(() => {
-    setProductState(productMenu)
-    setWeek(new Week(productMenu.disponibility.week))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productMenu])
-
-  useEffect(() => {
-    product.disponibility.week = week
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [week])
-
-  const modalCrop = (
-    <CropModal
-      typeCrop="productImage"
-      show={!!inputFileImage}
-      inputFile={inputFileImage}
-      setImageBlob={(blob, url) => {
-        const image = document.getElementById(
-          'productImage'
-        ) as HTMLImageElement
-        if (image) {
-          image.src = url
-        }
-        setValue('image', url)
-      }}
-      onHide={() => {
-        setInputFileImage(undefined)
-        setShowSpinner(false)
-      }}
-    />
-  )
-
-  const resetState = () => {
-    setNameInvalid(false)
-    setProductMenu(Product.newProduct(category))
-    setEventKeyTab('details')
-  }
-
-  // const createOrUpdateProduct = async (e: FormEvent) => {
-  //   e.preventDefault()
-  //   const inputName = document.getElementById(
-  //     `productName-${product?.id}`
-  //   ) as HTMLInputElement
-  //   const form = document.getElementById('form-products') as HTMLFormElement
-  //   try {
-  //     if (invalidWeek) {
-  //       handleShowToast({
-  //         type: `alert`,
-  //         content: `${t('message_cannot_invalid_times')}.`,
-  //         title: t('operating_hours'),
-  //         size: 35,
-  //       })
-  //       return
-  //     }
-
-  //     const dataProducts = new FormData(form)
-
-  //     if (!product?.name.trim().length) {
-  //       setEventKeyTab('details')
-  //       setNameInvalid(true)
-  //       setTimeout(() => {
-  //         inputName.focus()
-  //       }, 20)
-  //       return
-  //     }
-
-  //     if (product?.complements?.length) {
-  //       if (
-  //         verifyEmptyNameLength(product.complements, 'id', {
-  //           partialQuery: `#complement-name-`,
-  //           queryParentElement: `#create-product-modal`,
-  //           differTop: 200,
-  //         }) ||
-  //         verifyEmptyNameLength(
-  //           product.complements.flatMap((comp) => comp.itens.flat()),
-  //           'code',
-  //           {
-  //             partialQuery: `#complement-item-`,
-  //             queryParentElement: `#create-product-modal`,
-  //             differTop: -200,
-  //           }
-  //         )
-  //       ) {
-  //         handleShowToast({
-  //           type: 'alert',
-  //           title: t('complements'),
-  //           content: `${t('review_not_allowed')}.`,
-  //         })
-  //         setInvalidComplementName(true)
-  //         return
-  //       }
-
-  //       // const complFindFather = product?.complements?.find(
-  //       //   (compl) => compl.name.trim() === ""
-  //       // );
-  //       // const complFind = product?.complements?.find(
-  //       //   (compl) =>
-  //       //     compl.itens.filter((item) => item.name.trim() === "").length
-  //       // );
-  //       // if (complFindFather) {
-  //       //   setInvalidComplementName(true);
-
-  //       //   return;
-  //       // }
-  //       // if (complFind) {
-  //       //   setInvalidItemName(true);
-  //       //   return;
-  //       // }
-  //     }
-
-  //     imageCropped && dataProducts.append('image', imageCropped)
-  //     dataProducts.append('complements', copy(product.complements, 'json'))
-  //     dataProducts.append('recicle', copy(recicledComplements, 'json'))
-  //     dataProducts.append('disponibility', copy(product.disponibility, 'json'))
-  //     dataProducts.append('promoteStatus', copy(product.promoteStatus, 'json'))
-  //     dataProducts.append(
-  //       'promoteStatusTable',
-  //       copy(product.promoteStatusTable, 'json')
-  //     )
-  //     dataProducts.append('bypass_amount', copy(product.bypass_amount, 'json'))
-
-  //     setShowSaveSpinner(true)
-
-  //     if (type === 'update') {
-  //       dataProducts.append('order', String(product.order))
-  //       dataProducts.append(
-  //         'removeComplements',
-  //         copy(removeComplements, 'json')
-  //       )
-  //     } else {
-  //       dataProducts.append('order', String(category?.products?.length ?? 0))
-  //     }
-
-  //     dataProducts.set('name', encryptEmoji(product.name))
-  //     dataProducts.set('description', encryptEmoji(product.description))
-
-  //     if (type === 'update') {
-  //       const response = await Product.API({
-  //         type: 'UPDATE',
-  //         session,
-  //         data: dataProducts,
-  //         product: productMenu,
-  //         categories,
-  //         recicle: recicledComplements,
-  //         setCategories,
-  //       })
-  //       if ('inventory' in response) setLowInventoryItems(response.inventory)
-  //     }
-
-  //     if (type === 'create') {
-  //       const { data } = await api.post('/dashboard/products', dataProducts)
-  //       console.log(data);
-
-  //     }
-
-  //     handleShowToast({
-  //       position: 'middle-center',
-  //       title: t('product'),
-  //       content: `${product.name}, ${type === 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
-  //       type: 'success',
-  //       show: true,
-  //       delay: 1000,
-  //     })
-  //     setImageCroped(undefined)
-  //     handleClose()
-  //   } catch (e) {
-  //     console.error(e)
-  //     handleShowToast({
-  //       position: 'middle-center',
-  //       title: 'Produto',
-  //       content: `${t('could_not')} ${type === 'create' ? t('create') : t('update')} ${t('the_product')}, ${product.name}.`,
-  //       type: 'erro',
-  //       show: true,
-  //       delay: 1000,
-  //     })
-  //   } finally {
-  //     setShowSaveSpinner(false)
-  //   }
-  // }
-
-  const deleteProduct = () => {
-    setShowSaveSpinner(true)
-    handleConfirmModal({
-      actionConfirm: async () => {
-        try {
-          await Product.API({
-            type: 'DELETE',
-            session,
-            product: productMenu,
-            categories,
-            setCategories,
-          })
-
-          handleShowToast({
-            position: 'middle-center',
-            title: 'Produto',
-            content: `${product.name}, ${t('was_deleted_successfully')}.`,
-            type: 'success',
-            show: true,
-            delay: 1000,
-          })
-
-          handleClose()
-        } catch (e) {
-          console.error(e)
-          handleShowToast({
-            position: 'middle-center',
-            title: t('product'),
-            content: `${t('could_not_delete_product')}, ${product.name}.`,
-            type: 'erro',
-            show: true,
-            delay: 1000,
-          })
-        }
-        setShowSaveSpinner(false)
-      },
-      actionCancel: () => {
-        setShowSaveSpinner(false)
-      },
-      title: t('product'),
-      message: `${t('delete_the_product')}:
-      ${product.name}?`,
-    })
-  }
-
   const handleSendForm = async (body: ProductFormData) => {
-    if (type === 'create') {
-      const { data } = await api.post('/dashboard/products', body)
-      console.log(data);
-      
-    }
+    const { data } = await api[type === 'create' ? 'post' : 'put']('/dashboard/products', body)
+    console.log(data);
   }
 
   useEffect(() => {
-    let interval
-    if (show && window.innerWidth < 450) {
-      interval = setInterval(() => {
-        const inputs = document.querySelectorAll(
-          `[data-hidde-actions=products]`
-        )
-        inputs?.forEach((input: unknown) => {
-          ; (input as HTMLElement).onfocus = () => setShowActionsButton(false)
-            ; (input as HTMLElement).onblur = () => setShowActionsButton(true)
-        })
-      }, 5000)
-    } else {
-      if (interval) {
-        clearInterval(interval)
-      }
-    }
-  })
+    setValue('disponibility.week', week)
+  }, [week, setValue])
 
-  console.log(watch())
+  useEffect(() => {
+    reset({
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      amount: product.amount,
+      amount_alert: product.amount_alert,
+      description: product.description,
+      complements: product.complements.map((comp) => ({...comp, required: Boolean(comp.required)})),
+      order: product.order,
+      value: product.value,
+      valueTable: product.valueTable,
+      promoteValue: product.promoteValue,
+      promoteValueTable: product.promoteValueTable,
+      promoteStatus: Boolean(product.promoteStatus),
+      promoteStatusTable: Boolean(product.promoteStatusTable),
+      bypass_amount: Boolean(product.bypass_amount),
+      disponibility: product.disponibility,
 
+    })
+  }, [product, setValue, reset])
+  
   return (
     <div
       onKeyDown={(e) => {
@@ -437,13 +215,29 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         }
       }}
     >
-      {modalCrop}
+      <CropModal
+        typeCrop="productImage"
+        show={!!inputFileImage}
+        inputFile={inputFileImage}
+        setImageBlob={(blob, url) => {
+          const image = document.getElementById(
+            'productImage'
+          ) as HTMLImageElement
+          if (image) {
+            image.src = url
+          }
+          setValue('image', url)
+        }}
+        onHide={() => {
+          setInputFileImage(undefined)
+          setShowSpinner(false)
+        }}
+      />
       <Modal
         show={show}
-        onHide={handleClose}
-        onExit={() => {
-          setRecicledComplements([])
-          setInvalidComplementName(false)
+        onHide={() => {
+          reset()
+          handleClose()
         }}
         keyboard
         scrollable
@@ -451,15 +245,11 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         dialogClassName={`${window.innerWidth > 768 ? 'modal-90' : ''} centered mx-auto`}
         fullscreen={window.innerWidth < 768 ? true : undefined}
         centered
-        onExited={() => {
-          resetState()
-          setRemoveComplements([])
-        }}
       >
         <Modal.Header closeButton>
           <Modal.Title>
             {type === 'create' ? t('add') : t('edit')} {t('product')}{' '}
-            {type === 'update' && `(${productMenu.name})`}
+            {type === 'update' && `(${product.name})`}
           </Modal.Title>
         </Modal.Header>
 
@@ -484,7 +274,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                     <Nav.Item onClick={() => setEventKeyTab('details')}>
                       <Nav.Link eventKey="details">
                         {t('details')}
-                        {eventKeyTab !== 'details' && nameInvalid && (
+                        {eventKeyTab !== 'details' && formState.errors.name && (
                           <span className="ms-2">
                             <BsExclamationCircle
                               className="pulseElement"
@@ -532,19 +322,18 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                               >
                                 <label
                                   className="cursor-pointer"
-                                  htmlFor={`product-image-${productMenu.id}`}
+                                  htmlFor={`product-image-${product.id}`}
                                 >
                                   <Figure>
                                     <Figure.Image
                                       width={600}
-                                      // height={450}
                                       alt="Imagem do Produto"
                                       src={
-                                        product?.image || '/images/no-img.jpeg'
+                                        watch('image') || '/images/no-img.jpeg'
                                       }
                                       id="productImage"
                                       style={{
-                                        /* objectFit: "cover",*/ maxHeight: 270,
+                                        maxHeight: 270,
                                       }}
                                     />
                                     <Figure.Caption className="text-center">
@@ -560,7 +349,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <Form.Control
                                       type="file"
                                       accept="image/*"
-                                      id={`product-image-${productMenu.id}`}
+                                      id={`product-image-${product.id}`}
                                       onChange={(e) => {
                                         setInputFileImage(
                                           e.target as HTMLInputElement
@@ -588,8 +377,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <Form.Control
                                         id={`productName-${product?.id}`}
                                         autoFocus
-                                        isInvalid={nameInvalid}
-                                        maxLength={55}
+                                        isInvalid={Boolean(formState.errors.name)}
                                         {...register('name')}
                                       />
                                       <Form.Control.Feedback
@@ -615,18 +403,30 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   </Col>
                                   <Col sm>
                                     <Form.Label>
+                                      <b>Código NCM</b>
+                                    </Form.Label>
+                                    <Form.Select
+                                      {...register('ncm_code')}
+                                    >
+                                      <option disabled value={''}>
+                                        Selecione
+                                      </option>
+                                    </Form.Select>
+                                  </Col>
+                                  <Col sm>
+                                    <Form.Label>
                                       <b>{t('category')}</b>
                                     </Form.Label>
                                     <Form.Select
                                       value={watch('categoryId')}
-                                      {...register('categoryId')}
+                                      {...register('categoryId', { valueAsNumber: true })}
                                     >
                                       {categories
                                         .filter((c) => c.type === 'default')
                                         .map((category) => (
                                           <option
                                             key={`${category.id}-${hash()}`}
-                                            value={String(category.id)}
+                                            value={category.id}
                                           >
                                             {category.name}
                                           </option>
@@ -656,9 +456,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           </InputGroup.Text>
                                           <Form.Control
                                             required
-                                            defaultValue={(
-                                              product?.value ?? 0
-                                            ).toFixed(2)}
                                             {...register('value', {
                                               onChange: (e) => mask(e, 'currency')
                                             })}
@@ -684,9 +481,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           {currency({ value: 0, symbol: true })}
                                         </InputGroup.Text>
                                         <Form.Control
-                                          defaultValue={(
-                                            product?.valueTable ?? 0
-                                          ).toFixed(2)}
                                           {...register('valueTable', {
                                             onChange: (e) => mask(e, 'currency')
                                           })}
@@ -715,7 +509,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           variant="secondary"
                                           disabled={!watch('bypass_amount')}
                                           onClick={() => {
-                                            setValue('amount', Number(watch('amount')) - 1)
+                                            setValue('amount', Number(watch('amount')) <= 0 ? 0 : Number(watch('amount')) - 1)
                                           }}
                                         >
                                           -
@@ -754,7 +548,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           variant="secondary"
                                           disabled={!watch('bypass_amount')}
                                           onClick={() => {
-                                            setValue('amount_alert', watch('amount_alert') - 1)
+                                            setValue('amount_alert', Number(watch('amount_alert')) <= 0 ? 0 : watch('amount_alert') - 1)
                                           }}
                                         >
                                           -
@@ -791,9 +585,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           <Form.Check
                                             type="switch"
                                             className="fs-6 text-nowrap"
-                                            defaultChecked={
-                                              !!product.bypass_amount
-                                            }
                                             {...register('bypass_amount')}
                                           />
                                           <span>{t('always_available')}</span>
@@ -817,12 +608,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <div className="d-flex justify-content-end">
                                       <p
                                         className={
-                                          product.description?.length >= 500
+                                          (watch('description')?.length || 0) >= 500
                                             ? 'text-red-500'
                                             : ''
                                         }
                                       >
-                                        {product.description?.length || 0}
+                                        {watch('description')?.length || 0}
                                         /500 {t('characters')}
                                       </p>
                                     </div>
@@ -836,25 +627,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                     </Tab.Pane>
                     <Tab.Pane eventKey="complements">
                       <br />
-                      <ComponentComplement
-                        typeModal="product"
-                        complementType="default"
-                        complements={product?.complements || []}
-                        recicled={recicledComplements}
-                        saveComplements={(newComplements) => {
-                          setProduct({
-                            ...product,
-                            complements: newComplements,
-                          })
-                        }}
-                        saveRecicledComplements={(recicled) =>
-                          setRecicledComplements([...recicled])
-                        }
-                        saveRemovedComplements={(removeds) =>
-                          setRemoveComplements([...removeds])
-                        }
-                        invalidComplement={invalidComplementName}
-                      />
+                      <FormProvider {...form}>
+                        <ComponentComplement
+                          typeModal="product"
+                          complementType="default"
+                        />
+                      </FormProvider>
                     </Tab.Pane>
                     <Tab.Pane eventKey="promotion">
                       <Card className="wm-default text-dark mt-4">
@@ -953,7 +731,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   <Card.Body>
                                     <p>
                                       {t('original_price')}:{' '}
-                                      {currency({ value: product.valueTable })}
+                                      {currency({ value: watch('valueTable') })}
                                     </p>
                                     <div className="d-flex align-items-baseline gap-3">
                                       <Form.Label>
@@ -995,23 +773,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         Delivery
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={
-                                            product?.disponibility?.store
-                                              .delivery
-                                          }
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              disponibility: {
-                                                ...product.disponibility,
-                                                store: {
-                                                  ...product.disponibility
-                                                    .store,
-                                                  delivery: e.target.checked,
-                                                },
-                                              },
-                                            })
-                                          }}
+                                          {...register('disponibility.store.delivery')}
                                         />
                                       </Form.Label>
                                     </div>
@@ -1022,22 +784,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('table')}
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={
-                                            product?.disponibility?.store.table
-                                          }
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              disponibility: {
-                                                ...product.disponibility,
-                                                store: {
-                                                  ...product.disponibility
-                                                    .store,
-                                                  table: e.target.checked,
-                                                },
-                                              },
-                                            })
-                                          }}
+                                          {...register('disponibility.store.table')}
                                         />
                                       </Form.Label>
                                     </div>
@@ -1048,23 +795,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('package')}
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={
-                                            product?.disponibility?.store
-                                              .package
-                                          }
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              disponibility: {
-                                                ...product.disponibility,
-                                                store: {
-                                                  ...product.disponibility
-                                                    .store,
-                                                  package: e.target.checked,
-                                                },
-                                              },
-                                            })
-                                          }}
+                                          {...register('disponibility.store.package')}
                                         />
                                       </Form.Label>
                                     </div>
@@ -1078,7 +809,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                       <Dates
                         type="menu"
                         title={t('add_availability_hours')}
-                        week={product.disponibility?.week}
+                        week={product.disponibility?.week || new Week()}
                         setInvalidWeek={setInvalidWeek}
                         setWeek={setWeek}
                       />
@@ -1094,16 +825,14 @@ export function ProductModal({ show, handleClose }: ProductProps) {
             }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
-          <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>
-          {/* {showActionsButton && (
-            <ActionsFooterButton
-              type={type}
-              disabledButtonSave={nameInvalid}
-              // createOrUpdate={createOrUpdateProduct}
-              deleteFunction={deleteProduct}
-              handleClose={handleClose}
-            />
-          )} */}
+          <div className='d-flex align-items-center gap-2 w-100'>
+            <Button variant='outline-danger' form='form-product'>{t('delete')}</Button>
+            <div className='d-flex align-items-center gap-2 ms-auto'>
+              <Button variant='danger' form='form-product' onClick={handleClose} >{t('cancel')}</Button>
+              <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>
+            </div>
+          </div>
+          
         </Modal.Footer>
         <OverlaySpinner
           show={showSaveSpinner}
