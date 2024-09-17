@@ -38,7 +38,9 @@ class Profile extends Model {
             { flags: [], status: false, payment: 'food' },
           ]);
           break;
-
+        case 'ar-AE':
+          profile.timeZone = 'Asia/Dubai'
+          break
         default:
           profile.formsPayment = profile.formsPayment.concat([
             { flags: [], status: false, payment: 'snack' },
@@ -46,6 +48,7 @@ class Profile extends Model {
             { key: { type: '', value: '' }, status: false, payment: 'pix' },
             { key: { type: 'email', value: '' }, status: false, payment: 'picpay' },
           ]);
+          profile.timeZone = 'America/Sao_Paulo'
           break;
       }
 
@@ -199,7 +202,7 @@ class Profile extends Model {
         ...profile.options,
       }
 
-      profile.timeZone = 'America/Sao_Paulo'
+
       profile.formsPayment = JSON.stringify(profile.formsPayment)
       profile.week = JSON.stringify(profile.week)
       profile.options = JSON.stringify(profile.options)
