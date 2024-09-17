@@ -455,6 +455,9 @@ export class PaymentComponent implements OnInit, AfterContentChecked, OnDestroy 
             cartRequest: { ...this.data.cartRequest, paymentType: 'online' },
             userAgent: navigator.userAgent,
           })
+          if (this.data.cartRequest.taxDelivery !== cart.taxDelivery) {
+            this.value = Number(this.value) + cart.taxDelivery - this.data.cartRequest.taxDelivery
+          }
           this.data.cartRequest = cart
         } catch (error) {
           if (generatePixButton) {
@@ -506,9 +509,12 @@ export class PaymentComponent implements OnInit, AfterContentChecked, OnDestroy 
 
     this.websocket.connect.subscribe(async ({ type, data }: { type: 'connection' | 'request' | 'command' | 'profile'; data: any }) => {
       this.websocket.subscribe('profile', this.pixInvoice.id)
-      setTimeout(() => {
-        this.pixRegeneration = true
-      }, 5 * 1000 * 60)
+      setTimeout(
+        () => {
+          this.pixRegeneration = true
+        },
+        5 * 1000 * 60
+      )
       if (type === 'profile') {
         if (data.table) {
           this.context.getActiveTable().opened.formsPayment = [...data.table.formsPayment]
