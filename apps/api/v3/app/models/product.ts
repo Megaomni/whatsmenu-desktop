@@ -27,13 +27,13 @@ export default class Product extends BaseModel implements InventoryType {
   @column()
   declare description: string
 
-  @column()
+  @column({ serializeAs: 'bypass_amount' })
   declare bypass_amount: boolean
 
-  @column()
+  @column({ serializeAs: 'amount_alert' })
   declare amount_alert: number
 
-  @column()
+  @column({ serializeAs: 'amount' })
   declare amount: number
 
   @column()
@@ -66,7 +66,7 @@ export default class Product extends BaseModel implements InventoryType {
   })
   declare disponibility: ProductDisponibility
 
-  @column()
+  @column({ columnName: 'ncm_code', serializeAs: 'ncm_code' })
   declare ncm_code: string
 
   @column.dateTime({ autoCreate: false, columnName: 'deleted_at', serializeAs: 'deleted_at' })

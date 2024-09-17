@@ -35,6 +35,7 @@ import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
 import { OverlaySpinner } from '../../../OverlaySpinner'
 import { CropModal } from '../../CropModal'
 import { ComplementFormSchema, ComponentComplement } from '../Complements'
+import Product from '../../../../types/product'
 
 const ProductFormSchema = z.object({
   id: z.number().optional(),
@@ -91,6 +92,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     category,
     categories,
     typeModal: type,
+    setCategories,
+    ncmList,
   } = useContext(MenuContext)
 
 
@@ -160,7 +163,15 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const handleSendForm = async (body: ProductFormData) => {
     const { data } = await api[type === 'create' ? 'post' : 'put']('/dashboard/products', body)
-    console.log(data);
+    setCategories(state => {
+      return state.map(category => {
+        if (category.id === data.product.categoryId) {
+          category.products?.push(new Product(data.product))
+        }
+        return category
+      })
+    })
+    handleClose()
   }
 
   useEffect(() => {
@@ -411,6 +422,11 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <option disabled value={''}>
                                         Selecione
                                       </option>
+                                      {ncmList.map((ncm) => (
+                                        <option key={ncm.codigo} value={ncm.codigo}>
+                                          <pre>{ncm.descricao}</pre>
+                                        </option>
+                                      ))}
                                     </Form.Select>
                                   </Col>
                                   <Col sm>
@@ -457,6 +473,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           <Form.Control
                                             required
                                             {...register('value', {
+                                              valueAsNumber: true,
                                               onChange: (e) => mask(e, 'currency')
                                             })}
                                           />
@@ -482,6 +499,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         </InputGroup.Text>
                                         <Form.Control
                                           {...register('valueTable', {
+                                            valueAsNumber: true,
                                             onChange: (e) => mask(e, 'currency')
                                           })}
                                         />
@@ -507,7 +525,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
-                                          disabled={!watch('bypass_amount')}
+                                          disabled={watch('bypass_amount')}
                                           onClick={() => {
                                             setValue('amount', Number(watch('amount')) <= 0 ? 0 : Number(watch('amount')) - 1)
                                           }}
@@ -515,12 +533,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           -
                                         </Button>
                                         <Form.Control
-                                          disabled={!watch('bypass_amount')}
+                                          disabled={watch('bypass_amount')}
                                           {...register('amount')}
                                         />
                                         <Button
                                           variant="secondary"
-                                          disabled={!watch('bypass_amount')}
+                                          disabled={watch('bypass_amount')}
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
@@ -546,7 +564,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
-                                          disabled={!watch('bypass_amount')}
+                                          disabled={watch('bypass_amount')}
                                           onClick={() => {
                                             setValue('amount_alert', Number(watch('amount_alert')) <= 0 ? 0 : watch('amount_alert') - 1)
                                           }}
@@ -554,12 +572,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           -
                                         </Button>
                                         <Form.Control
-                                          disabled={!watch('bypass_amount')}
+                                          disabled={watch('bypass_amount')}
                                           {...register('amount_alert')}
                                         />
                                         <Button
                                           variant="secondary"
-                                          disabled={!watch('bypass_amount')}
+                                          disabled={watch('bypass_amount')}
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
@@ -826,7 +844,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         >
           <ArrowModalFooter />
           <div className='d-flex align-items-center gap-2 w-100'>
-            <Button variant='outline-danger' form='form-product'>{t('delete')}</Button>
+            {type === 'update' && (
+              <Button variant='outline-danger' form='form-product'>{t('delete')}</Button>
+            )}
             <div className='d-flex align-items-center gap-2 ms-auto'>
               <Button variant='danger' form='form-product' onClick={handleClose} >{t('cancel')}</Button>
               <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>

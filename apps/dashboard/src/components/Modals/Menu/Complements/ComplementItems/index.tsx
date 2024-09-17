@@ -1,11 +1,10 @@
 import { AppContext } from "@context/app.ctx"
-import Complement from "../../../../../types/complements"
 import { currency, mask } from "@utils/wm-functions"
 import { useContext } from "react"
 import { Button, Col, Form, InputGroup, Row } from "react-bootstrap"
 import { useFieldArray, useFormContext } from "react-hook-form"
 import { useTranslation } from "react-i18next"
-
+import { ComplementFormData } from ".."
 
 interface ComplementItemsProps {
   complementIndex: number
@@ -14,7 +13,7 @@ interface ComplementItemsProps {
 export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
   const { profile } = useContext(AppContext)
   const { t } = useTranslation()
-  const { register, control, watch, setValue } = useFormContext<{ complements: Complement[] }>()
+  const { register, control, watch, setValue } = useFormContext<{ complements: ComplementFormData[] }>()
   const { append: appendItem, remove: removeItem, fields: items } = useFieldArray({
     control,
     name: `complements.${complementIndex}.itens`,
@@ -23,8 +22,8 @@ export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
   return (
     <>
       {
-        items.map((item, itemIndex) => (
-          <div key={item.code}>
+        watch(`complements.${complementIndex}.itens`).map((item, itemIndex) => (
+          <div key={itemIndex}>
             <br />
             <Row>
               <Col sm="3" lg="3">
@@ -64,10 +63,10 @@ export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
                   <p
                     id={`itemDescription-${item.code}`}
                     className={
-                      watch(`complements.${complementIndex}.itens.${itemIndex}.description`).length >= 100 ? 'text-red-500' : ''
+                      (watch(`complements.${complementIndex}.itens.${itemIndex}.description`)?.length || 0) >= 100 ? 'text-red-500' : ''
                     }
                   >
-                    {watch(`complements.${complementIndex}.itens.${itemIndex}.description`).length}/100 {t('characters')}
+                    {watch(`complements.${complementIndex}.itens.${itemIndex}.description`)?.length}/100 {t('characters')}
                   </p>
                 </div>
               </Col>
@@ -80,6 +79,7 @@ export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
                     required
                     min="0"
                     {...register(`complements.${complementIndex}.itens.${itemIndex}.value`, {
+                      valueAsNumber: true,
                       onChange: (e) => mask(e, 'currency'),
                     })}
                   />
@@ -99,7 +99,9 @@ export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
                       </Button>
 
                       <Form.Control
-                        {...register(`complements.${complementIndex}.itens.${itemIndex}.amount`)}
+                        {...register(`complements.${complementIndex}.itens.${itemIndex}.amount`, {
+                          valueAsNumber: true,
+                        })}
                       />
 
                       <Button

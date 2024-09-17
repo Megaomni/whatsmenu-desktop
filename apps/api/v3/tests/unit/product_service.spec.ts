@@ -6,6 +6,7 @@ import { UserFactory } from '#database/factories/user_factory'
 import Category from '#models/category'
 import User from '#models/user'
 import Complement from '#models/complement'
+import { ComplementItem } from '#interfaces/complement'
 
 test.group('Product service', (group) => {
   const productService = new ProductService()
@@ -124,7 +125,7 @@ test.group('Product service', (group) => {
     }
 
     try {
-      const response = await productService.createProduct(body)
+      const response = await productService.createProduct(body as any)
       assert.exists(response.product)
       assert.equal(response.product.name, 'Teste')
       assert.equal(response.product.description, 'Teste')
@@ -358,7 +359,7 @@ test.group('Product service', (group) => {
     }
 
     try {
-      const response = await productService.createProduct(body)
+      const response = await productService.createProduct(body as any)
       assert.exists(response.product.complements)
       assert.lengthOf(response.product.complements, 1)
       assert.equal(response.product.complements[0].name, newComplement.name)
@@ -384,7 +385,7 @@ test.group('Product service', (group) => {
           name: 'Item 1',
           code: '123456',
         },
-      ],
+      ] as ComplementItem[],
     })
     const body = {
       complements: [
@@ -484,7 +485,7 @@ test.group('Product service', (group) => {
       },
     }
     try {
-      const response = await productService.createProduct(body)
+      const response = await productService.createProduct(body as any)
 
       // Verificando se o produto foi criado com o complemento existente vinculado
       assert.exists(response.product)
