@@ -83,7 +83,7 @@ export default function FacebookPixel() {
             <Form.Label className='d-flex flex-column gap-3 col-12 col-md-4'>
               <span className='fw-bold '>Facebook Pixel</span>
               <div className='position-relative'>
-                <Form.Control {...register('pixel')} onFocus={() => setIsInputSelected(true)} isInvalid={Boolean(errors?.pixel)} isValid={!Boolean(errors?.pixel) && isValid} maxLength={15} />
+                <Form.Control {...register('pixel')} onFocus={() => setIsInputSelected(true)} isInvalid={Boolean(errors?.pixel)} isValid={!Boolean(errors?.pixel) && isValid}  />
                 <Form.Control.Feedback
                   tooltip
                   type="invalid"
