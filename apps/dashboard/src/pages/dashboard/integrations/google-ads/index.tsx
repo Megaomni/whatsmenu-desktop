@@ -11,7 +11,7 @@ import { z } from 'zod'
 
 const GoogleAdsFormSchema = z.object({
   googleAds: z.object({
-    id: z.string().regex(/^AW-\d{20}$/, 'Id inválido'),
+    id: z.string(), //.regex(/^AW-\d{20}$/, 'Id inválido')
     label: z.string(),
   })
 })
