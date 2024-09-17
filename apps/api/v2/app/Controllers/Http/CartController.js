@@ -1020,6 +1020,8 @@ class CartController {
         const printTopic = Ws.getChannel('print:*').topic(`print:${slug}`)
         if (requestTopic) {
           requestTopic.broadcast(`request:${profile.slug}`, [{ ...cart.toJSON() }])
+        }
+        if (printTopic) {
           printTopic.broadcast(`print:${slug}`, [{ ...cart.toJSON() }])
         }
       }
