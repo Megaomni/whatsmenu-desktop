@@ -1,3 +1,4 @@
+import Product from '#models/product'
 import { ProductService } from '#services/product_service'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -18,6 +19,28 @@ export default class ProductsController {
       })
 
       return response.json({ product })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async update({ request, params, response, auth }: HttpContext) {
+    try {
+      const { complements, recicle, ...data } = request.all()
+      const image = request.file('image', { size: '8mb' })
+      const user = auth.user
+      const product = Product.findOrFail(params.id)
+      await user?.load('profile')
+
+      const { productUpdated }  = await this.productService.updateProduct({
+        profile: user!.profile,
+        complements,
+        data,
+        image?,
+        product
+      })
+
+      return response.json({ productUpdated })
     } catch (error) {
       throw error
     }
