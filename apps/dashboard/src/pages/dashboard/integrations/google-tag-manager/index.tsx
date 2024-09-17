@@ -10,7 +10,7 @@ import { api } from 'src/lib/axios';
 import { z } from 'zod'
 
 const GoogleTagManagerFormSchema = z.object({
-  google: z.string().regex(/^GTM-[A-Z0-9]{6,7}$/, 'Id inválido'),
+  google: z.string().regex(/^GTM-[A-Z0-9]{6,20}$/, 'Id inválido'),
 })
 
 type GoogleTagManagerFormType = z.infer<typeof GoogleTagManagerFormSchema>
