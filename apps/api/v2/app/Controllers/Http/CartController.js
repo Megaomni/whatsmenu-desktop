@@ -998,7 +998,6 @@ class CartController {
     }
   }
 
-  // pimp
   static async changeOrderPaymentStatus(orderId, status) {
     try {
       const cart = await Cart.query()
@@ -1019,7 +1018,7 @@ class CartController {
         await CartController.generateVouchers(cart)
         const requestTopic = Ws.getChannel('request:*').topic(`request:${profile.slug}`)
         const printTopic = Ws.getChannel('print:*').topic(`print:${slug}`)
-        if (requestTopic && printTopic) {
+        if (requestTopic) {
           requestTopic.broadcast(`request:${profile.slug}`, [{ ...cart.toJSON() }])
           printTopic.broadcast(`print:${slug}`, [{ ...cart.toJSON() }])
         }
