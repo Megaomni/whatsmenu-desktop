@@ -1,4 +1,3 @@
-import { CartFactory } from '#database/factories/cart_factory'
 import { UserFactory } from '#database/factories/user_factory'
 import User from '#models/user'
 import GroveNfeService from '#services/grove_nfe_service'
