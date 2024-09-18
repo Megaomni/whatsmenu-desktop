@@ -86,6 +86,7 @@ jobs:
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
             cd monorepo/apps/api/v3
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
+            ls -la
             cd build
             ln -s ../.env .env
             pm2 delete whatsmenu-api3
