@@ -1157,6 +1157,9 @@ importers:
       '@whatsmenu/prettier':
         specifier: workspace:*
         version: link:../../config/prettier
+      '@whatsmenu/types':
+        specifier: workspace:*
+        version: link:../types
       '@whatsmenu/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript-config
