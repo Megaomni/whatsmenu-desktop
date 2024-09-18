@@ -41,7 +41,7 @@ test.group('Product controller', () => {
   }) => {
     const user = await UserFactory.create()
     const profile = await ProfileFactory.merge({ userId: user.id }).create()
-    const category = await CategoryFactory.merge({ profileId: profile.id }).create()
+    await CategoryFactory.merge({ profileId: profile.id }).create()
     const productServicePostStub = sinon.stub(ProductService.prototype, 'createProduct').throws()
     try {
       await client
