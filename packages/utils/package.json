@@ -11,14 +11,14 @@
     "lint": "eslint src/**/*.ts* --fix"
   },
   "dependencies": {
-    "@types/luxon": "^3.4.2",
+    "luxon": "^3.5.0",
     "tsup": "^8.2.4"
   },
   "devDependencies": {
     "@whatsmenu/eslint-config": "workspace:*",
     "@whatsmenu/prettier": "workspace:*",
-    "@whatsmenu/typescript-config": "workspace:*",
     "@whatsmenu/types": "workspace:*",
+    "@whatsmenu/typescript-config": "workspace:*",
     "typescript": "^5.5.4"
   }
 }
