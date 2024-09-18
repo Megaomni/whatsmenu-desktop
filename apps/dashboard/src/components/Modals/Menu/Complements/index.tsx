@@ -41,14 +41,14 @@ export const ComplementFormSchema = z.object({
     .max(50, 'O nome deve ter no maúximo 50 caracteres'),
   required: z.boolean(),
   type: z.enum(['default', 'pizza']),
-  min: z.number().min(1).max(10000),
-  max: z.number().min(1).max(10000),
+  min: z.number().max(10000),
+  max: z.number().max(10000),
   order: z.number(),
   itens: z
     .array(
       z.object({
         id: z.string().optional(),
-        amount: z.number().min(1).max(10000),
+        amount: z.number().max(10000),
         amount_alert: z.number().min(0).max(10000),
         bypass_amount: z.boolean(),
         code: z.string(),
@@ -68,7 +68,6 @@ export type ComplementFormData = z.infer<typeof ComplementFormSchema> & { create
 type ComplementProps = {
   showVinculateComplement?: boolean
   typeModal: 'massive' | 'product'
-  autoFocusElement?: number
   invalidComplement?: boolean
   complementType: 'default' | 'pizza'
 }
@@ -77,9 +76,8 @@ export function ComponentComplement({
   showVinculateComplement,
   invalidComplement,
   complementType,
-  autoFocusElement,
 }: ComplementProps) {
-  const { watch, control, register, formState } = useFormContext<{ complements: ComplementFormData[] }>()
+  const { watch, control, register, setValue } = useFormContext<{ complements: ComplementFormData[] }>()
   const { append: appendComplement, remove: removeComplement, fields: complements, update: updateComplement } = useFieldArray({
     control,
     name: 'complements',
@@ -142,6 +140,7 @@ export function ComponentComplement({
         amount: item.amount ?? 0,
         amount_alert: item.amount_alert ?? 0,
         bypass_amount: item.bypass_amount ?? false,
+        status: Boolean(item.status),
       })),
       max: allComplements[0].max,
       min: allComplements[0].min,
@@ -232,10 +231,10 @@ export function ComponentComplement({
                     >
                       {allComplements.map((complement, index) => (
                         <option
-                        key={`${complement.id}-${index}`}
-                        value={`${complement.id}`}
-                      >
-                        {`${complement.name} - [${complementType === 'default'
+                          key={`${complement.id}-${index}`}
+                          value={`${complement.id}`}
+                        >
+                          {`${complement.name} - [${complementType === 'default'
                             ? products.find(
                               (prod) => prod.id === complement.pivot?.productId
                             )?.name
@@ -244,8 +243,8 @@ export function ComponentComplement({
                                 (comp) => comp.id === complement.id
                               )
                             )?.name
-                          }]`}
-                      </option>
+                            }]`}
+                        </option>
                       ))}
                     </Form.Select>
                   </Col>
@@ -363,7 +362,7 @@ export function ComponentComplement({
                                     if (index === 0 && arr.length === 1) {
                                       return `<span>${prod.name}</span>`
                                     }
-  
+
                                     return `<span>${prod.name}</span><br />`
                                   })
                                   .join('')}`,
@@ -463,9 +462,18 @@ export function ComponentComplement({
                   >
                     <Form.Label className='d-flex gap-3'>
                       <Form.Check
-                        defaultChecked={complement.required}
                         id={`complemento-obrigatorio-${complement.id}`}
-                        {...register(`complements.${index}.required`)}
+                        {...register(`complements.${index}.required`, {
+                          onChange: (e) => {
+                            if (watch(`complements.${index}.max`) <= 0) {
+                              setValue(`complements.${index}.max`, e.target.checked ? 1 : watch(`complements.${index}.max`))
+                            }
+
+                            if (watch(`complements.${index}.min`) <= 0) {
+                              setValue(`complements.${index}.min`, e.target.checked ? 1 : watch(`complements.${index}.min`))
+                            }
+                          }
+                        })}
                       />
                       <span>{t('mandatory_addon')}</span>
                     </Form.Label>
@@ -506,7 +514,7 @@ export function ComponentComplement({
             </Card>
           )
         }
-         )}
+        )}
       </Card.Body>
     </Card>
   )
