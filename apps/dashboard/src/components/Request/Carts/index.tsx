@@ -24,13 +24,13 @@ import { CartsContext } from '../../../context/cart.ctx'
 import { TableContext } from '../../../context/table.ctx'
 import Cart from '../../../types/cart'
 import { SendStatusMessageForm } from '../../SendStatusMessageForm'
-import { convertToFocusNfce } from "@whatsmenu/utils"
+import { convertToFocusNfce } from '@utils/convert-to-focus-nfce'
 
 export function Carts(data: any) {
   const { t } = useTranslation()
   const { data: session } = useSession()
   const { profile, groveNfeCompany } = useContext(AppContext)
-  
+
   const { carts, motoboys, setCart, updateMotoboyId } = useContext(CartsContext)
 
   // const [selectedMotoboys, setSelectedMotoboys] = useState(Number)
@@ -98,13 +98,13 @@ export function Carts(data: any) {
     }
   }
 
-  const handleEmitNote = async ({cart, groveNfeCompany}: {cart: Cart, groveNfeCompany: any}) => {
+  const handleEmitNote = async ({ cart, groveNfeCompany }: { cart: Cart, groveNfeCompany: any }) => {
     if (!profile?.options?.integrations?.grovenfe) {
       return
     }
     try {
-      const nfce = convertToFocusNfce({cart, groveNfeCompany})
-      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id } )
+      const nfce = convertToFocusNfce({ cart, groveNfeCompany })
+      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id })
     } catch (error) {
       throw error
     }
@@ -438,7 +438,7 @@ export function Carts(data: any) {
                                       <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                     </Link>
                                   ) : (
-                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({cart, groveNfeCompany})} />
+                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({ cart, groveNfeCompany })} />
                                   )}
                                 </td>
                               )}
