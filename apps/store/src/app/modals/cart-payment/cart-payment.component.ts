@@ -35,6 +35,7 @@ export declare const gtag: any
 export type CartPaymentComponentData = {
   clientData: ProfileType
   cartRequest: CartRequestType
+  cartItem?: CartItem
   customer: CustomerType
 }
 
@@ -244,11 +245,15 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
   createCardSubmitButtonText() {
     const { postalCode, addressNumber } = this.newCard.creditCardHolderInfo
     if (this.createCardButton) {
-      this.createCardButton.nativeElement.disabled = postalCode.length < 8 || !addressNumber
+      this.createCardButton.nativeElement.disabled = postalCode.length < 8 || !addressNumber || this.data.cartRequest.statusPayment === 'pending'
     }
     if (postalCode.length < 8) return 'Informe o CEP'
     if (!addressNumber) return 'Informe o número'
-    return 'Salvar cartão e Finalizar Pagamento'
+    if (this.data.cartRequest.statusPayment === 'pending') {
+      return 'Pedido Aprovado!'
+    } else {
+      return 'Salvar cartão e Finalizar Pagamento'
+    }
   }
 
   // Visto: Alterna Local e Online
