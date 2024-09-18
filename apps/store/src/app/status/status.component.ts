@@ -598,7 +598,6 @@ export class StatusComponent implements OnInit {
       message += `*${this.translate.text().order_comment}: + ${this.currencyNoSymbol(
         this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart)
       )}*\n`
-
       if (this.cart.addressId) {
         message += `*${this.translate.text().delivery}:* `
         if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === this.translate.text().to_consult) {

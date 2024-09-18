@@ -35,7 +35,6 @@ export declare const gtag: any
 export type CartPaymentComponentData = {
   clientData: ProfileType
   cartRequest: CartRequestType
-  cartItem?: CartItem
   customer: CustomerType
 }
 
