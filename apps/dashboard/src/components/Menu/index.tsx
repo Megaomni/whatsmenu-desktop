@@ -890,7 +890,7 @@ export function MenuComponent() {
         ? 'delivery'
         : 'package'
     const urlLink = (type: 'delivery' | 'package' = urlType) => {
-      const urlBase = process.env.WHATSMENU_BASE_URL
+      const urlBase = process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL
       const urlCategory = `${urlBase}/${profile.slug}/${type}/${categoryMap.id}?time=${DateTime.local().toMillis()}`
       const urlProduct = `${urlBase}/${profile.slug}/${type}/${categoryMap.id}/${productMap?.id}?time=${DateTime.local().toMillis()}`
 
@@ -1267,9 +1267,9 @@ export function MenuComponent() {
           <a
             rel="noreferrer"
             style={{ wordBreak: 'break-all' }}
-            href={`${process.env.WHATSMENU_BASE_URL}/${profile.slug}`}
+            href={`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}`}
             target="_blank"
-          >{`${process.env.WHATSMENU_BASE_URL}/${profile.slug}`}</a>
+          >{`${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}`}</a>
         </p>
         <Row>
           <Col md className="mt-4">
@@ -1396,16 +1396,16 @@ export function MenuComponent() {
                           <Card className="border-green">
                             <Card.Header
                               className={`position-relative d-flex justify-content-start align-items-center overflow-auto ${categoryMap.status &&
-                                  verifyAvailability(
-                                    categoryMap?.product as PizzaProductType
-                                  )
-                                  ? verifyAvailability(
-                                    categoryMap?.product as PizzaProductType,
-                                    'alert'
-                                  )
-                                    ? ''
-                                    : 'wm-warning'
-                                  : 'wm-request-canceled'
+                                verifyAvailability(
+                                  categoryMap?.product as PizzaProductType
+                                )
+                                ? verifyAvailability(
+                                  categoryMap?.product as PizzaProductType,
+                                  'alert'
+                                )
+                                  ? ''
+                                  : 'wm-warning'
+                                : 'wm-request-canceled'
                                 }`}
                             >
                               {(plansCategory.includes('package') ||
@@ -1861,13 +1861,13 @@ export function MenuComponent() {
                                               complement,
                                               'absolute'
                                             )
-                                                ? verifyPizzaComplementAvailability(
-                                                  complement,
-                                                  'alert'
-                                                )
-                                                  ? ''
-                                                  : 'wm-warning border-0'
-                                                : 'wm-request-canceled border-0'
+                                              ? verifyPizzaComplementAvailability(
+                                                complement,
+                                                'alert'
+                                              )
+                                                ? ''
+                                                : 'wm-warning border-0'
+                                              : 'wm-request-canceled border-0'
                                               }`}
                                           >
                                             <td>
@@ -2104,14 +2104,14 @@ export function MenuComponent() {
                                             >
                                               <td
                                                 className={`${flavorMap.status &&
-                                                    verifyAvailability(flavorMap)
-                                                    ? verifyAvailability(
-                                                      flavorMap,
-                                                      'alert'
-                                                    )
-                                                      ? ''
-                                                      : 'wm-warning'
-                                                    : 'wm-request-canceled'
+                                                  verifyAvailability(flavorMap)
+                                                  ? verifyAvailability(
+                                                    flavorMap,
+                                                    'alert'
+                                                  )
+                                                    ? ''
+                                                    : 'wm-warning'
+                                                  : 'wm-request-canceled'
                                                   }`}
                                                 onClick={() => {
                                                   if (
@@ -2181,8 +2181,8 @@ export function MenuComponent() {
                                                             <label
                                                               htmlFor={`input-image-${flavorMap.code}`}
                                                               className={`${editingFlavorsMassive
-                                                                  ? 'position-relative cursor-pointer'
-                                                                  : ''
+                                                                ? 'position-relative cursor-pointer'
+                                                                : ''
                                                                 } zoom-in-image`}
                                                             >
                                                               <Figure.Image
@@ -2725,8 +2725,8 @@ export function MenuComponent() {
                           >
                             <Card.Header
                               className={`p-md-1 position-relative d-flex justify-content-between align-items-center overflow-auto p-0 ${categoryMap.status
-                                  ? ''
-                                  : 'wm-request-canceled border-0'
+                                ? ''
+                                : 'wm-request-canceled border-0'
                                 }`}
                               style={{ minHeight: 50 }}
                             >
@@ -3038,14 +3038,14 @@ export function MenuComponent() {
                                             <tr
                                               key={productMap.id}
                                               className={`position-relative ${productMap.status &&
-                                                  verifyAvailability(productMap)
-                                                  ? verifyAvailability(
-                                                    productMap,
-                                                    'alert'
-                                                  )
-                                                    ? ''
-                                                    : 'wm-warning'
-                                                  : 'wm-request-canceled'
+                                                verifyAvailability(productMap)
+                                                ? verifyAvailability(
+                                                  productMap,
+                                                  'alert'
+                                                )
+                                                  ? ''
+                                                  : 'wm-warning'
+                                                : 'wm-request-canceled'
                                                 }`}
                                             >
                                               <td
@@ -3127,8 +3127,8 @@ export function MenuComponent() {
                                                           <label
                                                             htmlFor={`input-image-${productMap.id}`}
                                                             className={`${editingProductsMassive
-                                                                ? 'position-relative cursor-pointer'
-                                                                : ''
+                                                              ? 'position-relative cursor-pointer'
+                                                              : ''
                                                               } zoom-in-image`}
                                                           >
                                                             <Figure.Image
@@ -3686,11 +3686,11 @@ export function MenuComponent() {
                                                               size="sm"
                                                               variant="link"
                                                               className={`text-decoration-none fs-7 flex-grow-1 ${productMap.status &&
-                                                                  verifyAvailability(
-                                                                    productMap
-                                                                  )
-                                                                  ? ''
-                                                                  : 'link-danger'
+                                                                verifyAvailability(
+                                                                  productMap
+                                                                )
+                                                                ? ''
+                                                                : 'link-danger'
                                                                 }`}
                                                               tabIndex={
                                                                 editingProductsMassive
@@ -3725,11 +3725,11 @@ export function MenuComponent() {
                                                               size="sm"
                                                               variant="link"
                                                               className={`text-decoration-none fs-7 flex-grow-1 ${productMap.status &&
-                                                                  verifyAvailability(
-                                                                    productMap
-                                                                  )
-                                                                  ? ''
-                                                                  : 'link-danger'
+                                                                verifyAvailability(
+                                                                  productMap
+                                                                )
+                                                                ? ''
+                                                                : 'link-danger'
                                                                 }`}
                                                               tabIndex={
                                                                 editingProductsMassive
@@ -3754,11 +3754,11 @@ export function MenuComponent() {
                                                                 editingProductsMassive
                                                               }
                                                               className={`text-decoration-none fs-7 flex-grow-1 ${productMap.status &&
-                                                                  verifyAvailability(
-                                                                    productMap
-                                                                  )
-                                                                  ? ''
-                                                                  : 'link-danger'
+                                                                verifyAvailability(
+                                                                  productMap
+                                                                )
+                                                                ? ''
+                                                                : 'link-danger'
                                                                 }`}
                                                               onClick={() => {
                                                                 handleEditProduct(
