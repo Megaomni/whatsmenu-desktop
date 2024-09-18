@@ -1,5 +1,5 @@
-import { Component, ElementRef, ViewChild, OnInit, HostListener } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { Component, ElementRef, ViewChild, OnInit } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
 import { ToastService } from 'src/app/services/ngb-toast/toast.service'
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons'
 import { faArrowLeft, faPaste, faRotate } from '@fortawesome/free-solid-svg-icons'
@@ -17,14 +17,12 @@ import { NeighborhoodType, TaxDeliveryType } from '../tax-delivery-type'
 import { WebsocketService } from 'src/app/services/websocket/websocket.service'
 import { CartFormPaymentType } from 'src/app/formpayment-type'
 import { TranslateService } from '../translate.service'
-import { PlatformLocation, Location } from '@angular/common'
 
 @Component({
   selector: 'app-status',
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.scss', '../home/home.component.scss'],
 })
-
 export class StatusComponent implements OnInit {
   code: string
   slug: string
@@ -63,17 +61,13 @@ export class StatusComponent implements OnInit {
     public cartService: CartService,
     public context: ContextService,
     public toastService: ToastService,
-    private websocket: WebsocketService,
-    private location: Location,
-    private platformLocation: PlatformLocation
+    private websocket: WebsocketService
   ) {
-
     this.router.params.subscribe(({ code, slug }) => {
       this.code = code
       this.slug = slug
     })
   }
-
   async ngOnInit() {
     await this.getInfos()
     document.body.classList.remove('mat-typography')
@@ -91,27 +85,7 @@ export class StatusComponent implements OnInit {
       const result = await this.api.getCartStatus({ slug: this.profile.slug, cartId: this.cart.id })
       this.cart.status = result.status
     }, 1000 * 60)
-
-
-    this.platformLocation.onPopState(() => {
-      // this.location.replaceState('/' + this.profile.slug)
-      alert('onPopState triggered')
-      window.location.href = `${window.location.protocol}//${window.location.host}/${this.profile.slug}`
-    })
-    // this.location.replaceState('/' + this.profile.slug)
-
-//   window.onpopstate = (e)  => {
-//     e.preventDefault()
-//     alert('onPopState triggered')
-//   }
-// this.location.replaceState('/' + this.profile.slug)
-
-
-// this.location.onUrlChange(() => {
-//   window.location.href = ${window.location.protocol}//${window.location.host}/${this.profile.slug};
-//   this.location.replaceState('/' + this.profile.slug)
-// })
-}
+  }
 
   taxDelivery() {
     let verifyNeighborood: NeighborhoodType[][]
@@ -224,9 +198,12 @@ export class StatusComponent implements OnInit {
       }
       this.websocket.connect.subscribe(async ({ type, data }: { type: 'connection' | 'request' | 'command' | 'profile'; data: any }) => {
         this.websocket.subscribe('profile', this.pixInvoice.id)
-        setTimeout(() => {
-          this.pixRegeneration = true
-        }, 5 * 1000 * 60)
+        setTimeout(
+          () => {
+            this.pixRegeneration = true
+          },
+          5 * 1000 * 60
+        )
         if (type === 'profile') {
           if (data.table) {
             this.context.getActiveTable().opened.formsPayment = [...data.table.formsPayment]
@@ -621,7 +598,7 @@ export class StatusComponent implements OnInit {
       message += `*${this.translate.text().order_comment}: + ${this.currencyNoSymbol(
         this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart)
       )}*\n`
-      
+
       if (this.cart.addressId) {
         message += `*${this.translate.text().delivery}:* `
         if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === this.translate.text().to_consult) {
