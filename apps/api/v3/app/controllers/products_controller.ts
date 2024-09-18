@@ -18,7 +18,7 @@ export default class ProductsController {
         complements,
       })
 
-      return response.json({ product })
+      return response.status(201).json({ product })
     } catch (error) {
       throw error
     }
