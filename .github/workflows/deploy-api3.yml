@@ -85,7 +85,7 @@ jobs:
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
             cd monorepo
             pnpm install
-            cd monorepo/apps/api/v3
+            cd apps/api/v3
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
             cd build
             ln -s ../.env .env
