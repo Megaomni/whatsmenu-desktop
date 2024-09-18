@@ -87,7 +87,6 @@ jobs:
             cd monorepo/apps/api/v3
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
             cd build
-            rm .env
             ln -s ../.env .env
             pm2 start ${{ env.BRANCH == 'beta' && '../ecosystem_beta.config.cjs' || '../ecosystem.config.cjs' }}
           EOF
