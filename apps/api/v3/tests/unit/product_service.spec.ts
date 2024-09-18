@@ -389,7 +389,7 @@ test.group('Product service', (group) => {
   test('Deve lançar um erro ao tentar criar um produto com categoria inexistente', async ({
     assert,
   }) => {
-    const category = await Category.create({
+    await Category.create({
       name: 'Teste',
       profileId: profile.id,
       type: 'default',
@@ -757,7 +757,7 @@ test.group('Product service', (group) => {
       let complements = await product.related('complements').query()
       assert.lengthOf(complements, 2)
 
-      const result = await productService.updateProduct({
+      await productService.updateProduct({
         productId: product.id,
         complements: [{ id: complement1.id }] as any,
         data: {} as any,
