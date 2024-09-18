@@ -55,12 +55,14 @@
     "swr": "^2.1.5",
     "three-dots": "^0.2.3",
     "yarn": "^1.22.19",
+    "@whatsmenu/utils": "workspace:*",
     "zod": "^3.22.4"
   },
   "devDependencies": {
     "@whatsmenu/eslint-config": "workspace:*",
     "@whatsmenu/prettier": "workspace:*",
     "@whatsmenu/typescript-config": "workspace:*",
+    "@whatsmenu/types": "workspace:*",
     "@types/html-pdf": "^3.0.1",
     "@types/luxon": "^2.3.2",
     "@types/node": "17.0.31",

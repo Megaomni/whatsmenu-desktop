@@ -1,0 +1,24 @@
+{
+  "name": "@whatsmenu/utils",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --external luxon",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "lint": "eslint src/**/*.ts* --fix"
+  },
+  "dependencies": {
+    "@types/luxon": "^3.4.2",
+    "tsup": "^8.2.4"
+  },
+  "devDependencies": {
+    "@whatsmenu/eslint-config": "workspace:*",
+    "@whatsmenu/prettier": "workspace:*",
+    "@whatsmenu/typescript-config": "workspace:*",
+    "@whatsmenu/types": "workspace:*",
+    "typescript": "^5.5.4"
+  }
+}
