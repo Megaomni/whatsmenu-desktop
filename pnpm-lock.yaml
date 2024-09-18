@@ -344,9 +344,6 @@ importers:
       '@types/react-input-mask':
         specifier: ^3.0.2
         version: 3.0.5
-      '@whatsmenu/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
       adonis-websocket-client:
         specifier: ^1.0.2
         version: 1.0.2
