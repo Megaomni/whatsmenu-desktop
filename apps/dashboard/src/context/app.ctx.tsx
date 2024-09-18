@@ -333,7 +333,7 @@ export function AppProvider({ children }: AppProviderProps) {
 
   const baseUrl = process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL
   //
-  //
+
   const audioRef = useRef<HTMLAudioElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const workerRef = useRef<Worker>()
