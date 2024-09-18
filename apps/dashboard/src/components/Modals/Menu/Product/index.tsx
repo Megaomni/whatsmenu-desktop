@@ -89,6 +89,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     plansCategory,
     modalFooterOpened,
     currency,
+    handleShowToast,
+    setLowInventoryItems
   } = useContext(AppContext)
   const {
     product,
@@ -165,16 +167,49 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   }
 
   const handleSendForm = async (body: ProductFormData) => {
-    const { data } = await api[type === 'create' ? 'post' : 'put']('/dashboard/products', body)
-    setCategories(state => {
-      return state.map(category => {
-        if (category.id === data.product.categoryId) {
-          category.products?.push(new Product(data.product))
-        }
-        return category
+    setShowSpinner(true)
+    try {
+      const { data } = await api[type === 'create' ? 'post' : 'put']('/dashboard/products', body)
+      setCategories(state => {
+        return state.map(category => {
+          switch (type) {
+            case 'create':
+              if (category.id === data.product.categoryId) {
+                category.products?.push(new Product(data.product))
+              }
+              break;
+            case 'update':
+              if (category.id === data.product.categoryId) {
+                category.products = category.products?.map(product => product.id === data.product.id ? new Product(data.product) : product)
+              }
+              break;
+          }
+          return category
+        })
       })
-    })
-    handleClose()
+      setLowInventoryItems(data.inventory)
+      handleShowToast({
+        position: 'middle-center',
+        title: t('product'),
+        content: `${data.product.name}, ${type === 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
+        type: 'success',
+        show: true,
+        delay: 1000,
+      })
+    } catch (error) {
+      console.error(error)
+      handleShowToast({
+        position: 'middle-center',
+        title: 'Produto',
+        content: `${t('could_not')} ${type === 'create' ? t('create') : t('update')} ${t('the_product')}, ${product.name}.`,
+        type: 'erro',
+        show: true,
+        delay: 1000,
+      })
+    } finally {
+      setShowSpinner(false)
+      handleClose()
+    }
   }
 
   const handleDelete = async () => {

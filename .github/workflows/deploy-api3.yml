@@ -5,6 +5,8 @@ on:
     branches:
       - beta
       - main
+      - feat/ncm
+
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
@@ -29,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS) }}
+        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS_2) }}
 
     steps:
       - name: Check out the repository
@@ -56,7 +58,8 @@ jobs:
 
       - name: Package application
         run: |
-          tar -czf deploy.tar.gz -C out/apps/api/v3 build
+          mv out monorepo
+          tar -czf deploy.tar.gz monorepo
 
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
@@ -72,21 +75,21 @@ jobs:
 
           ssh-keyscan -H ${{ matrix.ec2_host }} >> ~/.ssh/known_hosts
 
-          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH/public_html
+          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH
 
           ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
-            cd ${{ env.PROJECT_PATH }}/public_html
-            rm -rf build
+          cd ${{ env.PROJECT_PATH }}
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-            pnpm install
+            cd monorepo/apps/api/v3
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
+            ls -la
             cd build
-            rm .env
             ln -s ../.env .env
+            pm2 delete whatsmenu-api3
             pm2 start ${{ env.BRANCH == 'beta' && '../ecosystem_beta.config.cjs' || '../ecosystem.config.cjs' }}
           EOF
 

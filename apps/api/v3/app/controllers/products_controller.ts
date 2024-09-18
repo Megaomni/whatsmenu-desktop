@@ -1,3 +1,4 @@
+import { apiV2 } from '#lib/axios'
 import { ProductService } from '#services/product_service'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -17,7 +18,7 @@ export default class ProductsController {
         complements,
       })
 
-      return response.json({ product })
+      return response.status(201).json({ product })
     } catch (error) {
       throw error
     }
@@ -36,7 +37,11 @@ export default class ProductsController {
         productId,
       })
 
-      return response.json({ product })
+      const {
+        data: { inventory },
+      } = await apiV2.get(`/api/v2/identifyLowInventory/${user?.profile.id}`)
+
+      return response.json({ product, inventory })
     } catch (error) {
       throw error
     }
