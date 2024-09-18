@@ -31,7 +31,7 @@ jobs:
 
     strategy:
       matrix:
-        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS) }}
+        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS_RT) }}
 
     steps:
       - name: Check out the repository
