@@ -1022,7 +1022,7 @@ class CartController {
           requestTopic.broadcast(`request:${profile.slug}`, [{ ...cart.toJSON() }])
         }
         if (printTopic) {
-          printTopic.broadcast(`print:${slug}`, [{ ...cart.toJSON() }])
+          printTopic.broadcast(`print:${profile.slug}`, [{ ...cart.toJSON() }])
         }
       }
       return cart.toJSON()
