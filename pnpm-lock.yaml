@@ -1144,6 +1144,9 @@ importers:
       '@types/luxon':
         specifier: ^3.4.2
         version: 3.4.2
+      '@whatsmenu/types':
+        specifier: workspace:*
+        version: link:../types
       luxon:
         specifier: ^3.5.0
         version: 3.5.0
@@ -1157,9 +1160,6 @@ importers:
       '@whatsmenu/prettier':
         specifier: workspace:*
         version: link:../../config/prettier
-      '@whatsmenu/types':
-        specifier: workspace:*
-        version: link:../types
       '@whatsmenu/typescript-config':
         specifier: workspace:*
         version: link:../../config/typescript-config
