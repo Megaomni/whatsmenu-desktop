@@ -89,7 +89,7 @@ jobs:
             cd build
             ln -s ../.env .env
             cd ..
-            pm2 start ${{ env.BRANCH == 'beta' && '../ecosystem_beta.config.cjs' || '../ecosystem.config.cjs' }}
+            pm2 start ${{ env.BRANCH == 'beta' && 'ecosystem_beta.config.cjs' || 'ecosystem.config.cjs' }}
           EOF
 
           rm private_key.pem
