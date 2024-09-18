@@ -6,6 +6,11 @@
 | The routes file is used for defining the HTTP routes.
 |
 */
+import swagger from '#config/swagger'
+import router from '@adonisjs/core/services/router'
+
+import AutoSwagger from 'adonis-autoswagger'
+import { middleware } from './kernel.js'
 
 const AuthController = () => import('#controllers/auth_controller')
 const CuponsController = () => import('#controllers/cupons_controller')
@@ -17,13 +22,7 @@ const ClientsController = () => import('#controllers/clients_controller')
 const CartsController = () => import('#controllers/carts_controller')
 const IntegrationsController = () => import('#controllers/integrations_controller')
 const GroveNfesController = () => import('#controllers/grove_nfes_controller')
-
-import swagger from '#config/swagger'
-import router from '@adonisjs/core/services/router'
-
-import AutoSwagger from 'adonis-autoswagger'
-import { middleware } from './kernel.js'
-import ProductsController from '#controllers/products_controller'
+const ProductsController = () => import('#controllers/products_controller')
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -75,6 +74,7 @@ router
     router
       .group(() => {
         router.post('/', [ProductsController, 'store'])
+        router.put('/', [ProductsController, 'update'])
       })
       .prefix('products')
 
