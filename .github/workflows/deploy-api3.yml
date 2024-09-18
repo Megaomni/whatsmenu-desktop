@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - beta
-      - feat/grove-nfe
       - main
     paths:
       - "apps/api/v3/**"
@@ -57,8 +56,9 @@ jobs:
 
       - name: Package application
         run: |
-          tar -czf deploy.tar.gz -C out/apps/api/v3 build
-          
+          mv out monorepo
+          tar -czf deploy.tar.gz monorepo
+
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
           EC2_USER: ${{ vars.EC2_USER_2 }}
@@ -73,17 +73,17 @@ jobs:
 
           ssh-keyscan -H ${{ matrix.ec2_host }} >> ~/.ssh/known_hosts
 
-          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH/public_html
+          scp -i private_key.pem deploy.tar.gz $EC2_USER@${{ matrix.ec2_host }}:$PROJECT_PATH
 
           ssh -i private_key.pem $EC2_USER@${{ matrix.ec2_host }} << 'EOF'
-            cd ${{ env.PROJECT_PATH }}/public_html
-            rm -rf build
+          cd ${{ env.PROJECT_PATH }}
             tar -xzf deploy.tar.gz
             rm deploy.tar.gz
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
             [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
             pnpm install
+            cd monorepo/apps/api/v3
             scp ${{ secrets.EC2_ENV_HOST }}:$ENV_PATH .env
             cd build
             rm .env

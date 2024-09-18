@@ -18,6 +18,7 @@ import PizzaProduct from '../../../../types/pizza-product'
 import { copy } from '../../../../utils/wm-functions'
 import Complement from '../../../../types/complements'
 import { useTranslation } from 'react-i18next'
+import { OldComponentComplement } from '../Complements/old'
 
 interface PizzaComplementProps {
   show: boolean
@@ -63,7 +64,7 @@ export function PizzaComplement(props: PizzaComplementProps) {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="position-relative">
-          <ComponentComplement
+          <OldComponentComplement
             complementType="pizza"
             typeModal="product"
             complements={newComplements ?? []}
@@ -80,9 +81,8 @@ export function PizzaComplement(props: PizzaComplementProps) {
           />
         </Modal.Body>
         <Modal.Footer
-          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${
-            modalFooterOpened ? 'show' : 'hidden'
-          }-buttons-modal-footer`}
+          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${modalFooterOpened ? 'show' : 'hidden'
+            }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
           <ActionsFooterButton
