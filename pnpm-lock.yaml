@@ -324,6 +324,121 @@ importers:
         specifier: ^5.3.3
         version: 5.5.4
 
+  apps/api/v3/build:
+    dependencies:
+      '@adonisjs/auth':
+        specifier: ^9.2.3
+        version: 9.2.3(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(@adonisjs/lucid@20.6.0(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(better-sqlite3@9.6.0)(luxon@3.5.0)(mysql2@3.11.0))(@adonisjs/session@7.4.2(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(@japa/api-client@2.0.3(@japa/assert@2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4))(@japa/runner@3.1.4)))(@japa/api-client@2.0.3(@japa/assert@2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4))(@japa/runner@3.1.4))(@japa/plugin-adonisjs@3.0.1(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(@japa/api-client@2.0.3(@japa/assert@2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4))(@japa/runner@3.1.4))(@japa/runner@3.1.4))
+      '@adonisjs/core':
+        specifier: ^6.12.1
+        version: 6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0)
+      '@adonisjs/cors':
+        specifier: ^2.2.1
+        version: 2.2.1(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))
+      '@adonisjs/drive':
+        specifier: ^3.2.0
+        version: 3.2.0(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(@aws-sdk/client-s3@3.651.1)(@aws-sdk/s3-request-presigner@3.651.1)
+      '@adonisjs/lucid':
+        specifier: ^20.1.0
+        version: 20.6.0(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(better-sqlite3@9.6.0)(luxon@3.5.0)(mysql2@3.11.0)
+      '@adonisjs/session':
+        specifier: ^7.1.1
+        version: 7.4.2(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(@japa/api-client@2.0.3(@japa/assert@2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4))(@japa/runner@3.1.4))
+      '@aws-sdk/client-s3':
+        specifier: ^3.651.0
+        version: 3.651.1
+      '@aws-sdk/s3-request-presigner':
+        specifier: ^3.651.0
+        version: 3.651.1
+      '@vinejs/vine':
+        specifier: ^1.7.1
+        version: 1.8.0
+      '@whatsmenu/utils':
+        specifier: workspace:*
+        version: link:../../../../packages/utils
+      adonis-autoswagger:
+        specifier: ^3.19.0
+        version: 3.61.0
+      axios:
+        specifier: ^1.6.7
+        version: 1.7.4
+      better-sqlite3:
+        specifier: ^9.4.3
+        version: 9.6.0
+      luxon:
+        specifier: ^3.4.4
+        version: 3.5.0
+      mysql2:
+        specifier: ^3.9.2
+        version: 3.11.0
+      reflect-metadata:
+        specifier: ^0.2.1
+        version: 0.2.2
+      socket.io:
+        specifier: ^4.7.5
+        version: 4.7.5
+    devDependencies:
+      '@adonisjs/assembler':
+        specifier: ^7.1.1
+        version: 7.7.0(typescript@5.5.4)
+      '@adonisjs/eslint-config':
+        specifier: ^1.2.1
+        version: 1.3.0(@types/eslint@9.6.0)(eslint@8.57.0)(prettier@3.3.3)(typescript@5.5.4)
+      '@adonisjs/prettier-config':
+        specifier: ^1.2.1
+        version: 1.3.0
+      '@adonisjs/tsconfig':
+        specifier: ^1.2.1
+        version: 1.3.0
+      '@japa/api-client':
+        specifier: ^2.0.2
+        version: 2.0.3(@japa/assert@2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4))(@japa/runner@3.1.4)
+      '@japa/assert':
+        specifier: ^2.1.0
+        version: 2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4)
+      '@japa/plugin-adonisjs':
+        specifier: ^3.0.0
+        version: 3.0.1(@adonisjs/core@6.12.1(@adonisjs/assembler@7.7.0(typescript@5.5.4))(@vinejs/vine@1.8.0))(@japa/api-client@2.0.3(@japa/assert@2.1.0(@japa/runner@3.1.4)(openapi-types@1.3.4))(@japa/runner@3.1.4))(@japa/runner@3.1.4)
+      '@japa/runner':
+        specifier: ^3.1.1
+        version: 3.1.4
+      '@swc/core':
+        specifier: ^1.3.107
+        version: 1.7.11(@swc/helpers@0.5.12)
+      '@types/luxon':
+        specifier: ^3.4.2
+        version: 3.4.2
+      '@types/node':
+        specifier: ^20.11.10
+        version: 20.14.14
+      '@types/sinon':
+        specifier: ^17.0.3
+        version: 17.0.3
+      '@whatsmenu/types':
+        specifier: workspace:*
+        version: link:../../../../packages/types
+      c8:
+        specifier: ^9.1.0
+        version: 9.1.0
+      eslint:
+        specifier: ^8.56.0
+        version: 8.57.0
+      pino-pretty:
+        specifier: ^10.3.1
+        version: 10.3.1
+      prettier:
+        specifier: ^3.2.4
+        version: 3.3.3
+      sinon:
+        specifier: ^17.0.1
+        version: 17.0.2
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@swc/core@1.7.11(@swc/helpers@0.5.12))(@types/node@20.14.14)(typescript@5.5.4)
+      typescript:
+        specifier: ^5.3.3
+        version: 5.5.4
+
   apps/dashboard:
     dependencies:
       '@adonisjs/websocket-client':
@@ -16150,7 +16265,7 @@ snapshots:
     dependencies:
       '@ampproject/remapping': 2.2.0
       '@angular-devkit/architect': 0.1502.11(chokidar@3.5.3)
-      '@angular-devkit/build-webpack': 0.1502.11(chokidar@3.5.3)(webpack-dev-server@4.11.1(webpack@5.76.1))(webpack@5.76.1(esbuild@0.17.8))
+      '@angular-devkit/build-webpack': 0.1502.11(chokidar@3.5.3)(webpack-dev-server@4.11.1(webpack@5.76.1))(webpack@5.76.1)
       '@angular-devkit/core': 15.2.11(chokidar@3.5.3)
       '@angular/compiler-cli': 15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5)
       '@babel/core': 7.20.12
@@ -16164,17 +16279,17 @@ snapshots:
       '@babel/runtime': 7.20.13
       '@babel/template': 7.20.7
       '@discoveryjs/json-ext': 0.5.7
-      '@ngtools/webpack': 15.2.11(@angular/compiler-cli@15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5))(typescript@4.9.5)(webpack@5.76.1(esbuild@0.17.8))
+      '@ngtools/webpack': 15.2.11(@angular/compiler-cli@15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5))(typescript@4.9.5)(webpack@5.76.1)
       ansi-colors: 4.1.3
       autoprefixer: 10.4.13(postcss@8.4.31)
-      babel-loader: 9.1.2(@babel/core@7.20.12)(webpack@5.76.1(esbuild@0.17.8))
+      babel-loader: 9.1.2(@babel/core@7.20.12)(webpack@5.76.1)
       babel-plugin-istanbul: 6.1.1
       browserslist: 4.21.5
       cacache: 17.0.4
       chokidar: 3.5.3
-      copy-webpack-plugin: 11.0.0(webpack@5.76.1(esbuild@0.17.8))
+      copy-webpack-plugin: 11.0.0(webpack@5.76.1)
       critters: 0.0.16
-      css-loader: 6.7.3(webpack@5.76.1(esbuild@0.17.8))
+      css-loader: 6.7.3(webpack@5.76.1)
       esbuild-wasm: 0.17.8
       glob: 8.1.0
       https-proxy-agent: 5.0.1
@@ -16182,23 +16297,23 @@ snapshots:
       jsonc-parser: 3.2.0
       karma-source-map-support: 1.4.0
       less: 4.1.3
-      less-loader: 11.1.0(less@4.1.3)(webpack@5.76.1(esbuild@0.17.8))
-      license-webpack-plugin: 4.0.2(webpack@5.76.1(esbuild@0.17.8))
+      less-loader: 11.1.0(less@4.1.3)(webpack@5.76.1)
+      license-webpack-plugin: 4.0.2(webpack@5.76.1)
       loader-utils: 3.2.1
       magic-string: 0.29.0
-      mini-css-extract-plugin: 2.7.2(webpack@5.76.1(esbuild@0.17.8))
+      mini-css-extract-plugin: 2.7.2(webpack@5.76.1)
       open: 8.4.1
       ora: 5.4.1
       parse5-html-rewriting-stream: 7.0.0
       piscina: 3.2.0
       postcss: 8.4.31
-      postcss-loader: 7.0.2(postcss@8.4.31)(webpack@5.76.1(esbuild@0.17.8))
+      postcss-loader: 7.0.2(postcss@8.4.31)(webpack@5.76.1)
       resolve-url-loader: 5.0.0
       rxjs: 6.6.7
       sass: 1.58.1
-      sass-loader: 13.2.0(sass@1.58.1)(webpack@5.76.1(esbuild@0.17.8))
+      sass-loader: 13.2.0(sass@1.58.1)(webpack@5.76.1)
       semver: 7.5.3
-      source-map-loader: 4.0.1(webpack@5.76.1(esbuild@0.17.8))
+      source-map-loader: 4.0.1(webpack@5.76.1)
       source-map-support: 0.5.21
       terser: 5.16.3
       text-table: 0.2.0
@@ -16206,10 +16321,10 @@ snapshots:
       tslib: 2.5.0
       typescript: 4.9.5
       webpack: 5.76.1(esbuild@0.17.8)
-      webpack-dev-middleware: 6.1.2(webpack@5.76.1(esbuild@0.17.8))
+      webpack-dev-middleware: 6.1.2(webpack@5.76.1)
       webpack-dev-server: 4.11.1(webpack@5.76.1)
       webpack-merge: 5.8.0
-      webpack-subresource-integrity: 5.1.0(webpack@5.76.1(esbuild@0.17.8))
+      webpack-subresource-integrity: 5.1.0(webpack@5.76.1)
     optionalDependencies:
       '@angular/localize': 15.2.10(@angular/compiler-cli@15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5))(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))
       '@angular/service-worker': 15.2.10(@angular/common@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8))(rxjs@6.5.5))(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8))
@@ -16231,7 +16346,7 @@ snapshots:
       - utf-8-validate
       - webpack-cli
 
-  '@angular-devkit/build-webpack@0.1502.11(chokidar@3.5.3)(webpack-dev-server@4.11.1(webpack@5.76.1))(webpack@5.76.1(esbuild@0.17.8))':
+  '@angular-devkit/build-webpack@0.1502.11(chokidar@3.5.3)(webpack-dev-server@4.11.1(webpack@5.76.1))(webpack@5.76.1)':
     dependencies:
       '@angular-devkit/architect': 0.1502.11(chokidar@3.5.3)
       rxjs: 6.6.7
@@ -20786,7 +20901,7 @@ snapshots:
       rxjs: 6.5.5
       tslib: 2.6.3
 
-  '@ngtools/webpack@15.2.11(@angular/compiler-cli@15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5))(typescript@4.9.5)(webpack@5.76.1(esbuild@0.17.8))':
+  '@ngtools/webpack@15.2.11(@angular/compiler-cli@15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5))(typescript@4.9.5)(webpack@5.76.1)':
     dependencies:
       '@angular/compiler-cli': 15.2.10(@angular/compiler@15.2.10(@angular/core@15.2.10(rxjs@6.5.5)(zone.js@0.11.8)))(typescript@4.9.5)
       typescript: 4.9.5
@@ -23607,7 +23722,7 @@ snapshots:
     dependencies:
       '@babel/core': 7.25.2
 
-  babel-loader@9.1.2(@babel/core@7.20.12)(webpack@5.76.1(esbuild@0.17.8)):
+  babel-loader@9.1.2(@babel/core@7.20.12)(webpack@5.76.1):
     dependencies:
       '@babel/core': 7.20.12
       find-cache-dir: 3.3.2
@@ -24726,7 +24841,7 @@ snapshots:
       graceful-fs: 4.2.11
       p-event: 6.0.1
 
-  copy-webpack-plugin@11.0.0(webpack@5.76.1(esbuild@0.17.8)):
+  copy-webpack-plugin@11.0.0(webpack@5.76.1):
     dependencies:
       fast-glob: 3.3.2
       glob-parent: 6.0.2
@@ -24859,7 +24974,7 @@ snapshots:
 
   css-color-keywords@1.0.0: {}
 
-  css-loader@6.7.3(webpack@5.76.1(esbuild@0.17.8)):
+  css-loader@6.7.3(webpack@5.76.1):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.41)
       postcss: 8.4.41
@@ -28952,7 +29067,7 @@ snapshots:
       readable-stream: 2.3.8
     optional: true
 
-  less-loader@11.1.0(less@4.1.3)(webpack@5.76.1(esbuild@0.17.8)):
+  less-loader@11.1.0(less@4.1.3)(webpack@5.76.1):
     dependencies:
       klona: 2.0.6
       less: 4.1.3
@@ -28979,7 +29094,7 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
-  license-webpack-plugin@4.0.2(webpack@5.76.1(esbuild@0.17.8)):
+  license-webpack-plugin@4.0.2(webpack@5.76.1):
     dependencies:
       webpack-sources: 3.2.3
     optionalDependencies:
@@ -29847,7 +29962,7 @@ snapshots:
 
   min-indent@1.0.1: {}
 
-  mini-css-extract-plugin@2.7.2(webpack@5.76.1(esbuild@0.17.8)):
+  mini-css-extract-plugin@2.7.2(webpack@5.76.1):
     dependencies:
       schema-utils: 4.2.0
       webpack: 5.76.1(esbuild@0.17.8)
@@ -31168,7 +31283,7 @@ snapshots:
       postcss: 8.4.41
       yaml: 2.5.0
 
-  postcss-loader@7.0.2(postcss@8.4.31)(webpack@5.76.1(esbuild@0.17.8)):
+  postcss-loader@7.0.2(postcss@8.4.31)(webpack@5.76.1):
     dependencies:
       cosmiconfig: 7.1.0
       klona: 2.0.6
@@ -32447,7 +32562,7 @@ snapshots:
 
   safevalues@0.3.4: {}
 
-  sass-loader@13.2.0(sass@1.58.1)(webpack@5.76.1(esbuild@0.17.8)):
+  sass-loader@13.2.0(sass@1.58.1)(webpack@5.76.1):
     dependencies:
       klona: 2.0.6
       neo-async: 2.6.2
@@ -32945,7 +33060,7 @@ snapshots:
 
   source-map-js@1.2.0: {}
 
-  source-map-loader@4.0.1(webpack@5.76.1(esbuild@0.17.8)):
+  source-map-loader@4.0.1(webpack@5.76.1):
     dependencies:
       abab: 2.0.6
       iconv-lite: 0.6.3
@@ -34497,7 +34612,7 @@ snapshots:
       schema-utils: 4.2.0
       webpack: 5.76.1(esbuild@0.17.8)
 
-  webpack-dev-middleware@6.1.2(webpack@5.76.1(esbuild@0.17.8)):
+  webpack-dev-middleware@6.1.2(webpack@5.76.1):
     dependencies:
       colorette: 2.0.20
       memfs: 3.5.3
@@ -34552,7 +34667,7 @@ snapshots:
 
   webpack-sources@3.2.3: {}
 
-  webpack-subresource-integrity@5.1.0(webpack@5.76.1(esbuild@0.17.8)):
+  webpack-subresource-integrity@5.1.0(webpack@5.76.1):
     dependencies:
       typed-assert: 1.0.9
       webpack: 5.76.1(esbuild@0.17.8)
