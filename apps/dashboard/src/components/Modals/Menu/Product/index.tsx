@@ -27,6 +27,7 @@ import { AppContext } from '../../../../context/app.ctx'
 import { MenuContext } from '../../../../context/menu.ctx'
 import Week from '../../../../types/dates'
 import {
+  apiRoute,
   hash,
   mask
 } from '../../../../utils/wm-functions'
@@ -36,6 +37,7 @@ import { OverlaySpinner } from '../../../OverlaySpinner'
 import { CropModal } from '../../CropModal'
 import { ComplementFormSchema, ComponentComplement } from '../Complements'
 import Product from '../../../../types/product'
+import { useSession } from 'next-auth/react'
 
 const ProductFormSchema = z.object({
   id: z.number().optional(),
@@ -60,14 +62,14 @@ const ProductFormSchema = z.object({
   amount: z.number(),
   amount_alert: z.number(),
   ncm_code: z.string().optional(),
-  disponibility: z.object({ 
+  disponibility: z.object({
     week: z.any(),
     store: z.object({
       delivery: z.boolean(),
       package: z.boolean(),
       table: z.boolean()
     })
-   }),
+  }),
   complements: ComplementFormSchema.array()
 })
 
@@ -81,6 +83,7 @@ interface ProductProps {
 
 export function ProductModal({ show, handleClose }: ProductProps) {
   const { t } = useTranslation()
+  const { data: session } = useSession()
   const {
     profile,
     plansCategory,
@@ -174,6 +177,19 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     handleClose()
   }
 
+  const handleDelete = async () => {
+    await apiRoute(`/dashboard/menu/product/${product.id}/delete`, session, 'DELETE')
+    setCategories(state => {
+      return state.map(category => {
+        category.products = category.products?.filter(p => p.id !== product.id)
+        return category
+      })
+    })
+    handleClose()
+  }
+
+  console.log(formState.errors);
+
   useEffect(() => {
     setValue('disponibility.week', week)
   }, [week, setValue])
@@ -186,7 +202,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       amount: product.amount,
       amount_alert: product.amount_alert,
       description: product.description,
-      complements: product.complements.map((comp) => ({...comp, required: Boolean(comp.required)})),
+      complements: product.complements.map((comp) => ({ ...comp, required: Boolean(comp.required) })),
       order: product.order,
       value: product.value,
       valueTable: product.valueTable,
@@ -199,7 +215,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
     })
   }, [product, setValue, reset])
-  
+
   return (
     <div
       onKeyDown={(e) => {
@@ -845,14 +861,14 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           <ArrowModalFooter />
           <div className='d-flex align-items-center gap-2 w-100'>
             {type === 'update' && (
-              <Button variant='outline-danger' form='form-product'>{t('delete')}</Button>
+              <Button variant='outline-danger' form='form-product' onClick={handleDelete}>{t('delete')}</Button>
             )}
             <div className='d-flex align-items-center gap-2 ms-auto'>
               <Button variant='danger' form='form-product' onClick={handleClose} >{t('cancel')}</Button>
               <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>
             </div>
           </div>
-          
+
         </Modal.Footer>
         <OverlaySpinner
           show={showSaveSpinner}
