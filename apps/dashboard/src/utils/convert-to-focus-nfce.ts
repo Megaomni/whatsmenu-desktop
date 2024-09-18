@@ -1,7 +1,5 @@
-import { NFCeFormsPaymentEnum, NFCeType } from '@whatsmenu/types'
+import { NFCeFormsPaymentEnum, NFCeType } from '../types/nfce'
 import { DateTime } from 'luxon'
-
-//
 
 /**
  * Converte um carrinho para um objeto NFC-e para uso com o banco de dados da Focus
