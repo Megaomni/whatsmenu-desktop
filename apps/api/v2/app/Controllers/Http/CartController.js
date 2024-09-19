@@ -740,7 +740,7 @@ class CartController {
             }
 
             if (requestTopic && cart && cart.statusPayment !== 'pending' && cart.statusPayment !== 'cancelled') {
-              ;(async () => {
+              ; (async () => {
                 requestTopic.broadcast(`request:${slug}`, [{ ...cart.toJSON() }])
                 requestTopic.broadcast(`menu:${slug}`, { menu: 'update' })
               })()
@@ -1017,7 +1017,7 @@ class CartController {
         await cart.save()
         await CartController.generateVouchers(cart)
         const requestTopic = Ws.getChannel('request:*').topic(`request:${profile.slug}`)
-        const printTopic = Ws.getChannel('print:*').topic(`print:${slug}`)
+        const printTopic = Ws.getChannel('print:*').topic(`print:${profile.slug}`)
         if (requestTopic) {
           requestTopic.broadcast(`request:${profile.slug}`, [{ ...cart.toJSON() }])
         }
