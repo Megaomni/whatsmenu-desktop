@@ -368,7 +368,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
 
         clearTimeout(whileNotClient)
       }
-    }, 1000)
+    }, 1000)    
   }
 
   ngAfterViewChecked(): void {
@@ -1062,6 +1062,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
       description: item.description,
       image: item.image,
       value: item.value,
+      ncm_code: item.ncm_code ? item.ncm_code : null,
       promoteStatus: item.promoteStatus,
       promoteValue: item.promoteValue,
       valueTable: item.valueTable,
@@ -1204,6 +1205,7 @@ export class HomeComponent implements OnInit, AfterViewChecked {
         editPizza: editPizza
           ? {
               obs: editPizza.obs,
+              ncm_code: editPizza.ncm_code ? editPizza.ncm_code : null,
               quantity: editPizza.quantity,
               type: 'pizza',
               complements: editPizza.complements,

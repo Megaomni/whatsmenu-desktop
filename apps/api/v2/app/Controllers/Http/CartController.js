@@ -348,7 +348,7 @@ class CartController {
           message: 'Desculpe nos o transtorno, mas esta loja no momento se encontra fechada.',
         })
       }
-
+      
       let client
       if (data.clientId) {
         client = await Client.query().where('id', data.clientId).where('profileId', profile.id).first()
@@ -625,7 +625,7 @@ class CartController {
           const itens_cart = []
           const itens_cartPizza = []
 
-          for (const item of data.itens) {
+          for (const {ncm_code, ...item} of data.itens) {
             if (item.type === 'default') {
               itens_cart.push(item)
             }
@@ -634,8 +634,13 @@ class CartController {
             }
             await CartIten.create(
               {
-                ...item,
+                controls: {
+                  grovenfe: {
+                    ncm_code,
+                  }
+                },
                 cartId: clientCart.id,
+                ...item,
               },
               trx
             )
