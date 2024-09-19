@@ -74,25 +74,23 @@ export function Sidebar() {
 
   const router = useRouter()
 
-  const businessHours = (timezone: string) => {
-    const openingTime = '08:00'
-    const closingTime = '20:30'
+  /**
+   * Retorna uma string representando o horário de funcionamento das 8h às 20h30
+   * no fuso horário fornecido.
+   *
+   * @param {string} timezone - Cadeia de caracteres do fuso horário IANA
+   * @returns {string} - String formatada representando o horário de funcionamento
+   */
+  const businessHours = (timezone: string): string => {
+    const formattedOpeningTime = DateTime.local()
+      .set({ hour: 8, minute: 0 })
+      .setZone(timezone)
+      .toFormat('HH:mm')
 
-    const formatOptions: Intl.DateTimeFormatOptions = {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: timezone,
-    }
-
-    const formattedOpeningTime = new Intl.DateTimeFormat(
-      'pt-BR',
-      formatOptions
-    ).format(new Date(`1970-01-01T${openingTime}:00`))
-    const formattedClosingTime = new Intl.DateTimeFormat(
-      'pt-BR',
-      formatOptions
-    ).format(new Date(`1970-01-01T${closingTime}:00`))
-
+    const formattedClosingTime = DateTime.local()
+      .set({ hour: 20, minute: 30 })
+      .setZone(timezone)
+      .toFormat('HH:mm')
     return `${formattedOpeningTime} às ${formattedClosingTime}`
   }
 
