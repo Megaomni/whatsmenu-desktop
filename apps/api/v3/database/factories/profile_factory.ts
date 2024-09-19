@@ -148,6 +148,19 @@ export const ProfileFactory = factory
       } as Profile['week'],
       timeZone: 'America/Sao_Paulo',
       options: {
+        integrations: {
+          grovenfe: {
+            company_id: faker.number.int({ min: 1, max: 100 }),
+            config: {
+              fiscal_notes: {
+                day_limiter: null,
+                forms_payments: [],
+              },
+            },
+            created_at: '',
+            plan: {},
+          },
+        },
         forceClose: null,
         inventoryControl: faker.datatype.boolean(),
         legacyPix: faker.datatype.boolean(),
@@ -287,6 +300,10 @@ export const ProfileFactory = factory
         tracking: {
           pixel: '1',
           google: '',
+          googleAds: {
+            id: '',
+            label: '',
+          },
         },
         hoursBlock: [],
         activeCupom: true,

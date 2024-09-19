@@ -39,7 +39,7 @@ export default function Dashboard() {
                     <div>
                       <h5 className="fw-bold mt-0 ">Casa da Esfiha</h5>
                       <a href=" " className="text-dark ">
-                        {process.env.WHATSMENU_BASE_URL}/casa-esfiha{' '}
+                        {process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/casa-esfiha{' '}
                       </a>{' '}
                       <br />
                       <a href="# " className="stretched-link ">
@@ -64,7 +64,7 @@ export default function Dashboard() {
                     <div>
                       <h5 className="fw-bold mt-0 ">Casa da Esfiha</h5>
                       <a href=" " className="text-dark ">
-                        {process.env.WHATSMENU_BASE_URL}/casa-esfiha{' '}
+                        {process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/casa-esfiha{' '}
                       </a>{' '}
                       <br />
                       <a href="# " className="stretched-link ">

@@ -98,7 +98,7 @@ export default class StrategyPagarme implements GatewayStrategy {
 
   public async createCardToken(data: CreateTokenCardContracts) {
     return await apiRoute(
-      `${process.env.CANONICAL_URL}/api/pagarme/createTokenCard`,
+      `${process.env.NEXT_PUBLIC_CANONICAL_URL}/api/pagarme/createTokenCard`,
       null,
       'POST',
       {

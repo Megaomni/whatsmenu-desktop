@@ -163,8 +163,8 @@ export const NotePrint = forwardRef(function NotePrint(
           (cart.statusPayment === 'offline'
             ? cart?.formsPayment
             : cart?.formsPayment.filter(
-                (f) => f.paid || f.payment === 'cashback'
-              )) ?? []
+              (f) => f.paid || f.payment === 'cashback'
+            )) ?? []
         if (noCashback) {
           formsPayment = formsPayment.filter(
             (formPayment) => formPayment.payment !== 'cashback'
@@ -250,7 +250,7 @@ export const NotePrint = forwardRef(function NotePrint(
         key={implementation.code}
         leftClass="complement-space"
         left={`${' '.repeat(3)}${implementation.name}`}
-        right={`${currency({ value: implementation.value })}`}
+        right={`${currency({ value: implementation.value, withoutSymbol: true })}`}
       />
     )
   }
@@ -259,7 +259,7 @@ export const NotePrint = forwardRef(function NotePrint(
     return items?.map((cartItem) => {
       const cartItemTotal =
         cartItem.details.value > 0
-          ? `${currency({ value: cartItem.getTotal(cartItem.type === 'default') })}`
+          ? `${currency({ value: cartItem.getTotal(cartItem.type === 'default'), withoutSymbol: true })}`
           : ''
       // const cartItemTotalWithOutSymbol = cartItem.details.value > 0 ? `(${currency({ value: cartItem.type === 'pizza' ? cartItem.getTotal(true) - cartItem.details.implementations.reduce((total, i) => total += i.value, 0) : cartItem.details.value, withoutSymbol: true })})` : ''
       const cartItemTotalWithOutSymbol =
@@ -274,16 +274,15 @@ export const NotePrint = forwardRef(function NotePrint(
       const regex =
         cartItem.type === 'pizza'
           ? new RegExp(
-              `${
-                cartItem.details.flavors.length > 1
-                  ? flavorsString.replace(specialCharsRegex, '\\$1')
-                  : cartItem.details.flavors[0].name.replace(
-                      specialCharsRegex,
-                      '\\$1'
-                    )
-              }.+`,
-              'g'
-            )
+            `${cartItem.details.flavors.length > 1
+              ? flavorsString.replace(specialCharsRegex, '\\$1')
+              : cartItem.details.flavors[0].name.replace(
+                specialCharsRegex,
+                '\\$1'
+              )
+            }.+`,
+            'g'
+          )
           : ''
       // if (cartItem.type === 'pizza') {
       //   console.log(cartItem.name.replace(regex, flavorsString), regex)
@@ -468,16 +467,15 @@ export const NotePrint = forwardRef(function NotePrint(
       )}
       {cart.type === 'T' && !printType && cart.bartender && (
         <Print.Row
-          left={`Garçom: ${
-            cart.bartender.deleted_at
-              ? cart.bartender.name.replace(
-                  cart.bartender.name.substring(
-                    cart.bartender.name.length - 19
-                  ),
-                  ' (Desativado)'
-                )
-              : cart.bartender.name
-          }`}
+          left={`Garçom: ${cart.bartender.deleted_at
+            ? cart.bartender.name.replace(
+              cart.bartender.name.substring(
+                cart.bartender.name.length - 19
+              ),
+              ' (Desativado)'
+            )
+            : cart.bartender.name
+            }`}
         />
       )}
       {cart.type === 'P' && (
@@ -486,7 +484,7 @@ export const NotePrint = forwardRef(function NotePrint(
       {cart.type !== 'T' && (
         <Print.Row left={`Tel: ${cart.returnMaskedContact()}`} />
       )}
-      {cart.secretNumber && <Print.Row left={`CPF: ${cart.secretNumber}`} />}
+      {cart.secretNumber && <Print.Row left={`${cart.secretNumber.length <= 11 ? 'CPF' : 'CNPJ'}: ${cart.secretNumber}`} />}
       {printType === 'table' && (
         <Print.Row
           left={`Permanência: ${cart.permenance(false, table?.opened)}`}
@@ -495,15 +493,15 @@ export const NotePrint = forwardRef(function NotePrint(
       <Print.LineSeparator />
       {detailedTable
         ? table?.opened?.getCarts()?.map((cart) => {
-            return cart.status !== 'canceled' ? (
-              <>
-                <Print.Row left={`Pedido: wm${cart.code}-${cart.type}`} />
-                {getItemsToPrint(
-                  cart.groupItens(profile.options.print.groupItems)
-                )}
-              </>
-            ) : null
-          })
+          return cart.status !== 'canceled' ? (
+            <>
+              <Print.Row left={`Pedido: wm${cart.code}-${cart.type}`} />
+              {getItemsToPrint(
+                cart.groupItens(profile.options.print.groupItems)
+              )}
+            </>
+          ) : null
+        })
         : getItemsToPrint(getItens())}
       {(printType === 'command' || printType === 'table') && (
         <>
@@ -594,19 +592,19 @@ export const NotePrint = forwardRef(function NotePrint(
         {getFormsPaymentToPrint(false).some(
           (formPayment) => formPayment.payment === 'cashback'
         ) && (
-          <Print.Row
-            left={`Cashback:`}
-            right={`-${currency({ value: cart.getTotalValue('cashback'), withoutSymbol: true })}`}
-          />
-        )}
+            <Print.Row
+              left={`Cashback:`}
+              right={`-${currency({ value: cart.getTotalValue('cashback'), withoutSymbol: true })}`}
+            />
+          )}
         <Print.Row
           left={`Total:`}
           right={`${currency({ value: getTotal('total'), withoutSymbol: true })}`}
         />
         {haveTransshipment &&
-        cart.formsPayment.filter(
-          (formPayment) => formPayment.payment !== 'cashback'
-        ).length ? (
+          cart.formsPayment.filter(
+            (formPayment) => formPayment.payment !== 'cashback'
+          ).length ? (
           <>
             <Print.Row
               left={`Troco para:`}

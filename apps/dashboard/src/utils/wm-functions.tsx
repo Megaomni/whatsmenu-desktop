@@ -198,7 +198,7 @@ export async function apiRoute<T, R = any>(
   }
 
   const response = await axios(
-    route.includes('://') ? route : `${process.env.WHATSMENU_API}${route}`,
+    route.includes('://') ? route : `${process.env.NEXT_PUBLIC_WHATSMENU_API}${route}`,
     {
       headers,
       method,

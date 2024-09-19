@@ -15,11 +15,14 @@ const ReportsController = () => import('#controllers/reports_controller')
 const CronsController = () => import('#controllers/crons_controller')
 const ClientsController = () => import('#controllers/clients_controller')
 const CartsController = () => import('#controllers/carts_controller')
+const IntegrationsController = () => import('#controllers/integrations_controller')
+const GroveNfesController = () => import('#controllers/grove_nfes_controller')
 
-import { middleware } from './kernel.js'
-import router from '@adonisjs/core/services/router'
-import AutoSwagger from 'adonis-autoswagger'
 import swagger from '#config/swagger'
+import router from '@adonisjs/core/services/router'
+
+import AutoSwagger from 'adonis-autoswagger'
+import { middleware } from './kernel.js'
 
 // returns swagger in YAML
 router.get('/swagger', async () => {
@@ -97,6 +100,13 @@ router
         router.patch('general', [ProfilesController, 'generalBasicSettings'])
       })
       .prefix('settings')
+
+    router
+      .group(() => {
+        router.post('facebookPixel', [IntegrationsController, 'facebookPixel'])
+        router.post('google', [IntegrationsController, 'google'])
+      })
+      .prefix('integrations')
   })
   .prefix('dashboard')
   .use(
@@ -135,6 +145,7 @@ router
     router
       .group(() => {
         router.get('/findClient', [ClientsController, 'findClient'])
+        router.get('/vouchers/:profileId/getByStatus/:status', [VouchersController, 'getByStatus'])
       })
       .prefix('desktop')
   })
@@ -146,3 +157,9 @@ router
     router.get('/closeCashiers', [CronsController, 'closeCashiers'])
   })
   .prefix('cron')
+
+router
+  .group(() => {
+    router.post('/webhook', [GroveNfesController, 'webhook'])
+  })
+  .prefix('grovenfe')

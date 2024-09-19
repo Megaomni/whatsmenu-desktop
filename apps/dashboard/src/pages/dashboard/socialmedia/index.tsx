@@ -135,7 +135,7 @@ export default function SocialMedia(props: SocialMediaProps) {
                           trigger={'click'}
                           placement="top"
                           overlay={linkShare(
-                            `${process.env.WHATSMENU_BASE_URL}/${profile.slug}?name=${img}`
+                            `${process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL}/${profile.slug}?name=${img}`
                           )}
                         >
                           <Button

@@ -152,7 +152,7 @@ export function ProfileFormsPayment({
               </ul>
               <Button
                 as="a"
-                href={process.env.ASAAS_DASHBOARD_URL}
+                href={process.env.NEXT_PUBLIC_ASAAS_DASHBOARD_URL}
                 target="_blank"
                 className="order-md-2  order-4 my-auto me-auto"
               >

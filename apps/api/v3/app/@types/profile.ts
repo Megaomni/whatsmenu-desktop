@@ -116,6 +116,10 @@ export interface ProfileOptions {
   tracking: {
     pixel: string
     google: string
+    googleAds: {
+      label: string
+      id: string
+    }
   }
   legacyPix: boolean
   onlinePix: boolean
@@ -145,4 +149,17 @@ export interface ProfileOptions {
     showProductsWhenPaused: boolean
   }
   inventoryControl: boolean
+  integrations: {
+    grovenfe?: {
+      company_id: number
+      plan: any
+      config: {
+        fiscal_notes: {
+          day_limiter: null | number
+          forms_payments: Array<{ type: string }>
+        }
+      }
+      created_at: string
+    }
+  }
 }
