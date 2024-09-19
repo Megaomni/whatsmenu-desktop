@@ -68,7 +68,6 @@ export class StatusComponent implements OnInit {
       this.slug = slug
     })
   }
-
   async ngOnInit() {
     await this.getInfos()
     document.body.classList.remove('mat-typography')
@@ -199,9 +198,12 @@ export class StatusComponent implements OnInit {
       }
       this.websocket.connect.subscribe(async ({ type, data }: { type: 'connection' | 'request' | 'command' | 'profile'; data: any }) => {
         this.websocket.subscribe('profile', this.pixInvoice.id)
-        setTimeout(() => {
-          this.pixRegeneration = true
-        }, 5 * 1000 * 60)
+        setTimeout(
+          () => {
+            this.pixRegeneration = true
+          },
+          5 * 1000 * 60
+        )
         if (type === 'profile') {
           if (data.table) {
             this.context.getActiveTable().opened.formsPayment = [...data.table.formsPayment]
@@ -596,7 +598,6 @@ export class StatusComponent implements OnInit {
       message += `*${this.translate.text().order_comment}: + ${this.currencyNoSymbol(
         this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart)
       )}*\n`
-      
       if (this.cart.addressId) {
         message += `*${this.translate.text().delivery}:* `
         if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === this.translate.text().to_consult) {
