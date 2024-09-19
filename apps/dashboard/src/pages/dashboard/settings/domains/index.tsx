@@ -227,7 +227,7 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
                 className="with-icon cursor-pointer"
                 onClick={(e) => handleCopy(e, handleShowToast)}
               >
-                melissa.ns.cloudflare.com
+                maxine.ns.cloudflare.com
                 <FaCopy />
               </span>
             </li>
@@ -236,7 +236,7 @@ export default function SettingsDomains(props: SettingsDomainsProps) {
                 className="with-icon cursor-pointer"
                 onClick={(e) => handleCopy(e, handleShowToast)}
               >
-                viddy.ns.cloudflare.com
+                milan.ns.cloudflare.com
                 <FaCopy />
               </span>
             </li>

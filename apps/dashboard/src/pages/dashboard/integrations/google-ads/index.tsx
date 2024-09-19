@@ -11,7 +11,7 @@ import { z } from 'zod'
 
 const GoogleAdsFormSchema = z.object({
   googleAds: z.object({
-    id: z.string().regex(/^AW-\d{10}$/, 'Id inválido'),
+    id: z.string().regex(/^AW-\d{20}$/, 'Id inválido'),
     label: z.string(),
   })
 })
@@ -75,7 +75,7 @@ export default function GoogleAds() {
             <Form.Label className='d-flex flex-column gap-3 col-12 col-md-4'>
               <span className='fw-bold'>ID</span>
               <div className='position-relative'>
-                <Form.Control {...register('googleAds.id')} onFocus={() => setIsInputSelected(true)} isInvalid={Boolean(errors?.googleAds?.id)} isValid={!Boolean(errors?.googleAds?.id) && isValid} maxLength={13} />
+                <Form.Control {...register('googleAds.id')} onFocus={() => setIsInputSelected(true)} isInvalid={Boolean(errors?.googleAds?.id)} isValid={!Boolean(errors?.googleAds?.id) && isValid} />
                 <Form.Control.Feedback
                   tooltip
                   type="invalid"

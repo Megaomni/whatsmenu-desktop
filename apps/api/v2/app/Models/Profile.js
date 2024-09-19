@@ -36,17 +36,27 @@ class Profile extends Model {
           profile.formsPayment = profile.formsPayment.concat([
             { flags: [], status: false, payment: 'snack' },
             { flags: [], status: false, payment: 'food' },
-          ]);
-          break;
-
+          ])
+          profile.timeZone = 'America/New_York'
+          break
+        case 'fr-CH':
+          profile.timeZone = 'Europe/Zurich'
+          break
+        case 'pt-PT':
+          profile.timeZone = 'Europe/Lisbon'
+          break
+        case 'ar-AE':
+          profile.timeZone = 'Asia/Dubai'
+          break
         default:
           profile.formsPayment = profile.formsPayment.concat([
             { flags: [], status: false, payment: 'snack' },
             { flags: [], status: false, payment: 'food' },
             { key: { type: '', value: '' }, status: false, payment: 'pix' },
             { key: { type: 'email', value: '' }, status: false, payment: 'picpay' },
-          ]);
-          break;
+          ])
+          profile.timeZone = 'America/Sao_Paulo'
+          break
       }
 
       const addon = { status: false, type: 'fee', valueType: 'fixed', value: 0 }
@@ -199,7 +209,6 @@ class Profile extends Model {
         ...profile.options,
       }
 
-      profile.timeZone = 'America/Sao_Paulo'
       profile.formsPayment = JSON.stringify(profile.formsPayment)
       profile.week = JSON.stringify(profile.week)
       profile.options = JSON.stringify(profile.options)

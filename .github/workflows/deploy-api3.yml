@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - beta
-      - feat/grove-nfe
-      - main
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
@@ -58,7 +56,7 @@ jobs:
       - name: Package application
         run: |
           tar -czf deploy.tar.gz -C out/apps/api/v3 build
-          
+
       - name: Deploy to EC2 ${{ env.BRANCH }}
         env:
           EC2_USER: ${{ vars.EC2_USER_2 }}

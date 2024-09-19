@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - beta
-      - feat/grove-nfe
-      
     paths:
       - "apps/api/v2/**"
       - ".github/workflows/deploy-api2.yml"
