@@ -250,7 +250,7 @@ export const NotePrint = forwardRef(function NotePrint(
         key={implementation.code}
         leftClass="complement-space"
         left={`${' '.repeat(3)}${implementation.name}`}
-        right={`${currency({ value: implementation.value })}`}
+        right={`${currency({ value: implementation.value, withoutSymbol: true })}`}
       />
     )
   }
@@ -259,7 +259,7 @@ export const NotePrint = forwardRef(function NotePrint(
     return items?.map((cartItem) => {
       const cartItemTotal =
         cartItem.details.value > 0
-          ? `${currency({ value: cartItem.getTotal(cartItem.type === 'default') })}`
+          ? `${currency({ value: cartItem.getTotal(cartItem.type === 'default'), withoutSymbol: true })}`
           : ''
       // const cartItemTotalWithOutSymbol = cartItem.details.value > 0 ? `(${currency({ value: cartItem.type === 'pizza' ? cartItem.getTotal(true) - cartItem.details.implementations.reduce((total, i) => total += i.value, 0) : cartItem.details.value, withoutSymbol: true })})` : ''
       const cartItemTotalWithOutSymbol =
@@ -468,13 +468,13 @@ export const NotePrint = forwardRef(function NotePrint(
       {cart.type === 'T' && !printType && cart.bartender && (
         <Print.Row
           left={`Garçom: ${cart.bartender.deleted_at
-              ? cart.bartender.name.replace(
-                cart.bartender.name.substring(
-                  cart.bartender.name.length - 19
-                ),
-                ' (Desativado)'
-              )
-              : cart.bartender.name
+            ? cart.bartender.name.replace(
+              cart.bartender.name.substring(
+                cart.bartender.name.length - 19
+              ),
+              ' (Desativado)'
+            )
+            : cart.bartender.name
             }`}
         />
       )}
