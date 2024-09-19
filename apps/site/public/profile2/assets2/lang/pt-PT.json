@@ -16,6 +16,7 @@
   },
 
   "text": {
+    "coin": "€",
     "favorite_card_comment": "Ex: O meu cartão favorito",
     "finalize_order_comment": "Finalizar Pedido",
     "welcome": "bem-vindo",

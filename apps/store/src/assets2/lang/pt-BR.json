@@ -44,6 +44,7 @@
     ]
   },
   "text": {
+    "coin": "R$",
     "favorite_card_comment": "Ex: Meu cartão favorito",
     "finalize_order_comment": "Finalizar Pedido",
     "welcome": "Bem vindo!",

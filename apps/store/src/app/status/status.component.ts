@@ -175,7 +175,7 @@ export class StatusComponent implements OnInit {
         name,
         document: this.pixSecretNumber,
         value: Number(this.cartService.totalCartFinalValue({ cartRequest: this.cart, isOnline: true }).toFixed(2)),
-        description: `Pedido ${this.context.profile.name} - WhatsMenu`,
+        description: `${this.translate.text().order} ${this.context.profile.name} - WhatsMenu`,
         walletId: this.context.profile.options.asaas.walletId,
         clientId: !!this.cart.tableType ? 0 : this.cart.client.id,
       }
@@ -198,6 +198,12 @@ export class StatusComponent implements OnInit {
       }
       this.websocket.connect.subscribe(async ({ type, data }: { type: 'connection' | 'request' | 'command' | 'profile'; data: any }) => {
         this.websocket.subscribe('profile', this.pixInvoice.id)
+        setTimeout(
+          () => {
+            this.pixRegeneration = true
+          },
+          5 * 1000 * 60
+        )
         setTimeout(
           () => {
             this.pixRegeneration = true
@@ -418,9 +424,10 @@ export class StatusComponent implements OnInit {
   private formatCurrency(val: any): string {
     let value = val
     if (typeof val === 'string') {
-      value = parseFloat(val.replace(',', '.').replace('R$', '').split(' ').join(''))
+      value = parseFloat(val.replace(',', '.').replace(`${this.translate.text().coin}`, '').split(' ').join(''))
     }
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
+    //precisa verificar isso:
+    return new Intl.NumberFormat(this.translate.language(), { style: 'currency', currency: this.translate.currency() }).format(value)
   }
 
   async setAlreadySent() {
@@ -460,16 +467,16 @@ export class StatusComponent implements OnInit {
     const cupomValue = this.cartService.cupomValue(this.cart.cupom, this.cart)
 
     if (this.cart.client.name) {
-      message += `*Meu nome é ${this.cart.client.name}, contato ${this.cart.client.whatsapp}*\n\n`
+      message += `*${this.translate.text().my_name_is} ${this.cart.client.name}, ${this.translate.text().contact}: ${this.cart.client.whatsapp}*\n\n`
     }
-    message += `*Código do pedido: wm${this.cart.code}${'-' + this.cart.type}*\n\n`
+    message += `*${this.translate.text().order_coder}: wm${this.cart.code}${'-' + this.cart.type}*\n\n`
 
     if (this.cart.type === 'P') {
       const formattedDate = DateTime.fromISO(this.cart.packageDate)
 
-      message += `*Data de entrega: ${
+      message += `*${this.translate.text().delivery_date}: ${
         verifyHour
-          ? formattedDate.toFormat(this.translate.masks().date_mask) + '(SEM HORÁRIO)'
+          ? formattedDate.toFormat(this.translate.masks().date_mask) + `(${this.translate.text().no_time_up})`
           : formattedDate.toFormat(`${this.translate.masks().date_mask} HH:mm`)
       }*\n\n`
     }
@@ -501,7 +508,7 @@ export class StatusComponent implements OnInit {
         })
       }
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().observations}:\n${item.obs}*\n`
       }
       if (this.profile.showTotal) {
         const itemValue = item.details.value || 0
@@ -513,9 +520,9 @@ export class StatusComponent implements OnInit {
 
     whatsCartPizza.forEach((item) => {
       item.name = item.name
-        .split(item.details.flavors.length > 1 ? 'Sabores' : 'Sabor')
+        .split(item.details.flavors.length > 1 ? `${this.translate.text().flavors}` : `$${this.translate.text().flavor}`)
         .at(0)
-        .concat(item.details.flavors.length > 1 ? 'Sabores' : 'Sabor')
+        .concat(item.details.flavors.length > 1 ? `${this.translate.text().flavors}` : `$${this.translate.text().flavor}`)
         .trim()
       if (this.profile.showTotal) {
         message += `*${item.quantity}x ${item.name}*\n`
@@ -566,7 +573,7 @@ export class StatusComponent implements OnInit {
         item.details.implementations.forEach((implementation) => (message += `   *com ${implementation.name.trim()}*\n`))
       }
       if (item.obs) {
-        message += `*Observações:\n${item.obs}*\n`
+        message += `*${this.translate.text().observations}:\n${item.obs}*\n`
       }
 
       if (this.profile.showTotal) {
@@ -598,6 +605,7 @@ export class StatusComponent implements OnInit {
       message += `*${this.translate.text().order_comment}: + ${this.currencyNoSymbol(
         this.cartService.totalCartValue(whatsCart, whatsCartPizza, this.cart)
       )}*\n`
+
       if (this.cart.addressId) {
         message += `*${this.translate.text().delivery}:* `
         if (this.cart.cupom?.type !== 'freight' && this.taxDelivery() === this.translate.text().to_consult) {
@@ -648,7 +656,7 @@ export class StatusComponent implements OnInit {
       const transshipment = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(transshipmentVal)
 
       if (this.cart.formsPayment[0].change > 0) {
-        message += `*Troco para ${transshipment}*\n`
+        message += `*${this.translate.text().change_for} ${transshipment}*\n`
 
         if (this.profile.showTotal) {
           let totalRequest = totalCart - cupomValue + totalAddon
@@ -657,50 +665,51 @@ export class StatusComponent implements OnInit {
             totalRequest += this.cart.taxDelivery
           }
 
-          message += `*Troco: ${new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(
-            transshipmentVal ? transshipmentVal - totalRequest : totalRequest
-          )}*\n`
+          message += `*${this.translate.text().change}: ${new Intl.NumberFormat(this.translate.language(), {
+            style: 'currency',
+            currency: this.translate.currency(),
+          }).format(transshipmentVal ? transshipmentVal - totalRequest : totalRequest)}*\n`
         }
       } else {
-        message += '*Não preciso de troco*\n'
+        message += `*${this.translate.text().i_not_need_transhipment}*\n`
       }
     }
 
-    message += `*Acompanhar pedido*\n https://www.whatsmenu.com.br/${this.profile.slug}/status/${this.cart.code}`
+    message += `*${this.translate.text().track_order}*\n https://www.whatsmenu.com.br/${this.profile.slug}/status/${this.cart.code}`
 
     if (this.cart.addressId) {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){
       if (this.cart.type === 'P') {
-        message += `\n\n*Encomendas*\n\n*Endereço da Entrega*\n\n`
+        message += `\n\n*${this.translate.text().package_s}*\n\n*${this.translate.text().delivery_address}*\n\n`
       } else {
-        message += `\n\n*Endereço da Entrega*\n\n`
+        message += `\n\n*${this.translate.text().delivery_address}*\n\n`
       }
       // message += `\n\n*Endereço da Entrega*\n\n`;
-      message += `*Rua: ${this.cart.address.street.trim()}*\n`
-      message += `*Número: ${this.cart.address.number}*\n`
+      message += `*${this.translate.text().street}: ${this.cart.address.street.trim()}*\n`
+      message += `*${this.translate.text().number}: ${this.cart.address.number}*\n`
 
       if (this.cart.address.complement) {
-        message += `*Complemento: ${this.cart.address.complement.trim()}*\n`
+        message += `*${this.translate.text().add_on}: ${this.cart.address.complement.trim()}*\n`
       }
 
-      message += `*Bairro: ${this.cart.address.neighborhood.trim()}*\n`
+      message += `*${this.translate.text().neighborhood}: ${this.cart.address.neighborhood.trim()}*\n`
 
       if (this.cart.address.reference) {
-        message += `*Referencia: ${this.cart.address.reference.trim()}*\n`
+        message += `*${this.translate.text().reference}: ${this.cart.address.reference.trim()}*\n`
       }
 
-      message += `*Cidade: ${this.cart.address.city.trim()}*\n`
+      message += `*${this.translate.text().city}: ${this.cart.address.city.trim()}*\n`
     } else {
       // if(localStorage.getItem('viewContentAlternate') === 'package'){
       if (this.cart.type === 'P') {
-        message += `\n\n*Encomendas*\n\n*Vou retirar no local*\n\n`
+        message += `\n\n*${this.translate.text().package}*\n\n*${this.translate.text().pickup_the_location}*\n\n`
       } else {
-        message += `\n\n*Vou retirar no local*\n\n`
+        message += `\n\n*${this.translate.text().pickup_the_location}*\n\n`
       }
     }
 
     message += split
-    message += '*Tecnologia*\n      *www.whatsmenu.com.br*'
+    message += `*${this.translate.text().technology}*\n      *www.whatsmenu.com.br*`
 
     // console.log(message)
     return encodeURIComponent(message)
