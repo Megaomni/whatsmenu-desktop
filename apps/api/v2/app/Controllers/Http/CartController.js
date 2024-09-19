@@ -166,15 +166,13 @@ class CartController {
             })
         })
         .where((whereBuilder) => {
-          whereBuilder
-            .where('statusPayment', 'offline')
-            .orWhere('statusPayment', 'paid')
+          whereBuilder.where('statusPayment', 'offline').orWhere('statusPayment', 'paid')
         })
         .whereBetween('carts.created_at', [startDate, endDate])
         .groupBy('name', 'pizzaId', 'productId', 'profileId', Database.raw('CAST(details->"$.value" AS DECIMAL(10,2))'))
         .orderBy('quantity', 'desc')
         .paginate(page, 50)
-        
+
       return response.json({ results })
     } catch (error) {
       console.error(error)
@@ -401,25 +399,28 @@ class CartController {
       if (integrations && integrations.grovenfe) {
         try {
           const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
-          if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
+          if (groveNfePayments.some((formpayment) => formpayment.type === data.formsPayment[0].payment)) {
             try {
               const companieId = integrations.grovenfe.companie_id
-              const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companieId}`, {
-                formPayment: data.formsPayment[0],
-              }, {
-                headers: {
-                  Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
+              const { data } = await axios.post(
+                `${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companieId}`,
+                {
+                  formPayment: data.formsPayment[0],
                 },
-              }
-            )
+                {
+                  headers: {
+                    Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
+                  },
+                }
+              )
             } catch (error) {
-              console.error('Erro ao criar a nota fiscal:', error);
-              throw error;
+              console.error('Erro ao criar a nota fiscal:', error)
+              throw error
             }
           }
         } catch (error) {
-          console.error('Erro ao verificar as integrações:', error);
-          throw error;
+          console.error('Erro ao verificar as integrações:', error)
+          throw error
         }
         return
       }
@@ -739,7 +740,7 @@ class CartController {
             }
 
             if (requestTopic && cart && cart.statusPayment !== 'pending' && cart.statusPayment !== 'cancelled') {
-              ; (async () => {
+              ;(async () => {
                 requestTopic.broadcast(`request:${slug}`, [{ ...cart.toJSON() }])
                 requestTopic.broadcast(`menu:${slug}`, { menu: 'update' })
               })()
@@ -1016,8 +1017,12 @@ class CartController {
         await cart.save()
         await CartController.generateVouchers(cart)
         const requestTopic = Ws.getChannel('request:*').topic(`request:${profile.slug}`)
+        const printTopic = Ws.getChannel('print:*').topic(`print:${slug}`)
         if (requestTopic) {
           requestTopic.broadcast(`request:${profile.slug}`, [{ ...cart.toJSON() }])
+        }
+        if (printTopic) {
+          printTopic.broadcast(`print:${profile.slug}`, [{ ...cart.toJSON() }])
         }
       }
       return cart.toJSON()
