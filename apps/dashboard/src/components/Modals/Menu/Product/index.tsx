@@ -236,8 +236,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     handleClose()
   }
 
-  console.log(formState.errors)
-
   useEffect(() => {
     setValue('disponibility.week', week)
   }, [week, setValue])
