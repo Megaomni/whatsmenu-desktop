@@ -18,19 +18,13 @@ import {
 } from 'react-bootstrap'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import {
-  BsExclamationCircle
-} from 'react-icons/bs'
+import { BsExclamationCircle } from 'react-icons/bs'
 import { api } from 'src/lib/axios'
 import { z } from 'zod'
 import { AppContext } from '../../../../context/app.ctx'
 import { MenuContext } from '../../../../context/menu.ctx'
 import Week from '../../../../types/dates'
-import {
-  apiRoute,
-  hash,
-  mask
-} from '../../../../utils/wm-functions'
+import { apiRoute, hash, mask } from '../../../../utils/wm-functions'
 import { Dates } from '../../../Dates'
 import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
 import { OverlaySpinner } from '../../../OverlaySpinner'
@@ -51,13 +45,22 @@ const ProductFormSchema = z.object({
     .max(100, 'A descrição deve ter no máximo 100 caracteres')
     .nullable(),
   value: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
-  promoteValue: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
-  valueTable: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
-  promoteValueTable: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValue: z
+    .number()
+    .transform((value) => parseFloat(Number(value).toFixed(2))),
+  valueTable: z
+    .number()
+    .transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValueTable: z
+    .number()
+    .transform((value) => parseFloat(Number(value).toFixed(2))),
   promoteStatus: z.boolean().default(false),
   promoteStatusTable: z.boolean().default(false),
   order: z.number(),
-  image: z.string().nullable().transform((value) => value && value.split(',')[1]),
+  image: z
+    .string()
+    .nullable()
+    .transform((value) => value && value.split(',')[1]),
   bypass_amount: z.boolean().default(true),
   amount: z.number(),
   amount_alert: z.number(),
@@ -67,10 +70,10 @@ const ProductFormSchema = z.object({
     store: z.object({
       delivery: z.boolean(),
       package: z.boolean(),
-      table: z.boolean()
-    })
+      table: z.boolean(),
+    }),
   }),
-  complements: ComplementFormSchema.array()
+  complements: ComplementFormSchema.array(),
 })
 
 type ProductFormData = z.infer<typeof ProductFormSchema>
@@ -90,7 +93,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     modalFooterOpened,
     currency,
     handleShowToast,
-    setLowInventoryItems
+    setLowInventoryItems,
   } = useContext(AppContext)
   const {
     product,
@@ -101,7 +104,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     ncmList,
   } = useContext(MenuContext)
 
-
   const form = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: {
@@ -109,7 +111,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       amount_alert: product?.amount_alert || 0,
       description: product?.description || null,
       complements: product?.complements || [],
-      order: product.order || (category?.products?.length || 0 + 1),
+      order: product.order || category?.products?.length || 0 + 1,
       value: product?.value || 0,
       valueTable: product?.valueTable || 0,
       promoteValue: product?.promoteValue || 0,
@@ -123,9 +125,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           delivery: product?.disponibility?.store?.delivery || true,
           table: product?.disponibility?.store?.table || true,
           package: product?.disponibility?.store?.package || true,
-        }
-      }
-    }
+        },
+      },
+    },
   })
 
   const { register, handleSubmit, watch, setValue, reset, formState } = form
@@ -138,9 +140,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const [eventKeyTab, setEventKeyTab] = useState<
     'details' | 'complements' | 'promotion' | 'disponibility'
   >('details')
-  const [week, setWeek] = useState<Week>(
-    new Week(product.disponibility.week)
-  )
+  const [week, setWeek] = useState<Week>(new Week(product.disponibility.week))
 
   const [inputFileImage, setInputFileImage] = useState<HTMLInputElement>()
 
@@ -149,17 +149,17 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const labels = {
     basic:
       plansCategory.includes('basic') &&
-        plansCategory.some((plan) => plan !== 'basic')
+      plansCategory.some((plan) => plan !== 'basic')
         ? 'Delivery'
         : '',
     table:
       plansCategory.includes('table') &&
-        plansCategory.some((plan) => plan !== 'table')
+      plansCategory.some((plan) => plan !== 'table')
         ? t('table')
         : '',
     package:
       plansCategory.includes('package') &&
-        plansCategory.some((plan) => plan !== 'package')
+      plansCategory.some((plan) => plan !== 'package')
         ? profile.options.package.label2
           ? t('appointment')
           : t('package')
@@ -169,20 +169,27 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const handleSendForm = async (body: ProductFormData) => {
     setShowSpinner(true)
     try {
-      const { data } = await api[type === 'create' ? 'post' : 'put']('/dashboard/products', body)
-      setCategories(state => {
-        return state.map(category => {
+      const { data } = await api[type === 'create' ? 'post' : 'put'](
+        '/dashboard/products',
+        body
+      )
+      setCategories((state) => {
+        return state.map((category) => {
           switch (type) {
             case 'create':
               if (category.id === data.product.categoryId) {
                 category.products?.push(new Product(data.product))
               }
-              break;
+              break
             case 'update':
               if (category.id === data.product.categoryId) {
-                category.products = category.products?.map(product => product.id === data.product.id ? new Product(data.product) : product)
+                category.products = category.products?.map((product) =>
+                  product.id === data.product.id
+                    ? new Product(data.product)
+                    : product
+                )
               }
-              break;
+              break
           }
           return category
         })
@@ -213,17 +220,23 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   }
 
   const handleDelete = async () => {
-    await apiRoute(`/dashboard/menu/product/${product.id}/delete`, session, 'DELETE')
-    setCategories(state => {
-      return state.map(category => {
-        category.products = category.products?.filter(p => p.id !== product.id)
+    await apiRoute(
+      `/dashboard/menu/product/${product.id}/delete`,
+      session,
+      'DELETE'
+    )
+    setCategories((state) => {
+      return state.map((category) => {
+        category.products = category.products?.filter(
+          (p) => p.id !== product.id
+        )
         return category
       })
     })
     handleClose()
   }
 
-  console.log(formState.errors);
+  console.log(formState.errors)
 
   useEffect(() => {
     setValue('disponibility.week', week)
@@ -237,7 +250,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       amount: product.amount,
       amount_alert: product.amount_alert,
       description: product.description,
-      complements: product.complements.map((comp) => ({ ...comp, required: Boolean(comp.required) })),
+      complements: product.complements.map((comp) => ({
+        ...comp,
+        required: Boolean(comp.required),
+      })),
       order: product.order,
       value: product.value,
       valueTable: product.valueTable,
@@ -247,7 +263,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       promoteStatusTable: Boolean(product.promoteStatusTable),
       bypass_amount: Boolean(product.bypass_amount),
       disponibility: product.disponibility,
-
     })
   }, [product, setValue, reset])
 
@@ -439,7 +454,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <Form.Control
                                         id={`productName-${product?.id}`}
                                         autoFocus
-                                        isInvalid={Boolean(formState.errors.name)}
+                                        isInvalid={Boolean(
+                                          formState.errors.name
+                                        )}
                                         {...register('name')}
                                       />
                                       <Form.Control.Feedback
@@ -467,18 +484,26 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <Form.Label>
                                       <b>Código NCM</b>
                                     </Form.Label>
-                                    <Form.Select
-                                      {...register('ncm_code')}
-                                    >
-                                      <option disabled value={''}>
-                                        Selecione
-                                      </option>
+                                    <Form.Control
+                                      list="ncm"
+                                      {...(register('ncm_code'),
+                                      {
+                                        onChange: (e) => {
+                                          setValue('ncm_code', e.target.value)
+                                        },
+                                      })}
+                                      placeholder="Selecione"
+                                    />
+                                    <datalist id="ncm">
                                       {ncmList.map((ncm) => (
-                                        <option key={ncm.codigo} value={ncm.codigo}>
-                                          <pre>{ncm.descricao}</pre>
+                                        <option
+                                          key={ncm.codigo}
+                                          value={ncm.descricao}
+                                        >
+                                          {ncm.descricao}
                                         </option>
                                       ))}
-                                    </Form.Select>
+                                    </datalist>
                                   </Col>
                                   <Col sm>
                                     <Form.Label>
@@ -486,7 +511,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     </Form.Label>
                                     <Form.Select
                                       value={watch('categoryId')}
-                                      {...register('categoryId', { valueAsNumber: true })}
+                                      {...register('categoryId', {
+                                        valueAsNumber: true,
+                                      })}
                                     >
                                       {categories
                                         .filter((c) => c.type === 'default')
@@ -505,38 +532,39 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                 <Row className="mb-4">
                                   {(plansCategory.includes('basic') ||
                                     plansCategory.includes('package')) && (
-                                      <Col sm="6">
-                                        <Form.Label>
-                                          <b className="text-nowrap">
-                                            {t('price')}{' '}
-                                            {plansCategory.includes('basic') &&
-                                              plansCategory.includes('package')
-                                              ? `${labels.basic}/${labels.package}`
-                                              : plansCategory.includes('basic')
-                                                ? labels.basic
-                                                : labels.package}
-                                          </b>
-                                        </Form.Label>
-                                        <InputGroup className="position-relative">
-                                          <InputGroup.Text>
-                                            {currency({ value: 0, symbol: true })}
-                                          </InputGroup.Text>
-                                          <Form.Control
-                                            required
-                                            {...register('value', {
-                                              valueAsNumber: true,
-                                              onChange: (e) => mask(e, 'currency')
-                                            })}
-                                          />
-                                          <Form.Control.Feedback
-                                            tooltip
-                                            type="invalid"
-                                          >
-                                            {t('enter_valid_value')}
-                                          </Form.Control.Feedback>
-                                        </InputGroup>
-                                      </Col>
-                                    )}
+                                    <Col sm="6">
+                                      <Form.Label>
+                                        <b className="text-nowrap">
+                                          {t('price')}{' '}
+                                          {plansCategory.includes('basic') &&
+                                          plansCategory.includes('package')
+                                            ? `${labels.basic}/${labels.package}`
+                                            : plansCategory.includes('basic')
+                                              ? labels.basic
+                                              : labels.package}
+                                        </b>
+                                      </Form.Label>
+                                      <InputGroup className="position-relative">
+                                        <InputGroup.Text>
+                                          {currency({ value: 0, symbol: true })}
+                                        </InputGroup.Text>
+                                        <Form.Control
+                                          required
+                                          {...register('value', {
+                                            valueAsNumber: true,
+                                            onChange: (e) =>
+                                              mask(e, 'currency'),
+                                          })}
+                                        />
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
+                                          {t('enter_valid_value')}
+                                        </Form.Control.Feedback>
+                                      </InputGroup>
+                                    </Col>
+                                  )}
                                   {plansCategory.includes('table') && (
                                     <Col sm="6">
                                       <Form.Label>
@@ -551,7 +579,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         <Form.Control
                                           {...register('valueTable', {
                                             valueAsNumber: true,
-                                            onChange: (e) => mask(e, 'currency')
+                                            onChange: (e) =>
+                                              mask(e, 'currency'),
                                           })}
                                         />
                                         <Form.Control.Feedback
@@ -578,7 +607,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           variant="secondary"
                                           disabled={watch('bypass_amount')}
                                           onClick={() => {
-                                            setValue('amount', Number(watch('amount')) <= 0 ? 0 : Number(watch('amount')) - 1)
+                                            setValue(
+                                              'amount',
+                                              Number(watch('amount')) <= 0
+                                                ? 0
+                                                : Number(watch('amount')) - 1
+                                            )
                                           }}
                                         >
                                           -
@@ -593,7 +627,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
-                                            setValue('amount', Number(watch('amount')) + 1)
+                                            setValue(
+                                              'amount',
+                                              Number(watch('amount')) + 1
+                                            )
                                           }}
                                         >
                                           +
@@ -617,7 +654,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           variant="secondary"
                                           disabled={watch('bypass_amount')}
                                           onClick={() => {
-                                            setValue('amount_alert', Number(watch('amount_alert')) <= 0 ? 0 : watch('amount_alert') - 1)
+                                            setValue(
+                                              'amount_alert',
+                                              Number(watch('amount_alert')) <= 0
+                                                ? 0
+                                                : watch('amount_alert') - 1
+                                            )
                                           }}
                                         >
                                           -
@@ -632,7 +674,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
-                                            setValue('amount_alert', Number(watch('amount_alert')) + 1)
+                                            setValue(
+                                              'amount_alert',
+                                              Number(watch('amount_alert')) + 1
+                                            )
                                           }}
                                         >
                                           +
@@ -650,7 +695,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       className="d-flex align-items-end my-2"
                                     >
                                       <FormGroup>
-                                        <Form.Label className='d-flex align-items-center'>
+                                        <Form.Label className="d-flex align-items-center">
                                           <Form.Check
                                             type="switch"
                                             className="fs-6 text-nowrap"
@@ -677,7 +722,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <div className="d-flex justify-content-end">
                                       <p
                                         className={
-                                          (watch('description')?.length || 0) >= 500
+                                          (watch('description')?.length || 0) >=
+                                          500
                                             ? 'text-red-500'
                                             : ''
                                         }
@@ -720,56 +766,56 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                         <Card.Body>
                           {(plansCategory.includes('basic') ||
                             plansCategory.includes('package')) && (
-                              <Row>
-                                <Col sm>
-                                  <div className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
-                                    <Form.Label htmlFor="promotion">
-                                      <p>
-                                        <b>
-                                          {t('activate_promotion')}{' '}
-                                          {plansCategory.includes('basic') &&
-                                            plansCategory.includes('package')
-                                            ? `${labels.basic}/${labels.package}`
-                                            : plansCategory.includes('basic')
-                                              ? labels.basic
-                                              : labels.package}
+                            <Row>
+                              <Col sm>
+                                <div className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
+                                  <Form.Label htmlFor="promotion">
+                                    <p>
+                                      <b>
+                                        {t('activate_promotion')}{' '}
+                                        {plansCategory.includes('basic') &&
+                                        plansCategory.includes('package')
+                                          ? `${labels.basic}/${labels.package}`
+                                          : plansCategory.includes('basic')
+                                            ? labels.basic
+                                            : labels.package}
+                                      </b>
+                                    </p>
+                                    <p>
+                                      {t('button_enable_disable_promotion')}
+                                    </p>
+                                  </Form.Label>
+                                  <Form.Switch
+                                    id="promotion"
+                                    {...register('promoteStatus')}
+                                  />
+                                </div>
+                              </Col>
+                              <Col sm>
+                                <Card>
+                                  <Card.Body>
+                                    <p>
+                                      {t('original_price')}:{' '}
+                                      {currency({ value: watch('value') })}
+                                    </p>
+                                    <div className="d-flex align-items-baseline gap-3">
+                                      <Form.Label>
+                                        <b className="text-nowrap">
+                                          {t('promotional_price')}:
                                         </b>
-                                      </p>
-                                      <p>
-                                        {t('button_enable_disable_promotion')}
-                                      </p>
-                                    </Form.Label>
-                                    <Form.Switch
-                                      id="promotion"
-                                      {...register('promoteStatus')}
-                                    />
-                                  </div>
-                                </Col>
-                                <Col sm>
-                                  <Card>
-                                    <Card.Body>
-                                      <p>
-                                        {t('original_price')}:{' '}
-                                        {currency({ value: watch('value') })}
-                                      </p>
-                                      <div className="d-flex align-items-baseline gap-3">
-                                        <Form.Label>
-                                          <b className="text-nowrap">
-                                            {t('promotional_price')}:
-                                          </b>
-                                        </Form.Label>
-                                        <Form.Control
-                                          {...register('promoteValue', {
-                                            onChange: (e) => mask(e, 'currency')
-                                          })}
-                                          className="w-75"
-                                        />
-                                      </div>
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              </Row>
-                            )}
+                                      </Form.Label>
+                                      <Form.Control
+                                        {...register('promoteValue', {
+                                          onChange: (e) => mask(e, 'currency'),
+                                        })}
+                                        className="w-75"
+                                      />
+                                    </div>
+                                  </Card.Body>
+                                </Card>
+                              </Col>
+                            </Row>
+                          )}
                           {plansCategory.includes('table') && (
                             <Row>
                               <Col sm>
@@ -811,7 +857,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <Form.Control
                                         className="w-75"
                                         {...register('promoteValueTable', {
-                                          onChange: (e) => mask(e, 'currency')
+                                          onChange: (e) => mask(e, 'currency'),
                                         })}
                                       />
                                     </div>
@@ -842,7 +888,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         Delivery
                                         <Form.Switch
                                           className="pt-2"
-                                          {...register('disponibility.store.delivery')}
+                                          {...register(
+                                            'disponibility.store.delivery'
+                                          )}
                                         />
                                       </Form.Label>
                                     </div>
@@ -853,7 +901,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('table')}
                                         <Form.Switch
                                           className="pt-2"
-                                          {...register('disponibility.store.table')}
+                                          {...register(
+                                            'disponibility.store.table'
+                                          )}
                                         />
                                       </Form.Label>
                                     </div>
@@ -864,7 +914,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('package')}
                                         <Form.Switch
                                           className="pt-2"
-                                          {...register('disponibility.store.package')}
+                                          {...register(
+                                            'disponibility.store.package'
+                                          )}
                                         />
                                       </Form.Label>
                                     </div>
@@ -890,20 +942,34 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           </form>
         </Modal.Body>
         <Modal.Footer
-          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${modalFooterOpened ? 'show' : 'hidden'
-            }-buttons-modal-footer`}
+          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${
+            modalFooterOpened ? 'show' : 'hidden'
+          }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
-          <div className='d-flex align-items-center gap-2 w-100'>
+          <div className="d-flex align-items-center w-100 gap-2">
             {type === 'update' && (
-              <Button variant='outline-danger' form='form-product' onClick={handleDelete}>{t('delete')}</Button>
+              <Button
+                variant="outline-danger"
+                form="form-product"
+                onClick={handleDelete}
+              >
+                {t('delete')}
+              </Button>
             )}
-            <div className='d-flex align-items-center gap-2 ms-auto'>
-              <Button variant='danger' form='form-product' onClick={handleClose} >{t('cancel')}</Button>
-              <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>
+            <div className="d-flex align-items-center ms-auto gap-2">
+              <Button
+                variant="danger"
+                form="form-product"
+                onClick={handleClose}
+              >
+                {t('cancel')}
+              </Button>
+              <Button variant="success" form="form-product" type="submit">
+                {type === 'update' ? t('save') : t('create')}
+              </Button>
             </div>
           </div>
-
         </Modal.Footer>
         <OverlaySpinner
           show={showSaveSpinner}
