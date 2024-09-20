@@ -55,16 +55,7 @@ interface MenuContextData {
   setImplementation: Dispatch<SetStateAction<PizzaImplementationType>>
   setFlavor: Dispatch<SetStateAction<PizzaFlavorType>>
   setFocusId: Dispatch<SetStateAction<number | undefined>>
-  ncmList: Array<{
-    codigo: string
-    descricao: string
-    data_inicio: string
-    data_fim: string
-    tipo_ato: string
-    numero_ato: string
-    ano_ato: string
-  }>
-  componentIsLinked: ({ complementId } : {complementId?: number}) => boolean
+  componentIsLinked: ({ complementId }: { complementId?: number }) => boolean
   handleMenuModal(
     show: boolean,
     modal:
@@ -119,15 +110,6 @@ export function MenuProvider({
     reorder: false,
   })
   const [focusId, setFocusId] = useState<number>()
-  const [ncmList, setNcmList] = useState<Array<{
-    codigo: string
-    descricao: string
-    data_inicio: string
-    data_fim: string
-    tipo_ato: string
-    numero_ato: string
-    ano_ato: string
-  }>>([])
 
   const getMenu = useCallback(async () => {
     try {
@@ -140,7 +122,7 @@ export function MenuProvider({
     }
   }, [session])
 
-  const componentIsLinked = ({ complementId } : {complementId?: number}) => {
+  const componentIsLinked = ({ complementId }: { complementId?: number }) => {
     if (!complementId) {
       return false
     }
@@ -183,11 +165,6 @@ export function MenuProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  useEffect(() => {
-    axios('/api/getNcmList').then(({data}) => {
-      setNcmList(data)
-    })
-  }, [])
 
   const handleMenuModal = (
     show: boolean,
@@ -232,8 +209,7 @@ export function MenuProvider({
         typeModal,
         focusId,
         setFocusId,
-        componentIsLinked,
-        ncmList
+        componentIsLinked
       }}
     >
       {children}

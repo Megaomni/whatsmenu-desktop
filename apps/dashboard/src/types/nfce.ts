@@ -35,15 +35,14 @@ export interface NFCeFormsPaymentType {
 }
 
 export interface Ncm {
-  codigo?: string
-  descricao?: string
-  capitulo?: string
-  posicao?: string
-  subposicao1?: string
-  subposicao2?: string
-  item1?: string
-  item2?: string
-  offset?: number
+  codigo: string
+  descricao_completa: string
+  capitulo: string
+  posicao: string
+  subposicao1: string
+  subposicao2: string
+  item1: string
+  item2: string
 }
 
 export enum NFCeFormsPaymentEnum {
