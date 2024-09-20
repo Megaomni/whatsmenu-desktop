@@ -471,8 +471,6 @@ export class StatusComponent implements OnInit {
     }
     message += `*${this.translate.text().order_code}: wm${this.cart.code}${'-' + this.cart.type}*\n\n`
 
-    console.log(this.translate.text().order_code, this.cart.client.name)
-
     if (this.cart.type === 'P') {
       const formattedDate = DateTime.fromISO(this.cart.packageDate)
 
