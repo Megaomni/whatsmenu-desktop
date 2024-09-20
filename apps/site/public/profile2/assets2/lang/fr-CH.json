@@ -16,6 +16,11 @@
   },
   "text": {
     "coin": "CHF",
+    "my_name_is": "Meu nome é",
+    "order_code": "Código do pedido",
+    "observations": "Observações",
+    "no_time_up": "SEM HORÁRIO",
+    "contact": "Contato",
     "favorite_card_comment": "Ex: Meu cartão favorito",
     "finalize_order_comment": "Finalizar Pedido",
     "welcome": "Bem vindo!",
@@ -473,19 +478,6 @@
 
   "calendar": {
     "weekdays": ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"],
-    "months": [
-      "Janeiro",
-      "Fevereiro",
-      "Março",
-      "Abril",
-      "Maio",
-      "Junho",
-      "Julho",
-      "Agosto",
-      "Setembro",
-      "Outubro",
-      "Novembro",
-      "Dezembro"
-    ]
+    "months": ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"]
   }
 }

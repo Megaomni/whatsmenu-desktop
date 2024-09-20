@@ -17,6 +17,11 @@
 
   "text": {
     "coin": "€",
+    "my_name_is": "Meu nome é",
+    "order_code": "Código do pedido",
+    "observations": "Observações",
+    "no_time_up": "SEM HORÁRIO",
+    "contact": "Contato",
     "favorite_card_comment": "Ex: O meu cartão favorito",
     "finalize_order_comment": "Finalizar Pedido",
     "welcome": "bem-vindo",
