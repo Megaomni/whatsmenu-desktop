@@ -32,6 +32,8 @@ import { CropModal } from '../../CropModal'
 import { ComplementFormSchema, ComponentComplement } from '../Complements'
 import Product from '../../../../types/product'
 import { useSession } from 'next-auth/react'
+import { groveNfeApi } from 'src/lib/axios'
+import { Ncm } from '../../../../types/nfce'
 
 const ProductFormSchema = z.object({
   id: z.number().optional(),
@@ -101,7 +103,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     categories,
     typeModal: type,
     setCategories,
-    ncmList,
   } = useContext(MenuContext)
 
   const form = useForm<ProductFormData>({
@@ -143,6 +144,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const [week, setWeek] = useState<Week>(new Week(product.disponibility.week))
 
   const [inputFileImage, setInputFileImage] = useState<HTMLInputElement>()
+
+  const [ncmList, setNcmList] = useState([] as Ncm[])
 
   // LABELS
 
@@ -236,6 +239,22 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     handleClose()
   }
 
+  const handleNcmList = async (term: string) => {
+    try {
+      const response = await groveNfeApi.get(`v1/fiscalNotes/list/ncms`, {
+        params: {
+          descricao: term,
+        },
+      })
+
+      if (response.data) {
+        setNcmList(response.data)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   useEffect(() => {
     setValue('disponibility.week', week)
   }, [week, setValue])
@@ -263,6 +282,14 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       disponibility: product.disponibility,
     })
   }, [product, setValue, reset])
+
+  // useEffect(() => {
+  //   if (searchTerm) {
+  //     handleNcmList(searchTerm)
+  //   } else {
+  //     setNcmList([])
+  //   }
+  // }, [searchTerm])
 
   return (
     <div
@@ -487,7 +514,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       {...(register('ncm_code'),
                                       {
                                         onChange: (e) => {
-                                          setValue('ncm_code', e.target.value)
+                                          handleNcmList(e.target.value)
                                         },
                                       })}
                                       placeholder="Selecione"
