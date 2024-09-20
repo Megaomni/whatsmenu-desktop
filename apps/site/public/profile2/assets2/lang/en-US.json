@@ -16,6 +16,11 @@
   },
   "text": {
     "coin": "$",
+    "my_name_is": "My name is",
+    "order_code": "Order Code",
+    "observations": "Observations",
+    "no_time_up": "NO TIME",
+    "contact": "Contact",
     "favorite_card_comment": "Ex: My favorite card",
     "finalize_order_comment": "Finalize Order",
     "welcome": "welcome",

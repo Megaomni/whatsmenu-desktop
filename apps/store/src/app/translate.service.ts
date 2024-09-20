@@ -495,7 +495,7 @@ export interface TranslateType {
     time_closed_comment: string
     my_name_is: string
     contact: string
-    order_coder: string
+    order_code: string
     no_time_up: string
     with: string
     observations: string
