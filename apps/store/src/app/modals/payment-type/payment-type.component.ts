@@ -698,7 +698,7 @@ export class PaymentTypeComponent implements OnInit, AfterViewChecked {
     if (this.customer.name) {
       message += `*${this.translate.text().my_name_is} ${this.customer.name}, contato ${this.customer.whatsapp}*\n\n`
     }
-    message += `*${this.translate.text().order_coder}: wm${this.requestCode}${'-' + this.cartRequest.type}\n\n`
+    message += `*${this.translate.text().order_code}: wm${this.requestCode}${'-' + this.cartRequest.type}\n\n`
 
     if (this.cartRequest.type === 'P') {
       message += `*${this.translate.text().delivery_date} : ${

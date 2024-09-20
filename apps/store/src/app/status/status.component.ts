@@ -469,7 +469,9 @@ export class StatusComponent implements OnInit {
     if (this.cart.client.name) {
       message += `*${this.translate.text().my_name_is} ${this.cart.client.name}, ${this.translate.text().contact}: ${this.cart.client.whatsapp}*\n\n`
     }
-    message += `*${this.translate.text().order_coder}: wm${this.cart.code}${'-' + this.cart.type}*\n\n`
+    message += `*${this.translate.text().order_code}: wm${this.cart.code}${'-' + this.cart.type}*\n\n`
+
+    console.log(this.translate.text().order_code, this.cart.client.name)
 
     if (this.cart.type === 'P') {
       const formattedDate = DateTime.fromISO(this.cart.packageDate)
