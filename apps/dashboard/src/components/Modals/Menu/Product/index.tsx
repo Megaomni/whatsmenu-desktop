@@ -108,6 +108,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const form = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: {
+      categoryId: product?.categoryId || category?.id || 0,
       amount: product?.amount || 0,
       amount_alert: product?.amount_alert || 0,
       description: product?.description || null,
@@ -534,15 +535,14 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <b>{t('category')}</b>
                                     </Form.Label>
                                     <Form.Select
+                                      value={
+                                        watch('categoryId') ||
+                                        product?.categoryId ||
+                                        0
+                                      }
                                       {...register('categoryId', {
                                         valueAsNumber: true,
                                       })}
-                                      value={
-                                        watch('categoryId') ||
-                                        categories
-                                          .filter((c) => c.type === 'default')
-                                          .slice(-1)[0]?.id
-                                      }
                                     >
                                       {categories
                                         .filter((c) => c.type === 'default')
