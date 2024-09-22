@@ -76,7 +76,7 @@ export function ConfigEmission() {
       },
     }
     try {
-      const { data } = await groveNfeApi.put('/v1/companies', { company })
+      const { data } = await groveNfeApi.put(`/v1/companies/${company.id}`, { company })
       setProfile((prevProfile) => ({
         ...prevProfile!,
         options: {

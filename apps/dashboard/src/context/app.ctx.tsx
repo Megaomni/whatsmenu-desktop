@@ -42,7 +42,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { FaDownload, FaGooglePlay } from 'react-icons/fa'
 import { IoVolumeMuteSharp } from 'react-icons/io5'
-import { api } from 'src/lib/axios'
+import { api, groveNfeApi } from 'src/lib/axios'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { Invoice } from '../pages/dashboard/invoices'
 import StrategyPagarme from '../payment/pagarme'
@@ -60,6 +60,8 @@ import { WmFunctions, apiRoute, getMobileOS } from '../utils/wm-functions'
 import { CartsProvider } from './cart.ctx'
 import { PaymentMethodProvider } from './paymentMethod.ctx'
 import { TablesProvider } from './table.ctx'
+//
+//
 type ChangeType = {
   changeState?: boolean
   confirmSave?: boolean
@@ -178,6 +180,7 @@ interface AppContextData {
     symbol?: boolean
     withoutSymbol?: boolean
   }) => string
+  groveNfeCompany: any
 }
 
 type RequestsToPrintType = {
@@ -295,6 +298,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const [wsCommand, setWsCommand] = useState<CommandType | null>(null)
   const [wsPrint, setWsPrint] = useState<Subscription | null>(null)
   const [prevent, setPrevent] = useState<boolean>(false)
+  const [groveNfeCompany, setGroveNfeCompany] = useState<any>()
 
   const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
     'defaultDomain',
@@ -329,7 +333,6 @@ export function AppProvider({ children }: AppProviderProps) {
   const [user, dispatchUser] = useReducer<Reducer<any, any>>(userReducer, {})
 
   const baseUrl = process.env.NEXT_PUBLIC_WHATSMENU_BASE_URL
-
   const audioRef = useRef<HTMLAudioElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const workerRef = useRef<Worker>()
@@ -995,6 +998,16 @@ export function AppProvider({ children }: AppProviderProps) {
     }
   }, [profile])
 
+  useEffect(() => {
+    if (profile && Boolean(profile?.options?.integrations?.grovenfe) && !groveNfeCompany) {
+      groveNfeApi.get(`/v1/companies/${profile.options.integrations.grovenfe.company_id}`).then(({ data }) => {
+        setGroveNfeCompany(data.company)
+        console.log(data.company);
+      })
+    }
+
+  }, [profile])
+
   const showInvoiceAlertMessage = user?.controls?.alertInvoiceDayBefore
     ? Interval.fromDateTimes(
       DateTime.local(),
@@ -1075,6 +1088,7 @@ export function AppProvider({ children }: AppProviderProps) {
             setShowNewFeatureModal,
             setWhatsmenuDesktopDownloaded,
             currency,
+            groveNfeCompany,
             // overlaySpinnerConfig,
             // setOverlaySpinnerConfig,
           }}

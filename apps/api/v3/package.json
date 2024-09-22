@@ -10,7 +10,7 @@
   "scripts": {
     "setup": "chmod +x setup.sh && ./setup.sh",
     "start": "node bin/server.js",
-    "build": "chmod +x build.sh && ./build.sh",
+    "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
     "test:watch": "node ace test --watch",
@@ -59,14 +59,18 @@
     "prettier": "^3.2.4",
     "sinon": "^17.0.1",
     "ts-node": "^10.9.2",
+    "@whatsmenu/types": "workspace:*",
     "typescript": "^5.3.3"
   },
   "dependencies": {
-    "@adonisjs/auth": "^9.1.1",
-    "@adonisjs/core": "^6.2.2",
+    "@adonisjs/auth": "^9.2.3",
+    "@adonisjs/core": "^6.12.1",
     "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/drive": "^3.2.0",
     "@adonisjs/lucid": "^20.1.0",
     "@adonisjs/session": "^7.1.1",
+    "@aws-sdk/client-s3": "^3.651.0",
+    "@aws-sdk/s3-request-presigner": "^3.651.0",
     "@vinejs/vine": "^1.7.1",
     "adonis-autoswagger": "^3.19.0",
     "axios": "^1.6.7",
@@ -74,6 +78,7 @@
     "luxon": "^3.4.4",
     "mysql2": "^3.9.2",
     "reflect-metadata": "^0.2.1",
+    "@whatsmenu/utils": "workspace:*",
     "socket.io": "^4.7.5"
   },
   "eslintConfig": {

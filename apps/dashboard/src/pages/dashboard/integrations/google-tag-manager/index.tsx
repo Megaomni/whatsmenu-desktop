@@ -82,25 +82,18 @@ export default function GoogleTagManager() {
             </Form.Label>
           </Form>
         </Card.Body>
+        <Card.Footer className='d-flex justify-content-end'>
+          <Button
+            form='google-tag-manager-form'
+            type='submit'
+            className='flex-grow-1 flex-md-grow-0'
+            variant='success'
+            disabled={!isValid}
+          >
+            Salvar
+          </Button>
+        </Card.Footer>
       </Card>
-      <div
-        className='position-fixed start-0 end-0 p-3 h-auto d-flex justify-content-end'
-        style={{
-          background: "#DFE6E9",
-          transition: "all 0.3s ease",
-          bottom: isInputSelected ? "0" : "-68px",
-        }}
-      >
-        <Button
-          form='google-tag-manager-form'
-          type='submit'
-          className='flex-grow-1 flex-md-grow-0'
-          variant='success'
-          disabled={!isValid}
-        >
-          Salvar
-        </Button>
-      </div>
     </>
 
   )

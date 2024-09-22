@@ -22,7 +22,8 @@
       "#start/*": ["./start/*.js"],
       "#config/*": ["./config/*.js"],
       "#types/*": ["./app/@types/*.js"],
-      "#utils/*": ["./app/utils/*.js"]
+      "#utils/*": ["./app/utils/*.js"],
+      "#ressources/*": ["./app/ressources/*.js"]
     }
   }
 }

@@ -146,7 +146,6 @@ export class CartService {
     if (!formPayment) {
       formPayment = cartRequest.formsPayment.filter((formPayment) => formPayment.payment !== 'cashback')[0]
     }
-
     const { cart, cartPizza } = this.itemCart({ itens: cartRequest.itens })
     let voucherValue = cartRequest.formsPayment
       .filter((formPayment) => formPayment.payment === 'cashback')
@@ -171,6 +170,7 @@ export class CartService {
         .filter((complement) => complement.itens.length)
       return {
         pizzaId: pizza.id,
+        ncm_code: pizza.ncm_code ? pizza.ncm_code : null,
         quantity: pizza.quantity,
         obs: pizza.obs,
         details: {
@@ -196,10 +196,11 @@ export class CartService {
 
     const cartMapped: CartItem[] = cart
       .filter((product) => product)
-      .map((product) => {
+      .map((product) => {        
         return {
           productId: product.id,
           quantity: product.quantity,
+          ncm_code: product.ncm_code ? product.ncm_code : null,
           obs: product.obs,
           details: {
             value: this.getProductFinalValue(product, valueType),
@@ -218,7 +219,7 @@ export class CartService {
   /** Formata carrinho vindo do servidor para vizualização */
   public itemCart({ itens }: { itens: CartItem[] }): { cart: CartType[]; cartPizza: CartPizza[] } {
     const cart = []
-    const cartPizza = []
+    const cartPizza = []    
     itens.forEach((item) => {
       if (item.type === 'default') {
         const menuItem = this.context.profile.categories

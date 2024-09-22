@@ -111,6 +111,7 @@ export class ProductComponent implements OnInit {
     product = JSON.parse(JSON.stringify(product))
     this.cart = {
       id: product.id,
+      ncm_code: product.ncm_code ? product.ncm_code : null,
       amount: product.amount,
       amount_alert: product.amount_alert,
       bypass_amount: product.bypass_amount,

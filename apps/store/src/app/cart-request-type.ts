@@ -52,6 +52,7 @@ export interface CartRequestType {
 export interface CartItem {
   pizzaId?: number
   productId?: number
+  ncm_code?: string
   quantity: number
   obs: string
   complements?: ComplementType[]

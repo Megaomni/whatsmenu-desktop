@@ -11,6 +11,7 @@ export interface ProductType extends InventoryPropsType {
   order?: number
   image: string
   value: number
+  ncm_code?: string
   promoteStatus: boolean
   promoteValue: number
   valueTable: number

@@ -5,10 +5,9 @@ import Link from 'next/link'
 import {
   Card,
   CardBody,
-  CardHeader,
   Col,
   Container,
-  Row,
+  Row
 } from 'react-bootstrap'
 import { useTranslation } from 'react-i18next'
 
@@ -73,6 +72,18 @@ export default function Integrations() {
                     />
                   </IntegrationCard>
                 </Link>
+                <Link href="/dashboard/settings/domains">
+                  <IntegrationCard
+                    legend={"Domínios"}
+                  >
+                    <Image
+                      src="/images/registro-br-logo.svg"
+                      alt="registro-br-logo"
+                      width={140}
+                      height={50}
+                    />
+                  </IntegrationCard>
+                </Link>
               </IntegrationCardContainer>
             </Col>
           </Row>
@@ -125,7 +136,7 @@ export default function Integrations() {
         <Row>
           <Col className="d-flex gap-3">
             <h4 className="lh-base fs-2 fw-bold text-primary mt-2">
-              {t('fiscal_note_issuer')}
+              {t('fiscal_note_issuer').replace('NFe e', '')}
             </h4>
           </Col >
         </Row >
@@ -134,6 +145,7 @@ export default function Integrations() {
             <p className="fs-6 lh-base text-black">
               {t('fiscal_note_issuer_description')}
             </p>
+            {/* <Link href="/dashboard/integrations/grovenfe"> */}
             <IntegrationCardContainer>
               <IntegrationCard
                 legend={t('grove_nfe_description')}
@@ -146,6 +158,7 @@ export default function Integrations() {
                 />
               </IntegrationCard>
             </IntegrationCardContainer>
+            {/* </Link> */}
           </Col>
         </Row>
       </Card >

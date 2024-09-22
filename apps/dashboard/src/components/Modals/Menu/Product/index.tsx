@@ -1,4 +1,6 @@
-import { FormEvent, useContext, useEffect, useState } from 'react'
+import { HelpVideos } from '@components/Modals/HelpVideos'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useContext, useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -6,42 +8,72 @@ import {
   Container,
   Figure,
   Form,
+  FormGroup,
+  InputGroup,
   Modal,
   Nav,
   Row,
-  Tab,
-  InputGroup,
   Spinner,
-  FormGroup,
+  Tab,
 } from 'react-bootstrap'
-import { Dates } from '../../../Dates'
-import Complement, { ComplementType } from '../../../../types/complements'
-import { CropModal } from '../../CropModal'
+import { FormProvider, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+import {
+  BsExclamationCircle
+} from 'react-icons/bs'
+import { api } from 'src/lib/axios'
+import { z } from 'zod'
+import { AppContext } from '../../../../context/app.ctx'
+import { MenuContext } from '../../../../context/menu.ctx'
 import Week from '../../../../types/dates'
 import {
-  copy,
-  encryptEmoji,
+  apiRoute,
   hash,
-  mask,
-  modifyFontValues,
-  scrollToElement,
-  verifyEmptyNameLength,
+  mask
 } from '../../../../utils/wm-functions'
-import { useSession } from 'next-auth/react'
-import { OverlaySpinner } from '../../../OverlaySpinner'
-import { AppContext } from '../../../../context/app.ctx'
-import Product, { ProductType } from '../../../../types/product'
-import { MenuContext } from '../../../../context/menu.ctx'
-import {
-  BsExclamationCircle,
-  BsFillArrowDownCircleFill,
-  BsFillArrowUpCircleFill,
-} from 'react-icons/bs'
-import { ComponentComplement } from '../Complements'
-import { ActionsFooterButton } from '../../ModalFooter/Actions'
+import { Dates } from '../../../Dates'
 import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
-import { HelpVideos } from '@components/Modals/HelpVideos'
-import { useTranslation } from 'react-i18next'
+import { OverlaySpinner } from '../../../OverlaySpinner'
+import { CropModal } from '../../CropModal'
+import { ComplementFormSchema, ComponentComplement } from '../Complements'
+import Product from '../../../../types/product'
+import { useSession } from 'next-auth/react'
+
+const ProductFormSchema = z.object({
+  id: z.number().optional(),
+  categoryId: z.number(),
+  name: z
+    .string()
+    .min(3, 'O nome deve ter pelo menos 3 caracteres')
+    .max(55, 'O nome deve ter no máximo 55 caracteres'),
+  description: z
+    .string()
+    .max(100, 'A descrição deve ter no máximo 100 caracteres')
+    .nullable(),
+  value: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValue: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  valueTable: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteValueTable: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
+  promoteStatus: z.boolean().default(false),
+  promoteStatusTable: z.boolean().default(false),
+  order: z.number(),
+  image: z.string().nullable().transform((value) => value && value.split(',')[1]),
+  bypass_amount: z.boolean().default(true),
+  amount: z.number(),
+  amount_alert: z.number(),
+  ncm_code: z.string().optional(),
+  disponibility: z.object({
+    week: z.any(),
+    store: z.object({
+      delivery: z.boolean(),
+      package: z.boolean(),
+      table: z.boolean()
+    })
+  }),
+  complements: ComplementFormSchema.array()
+})
+
+type ProductFormData = z.infer<typeof ProductFormSchema>
 
 interface ProductProps {
   show: boolean
@@ -51,61 +83,66 @@ interface ProductProps {
 
 export function ProductModal({ show, handleClose }: ProductProps) {
   const { t } = useTranslation()
+  const { data: session } = useSession()
   const {
     profile,
-    handleShowToast,
-    handleConfirmModal,
     plansCategory,
     modalFooterOpened,
-    user,
-    setLowInventoryItems,
     currency,
+    handleShowToast,
+    setLowInventoryItems
   } = useContext(AppContext)
   const {
-    product: productMenu,
-    setProduct: setProductMenu,
+    product,
     category,
     categories,
-    setCategories,
     typeModal: type,
+    setCategories,
+    ncmList,
   } = useContext(MenuContext)
 
-  const [recicledComplements, setRecicledComplements] = useState<
-    { id: number; link: boolean }[]
-  >([])
-  const [removeComplements, setRemoveComplements] = useState<number[]>([])
+
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(ProductFormSchema),
+    defaultValues: {
+      amount: product?.amount || 0,
+      amount_alert: product?.amount_alert || 0,
+      description: product?.description || null,
+      complements: product?.complements || [],
+      order: product.order || (category?.products?.length || 0 + 1),
+      value: product?.value || 0,
+      valueTable: product?.valueTable || 0,
+      promoteValue: product?.promoteValue || 0,
+      promoteValueTable: product?.promoteValueTable || 0,
+      promoteStatus: Boolean(product?.promoteStatus) || false,
+      promoteStatusTable: Boolean(product?.promoteStatusTable) || false,
+      bypass_amount: Boolean(product?.bypass_amount) || true,
+      name: product?.name || 'teste',
+      disponibility: {
+        store: {
+          delivery: product?.disponibility?.store?.delivery || true,
+          table: product?.disponibility?.store?.table || true,
+          package: product?.disponibility?.store?.package || true,
+        }
+      }
+    }
+  })
+
+  const { register, handleSubmit, watch, setValue, reset, formState } = form
 
   //PROPRIEDADES DO PRODUTO
-
-  const [product, setProduct] = useState<Product | ProductType>(productMenu)
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
-  const [invalidComplementName, setInvalidComplementName] =
-    useState<boolean>(false)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
-  const [invalidItemName, setInvalidItemName] = useState<boolean>(false)
-  const [nameInvalid, setNameInvalid] = useState<boolean>(false)
-  const [valueInvalid, setValueInvalid] = useState<boolean>(false)
-  const [valueTableInvalid, setValueTableInvalid] = useState<boolean>(false)
   const [showSpinner, setShowSpinner] = useState<boolean>(false)
-  const [showActionsButton, setShowActionsButton] = useState<boolean>(true)
 
   const [eventKeyTab, setEventKeyTab] = useState<
     'details' | 'complements' | 'promotion' | 'disponibility'
   >('details')
   const [week, setWeek] = useState<Week>(
-    new Week(productMenu.disponibility.week)
+    new Week(product.disponibility.week)
   )
-  const [imageCropped, setImageCroped] = useState<Blob>()
 
-  /** Input tipo file, se input crop modal aparece */
   const [inputFileImage, setInputFileImage] = useState<HTMLInputElement>()
-
-  const { data: session } = useSession()
-
-  const setProductState = (prod: ProductType) => {
-    const { category, ...productState } = prod
-    setProduct(new Product(copy(productState), category))
-  }
 
   // LABELS
 
@@ -129,165 +166,38 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         : '',
   }
 
-  useEffect(() => {
-    setProductState(productMenu)
-    setWeek(new Week(productMenu.disponibility.week))
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productMenu])
-
-  useEffect(() => {
-    product.disponibility.week = week
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [week])
-
-  const modalCrop = (
-    <CropModal
-      typeCrop="productImage"
-      show={!!inputFileImage}
-      inputFile={inputFileImage}
-      setImageBlob={(blob, url) => {
-        const image = document.getElementById(
-          'productImage'
-        ) as HTMLImageElement
-        if (image) {
-          image.src = url
-        }
-        setImageCroped(blob)
-      }}
-      onHide={() => {
-        setInputFileImage(undefined)
-        setShowSpinner(false)
-      }}
-    />
-  )
-
-  const resetState = () => {
-    setNameInvalid(false)
-    setProductMenu(Product.newProduct(category))
-    setEventKeyTab('details')
-  }
-
-  const createOrUpdateProduct = async (e: FormEvent) => {
-    e.preventDefault()
-    const inputName = document.getElementById(
-      `productName-${product?.id}`
-    ) as HTMLInputElement
-    const form = document.getElementById('form-products') as HTMLFormElement
+  const handleSendForm = async (body: ProductFormData) => {
+    setShowSpinner(true)
     try {
-      if (invalidWeek) {
-        handleShowToast({
-          type: `alert`,
-          content: `${t('message_cannot_invalid_times')}.`,
-          title: t('operating_hours'),
-          size: 35,
+      const { data } = await api[type === 'create' ? 'post' : 'put']('/dashboard/products', body)
+      setCategories(state => {
+        return state.map(category => {
+          switch (type) {
+            case 'create':
+              if (category.id === data.product.categoryId) {
+                category.products?.push(new Product(data.product))
+              }
+              break;
+            case 'update':
+              if (category.id === data.product.categoryId) {
+                category.products = category.products?.map(product => product.id === data.product.id ? new Product(data.product) : product)
+              }
+              break;
+          }
+          return category
         })
-        return
-      }
-
-      const dataProducts = new FormData(form)
-
-      if (!product?.name.trim().length) {
-        setEventKeyTab('details')
-        setNameInvalid(true)
-        setTimeout(() => {
-          inputName.focus()
-        }, 20)
-        return
-      }
-
-      if (product?.complements?.length) {
-        if (
-          verifyEmptyNameLength(product.complements, 'id', {
-            partialQuery: `#complement-name-`,
-            queryParentElement: `#create-product-modal`,
-            differTop: 200,
-          }) ||
-          verifyEmptyNameLength(
-            product.complements.flatMap((comp) => comp.itens.flat()),
-            'code',
-            {
-              partialQuery: `#complement-item-`,
-              queryParentElement: `#create-product-modal`,
-              differTop: -200,
-            }
-          )
-        ) {
-          handleShowToast({
-            type: 'alert',
-            title: t('complements'),
-            content: `${t('review_not_allowed')}.`,
-          })
-          setInvalidComplementName(true)
-          return
-        }
-
-        // const complFindFather = product?.complements?.find(
-        //   (compl) => compl.name.trim() === ""
-        // );
-        // const complFind = product?.complements?.find(
-        //   (compl) =>
-        //     compl.itens.filter((item) => item.name.trim() === "").length
-        // );
-        // if (complFindFather) {
-        //   setInvalidComplementName(true);
-
-        //   return;
-        // }
-        // if (complFind) {
-        //   setInvalidItemName(true);
-        //   return;
-        // }
-      }
-
-      imageCropped && dataProducts.append('image', imageCropped)
-      dataProducts.append('complements', copy(product.complements, 'json'))
-      dataProducts.append('recicle', copy(recicledComplements, 'json'))
-      dataProducts.append('disponibility', copy(product.disponibility, 'json'))
-      dataProducts.append('promoteStatus', copy(product.promoteStatus, 'json'))
-      dataProducts.append(
-        'promoteStatusTable',
-        copy(product.promoteStatusTable, 'json')
-      )
-      dataProducts.append('bypass_amount', copy(product.bypass_amount, 'json'))
-
-      setShowSaveSpinner(true)
-
-      if (type === 'update') {
-        dataProducts.append('order', String(product.order))
-        dataProducts.append(
-          'removeComplements',
-          copy(removeComplements, 'json')
-        )
-      } else {
-        dataProducts.append('order', String(category?.products?.length ?? 0))
-      }
-
-      dataProducts.set('name', encryptEmoji(product.name))
-      dataProducts.set('description', encryptEmoji(product.description))
-
-      const response = await Product.API({
-        type: type === 'create' ? 'CREATE' : 'UPDATE',
-        session,
-        data: dataProducts,
-        product: productMenu,
-        categories,
-        recicle: recicledComplements,
-        setCategories,
       })
-      if ('inventory' in response) setLowInventoryItems(response.inventory)
-
+      setLowInventoryItems(data.inventory)
       handleShowToast({
         position: 'middle-center',
         title: t('product'),
-        content: `${product.name}, ${type === 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
+        content: `${data.product.name}, ${type === 'create' ? t('created_o') : t('updated_o')} ${t('successfully')}.`,
         type: 'success',
         show: true,
         delay: 1000,
       })
-      setImageCroped(undefined)
-      handleClose()
-    } catch (e) {
-      console.error(e)
+    } catch (error) {
+      console.error(error)
       handleShowToast({
         position: 'middle-center',
         title: 'Produto',
@@ -297,73 +207,49 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         delay: 1000,
       })
     } finally {
-      setShowSaveSpinner(false)
+      setShowSpinner(false)
+      handleClose()
     }
   }
 
-  const deleteProduct = () => {
-    setShowSaveSpinner(true)
-    handleConfirmModal({
-      actionConfirm: async () => {
-        try {
-          await Product.API({
-            type: 'DELETE',
-            session,
-            product: productMenu,
-            categories,
-            setCategories,
-          })
-
-          handleShowToast({
-            position: 'middle-center',
-            title: 'Produto',
-            content: `${product.name}, ${t('was_deleted_successfully')}.`,
-            type: 'success',
-            show: true,
-            delay: 1000,
-          })
-
-          handleClose()
-        } catch (e) {
-          console.error(e)
-          handleShowToast({
-            position: 'middle-center',
-            title: t('product'),
-            content: `${t('could_not_delete_product')}, ${product.name}.`,
-            type: 'erro',
-            show: true,
-            delay: 1000,
-          })
-        }
-        setShowSaveSpinner(false)
-      },
-      actionCancel: () => {
-        setShowSaveSpinner(false)
-      },
-      title: t('product'),
-      message: `${t('delete_the_product')}:
-      ${product.name}?`,
+  const handleDelete = async () => {
+    await apiRoute(`/dashboard/menu/product/${product.id}/delete`, session, 'DELETE')
+    setCategories(state => {
+      return state.map(category => {
+        category.products = category.products?.filter(p => p.id !== product.id)
+        return category
+      })
     })
+    handleClose()
   }
+
+  console.log(formState.errors);
 
   useEffect(() => {
-    let interval
-    if (show && window.innerWidth < 450) {
-      interval = setInterval(() => {
-        const inputs = document.querySelectorAll(
-          `[data-hidde-actions=products]`
-        )
-        inputs?.forEach((input: unknown) => {
-          ; (input as HTMLElement).onfocus = () => setShowActionsButton(false)
-            ; (input as HTMLElement).onblur = () => setShowActionsButton(true)
-        })
-      }, 5000)
-    } else {
-      if (interval) {
-        clearInterval(interval)
-      }
-    }
-  })
+    setValue('disponibility.week', week)
+  }, [week, setValue])
+
+  useEffect(() => {
+    reset({
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      amount: product.amount,
+      amount_alert: product.amount_alert,
+      description: product.description,
+      complements: product.complements.map((comp) => ({ ...comp, required: Boolean(comp.required) })),
+      order: product.order,
+      value: product.value,
+      valueTable: product.valueTable,
+      promoteValue: product.promoteValue,
+      promoteValueTable: product.promoteValueTable,
+      promoteStatus: Boolean(product.promoteStatus),
+      promoteStatusTable: Boolean(product.promoteStatusTable),
+      bypass_amount: Boolean(product.bypass_amount),
+      disponibility: product.disponibility,
+
+    })
+  }, [product, setValue, reset])
 
   return (
     <div
@@ -372,7 +258,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           switch (e.code) {
             case 'Enter':
               if (!invalidWeek) {
-                createOrUpdateProduct(e)
+                // createOrUpdateProduct(e)
               }
               break
             case 'Digit1':
@@ -391,13 +277,29 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         }
       }}
     >
-      {modalCrop}
+      <CropModal
+        typeCrop="productImage"
+        show={!!inputFileImage}
+        inputFile={inputFileImage}
+        setImageBlob={(blob, url) => {
+          const image = document.getElementById(
+            'productImage'
+          ) as HTMLImageElement
+          if (image) {
+            image.src = url
+          }
+          setValue('image', url)
+        }}
+        onHide={() => {
+          setInputFileImage(undefined)
+          setShowSpinner(false)
+        }}
+      />
       <Modal
         show={show}
-        onHide={handleClose}
-        onExit={() => {
-          setRecicledComplements([])
-          setInvalidComplementName(false)
+        onHide={() => {
+          reset()
+          handleClose()
         }}
         keyboard
         scrollable
@@ -405,15 +307,11 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         dialogClassName={`${window.innerWidth > 768 ? 'modal-90' : ''} centered mx-auto`}
         fullscreen={window.innerWidth < 768 ? true : undefined}
         centered
-        onExited={() => {
-          resetState()
-          setRemoveComplements([])
-        }}
       >
         <Modal.Header closeButton>
           <Modal.Title>
             {type === 'create' ? t('add') : t('edit')} {t('product')}{' '}
-            {type === 'update' && `(${productMenu.name})`}
+            {type === 'update' && `(${product.name})`}
           </Modal.Title>
         </Modal.Header>
 
@@ -422,7 +320,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           className={`position-relative`}
           style={{ height: '80vmin' }}
         >
-          <form id="form-products" onSubmit={createOrUpdateProduct}>
+          <form id="form-product" onSubmit={handleSubmit(handleSendForm)}>
             {showSpinner && (
               <div
                 className="position-absolute d-flex justify-content-center align-items-center bottom-0 end-0 start-0 top-0"
@@ -438,7 +336,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                     <Nav.Item onClick={() => setEventKeyTab('details')}>
                       <Nav.Link eventKey="details">
                         {t('details')}
-                        {eventKeyTab !== 'details' && nameInvalid && (
+                        {eventKeyTab !== 'details' && formState.errors.name && (
                           <span className="ms-2">
                             <BsExclamationCircle
                               className="pulseElement"
@@ -486,19 +384,18 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                               >
                                 <label
                                   className="cursor-pointer"
-                                  htmlFor={`product-image-${productMenu.id}`}
+                                  htmlFor={`product-image-${product.id}`}
                                 >
                                   <Figure>
                                     <Figure.Image
                                       width={600}
-                                      // height={450}
                                       alt="Imagem do Produto"
                                       src={
-                                        product?.image || '/images/no-img.jpeg'
+                                        watch('image') || '/images/no-img.jpeg'
                                       }
                                       id="productImage"
                                       style={{
-                                        /* objectFit: "cover",*/ maxHeight: 270,
+                                        maxHeight: 270,
                                       }}
                                     />
                                     <Figure.Caption className="text-center">
@@ -514,7 +411,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <Form.Control
                                       type="file"
                                       accept="image/*"
-                                      id={`product-image-${productMenu.id}`}
+                                      id={`product-image-${product.id}`}
                                       onChange={(e) => {
                                         setInputFileImage(
                                           e.target as HTMLInputElement
@@ -540,26 +437,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     </Form.Label>
                                     <div className="position-relative">
                                       <Form.Control
-                                        defaultValue={product?.name}
                                         id={`productName-${product?.id}`}
                                         autoFocus
-                                        isInvalid={nameInvalid}
-                                        maxLength={55}
-                                        name="name"
-                                        onChange={(e) => {
-                                          if (nameInvalid) {
-                                            setNameInvalid(false)
-                                          }
-                                          setProduct({
-                                            ...product,
-                                            name: e.target.value,
-                                          })
-                                        }}
-                                        onKeyDown={(e) =>
-                                          modifyFontValues(e, {
-                                            prop: product.name,
-                                          })
-                                        }
+                                        isInvalid={Boolean(formState.errors.name)}
+                                        {...register('name')}
                                       />
                                       <Form.Control.Feedback
                                         tooltip
@@ -572,29 +453,40 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <div className="d-flex justify-content-end">
                                       <p
                                         className={
-                                          (product.name.length || 0) >= 55
+                                          (watch('name')?.length || 0) >= 55
                                             ? 'text-red-500'
                                             : ''
                                         }
                                       >
-                                        {product.name.length || 0}/55{' '}
+                                        {watch('name')?.length || 0}/55{' '}
                                         {t('characters')}
                                       </p>
                                     </div>
                                   </Col>
                                   <Col sm>
                                     <Form.Label>
+                                      <b>Código NCM</b>
+                                    </Form.Label>
+                                    <Form.Select
+                                      {...register('ncm_code')}
+                                    >
+                                      <option disabled value={''}>
+                                        Selecione
+                                      </option>
+                                      {ncmList.map((ncm) => (
+                                        <option key={ncm.codigo} value={ncm.codigo}>
+                                          <pre>{ncm.descricao}</pre>
+                                        </option>
+                                      ))}
+                                    </Form.Select>
+                                  </Col>
+                                  <Col sm>
+                                    <Form.Label>
                                       <b>{t('category')}</b>
                                     </Form.Label>
                                     <Form.Select
-                                      value={product.categoryId || category?.id}
-                                      name="categoryId"
-                                      onChange={(e) => {
-                                        setProduct({
-                                          ...product,
-                                          categoryId: parseInt(e.target.value),
-                                        })
-                                      }}
+                                      value={watch('categoryId')}
+                                      {...register('categoryId', { valueAsNumber: true })}
                                     >
                                       {categories
                                         .filter((c) => c.type === 'default')
@@ -631,26 +523,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           </InputGroup.Text>
                                           <Form.Control
                                             required
-                                            defaultValue={(
-                                              product?.value ?? 0
-                                            ).toFixed(2)}
-                                            name="value"
-                                            isInvalid={valueInvalid}
-                                            onBlur={(e) => {
-                                              e.target.value.length
-                                                ? setValueInvalid(false)
-                                                : setValueInvalid(true)
-                                            }}
-                                            onFocus={() => {
-                                              setValueInvalid(false)
-                                            }}
-                                            onChange={(e) => {
-                                              mask(e, 'currency')
-                                              setProduct({
-                                                ...product,
-                                                value: Number(e.target.value),
-                                              })
-                                            }}
+                                            {...register('value', {
+                                              valueAsNumber: true,
+                                              onChange: (e) => mask(e, 'currency')
+                                            })}
                                           />
                                           <Form.Control.Feedback
                                             tooltip
@@ -673,28 +549,10 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           {currency({ value: 0, symbol: true })}
                                         </InputGroup.Text>
                                         <Form.Control
-                                          defaultValue={(
-                                            product?.valueTable ?? 0
-                                          ).toFixed(2)}
-                                          name="valueTable"
-                                          isInvalid={valueTableInvalid}
-                                          onBlur={(e) => {
-                                            e.target.value.length
-                                              ? setValueTableInvalid(false)
-                                              : setValueTableInvalid(true)
-                                          }}
-                                          onFocus={() => {
-                                            setValueTableInvalid(false)
-                                          }}
-                                          onChange={(e) => {
-                                            mask(e, 'currency')
-                                            setProduct({
-                                              ...product,
-                                              valueTable: Number(
-                                                e.target.value
-                                              ),
-                                            })
-                                          }}
+                                          {...register('valueTable', {
+                                            valueAsNumber: true,
+                                            onChange: (e) => mask(e, 'currency')
+                                          })}
                                         />
                                         <Form.Control.Feedback
                                           tooltip
@@ -718,46 +576,24 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={watch('bypass_amount')}
                                           onClick={() => {
-                                            if (
-                                              typeof product.amount !== 'number'
-                                            )
-                                              return
-                                            setProduct({
-                                              ...product,
-                                              amount:
-                                                product.amount === 0
-                                                  ? 0
-                                                  : product.amount - 1,
-                                            })
+                                            setValue('amount', Number(watch('amount')) <= 0 ? 0 : Number(watch('amount')) - 1)
                                           }}
                                         >
                                           -
                                         </Button>
                                         <Form.Control
-                                          value={product.amount || 0}
-                                          disabled={product.bypass_amount}
-                                          name="amount"
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              amount: Number(e.target.value),
-                                            })
-                                          }}
+                                          disabled={watch('bypass_amount')}
+                                          {...register('amount')}
                                         />
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={watch('bypass_amount')}
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
-                                            setProduct({
-                                              ...product,
-                                              amount: !product.amount
-                                                ? 1
-                                                : product.amount + 1,
-                                            })
+                                            setValue('amount', Number(watch('amount')) + 1)
                                           }}
                                         >
                                           +
@@ -779,50 +615,24 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <InputGroup className="position-relative">
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={watch('bypass_amount')}
                                           onClick={() => {
-                                            if (
-                                              typeof product.amount_alert !==
-                                              'number'
-                                            )
-                                              return
-                                            setProduct({
-                                              ...product,
-                                              amount_alert:
-                                                product.amount_alert === 0
-                                                  ? 0
-                                                  : product.amount_alert - 1,
-                                            })
+                                            setValue('amount_alert', Number(watch('amount_alert')) <= 0 ? 0 : watch('amount_alert') - 1)
                                           }}
                                         >
                                           -
                                         </Button>
                                         <Form.Control
-                                          value={product.amount_alert || 0}
-                                          name="amount_alert"
-                                          disabled={product.bypass_amount}
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              amount_alert: Number(
-                                                e.target.value
-                                              ),
-                                            })
-                                          }}
+                                          disabled={watch('bypass_amount')}
+                                          {...register('amount_alert')}
                                         />
                                         <Button
                                           variant="secondary"
-                                          disabled={product.bypass_amount}
+                                          disabled={watch('bypass_amount')}
                                           className="rounded-end"
                                           style={{ minWidth: '34.75px' }}
                                           onClick={() => {
-                                            setProduct({
-                                              ...product,
-                                              amount_alert:
-                                                !product.amount_alert
-                                                  ? 1
-                                                  : product.amount_alert + 1,
-                                            })
+                                            setValue('amount_alert', Number(watch('amount_alert')) + 1)
                                           }}
                                         >
                                           +
@@ -840,22 +650,14 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       className="d-flex align-items-end my-2"
                                     >
                                       <FormGroup>
-                                        <Form.Check
-                                          type="switch"
-                                          id="amount_bypass"
-                                          name="amount_bypass"
-                                          label={t('always_available')}
-                                          className="fs-6 text-nowrap"
-                                          defaultChecked={
-                                            !!product.bypass_amount
-                                          }
-                                          onClick={(e: any) => {
-                                            setProduct({
-                                              ...product,
-                                              bypass_amount: e.target?.checked,
-                                            })
-                                          }}
-                                        />
+                                        <Form.Label className='d-flex align-items-center'>
+                                          <Form.Check
+                                            type="switch"
+                                            className="fs-6 text-nowrap"
+                                            {...register('bypass_amount')}
+                                          />
+                                          <span>{t('always_available')}</span>
+                                        </Form.Label>
                                       </FormGroup>
                                     </Col>
                                   </Row>
@@ -870,29 +672,17 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       as="textarea"
                                       rows={5}
                                       maxLength={500}
-                                      defaultValue={product?.description}
-                                      name="description"
-                                      onChange={(e) => {
-                                        setProduct({
-                                          ...product,
-                                          description: e.target.value,
-                                        })
-                                      }}
-                                      onKeyDown={(e) =>
-                                        modifyFontValues(e, {
-                                          prop: product.description,
-                                        })
-                                      }
+                                      {...register('description')}
                                     />
                                     <div className="d-flex justify-content-end">
                                       <p
                                         className={
-                                          product.description?.length >= 500
+                                          (watch('description')?.length || 0) >= 500
                                             ? 'text-red-500'
                                             : ''
                                         }
                                       >
-                                        {product.description?.length || 0}
+                                        {watch('description')?.length || 0}
                                         /500 {t('characters')}
                                       </p>
                                     </div>
@@ -906,25 +696,12 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                     </Tab.Pane>
                     <Tab.Pane eventKey="complements">
                       <br />
-                      <ComponentComplement
-                        typeModal="product"
-                        complementType="default"
-                        complements={product?.complements || []}
-                        recicled={recicledComplements}
-                        saveComplements={(newComplements) => {
-                          setProduct({
-                            ...product,
-                            complements: newComplements,
-                          })
-                        }}
-                        saveRecicledComplements={(recicled) =>
-                          setRecicledComplements([...recicled])
-                        }
-                        saveRemovedComplements={(removeds) =>
-                          setRemoveComplements([...removeds])
-                        }
-                        invalidComplement={invalidComplementName}
-                      />
+                      <FormProvider {...form}>
+                        <ComponentComplement
+                          typeModal="product"
+                          complementType="default"
+                        />
+                      </FormProvider>
                     </Tab.Pane>
                     <Tab.Pane eventKey="promotion">
                       <Card className="wm-default text-dark mt-4">
@@ -964,13 +741,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     </Form.Label>
                                     <Form.Switch
                                       id="promotion"
-                                      checked={product?.promoteStatus}
-                                      onChange={(e) => {
-                                        setProduct({
-                                          ...product,
-                                          promoteStatus: e.target.checked,
-                                        })
-                                      }}
+                                      {...register('promoteStatus')}
                                     />
                                   </div>
                                 </Col>
@@ -979,7 +750,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                     <Card.Body>
                                       <p>
                                         {t('original_price')}:{' '}
-                                        {currency({ value: product.value })}
+                                        {currency({ value: watch('value') })}
                                       </p>
                                       <div className="d-flex align-items-baseline gap-3">
                                         <Form.Label>
@@ -988,19 +759,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                           </b>
                                         </Form.Label>
                                         <Form.Control
-                                          defaultValue={(
-                                            product.promoteValue ?? 0
-                                          ).toFixed(2)}
-                                          name="promoteValue"
-                                          onChange={(e) => {
-                                            mask(e, 'currency')
-                                            setProduct({
-                                              ...product,
-                                              promoteValue: Number(
-                                                e.target.value
-                                              ),
-                                            })
-                                          }}
+                                          {...register('promoteValue', {
+                                            onChange: (e) => mask(e, 'currency')
+                                          })}
                                           className="w-75"
                                         />
                                       </div>
@@ -1030,13 +791,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   </Form.Label>
                                   <Form.Switch
                                     id="promotionTable"
-                                    checked={product?.promoteStatusTable}
-                                    onChange={(e) => {
-                                      setProduct({
-                                        ...product,
-                                        promoteStatusTable: e.target.checked,
-                                      })
-                                    }}
+                                    {...register('promoteStatusTable')}
                                   />
                                 </div>
                               </Col>
@@ -1045,7 +800,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                   <Card.Body>
                                     <p>
                                       {t('original_price')}:{' '}
-                                      {currency({ value: product.valueTable })}
+                                      {currency({ value: watch('valueTable') })}
                                     </p>
                                     <div className="d-flex align-items-baseline gap-3">
                                       <Form.Label>
@@ -1055,19 +810,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       </Form.Label>
                                       <Form.Control
                                         className="w-75"
-                                        name="promoteValueTable"
-                                        defaultValue={(
-                                          product.promoteValueTable ?? 0
-                                        ).toFixed(2)}
-                                        onChange={(e) => {
-                                          mask(e, 'currency')
-                                          setProduct({
-                                            ...product,
-                                            promoteValueTable: Number(
-                                              e.target.value
-                                            ),
-                                          })
-                                        }}
+                                        {...register('promoteValueTable', {
+                                          onChange: (e) => mask(e, 'currency')
+                                        })}
                                       />
                                     </div>
                                   </Card.Body>
@@ -1097,23 +842,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         Delivery
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={
-                                            product?.disponibility?.store
-                                              .delivery
-                                          }
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              disponibility: {
-                                                ...product.disponibility,
-                                                store: {
-                                                  ...product.disponibility
-                                                    .store,
-                                                  delivery: e.target.checked,
-                                                },
-                                              },
-                                            })
-                                          }}
+                                          {...register('disponibility.store.delivery')}
                                         />
                                       </Form.Label>
                                     </div>
@@ -1124,22 +853,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('table')}
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={
-                                            product?.disponibility?.store.table
-                                          }
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              disponibility: {
-                                                ...product.disponibility,
-                                                store: {
-                                                  ...product.disponibility
-                                                    .store,
-                                                  table: e.target.checked,
-                                                },
-                                              },
-                                            })
-                                          }}
+                                          {...register('disponibility.store.table')}
                                         />
                                       </Form.Label>
                                     </div>
@@ -1150,23 +864,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         {t('package')}
                                         <Form.Switch
                                           className="pt-2"
-                                          defaultChecked={
-                                            product?.disponibility?.store
-                                              .package
-                                          }
-                                          onChange={(e) => {
-                                            setProduct({
-                                              ...product,
-                                              disponibility: {
-                                                ...product.disponibility,
-                                                store: {
-                                                  ...product.disponibility
-                                                    .store,
-                                                  package: e.target.checked,
-                                                },
-                                              },
-                                            })
-                                          }}
+                                          {...register('disponibility.store.package')}
                                         />
                                       </Form.Label>
                                     </div>
@@ -1180,7 +878,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                       <Dates
                         type="menu"
                         title={t('add_availability_hours')}
-                        week={product.disponibility?.week}
+                        week={product.disponibility?.week || new Week()}
                         setInvalidWeek={setInvalidWeek}
                         setWeek={setWeek}
                       />
@@ -1196,15 +894,16 @@ export function ProductModal({ show, handleClose }: ProductProps) {
             }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
-          {showActionsButton && (
-            <ActionsFooterButton
-              type={type}
-              disabledButtonSave={nameInvalid}
-              createOrUpdate={createOrUpdateProduct}
-              deleteFunction={deleteProduct}
-              handleClose={handleClose}
-            />
-          )}
+          <div className='d-flex align-items-center gap-2 w-100'>
+            {type === 'update' && (
+              <Button variant='outline-danger' form='form-product' onClick={handleDelete}>{t('delete')}</Button>
+            )}
+            <div className='d-flex align-items-center gap-2 ms-auto'>
+              <Button variant='danger' form='form-product' onClick={handleClose} >{t('cancel')}</Button>
+              <Button variant='success' form='form-product' type='submit' >{type === 'update' ? t('save') : t('create')}</Button>
+            </div>
+          </div>
+
         </Modal.Footer>
         <OverlaySpinner
           show={showSaveSpinner}
