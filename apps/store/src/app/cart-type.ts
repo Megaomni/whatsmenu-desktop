@@ -2,6 +2,7 @@ import { ProductType } from './product-type'
 
 export interface CartType extends ProductType {
   productId?: number
+  ncm_code?: string
   details?: any
   displayValue?: number
   quantity?: number
