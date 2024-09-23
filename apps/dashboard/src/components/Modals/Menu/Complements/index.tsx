@@ -152,7 +152,8 @@ export function ComponentComplement({
     })
   }
 
-  const handleAddItemComplement = (index: number, complement: ComplementFormData) => {
+  const handleAddItemComplement = (index: number) => {
+    const complement = watch(`complements.${index}`)
     complement.itens.push({
       name: '',
       description: '',
@@ -504,7 +505,7 @@ export function ComponentComplement({
                       variant="success"
                       className="flex-grow-1"
                       id={`btn-addItemComplement-${index}`}
-                      onClick={() => handleAddItemComplement(index, complement)}
+                      onClick={() => handleAddItemComplement(index)}
                     >
                       + {t('add_item')}
                     </Button>
