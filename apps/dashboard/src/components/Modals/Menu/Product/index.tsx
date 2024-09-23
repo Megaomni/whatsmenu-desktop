@@ -251,6 +251,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         params.descricao = ncm_code
       }
 
+      setShowSpinner(true)
+
       try {
         const response = await groveNfeApi.get(`v1/fiscalNotes/list/ncms`, {
           params,
@@ -261,6 +263,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         }
       } catch (error) {
         console.error(error)
+      } finally {
+        setShowSpinner(false)
       }
     }
   }, [ncm_code, setNcmList])
