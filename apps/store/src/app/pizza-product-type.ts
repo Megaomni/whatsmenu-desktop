@@ -10,6 +10,7 @@ export interface PizzaProductType extends InventoryPropsType {
   implementations: PizzaImplementationType[]
   flavors: PizzaFlavorType[]
   complements?: ComplementType[]
+  ncm_code?: string
 }
 
 export interface PizzaSizeType {

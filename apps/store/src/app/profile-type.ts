@@ -165,10 +165,22 @@ export interface ProfileOptionsType {
     status: boolean
     createdAt: string
   }>
-
   locale: {
     currency: string
     language: string
+  }
+  integrations: {
+    grovenfe: {
+      plan: any
+      config: {
+        fiscal_notes: {
+          day_limiter: number | null
+          forms_payment: { type: string }[]
+        }
+      }
+      created_at: string
+      company_id: number
+    }
   }
 }
 

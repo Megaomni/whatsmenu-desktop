@@ -33,6 +33,7 @@ export class PizzaComponent implements OnInit, AfterContentChecked {
   pizza: CartItem = {
     type: 'pizza',
     obs: '',
+    ncm_code: this.data.pizza.ncm_code ? this.data.pizza.ncm_code : null,
     quantity: 1,
     pizzaId: this.data.pizza.id,
     details: {

@@ -5,7 +5,7 @@ on:
     branches:
       - beta
       - main
-
+      - feat/ncm
     paths:
       - "apps/site/**"
       - ".github/workflows/deploy-site.yml"

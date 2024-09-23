@@ -811,7 +811,6 @@ export function CreateCompany() {
                   {nfce && (
                     <Row className="d-flex">
                       <div className="mt-2">
-                        <p className="fw-bold m-0 p-0">{t('production')}</p>
                         <Row>
                           <Col xs={6} md={3}>
                             <Form.Label className="m-0 mt-2 p-0 pb-2">
@@ -858,6 +857,11 @@ export function CreateCompany() {
                             )}
                           </Col>
                         </Row>
+                        <p className="fs-7 m-auto mt-2">
+                          *Esses códigos você consegue no Portal da SEFAZ dentro
+                          do acesso da sua empresa, caso tenha duvidas solicite
+                          ajuda do seu contador.
+                        </p>
                       </div>
                     </Row>
                   )}
