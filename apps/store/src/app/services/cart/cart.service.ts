@@ -25,7 +25,10 @@ export class CartService {
   profile: ProfileType
   cartRequest: CartRequestType
 
-  constructor(public context: ContextService, public api: ApiService) {
+  constructor(
+    public context: ContextService,
+    public api: ApiService
+  ) {
     this.markDisabled = this.markDisabled.bind(this)
   }
 
@@ -154,7 +157,7 @@ export class CartService {
     return Math.max(
       this.totalCartValue(cart, cartPizza, cartRequest) -
         (cupom ? this.cupomValue(cartRequest.cupom, cartRequest) : 0) +
-        (cartRequest.addressId ? cartRequest.taxDelivery ?? 0 : 0) +
+        (cartRequest.addressId ? (cartRequest.taxDelivery ?? 0) : 0) +
         (isOnline ? 0 : this.formPaymentAddonCalcResult(formPayment, cartRequest.total)) -
         voucherValue,
       0
@@ -170,10 +173,10 @@ export class CartService {
         .filter((complement) => complement.itens.length)
       return {
         pizzaId: pizza.id,
-        ncm_code: pizza.ncm_code ? pizza.ncm_code : null,
         quantity: pizza.quantity,
         obs: pizza.obs,
         details: {
+          ncm_code: pizza.ncm_code ? pizza.ncm_code : null,
           value: pizza.details?.value ?? this.itemValueWithComplements({ item: pizza, type: 'pizza', valueType, multiplyByQuantity: false }),
           sizeCode,
           complements: filteredGeneralComplements,
@@ -196,13 +199,13 @@ export class CartService {
 
     const cartMapped: CartItem[] = cart
       .filter((product) => product)
-      .map((product) => {        
+      .map((product) => {
         return {
           productId: product.id,
           quantity: product.quantity,
-          ncm_code: product.ncm_code ? product.ncm_code : null,
           obs: product.obs,
           details: {
+            ncm_code: product.ncm_code ? product.ncm_code : null,
             value: this.getProductFinalValue(product, valueType),
             isPromote: product.promoteStatus || product.promoteStatusTable,
             complements: product.complements
@@ -219,7 +222,7 @@ export class CartService {
   /** Formata carrinho vindo do servidor para vizualização */
   public itemCart({ itens }: { itens: CartItem[] }): { cart: CartType[]; cartPizza: CartPizza[] } {
     const cart = []
-    const cartPizza = []    
+    const cartPizza = []
     itens.forEach((item) => {
       if (item.type === 'default') {
         const menuItem = this.context.profile.categories
@@ -454,8 +457,8 @@ export class CartService {
     return higherValue
       ? Math.max(...implementations.map((i) => i?.value || 0), 0)
       : multipleBorders
-      ? implementations.filter((i) => i).reduce((total, i) => (total += i.value / pizza.details.flavors.length), 0)
-      : implementations[0]?.value || 0
+        ? implementations.filter((i) => i).reduce((total, i) => (total += i.value / pizza.details.flavors.length), 0)
+        : implementations[0]?.value || 0
   }
 
   /** Retorna o valor total do produto ou pizza com a soma do total de complementos */
@@ -1089,7 +1092,7 @@ export class CartService {
       if (existingProduct) {
         existingProduct.quantity += product.quantity
       } else {
-        const bypassAmount = product?.amount === null || !this.profile?.options?.inventoryControl ? true : product?.bypass_amount ?? false
+        const bypassAmount = product?.amount === null || !this.profile?.options?.inventoryControl ? true : (product?.bypass_amount ?? false)
         grouped.push({
           name: product?.name || 'Pizza',
           id: product?.id || product?.pizzaId,
@@ -1132,7 +1135,7 @@ export class CartService {
       if (existingProduct) {
         existingProduct.quantity += product.quantity
       } else {
-        const bypassAmount = product.amount === null || !this.profile?.options?.inventoryControl ? true : product?.bypass_amount ?? false
+        const bypassAmount = product.amount === null || !this.profile?.options?.inventoryControl ? true : (product?.bypass_amount ?? false)
 
         grouped.push({
           name: 'Pizza' + product.flavorCode,
