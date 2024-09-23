@@ -519,7 +519,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       </p>
                                     </div>
                                   </Col>
-                                  {profile.options.integrations.grovenfe && (
+                                  {profile.options?.integrations?.grovenfe && (
                                     <Col sm>
                                       <Form.Label>
                                         <b>Código NCM</b>
