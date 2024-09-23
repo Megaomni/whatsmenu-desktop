@@ -5,6 +5,7 @@ on:
     branches:
       - beta
       - feat/ncm
+
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
