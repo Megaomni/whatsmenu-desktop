@@ -24,7 +24,7 @@ export const convertToFocusNfce = ({
     local_destino: '1',
     items: cart.itens.map((item: any, index: number) => ({
       numero_item: String(index + 1),
-      codigo_ncm: '00000000',
+      codigo_ncm: item.details.ncm_code,
       codigo_produto: String(item.id),
       descricao: item.name,
       quantidade_comercial: String(item.quantity),

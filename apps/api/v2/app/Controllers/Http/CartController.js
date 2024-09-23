@@ -658,7 +658,7 @@ class CartController {
           const itens_cart = []
           const itens_cartPizza = []
 
-          for (const { ncm_code, ...item } of data.itens) {
+          for (const item of data.itens) {
             if (item.type === 'default') {
               itens_cart.push(item)
             }
@@ -667,11 +667,6 @@ class CartController {
             }
             await CartIten.create(
               {
-                controls: {
-                  grovenfe: {
-                    ncm_code,
-                  }
-                },
                 cartId: clientCart.id,
                 ...item,
               },
@@ -826,7 +821,6 @@ class CartController {
                     )
                   } catch (error) {
                     console.error('Erro ao criar a nota fiscal:', error);
-                    throw error;
                   }
                 }
               } catch (error) {

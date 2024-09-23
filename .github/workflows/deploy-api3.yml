@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - beta
-      - feat/ncm
+      - main
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
