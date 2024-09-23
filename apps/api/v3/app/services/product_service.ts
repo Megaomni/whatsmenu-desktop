@@ -196,6 +196,15 @@ export class ProductService {
           await product.related('complements').detach(complementsToRemove)
         }
         // Anexar os novos complementos reutilizados
+
+        for (const complement of vinculatedComplements) {
+          const complementToUpdate = await Complement.find(complement.id)
+          if (complementToUpdate) {
+            complementToUpdate.merge(complement)
+            await complementToUpdate.save()
+          }
+        }
+
         await product.related('complements').sync(complementIds)
       } else {
         // Se nenhum complemento vinculado, remover todos os existentes
