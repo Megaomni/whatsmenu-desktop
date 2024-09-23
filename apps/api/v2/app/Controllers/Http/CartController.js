@@ -658,7 +658,7 @@ class CartController {
           const itens_cart = []
           const itens_cartPizza = []
 
-          for (const item of data.itens) {
+          for (const { ncm_code, ...item } of data.itens) {
             if (item.type === 'default') {
               itens_cart.push(item)
             }
