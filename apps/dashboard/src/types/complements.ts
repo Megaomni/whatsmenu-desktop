@@ -66,6 +66,7 @@ export default class Complement {
 
     this.itens.forEach((item) => {
       item.value = Number(item.value ?? 0)
+      item.amount_alert = item.amount_alert ?? 0
     })
   }
 

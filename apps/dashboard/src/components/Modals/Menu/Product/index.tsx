@@ -104,6 +104,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     categories,
     typeModal: type,
     setCategories,
+    setProduct
   } = useContext(MenuContext)
 
   const form = useForm<ProductFormData>({
@@ -198,6 +199,8 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           return category
         })
       })
+      setProduct(new Product(data.product))
+
       setLowInventoryItems(data.inventory)
       handleShowToast({
         position: 'middle-center',
