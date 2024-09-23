@@ -400,9 +400,9 @@ class CartController {
         const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
         if (groveNfePayments.some((formpayment) => formpayment.type === data.formsPayment[0].payment)) {
           try {
-            const companieId = integrations.grovenfe.companie_id
+            const companyId = integrations.grovenfe.company_id
             const { data } = await axios.post(
-              `${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companieId}`,
+              `${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companyId}`,
               {
                 formPayment: data.formsPayment[0],
               },
@@ -795,7 +795,7 @@ class CartController {
                 const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
                 if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
                   try {
-                    const companieId = integrations.grovenfe.companie_id
+                    const companieId = integrations.grovenfe.company_id
                     const { company } = axios.get(`${Env.get('GROVENFE_API_URL')}/v1/companies/${companieId}`, {
                       headers: {
                         Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
