@@ -206,9 +206,6 @@ export class ProductService {
         }
 
         await product.related('complements').sync(complementIds)
-      } else {
-        // Se nenhum complemento vinculado, remover todos os existentes
-        await product.related('complements').detach(existingComplements)
       }
 
       if (newComplements.length) {
@@ -225,6 +222,8 @@ export class ProductService {
       }
 
       await product.load('complements')
+
+      console.log(`${product.name}:`, product.complements)
 
       return { product }
     } catch (error) {
