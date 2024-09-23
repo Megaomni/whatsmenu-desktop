@@ -63,6 +63,7 @@ const ProductFormSchema = z.object({
     .string()
     .nullable()
     .transform((value) => value && value.split(',')[1]),
+  imageName: z.string().optional(),
   bypass_amount: z.boolean().default(true),
   amount: z.number(),
   amount_alert: z.number(),
@@ -467,6 +468,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       accept="image/*"
                                       id={`product-image-${product.id}`}
                                       onChange={(e) => {
+                                        setValue('imageName', (e.target as HTMLInputElement).files?.[0].name)
                                         setInputFileImage(
                                           e.target as HTMLInputElement
                                         )

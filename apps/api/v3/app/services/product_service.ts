@@ -13,14 +13,14 @@ export interface CreateProductPayload {
   image?: MultipartFile | null
   profile: Profile
   complements: NewComplement[]
-  data: ModelAttributes<Product>
+  data: ModelAttributes<Product> & { imageName?: string }
 }
 
 export interface UpdateProductPayload {
   image?: MultipartFile | null
   profile: Profile
   complements: NewComplement[]
-  data: ModelAttributes<Product>
+  data: ModelAttributes<Product> & { imageName?: string }
   productId: Product['id']
 }
 
@@ -52,7 +52,7 @@ export class ProductService {
       })
 
       if (data.image) {
-        const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${'teste'}`
+        const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${data.imageName}`
         const buffer = Buffer.from(data.image, 'base64')
         await drive.use('s3').put(imageKey, buffer, {
           contentType: 'image/webp',
@@ -156,7 +156,7 @@ export class ProductService {
       })
 
       if (data.image) {
-        const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${'teste'}`
+        const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${data.imageName}`
         const buffer = Buffer.from(data.image, 'base64')
         await drive.use('s3').put(imageKey, buffer, {
           contentType: 'image/webp',

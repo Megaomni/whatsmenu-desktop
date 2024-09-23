@@ -183,7 +183,7 @@ export function CreateCompany() {
         )
         .then(({ data }) => {
           reset({
-            cnpj: data.company.docNumber
+            cnpj: data.company.doc_number
               .replace(/(\d{2})(\d)/, '$1.$2')
               .replace(/(\d{3})(\d)/, '$1.$2')
               .replace(/(\d{3})(\d)/, '$1/$2')
