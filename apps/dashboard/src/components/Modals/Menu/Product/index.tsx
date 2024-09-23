@@ -1,6 +1,6 @@
 import { HelpVideos } from '@components/Modals/HelpVideos'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import {
   Button,
   Card,
@@ -133,7 +133,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   })
 
   const { register, handleSubmit, watch, setValue, reset, formState } = form
-
+  const { ncm_code } = watch()
   //PROPRIEDADES DO PRODUTO
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
@@ -153,17 +153,17 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   const labels = {
     basic:
       plansCategory.includes('basic') &&
-        plansCategory.some((plan) => plan !== 'basic')
+      plansCategory.some((plan) => plan !== 'basic')
         ? 'Delivery'
         : '',
     table:
       plansCategory.includes('table') &&
-        plansCategory.some((plan) => plan !== 'table')
+      plansCategory.some((plan) => plan !== 'table')
         ? t('table')
         : '',
     package:
       plansCategory.includes('package') &&
-        plansCategory.some((plan) => plan !== 'package')
+      plansCategory.some((plan) => plan !== 'package')
         ? profile.options.package.label2
           ? t('appointment')
           : t('package')
@@ -240,28 +240,30 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     handleClose()
   }
 
-  const handleNcmList = async (term: string) => {
-    let params: { codigo?: string; descricao?: string } = {}
+  const handleNcmList = useCallback(async () => {
+    if (ncm_code) {
+      let params: { codigo?: string; descricao?: string } = {}
 
-    if (/\d+/g.test(term)) {
-      params.codigo = term
-    }
-    if (/\D+/g.test(term)) {
-      params.descricao = term
-    }
-
-    try {
-      const response = await groveNfeApi.get(`v1/fiscalNotes/list/ncms`, {
-        params,
-      })
-
-      if (response.data) {
-        setNcmList(response.data.data)
+      if (/\d+/g.test(ncm_code)) {
+        params.codigo = ncm_code
       }
-    } catch (error) {
-      console.error(error)
+      if (/\D+/g.test(ncm_code)) {
+        params.descricao = ncm_code
+      }
+
+      try {
+        const response = await groveNfeApi.get(`v1/fiscalNotes/list/ncms`, {
+          params,
+        })
+
+        if (response.data) {
+          setNcmList(response.data.data)
+        }
+      } catch (error) {
+        console.error(error)
+      }
     }
-  }
+  }, [ncm_code, setNcmList])
 
   useEffect(() => {
     setValue('disponibility.week', week)
@@ -290,6 +292,16 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       disponibility: product.disponibility,
     })
   }, [product, setValue, reset])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (ncm_code) {
+        handleNcmList()
+      }
+    }, 1000 * 1.5)
+
+    return () => clearTimeout(timer)
+  }, [ncm_code, handleNcmList])
 
   return (
     <div
@@ -505,35 +517,26 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       </p>
                                     </div>
                                   </Col>
-                                  {
-                                    profile.options.integrations.grovenfe && (
-                                      <Col sm>
-                                        <Form.Label>
-                                          <b>Código NCM</b>
-                                        </Form.Label>
-                                        <Form.Control
-                                          list="ncm"
-                                          {...(register('ncm_code'),
-                                          {
-                                            onChange: (e) => {
-                                              handleNcmList(e.target.value)
-                                            },
-                                          })}
-                                          placeholder="Selecione"
-                                        />
-                                        <datalist id="ncm">
-                                          {ncmList.map((ncm) => (
-                                            <option
-                                              key={ncm.codigo}
-                                              value={ncm.codigo}
-                                            >
-                                              {ncm.descricao_completa}
-                                            </option>
-                                          ))}
-                                        </datalist>
-                                      </Col>
-                                    )
-                                  }
+                                  <Col sm>
+                                    <Form.Label>
+                                      <b>Código NCM</b>
+                                    </Form.Label>
+                                    <Form.Control
+                                      list="ncm"
+                                      {...register('ncm_code')}
+                                      placeholder="Selecione"
+                                    />
+                                    <datalist id="ncm">
+                                      {ncmList.map((ncm) => (
+                                        <option
+                                          key={ncm.codigo}
+                                          value={ncm.codigo}
+                                        >
+                                          {ncm.descricao_completa}
+                                        </option>
+                                      ))}
+                                    </datalist>
+                                  </Col>
                                   <Col sm>
                                     <Form.Label>
                                       <b>{t('category')}</b>
@@ -565,39 +568,39 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                 <Row className="mb-4">
                                   {(plansCategory.includes('basic') ||
                                     plansCategory.includes('package')) && (
-                                      <Col sm="6">
-                                        <Form.Label>
-                                          <b className="text-nowrap">
-                                            {t('price')}{' '}
-                                            {plansCategory.includes('basic') &&
-                                              plansCategory.includes('package')
-                                              ? `${labels.basic}/${labels.package}`
-                                              : plansCategory.includes('basic')
-                                                ? labels.basic
-                                                : labels.package}
-                                          </b>
-                                        </Form.Label>
-                                        <InputGroup className="position-relative">
-                                          <InputGroup.Text>
-                                            {currency({ value: 0, symbol: true })}
-                                          </InputGroup.Text>
-                                          <Form.Control
-                                            required
-                                            {...register('value', {
-                                              valueAsNumber: true,
-                                              onChange: (e) =>
-                                                mask(e, 'currency'),
-                                            })}
-                                          />
-                                          <Form.Control.Feedback
-                                            tooltip
-                                            type="invalid"
-                                          >
-                                            {t('enter_valid_value')}
-                                          </Form.Control.Feedback>
-                                        </InputGroup>
-                                      </Col>
-                                    )}
+                                    <Col sm="6">
+                                      <Form.Label>
+                                        <b className="text-nowrap">
+                                          {t('price')}{' '}
+                                          {plansCategory.includes('basic') &&
+                                          plansCategory.includes('package')
+                                            ? `${labels.basic}/${labels.package}`
+                                            : plansCategory.includes('basic')
+                                              ? labels.basic
+                                              : labels.package}
+                                        </b>
+                                      </Form.Label>
+                                      <InputGroup className="position-relative">
+                                        <InputGroup.Text>
+                                          {currency({ value: 0, symbol: true })}
+                                        </InputGroup.Text>
+                                        <Form.Control
+                                          required
+                                          {...register('value', {
+                                            valueAsNumber: true,
+                                            onChange: (e) =>
+                                              mask(e, 'currency'),
+                                          })}
+                                        />
+                                        <Form.Control.Feedback
+                                          tooltip
+                                          type="invalid"
+                                        >
+                                          {t('enter_valid_value')}
+                                        </Form.Control.Feedback>
+                                      </InputGroup>
+                                    </Col>
+                                  )}
                                   {plansCategory.includes('table') && (
                                     <Col sm="6">
                                       <Form.Label>
@@ -756,7 +759,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       <p
                                         className={
                                           (watch('description')?.length || 0) >=
-                                            500
+                                          500
                                             ? 'text-red-500'
                                             : ''
                                         }
@@ -799,56 +802,56 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                         <Card.Body>
                           {(plansCategory.includes('basic') ||
                             plansCategory.includes('package')) && (
-                              <Row>
-                                <Col sm>
-                                  <div className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
-                                    <Form.Label htmlFor="promotion">
-                                      <p>
-                                        <b>
-                                          {t('activate_promotion')}{' '}
-                                          {plansCategory.includes('basic') &&
-                                            plansCategory.includes('package')
-                                            ? `${labels.basic}/${labels.package}`
-                                            : plansCategory.includes('basic')
-                                              ? labels.basic
-                                              : labels.package}
+                            <Row>
+                              <Col sm>
+                                <div className="d-flex justify-content-end mt-4 flex-row-reverse gap-2">
+                                  <Form.Label htmlFor="promotion">
+                                    <p>
+                                      <b>
+                                        {t('activate_promotion')}{' '}
+                                        {plansCategory.includes('basic') &&
+                                        plansCategory.includes('package')
+                                          ? `${labels.basic}/${labels.package}`
+                                          : plansCategory.includes('basic')
+                                            ? labels.basic
+                                            : labels.package}
+                                      </b>
+                                    </p>
+                                    <p>
+                                      {t('button_enable_disable_promotion')}
+                                    </p>
+                                  </Form.Label>
+                                  <Form.Switch
+                                    id="promotion"
+                                    {...register('promoteStatus')}
+                                  />
+                                </div>
+                              </Col>
+                              <Col sm>
+                                <Card>
+                                  <Card.Body>
+                                    <p>
+                                      {t('original_price')}:{' '}
+                                      {currency({ value: watch('value') })}
+                                    </p>
+                                    <div className="d-flex align-items-baseline gap-3">
+                                      <Form.Label>
+                                        <b className="text-nowrap">
+                                          {t('promotional_price')}:
                                         </b>
-                                      </p>
-                                      <p>
-                                        {t('button_enable_disable_promotion')}
-                                      </p>
-                                    </Form.Label>
-                                    <Form.Switch
-                                      id="promotion"
-                                      {...register('promoteStatus')}
-                                    />
-                                  </div>
-                                </Col>
-                                <Col sm>
-                                  <Card>
-                                    <Card.Body>
-                                      <p>
-                                        {t('original_price')}:{' '}
-                                        {currency({ value: watch('value') })}
-                                      </p>
-                                      <div className="d-flex align-items-baseline gap-3">
-                                        <Form.Label>
-                                          <b className="text-nowrap">
-                                            {t('promotional_price')}:
-                                          </b>
-                                        </Form.Label>
-                                        <Form.Control
-                                          {...register('promoteValue', {
-                                            onChange: (e) => mask(e, 'currency'),
-                                          })}
-                                          className="w-75"
-                                        />
-                                      </div>
-                                    </Card.Body>
-                                  </Card>
-                                </Col>
-                              </Row>
-                            )}
+                                      </Form.Label>
+                                      <Form.Control
+                                        {...register('promoteValue', {
+                                          onChange: (e) => mask(e, 'currency'),
+                                        })}
+                                        className="w-75"
+                                      />
+                                    </div>
+                                  </Card.Body>
+                                </Card>
+                              </Col>
+                            </Row>
+                          )}
                           {plansCategory.includes('table') && (
                             <Row>
                               <Col sm>
@@ -975,8 +978,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           </form>
         </Modal.Body>
         <Modal.Footer
-          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${modalFooterOpened ? 'show' : 'hidden'
-            }-buttons-modal-footer`}
+          className={`${type === 'update' ? 'justify-content-between' : undefined} position-relative ${
+            modalFooterOpened ? 'show' : 'hidden'
+          }-buttons-modal-footer`}
         >
           <ArrowModalFooter />
           <div className="d-flex align-items-center w-100 gap-2">
