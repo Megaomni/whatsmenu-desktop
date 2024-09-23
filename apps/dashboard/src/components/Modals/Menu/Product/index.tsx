@@ -63,7 +63,7 @@ const ProductFormSchema = z.object({
     .string()
     .nullable()
     .transform((value) => value && value.split(',')[1]),
-  imageName: z.string().optional(),
+  imageName: z.string().optional().transform((value) => value && value.split('.')[0].trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(' ', '_')),
   bypass_amount: z.boolean().default(true),
   amount: z.number(),
   amount_alert: z.number(),
@@ -186,6 +186,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
               break
             case 'update':
               if (category.id === data.product.categoryId) {
+                console.log(product.id === data.product.id, category.id === data.product.categoryId)
                 category.products = category.products?.map((product) =>
                   product.id === data.product.id
                     ? new Product(data.product)
@@ -218,6 +219,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       })
     } finally {
       setShowSpinner(false)
+      reset()
       handleClose()
     }
   }
