@@ -148,8 +148,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const [ncmList, setNcmList] = useState([] as Ncm[])
 
-  // LABELS
-
   const labels = {
     basic:
       plansCategory.includes('basic') &&
