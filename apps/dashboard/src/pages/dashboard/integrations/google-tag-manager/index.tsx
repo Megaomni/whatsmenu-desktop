@@ -10,7 +10,7 @@ import { api } from 'src/lib/axios';
 import { z } from 'zod'
 
 const GoogleTagManagerFormSchema = z.object({
-  google: z.string().regex(/^GTM-[A-Z0-9]{6,7}$/, 'Id inválido'),
+  google: z.string().regex(/^GTM-[A-Z0-9]{6,20}$/, 'Id inválido'),
 })
 
 type GoogleTagManagerFormType = z.infer<typeof GoogleTagManagerFormSchema>
@@ -69,7 +69,7 @@ export default function GoogleTagManager() {
             <Form.Label className='d-flex flex-column gap-3 col-12 col-md-4'>
               <span className='fw-bold'>Google Tag Manager</span>
               <div className='position-relative'>
-                <Form.Control {...register('google')} onFocus={() => setIsInputSelected(true)} isInvalid={Boolean(errors?.google)} isValid={!Boolean(errors?.google) && isValid} maxLength={10} />
+                <Form.Control {...register('google')} onFocus={() => setIsInputSelected(true)} isInvalid={Boolean(errors?.google)} isValid={!Boolean(errors?.google) && isValid} />
                 <Form.Control.Feedback
                   tooltip
                   type="invalid"

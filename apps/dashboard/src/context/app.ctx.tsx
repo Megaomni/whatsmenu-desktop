@@ -60,8 +60,6 @@ import { WmFunctions, apiRoute, getMobileOS } from '../utils/wm-functions'
 import { CartsProvider } from './cart.ctx'
 import { PaymentMethodProvider } from './paymentMethod.ctx'
 import { TablesProvider } from './table.ctx'
-//
-//
 type ChangeType = {
   changeState?: boolean
   confirmSave?: boolean

@@ -244,11 +244,15 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
   createCardSubmitButtonText() {
     const { postalCode, addressNumber } = this.newCard.creditCardHolderInfo
     if (this.createCardButton) {
-      this.createCardButton.nativeElement.disabled = postalCode.length < 8 || !addressNumber
+      this.createCardButton.nativeElement.disabled = postalCode.length < 8 || !addressNumber || this.data.cartRequest.statusPayment === 'pending'
     }
     if (postalCode.length < 8) return 'Informe o CEP'
     if (!addressNumber) return 'Informe o número'
-    return 'Salvar cartão e Finalizar Pagamento'
+    if (this.data.cartRequest.statusPayment === 'pending') {
+      return 'Pedido Aprovado!'
+    } else {
+      return 'Salvar cartão e Finalizar Pagamento'
+    }
   }
 
   // Visto: Alterna Local e Online
@@ -458,7 +462,7 @@ export class CartPaymentComponent implements OnInit, AfterViewChecked {
     if (this.data.customer.name) {
       message += `*${this.translate.text().my_name_is} ${this.data.customer.name}, ${this.translate.text().contact} ${this.data.customer.whatsapp}*\n\n`
     }
-    message += `*${this.translate.text().order_coder}: wm${this.data.cartRequest.code}${'-' + this.data.cartRequest.type}*\n\n`
+    message += `*${this.translate.text().order_code}: wm${this.data.cartRequest.code}${'-' + this.data.cartRequest.type}*\n\n`
 
     if (this.data.cartRequest.type === 'P') {
       const formattedDate = DateTime.fromFormat(this.data.cartRequest.packageDate.substring(0, 19), 'yyyy-MM-dd HH:mm:ss')

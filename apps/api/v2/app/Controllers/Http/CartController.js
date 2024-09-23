@@ -165,6 +165,9 @@ class CartController {
               nestedBuilder.whereNull('status')
             })
         })
+        .where((whereBuilder) => {
+          whereBuilder.where('statusPayment', 'offline').orWhere('statusPayment', 'paid')
+        })
         .whereBetween('carts.created_at', [startDate, endDate])
         .groupBy('name', 'pizzaId', 'productId', 'profileId', Database.raw('CAST(details->"$.value" AS DECIMAL(10,2))'))
         .orderBy('quantity', 'desc')
@@ -348,7 +351,7 @@ class CartController {
           message: 'Desculpe nos o transtorno, mas esta loja no momento se encontra fechada.',
         })
       }
-      
+
       let client
       if (data.clientId) {
         client = await Client.query().where('id', data.clientId).where('profileId', profile.id).first()
@@ -390,6 +393,36 @@ class CartController {
         if (!profile.options.package.shippingLocal.active && !data.addressId && data.type != 'T') {
           return response.status(401).json({ message: 'A Loja não aceita pedidos para retirada' })
         }
+      }
+
+      const integrations = profile.options.integrations
+      if (integrations && integrations.grovenfe) {
+        try {
+          const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
+          if (groveNfePayments.some((formpayment) => formpayment.type === data.formsPayment[0].payment)) {
+            try {
+              const companieId = integrations.grovenfe.companie_id
+              const { data } = await axios.post(
+                `${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companieId}`,
+                {
+                  formPayment: data.formsPayment[0],
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
+                  },
+                }
+              )
+            } catch (error) {
+              console.error('Erro ao criar a nota fiscal:', error)
+              throw error
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao verificar as integrações:', error)
+          throw error
+        }
+        return
       }
 
       const address = await ClientAddress.find(data.addressId)
@@ -625,7 +658,7 @@ class CartController {
           const itens_cart = []
           const itens_cartPizza = []
 
-          for (const {ncm_code, ...item} of data.itens) {
+          for (const { ncm_code, ...item } of data.itens) {
             if (item.type === 'default') {
               itens_cart.push(item)
             }
@@ -768,40 +801,40 @@ class CartController {
             }
 
             const integrations = profile.options.integrations
-      if (integrations && integrations.grovenfe) {
-        try {
-          const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
-          if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
-            try {
-              const companieId = integrations.grovenfe.companie_id
-              const { company } = axios.get(`${Env.get('GROVENFE_API_URL')}/v1/companies/${companieId}`, {
-                headers: {
-                  Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
-                },
-              })
+            if (integrations && integrations.grovenfe) {
+              try {
+                const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
+                if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
+                  try {
+                    const companieId = integrations.grovenfe.companie_id
+                    const { company } = axios.get(`${Env.get('GROVENFE_API_URL')}/v1/companies/${companieId}`, {
+                      headers: {
+                        Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
+                      },
+                    })
 
-              const { focus_note } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, {cart, company})
+                    const { focus_note } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
 
-              const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/v1/fiscalNotes/create/${companieId}`, {
-                external_id: String(cart.id),
-                nfce: focus_note,
-              }, {
-                headers: {
-                  Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
-                },
+                    const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/v1/fiscalNotes/create/${companieId}`, {
+                      external_id: String(cart.id),
+                      nfce: focus_note,
+                    }, {
+                      headers: {
+                        Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
+                      },
+                    }
+                    )
+                  } catch (error) {
+                    console.error('Erro ao criar a nota fiscal:', error);
+                    throw error;
+                  }
+                }
+              } catch (error) {
+                console.error('Erro ao verificar as integrações:', error);
+                throw error;
               }
-            )
-            } catch (error) {
-              console.error('Erro ao criar a nota fiscal:', error);
-              throw error;
+              return
             }
-          }
-        } catch (error) {
-          console.error('Erro ao verificar as integrações:', error);
-          throw error;
-        }
-        return
-      }
 
             console.log('Transação finalizada com sucesso')
             return response.json({ cart })
@@ -1025,8 +1058,12 @@ class CartController {
         await cart.save()
         await CartController.generateVouchers(cart)
         const requestTopic = Ws.getChannel('request:*').topic(`request:${profile.slug}`)
+        const printTopic = Ws.getChannel('print:*').topic(`print:${profile.slug}`)
         if (requestTopic) {
           requestTopic.broadcast(`request:${profile.slug}`, [{ ...cart.toJSON() }])
+        }
+        if (printTopic) {
+          printTopic.broadcast(`print:${profile.slug}`, [{ ...cart.toJSON() }])
         }
       }
       return cart.toJSON()
