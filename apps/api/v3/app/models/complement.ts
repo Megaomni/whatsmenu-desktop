@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import { afterSave, BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
 import { ComplementItem } from '#types/complement'
 import Product from './product.js'
 import type { ManyToMany } from '@adonisjs/lucid/types/relations'
@@ -48,4 +48,9 @@ export default class Complement extends BaseModel {
     pivotRelatedForeignKey: 'productId',
   })
   declare products: ManyToMany<typeof Product>
+
+  @afterSave()
+  static async updateProducts(complement: Complement) {
+    console.log(`Salvou complemento: ${complement.id}`, complement)
+  }
 }

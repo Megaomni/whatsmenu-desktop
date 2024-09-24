@@ -157,6 +157,7 @@ export class ProductService {
         })
         .save()
 
+      console.log('Salvou antes da imagem')
       if (data.image) {
         const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${data.imageName}`
         const buffer = Buffer.from(data.image, 'base64')
@@ -169,8 +170,11 @@ export class ProductService {
       }
 
       await product.save()
+      console.log('Salvou depois da imagem')
 
       await product.load('complements')
+      console.log('carregando complementos')
+
       const existingComplements = product.complements.map((complement) => complement.id)
 
       let [newComplements, vinculatedComplements] = complements.reduce<
@@ -196,6 +200,7 @@ export class ProductService {
         )
         if (complementsToRemove.length) {
           await product.related('complements').detach(complementsToRemove)
+          console.log('removendo complementos')
         }
         // Anexar os novos complementos reutilizados
 
@@ -203,6 +208,7 @@ export class ProductService {
           const complementToUpdate = await Complement.find(complement.id)
           if (complementToUpdate) {
             await complementToUpdate.merge(complement).save()
+            console.log(`atualizando complemento: ${complement.id}`)
           }
         }
 
@@ -220,14 +226,19 @@ export class ProductService {
               })) || [],
           }))
         )
+
+        console.log('criando complementos novos')
       }
 
       await product.load('complements')
+      console.log('carregando complementos novamente')
 
       const newProduct = await Product.query()
         .where('id', productId)
         .preload('complements')
         .firstOrFail()
+
+      console.log('carregando produto complementos')
 
       console.log(newProduct.toJSON())
 
