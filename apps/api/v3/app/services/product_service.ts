@@ -242,7 +242,7 @@ export class ProductService {
 
       console.log('carregando produto complementos')
 
-      return { product: { ...newProduct, complements: compls } }
+      return { product: { ...newProduct.toJSON(), complements: compls } }
     } catch (error) {
       throw error
     }
