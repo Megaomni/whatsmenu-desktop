@@ -137,23 +137,25 @@ export class ProductService {
     try {
       const product = await Product.findOrFail(productId)
 
-      product.merge({
-        categoryId: data.categoryId,
-        name: data.name,
-        description: data.description,
-        order: data.order,
-        value: data.value,
-        valueTable: data.valueTable,
-        promoteStatus: data.promoteStatus,
-        promoteValue: data.promoteValue,
-        promoteStatusTable: data.promoteStatusTable,
-        promoteValueTable: data.promoteValueTable,
-        disponibility: data.disponibility,
-        ncm_code: data.ncm_code,
-        amount: data.amount,
-        amount_alert: data.amount_alert,
-        bypass_amount: data.bypass_amount,
-      })
+      await product
+        .merge({
+          categoryId: data.categoryId,
+          name: data.name,
+          description: data.description,
+          order: data.order,
+          value: data.value,
+          valueTable: data.valueTable,
+          promoteStatus: data.promoteStatus,
+          promoteValue: data.promoteValue,
+          promoteStatusTable: data.promoteStatusTable,
+          promoteValueTable: data.promoteValueTable,
+          disponibility: data.disponibility,
+          ncm_code: data.ncm_code,
+          amount: data.amount,
+          amount_alert: data.amount_alert,
+          bypass_amount: data.bypass_amount,
+        })
+        .save()
 
       if (data.image) {
         const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${data.imageName}`
@@ -200,8 +202,7 @@ export class ProductService {
         for await (const complement of vinculatedComplements) {
           const complementToUpdate = await Complement.find(complement.id)
           if (complementToUpdate) {
-            complementToUpdate.merge(complement)
-            await complementToUpdate.save()
+            await complementToUpdate.merge(complement).save()
           }
         }
 
@@ -227,8 +228,6 @@ export class ProductService {
         .where('id', productId)
         .preload('complements')
         .firstOrFail()
-
-      console.log(`${product.name}:`, product.complements)
 
       return { product: newProduct }
     } catch (error) {
