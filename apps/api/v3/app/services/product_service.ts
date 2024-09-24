@@ -227,7 +227,7 @@ export class ProductService {
 
       console.log(`${product.name}:`, product.complements)
 
-      return { newProduct }
+      return { product: newProduct }
     } catch (error) {
       throw error
     }
