@@ -199,7 +199,7 @@ export class ProductService {
         }
         // Anexar os novos complementos reutilizados
 
-        for await (const complement of vinculatedComplements) {
+        for (const complement of vinculatedComplements) {
           const complementToUpdate = await Complement.find(complement.id)
           if (complementToUpdate) {
             await complementToUpdate.merge(complement).save()
