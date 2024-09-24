@@ -63,10 +63,10 @@ export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
                   <p
                     id={`itemDescription-${item.code}`}
                     className={
-                      '' // (watch(`complements.${complementIndex}.itens.${itemIndex}.description`)?.length || 0) >= 100 ? 'text-red-500' : ''
+                      (watch(`complements.${complementIndex}.itens.${itemIndex}.description`)?.length || 0) >= 100 ? 'text-red-500' : ''
                     }
                   >
-                    {/* {watch(`complements.${complementIndex}.itens.${itemIndex}.description`)?.length}/100 {t('characters')} */}
+                    {watch(`complements.${complementIndex}.itens.${itemIndex}.description`)?.length}/100 {t('characters')}
                   </p>
                 </div>
               </Col>
