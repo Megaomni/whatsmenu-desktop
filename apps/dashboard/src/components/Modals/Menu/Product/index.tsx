@@ -106,7 +106,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     setCategories,
     setProduct
   } = useContext(MenuContext)
-//
+
   const form = useForm<ProductFormData>({
     resolver: zodResolver(ProductFormSchema),
     defaultValues: {
