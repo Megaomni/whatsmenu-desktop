@@ -223,7 +223,10 @@ export class ProductService {
 
       await product.load('complements')
 
-      const newProduct = await Product.query().where('id', productId).preload('complements').first()
+      const newProduct = await Product.query()
+        .where('id', productId)
+        .preload('complements')
+        .firstOrFail()
 
       console.log(`${product.name}:`, product.complements)
 
