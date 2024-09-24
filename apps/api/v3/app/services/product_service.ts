@@ -223,9 +223,11 @@ export class ProductService {
 
       await product.load('complements')
 
+      const newProduct = await Product.query().where('id', productId).preload('complements').first()
+
       console.log(`${product.name}:`, product.complements)
 
-      return { product }
+      return { newProduct }
     } catch (error) {
       throw error
     }
