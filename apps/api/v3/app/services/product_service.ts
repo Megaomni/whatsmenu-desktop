@@ -206,7 +206,7 @@ export class ProductService {
           }
         }
 
-        await product.related('complements').sync(complementIds)
+        // await product.related('complements').sync(complementIds)
       }
 
       if (newComplements.length) {
