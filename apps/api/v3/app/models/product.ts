@@ -89,7 +89,9 @@ export default class Product extends BaseModel implements InventoryType {
   declare category: BelongsTo<typeof Category>
 
   @manyToMany(() => Complement, {
+    localKey: 'id',
     pivotTable: 'product_complements',
+    relatedKey: 'id',
     pivotForeignKey: 'productId',
     pivotRelatedForeignKey: 'complementId',
   })
