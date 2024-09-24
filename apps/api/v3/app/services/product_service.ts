@@ -229,6 +229,8 @@ export class ProductService {
         .preload('complements')
         .firstOrFail()
 
+      console.log(newProduct.toJSON())
+
       return { product: newProduct }
     } catch (error) {
       throw error
