@@ -245,7 +245,7 @@ export class ProductService {
 
       console.log('carregando produto complementos')
 
-      return { product: { product: newProduct } }
+      return { product: { ...newProduct } }
     } catch (error) {
       throw error
     }
