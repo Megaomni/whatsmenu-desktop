@@ -858,10 +858,10 @@ export function OldComponentComplement({
                         <p
                           id={`itemDescription-${item.code}`}
                           className={
-                            item.description.length >= 100 ? 'text-red-500' : ''
+                            item?.description?.length >= 100 ? 'text-red-500' : ''
                           }
                         >
-                          {item.description.length}/100 {t('characters')}
+                          {item?.description?.length}/100 {t('characters')}
                         </p>
                       </div>
                     </Col>
