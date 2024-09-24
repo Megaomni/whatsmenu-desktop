@@ -37,7 +37,7 @@ export interface ProductType {
   bypass_amount?: boolean
   order: number
   name: string
-  description: string | null
+  description: string
   value: number
   valueTable: number
   promoteValue: number
@@ -61,7 +61,7 @@ export default class Product {
   bypass_amount?: boolean
   order: number
   name: string
-  description: string | null
+  description: string
   value: number
   valueTable: number
   promoteValue: number
