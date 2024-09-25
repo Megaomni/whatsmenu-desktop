@@ -20,6 +20,7 @@ import { DateTime } from "luxon";
 import { VoucherNotification } from "../@types/store";
 import { vouchersToNotifyQueue } from "../lib/queue";
 import { botMessages } from "../utils/bot-messages";
+import { formatDDIBotMessage } from "../utils/ddi-bot-message";
 
 export class WhatsApp {
   messagesQueue: Array<{
@@ -205,26 +206,8 @@ export class WhatsApp {
       }
       let contact: WAWebJS.ContactId | null = null;
       for await (const voucher of list) {
-        switch (language) {
-          case "pt-BR":
-            contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
-            break;
-          case "en-US":
-            contact = this.checkNinthDigit(`1${voucher.client.whatsapp}`);
-            break;
-          case "pt-PT":
-            contact = this.checkNinthDigit(`351${voucher.client.whatsapp}`);
-            break;
-          case "fr-CH":
-            contact = this.checkNinthDigit(`41${voucher.client.whatsapp}`);
-            break;
-          case "ar-AE":
-            contact = this.checkNinthDigit(`971${voucher.client.whatsapp}`);
-            break;
-          default:
-            contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
-            break;
-        }
+        const { ddi } = formatDDIBotMessage({ language });
+        contact = this.checkNinthDigit(`${ddi}${voucher.client.whatsapp}`);
         if (contact) {
           await this.bot.sendMessage(
             contact._serialized,
