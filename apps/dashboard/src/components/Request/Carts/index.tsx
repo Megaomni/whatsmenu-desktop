@@ -104,7 +104,11 @@ export function Carts(data: any) {
     }
     try {
       const nfce = convertToFocusNfce({ cart, groveNfeCompany })
-      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id })
+      const { data } = await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id })
+      cart.controls.grovenfe = {
+        fiscal_note: data.fiscal_note
+      }
+      setCart(new Cart(cart))
     } catch (error) {
       throw error
     }
