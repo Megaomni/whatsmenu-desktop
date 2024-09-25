@@ -221,6 +221,9 @@ export class WhatsApp {
           case "ar-AE":
             contact = this.checkNinthDigit(`971${voucher.client.whatsapp}`);
             break;
+          default:
+            contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
+            break;
         }
         if (contact) {
           await this.bot.sendMessage(
@@ -269,7 +272,7 @@ export class WhatsApp {
       ) {
         contact = contact.slice(0, 4) + contact.slice(5);
       }
-    } 
+    }
 
     const contactId: WAWebJS.ContactId = {
       user: contact,
