@@ -249,9 +249,7 @@ export class WhatsApp {
       ) {
         contact = contact.slice(0, 4) + contact.slice(5);
       }
-    } else {
-      throw new Error("Invalid contact number");
-    }
+    } 
 
     const contactId: WAWebJS.ContactId = {
       user: contact,
