@@ -36,14 +36,14 @@ export default class GroveNfeService {
   /**
    * Adiciona uma nota fiscal ao carrinho.
    *
-   * @param {string} externalId - ID externo do carrinho.
+   * @param {string} external_id - ID externo do carrinho.
    * @param {object} fiscalNote - Objeto da nota fiscal.
    *
    * @returns {Promise<void>}
    */
   async addFiscalNoteToCart({ fiscal_note }: { fiscal_note: any }): Promise<boolean> {
     try {
-      const cart = await Cart.find(fiscal_note.externalId)
+      const cart = await Cart.find(fiscal_note.external_id)
       if (cart) {
         cart.controls.grovenfe = { fiscal_note }
         await cart.save()
@@ -58,7 +58,7 @@ export default class GroveNfeService {
 
   async deleteFiscalNoteFromCart({ fiscal_note }: { fiscal_note: any }): Promise<void> {
     try {
-      const cart = await Cart.find(fiscal_note.externalId)
+      const cart = await Cart.find(fiscal_note.external_id)
       if (cart && cart.controls?.grovenfe?.fiscal_note) {
         cart.controls.grovenfe.fiscal_note.deleted_at = DateTime.local().toISO()
         await cart.save()

@@ -29,7 +29,6 @@ router.get('/swagger', async () => {
   return AutoSwagger.default.docs(router.toJSON(), swagger)
 })
 
-//
 // Renders Swagger-UI and passes YAML-output of /swagger
 router.get('/docs', async () => {
   return AutoSwagger.default.ui('/swagger', swagger)
