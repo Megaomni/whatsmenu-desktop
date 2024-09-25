@@ -416,7 +416,6 @@ class CartController {
             console.error('Erro ao criar a nota fiscal:', error)
           }
         }
-        return
       }
 
       const address = await ClientAddress.find(data.addressId)
