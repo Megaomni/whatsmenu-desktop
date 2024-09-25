@@ -174,6 +174,7 @@ export class WhatsApp {
         .forEach((voucher) => deleteVoucherToNotify(voucher.id));
     };
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
+      const language = profile.options.locale.language;
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
@@ -202,12 +203,31 @@ export class WhatsApp {
         default:
           break;
       }
+      let contact: WAWebJS.ContactId | null = null;
       for await (const voucher of list) {
-        const contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
-        await this.bot.sendMessage(
-          contact._serialized,
-          botMessages.cashback[messageType]({ voucher, profile })
-        );
+        switch (language) {
+          case "pt-BR":
+            contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
+            break;
+          case "en-US":
+            contact = this.checkNinthDigit(`1${voucher.client.whatsapp}`);
+            break;
+          case "pt-PT":
+            contact = this.checkNinthDigit(`351${voucher.client.whatsapp}`);
+            break;
+          case "fr-CH":
+            contact = this.checkNinthDigit(`41${voucher.client.whatsapp}`);
+            break;
+          case "ar-AE":
+            contact = this.checkNinthDigit(`971${voucher.client.whatsapp}`);
+            break;
+        }
+        if (contact) {
+          await this.bot.sendMessage(
+            contact._serialized,
+            botMessages.cashback[messageType]({ voucher, profile })
+          );
+        }
         switch (messageType) {
           case "afterPurchase":
             updateVoucherToNotify(voucher.id, {
