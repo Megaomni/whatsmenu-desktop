@@ -21,7 +21,6 @@ export default class GroveNfesController {
         case 'FISCAL_NOTE_UPDATED':
         case 'FISCAL_NOTE_CREATED':
           console.log('GROVE NFE WEBHOOK', data)
-
           fiscal_note = data.fiscal_note
           await this.groveNfeService.addFiscalNoteToCart({ fiscal_note })
           break
