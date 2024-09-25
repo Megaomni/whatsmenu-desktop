@@ -1,5 +1,6 @@
 import Cart from '#models/cart'
 import Profile from '#models/profile'
+import { DateTime } from 'luxon'
 
 export default class GroveNfeService {
   constructor() {}
@@ -44,7 +45,7 @@ export default class GroveNfeService {
     try {
       const cart = await Cart.find(fiscal_note.externalId)
       if (cart) {
-        cart.controls = { grovenfe: { fiscal_note } }
+        cart.controls.grovenfe = { fiscal_note }
         await cart.save()
         return true
       } else {
@@ -59,7 +60,7 @@ export default class GroveNfeService {
     try {
       const cart = await Cart.find(fiscal_note.externalId)
       if (cart && cart.controls?.grovenfe?.fiscal_note) {
-        cart.controls.grovenfe.fiscal_note = null
+        cart.controls.grovenfe.fiscal_note.deleted_at = DateTime.local().toISO()
         await cart.save()
       }
     } catch (error) {
