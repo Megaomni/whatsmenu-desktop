@@ -89,7 +89,7 @@ export default class Cart extends BaseModel {
   @column({})
   declare total: number
 
-  @column({ consume: jsonSerialize })
+  @column({ consume: jsonSerialize, prepare: (value: string) => JSON.stringify(value) })
   declare controls: any
 
   @column.dateTime({ autoCreate: false, columnName: 'package_date', serializeAs: 'package_date' })
