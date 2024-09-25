@@ -433,8 +433,8 @@ export function Carts(data: any) {
                               </td>
                               {profile.options.integrations?.grovenfe && (
                                 <td>
-                                  {cart.controls?.grovenfe?.fiscal_note ? (
-                                    <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
+                                  {cart.controls?.grovenfe?.fiscal_note.aditionalInfo.qrcode_url ? (
+                                    <Link href={cart.controls?.grovenfe?.fiscal_note.aditionalInfo.qrcode_url} target='_blank'>
                                       <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                     </Link>
                                   ) : (
