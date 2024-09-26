@@ -820,7 +820,6 @@ class CartController {
                 console.error('Erro ao verificar as integrações:', error);
                 throw error;
               }
-              return
             }
 
             console.log('Transação finalizada com sucesso')
