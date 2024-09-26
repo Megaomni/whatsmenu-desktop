@@ -8,6 +8,7 @@ const moment = use('moment')
 
 const User = use('App/Models/User')
 const Product = use('App/Models/Product')
+const Profile = use('App/Models/Profile')
 const Category = use('App/Models/Category')
 const Complement = use('App/Models/Complement')
 const ProductComplement = use('App/Models/ProductComplement')
@@ -953,6 +954,20 @@ class ProductController {
         success: false,
         error: error,
       })
+    }
+  }
+
+  async identifyLowInventory({ params, response }) {
+    try {
+      const profile = await Profile.find(params.profileId)
+      let inventory = null
+      if (profile.options.inventoryControl) {
+        inventory = await InventoryProvider.identifyLowInventory(profile.id)
+      }
+      return response.json({ inventory })
+    } catch (error) {
+      console.error(error)
+      throw error
     }
   }
 

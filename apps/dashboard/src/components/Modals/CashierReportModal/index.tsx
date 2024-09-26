@@ -35,25 +35,28 @@ export const CashierReportModal = ({
             </tr>
           </thead>
           <tbody>
-            {profile.formsPayment.map((formPayment, index) => {
+            {profile.formsPayment.map((formsPayment, index) => {
               const closedValueSystemTotal =
                 cashier.closedValues_system?.reduce(
                   (total, closedSystemValue) =>
                     (total +=
-                      closedSystemValue.payment === formPayment.payment
+                      closedSystemValue.payment === formsPayment.payment
                         ? closedSystemValue.total
                         : 0),
                   0
                 ) || 0
               const closedValueUserTotal =
-                cashier.closedValues_user?.find(
-                  (cvs) =>
-                    cvs.payment === formPayment.label ||
-                    cvs.payment === formPayment.payment
-                )?.total ?? 0
+                cashier.closedValues_user?.reduce(
+                  (value, closedUserValue) =>
+                    (value +=
+                      closedUserValue.payment === formsPayment.payment
+                        ? closedUserValue.value
+                        : 0),
+                  0
+                ) || 0
               return (
                 <tr key={index}>
-                  <td>{formPayment.label}</td>
+                  <td>{formsPayment.label}</td>
                   <td>{currency({ value: closedValueUserTotal })}</td>
                   <td>{currency({ value: closedValueSystemTotal })}</td>
                 </tr>

@@ -204,12 +204,6 @@ export class StatusComponent implements OnInit {
           },
           5 * 1000 * 60
         )
-        setTimeout(
-          () => {
-            this.pixRegeneration = true
-          },
-          5 * 1000 * 60
-        )
         if (type === 'profile') {
           if (data.table) {
             this.context.getActiveTable().opened.formsPayment = [...data.table.formsPayment]

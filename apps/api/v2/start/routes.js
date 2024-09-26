@@ -485,6 +485,8 @@ Route.group(() => {
   Route.get('/number-site', 'ApiController.queueSiteNumber').as('ApiGetNumber')
 
   Route.post('/bot/whatsapp', 'ProfileController.botConfig')
+
+  Route.get('/identifyLowInventory/:profileId', 'ProductController.identifyLowInventory')
 }).prefix('api/v2')
 
 Route.group(() => {

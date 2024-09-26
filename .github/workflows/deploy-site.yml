@@ -5,7 +5,6 @@ on:
     branches:
       - beta
       - main
-
     paths:
       - "apps/site/**"
       - ".github/workflows/deploy-site.yml"

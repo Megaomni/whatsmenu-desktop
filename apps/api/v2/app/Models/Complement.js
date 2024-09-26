@@ -14,6 +14,7 @@ class Complement extends Model {
         complement.itens.forEach((item, index) => {
           item.name = WmProvider.encryptEmoji(item.name)
           item.description = WmProvider.encryptEmoji(item.description)
+          item.description = item.description ? item.description : ''
           if (!item) {
             complement.itens.splice(index, 1)
           } else {
@@ -45,6 +46,7 @@ class Complement extends Model {
       complement.itens.forEach((item) => {
         item.name = WmProvider.decryptEmoji(item.name)
         item.description = WmProvider.decryptEmoji(item.description)
+        item.description = item.description ? item.description : ''
       })
     })
 
@@ -53,6 +55,7 @@ class Complement extends Model {
       complement.itens.forEach((item) => {
         item.name = WmProvider.decryptEmoji(item.name)
         item.description = WmProvider.decryptEmoji(item.description)
+        item.description = item.description ? item.description : ''
         if (item.bypass_amount === undefined) {
           item.bypass_amount = true
         }
@@ -68,6 +71,7 @@ class Complement extends Model {
         complement.itens.forEach((item) => {
           item.name = WmProvider.decryptEmoji(item.name)
           item.description = WmProvider.decryptEmoji(item.description)
+          item.description = item.description ? item.description : ''
           if (item.bypass_amount === undefined) {
             item.bypass_amount = true
           }
@@ -84,6 +88,7 @@ class Complement extends Model {
         complement.itens.forEach((item) => {
           item.name = WmProvider.decryptEmoji(item.name)
           item.description = WmProvider.decryptEmoji(item.description)
+          item.description = item.description ? item.description : ''
           if (item.bypass_amount === undefined) {
             item.bypass_amount = true
           }

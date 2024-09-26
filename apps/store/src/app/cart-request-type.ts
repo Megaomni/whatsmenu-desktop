@@ -5,6 +5,7 @@ import { CartFormPaymentType } from './formpayment-type'
 import { PizzaFlavorType, PizzaImplementationType } from './pizza-product-type'
 import { ComplementType } from './product-type'
 import { AddonFormPaymentType } from './formpayment-type'
+import { FiscalNote } from './fiscal-note-type'
 
 export interface CartRequestType {
   code?: string
@@ -25,6 +26,15 @@ export interface CartRequestType {
   cashierId: number | null
   obs: string | null
   type: 'D' | 'T' | 'P'
+  controls?: {
+    userAgent: string
+    whatsApp: {
+      alreadySent: boolean
+    }
+    grovenfe: {
+      fiscal_note: FiscalNote
+    }
+  }
   taxDelivery: number
   timeDelivery?: string
   formsPayment: CartFormPaymentType[]
@@ -42,6 +52,7 @@ export interface CartRequestType {
 export interface CartItem {
   pizzaId?: number
   productId?: number
+  ncm_code?: string
   quantity: number
   obs: string
   complements?: ComplementType[]

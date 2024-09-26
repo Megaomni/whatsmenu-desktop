@@ -15,7 +15,7 @@ import PizzaProduct, {
   PizzaImplementationType,
   PizzaSizeType,
 } from '../types/pizza-product'
-import Product, { ProductType } from '../types/product'
+import Product from '../types/product'
 import { ProductModal } from '../components/Modals/Menu/Product'
 import { PizzaSize } from '../components/Modals/Menu/PizzaSize'
 import { PizzaImplementation } from '../components/Modals/Menu/PizzaImplementation'
@@ -26,8 +26,8 @@ import Category, { CategoryType } from '../types/category'
 import { CategoryModal } from '../components/Modals/Menu/Category'
 import { PizzaComplement } from '../components/Modals/Menu/PizzaComplement'
 import { CartsContext } from './cart.ctx'
-import { useRouter } from 'next/router'
 import { apiRoute } from '@utils/wm-functions'
+import axios from 'axios'
 
 interface IMenu {
   categories: Category[]
@@ -55,6 +55,7 @@ interface MenuContextData {
   setImplementation: Dispatch<SetStateAction<PizzaImplementationType>>
   setFlavor: Dispatch<SetStateAction<PizzaFlavorType>>
   setFocusId: Dispatch<SetStateAction<number | undefined>>
+  componentIsLinked: ({ complementId }: { complementId?: number }) => boolean
   handleMenuModal(
     show: boolean,
     modal:
@@ -121,6 +122,13 @@ export function MenuProvider({
     }
   }, [session])
 
+  const componentIsLinked = ({ complementId }: { complementId?: number }) => {
+    if (!complementId) {
+      return false
+    }
+    return products.filter((p) => p.id !== product.id).flatMap((product) => product.complements).some(c => c.pivot?.complementId === complementId)
+  }
+
   useEffect(() => {
     setProducts(categories.flatMap((cat) => cat.getAllProducts()))
     setProduct((state) => {
@@ -154,7 +162,9 @@ export function MenuProvider({
     return () => {
       cartEvents.removeAllListeners()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
 
   const handleMenuModal = (
     show: boolean,
@@ -199,6 +209,7 @@ export function MenuProvider({
         typeModal,
         focusId,
         setFocusId,
+        componentIsLinked
       }}
     >
       {children}

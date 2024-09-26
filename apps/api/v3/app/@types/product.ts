@@ -1,7 +1,10 @@
-import { DisponibilityType } from './inventory.js'
 import { WeekType } from './week.js'
 
 export type ProductDisponibility = {
-  store: DisponibilityType
+  store: {
+    delivery: boolean
+    table: boolean
+    package: boolean
+  }
   week: WeekType
 }

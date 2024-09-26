@@ -47,6 +47,7 @@ import { OverlaySpinner } from '../../../../OverlaySpinner'
 import { IoInformationCircle } from 'react-icons/io5'
 import { BsArrowLeftSquare } from 'react-icons/bs'
 import { useTranslation } from 'react-i18next'
+import { OldComponentComplement } from '../../Complements/old'
 
 type MassiveProps = {
   show: boolean
@@ -576,27 +577,27 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                                 <Row className="mt-2">
                                   {(plansCategory.includes('basic') ||
                                     plansCategory.includes('package')) && (
-                                    <Col
-                                      sm={
-                                        plansCategory.includes('table')
-                                          ? '6'
-                                          : '12'
-                                      }
-                                    >
-                                      <FormGroup>
-                                        <Form.Label>
-                                          {t('price')} Delivery
-                                        </Form.Label>
-                                        <Form.Control
-                                          defaultValue={prod.value}
-                                          onChange={(e) => {
-                                            mask(e, 'currency')
-                                            prod.value = Number(e.target.value)
-                                          }}
-                                        />
-                                      </FormGroup>
-                                    </Col>
-                                  )}
+                                      <Col
+                                        sm={
+                                          plansCategory.includes('table')
+                                            ? '6'
+                                            : '12'
+                                        }
+                                      >
+                                        <FormGroup>
+                                          <Form.Label>
+                                            {t('price')} Delivery
+                                          </Form.Label>
+                                          <Form.Control
+                                            defaultValue={prod.value}
+                                            onChange={(e) => {
+                                              mask(e, 'currency')
+                                              prod.value = Number(e.target.value)
+                                            }}
+                                          />
+                                        </FormGroup>
+                                      </Col>
+                                    )}
                                   {plansCategory.includes('table') && (
                                     <Col
                                       sm={
@@ -719,7 +720,7 @@ export function CreateMassiveProducts({ category, ...props }: MassiveProps) {
                   ))}
               </form>
               {step === 2 && (
-                <ComponentComplement
+                <OldComponentComplement
                   complements={complements}
                   recicled={recicledComplements}
                   typeModal="massive"
