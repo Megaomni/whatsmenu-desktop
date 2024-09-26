@@ -49,6 +49,7 @@ export interface ProductType {
   disponibility: DisponibilityType
   quantity?: number
   category?: Category | null
+  ncm_code?: string
 }
 
 /** Classe dos produtos usada para criar instâncias e manter a referência dos produtos nas chamadas API, agilizando o processo de atualização dos estados (REACT). */
@@ -73,6 +74,7 @@ export default class Product {
   disponibility: DisponibilityType
   quantity?: number
   category?: Category | null
+  ncm_code?: string
   private basicRoute: string = '/dashboard/menu/product'
 
   constructor(
@@ -96,6 +98,7 @@ export default class Product {
       complements,
       disponibility,
       quantity,
+      ncm_code,
     }: ProductType,
     category?: Category | null
   ) {
@@ -123,6 +126,7 @@ export default class Product {
     this.disponibility = disponibility
     this.quantity = quantity
     this.category = category
+    this.ncm_code = ncm_code
   }
 
   // ----- COMPLEMENTS FUNCTIONS ----
