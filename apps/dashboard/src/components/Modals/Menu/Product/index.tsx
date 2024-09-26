@@ -79,7 +79,7 @@ const ProductFormSchema = z.object({
   bypass_amount: z.boolean().default(true),
   amount: z.number(),
   amount_alert: z.number(),
-  ncm_code: z.string().optional(),
+  ncm_code: z.string().nullable(),
   disponibility: z.object({
     week: z.any(),
     store: z.object({
@@ -117,6 +117,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     typeModal: type,
     setCategories,
     setProduct,
+    updateProduct,
   } = useContext(MenuContext)
 
   const form = useForm<ProductFormData>({
@@ -191,28 +192,29 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         '/dashboard/products',
         body
       )
-      setCategories((state) => {
-        return state.map((category) => {
-          switch (type) {
-            case 'create':
-              if (category.id === data.product.categoryId) {
-                category.products?.push(new Product(data.product))
-              }
-              break
-            case 'update':
-              if (category.id === data.product.categoryId) {
-                category.products = category.products?.map((product) =>
-                  product.id === body.id
-                    ? new Product({ ...product, ...body } as ProductType)
-                    : product
-                )
-              }
-              break
-          }
-          return category
-        })
-      })
-      setProduct(new Product({ ...product, ...body } as ProductType))
+      updateProduct({ newProduct: data.product })
+      // setCategories((state) => {
+      //   return state.map((category) => {
+      //     switch (type) {
+      //       case 'create':
+      //         if (category.id === data.product.categoryId) {
+      //           category.products?.push(new Product(data.product))
+      //         }
+      //         break
+      //       case 'update':
+      //         if (category.id === data.product.categoryId) {
+      //           category.products = category.products?.map((product) =>
+      //             product.id === body.id
+      //               ? new Product({ ...product, ...body } as ProductType)
+      //               : product
+      //           )
+      //         }
+      //         break
+      //     }
+      //     return category
+      //   })
+      // })
+      // setProduct(new Product({ ...product, ...body } as ProductType))
 
       setLowInventoryItems(data.inventory)
       handleShowToast({
