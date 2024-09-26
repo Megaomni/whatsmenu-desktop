@@ -96,6 +96,7 @@ export function CreateCompany() {
     formState: { errors },
     reset,
     setValue,
+    watch
   } = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
   })
@@ -111,7 +112,6 @@ export function CreateCompany() {
   const toggleAdvancedSettingsNfce = () =>
     setAdvancedSettingsNfce(!advancedSettingsNfce)
 
-  const [nfce, setNfce] = useState(false)
   const [cnpjMasked, setCnpjMasked] = useState('')
   const [phoneMasked, setPhoneMasked] = useState('')
   const [cepMasked, setCepMasked] = useState('')
@@ -799,16 +799,13 @@ export function CreateCompany() {
                     label="NFCe"
                     {...register('habilita_nfce')}
                     className="mb-3 mt-3"
-                    onChange={(event) => {
-                      setNfce(event?.target.checked)
-                    }}
                   ></Form.Switch>
                   {errors.habilita_nfce && (
                     <span className="text-danger">
                       {errors.habilita_nfce.message}
                     </span>
                   )}
-                  {nfce && (
+                  {watch('habilita_nfce') && (
                     <Row className="d-flex">
                       <div className="mt-2">
                         <Row>
@@ -826,7 +823,6 @@ export function CreateCompany() {
                               {t('next_number')}
                             </Form.Label>
                             <Form.Control
-                              defaultValue="1"
                               {...register('proximo_numero_nfce_producao')}
                             ></Form.Control>
                           </Col>
