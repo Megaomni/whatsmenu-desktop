@@ -1,8 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import { useContext, useEffect, useState } from 'react'
 import {
   Button,
   ButtonGroup,
@@ -12,7 +8,7 @@ import {
   InputGroup,
   OverlayTrigger,
   Popover,
-  Row
+  Row,
 } from 'react-bootstrap'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -21,20 +17,21 @@ import { RiErrorWarningFill } from 'react-icons/ri'
 import { z } from 'zod'
 import { AppContext } from '../../../../context/app.ctx'
 import { MenuContext } from '../../../../context/menu.ctx'
-import {
-  hash
-} from '../../../../utils/wm-functions'
+import { hash } from '../../../../utils/wm-functions'
 import { HelpVideos } from '../../HelpVideos'
 import { ComplementItems } from './ComplementItems'
 
 export const ComplementFormSchema = z.object({
-  id: z.number().transform((value) => {
-    const parsedId = Number(value)
-    if (isNaN(parsedId)) {
-      return undefined
-    }
-    return parsedId
-  }).optional(),
+  id: z
+    .number()
+    .transform((value) => {
+      const parsedId = Number(value)
+      if (isNaN(parsedId)) {
+        return undefined
+      }
+      return parsedId
+    })
+    .optional(),
   name: z
     .string()
     .min(3, 'O nome deve ter pelo menos 3 caracteres')
@@ -44,27 +41,35 @@ export const ComplementFormSchema = z.object({
   min: z.number().max(10000),
   max: z.number().max(10000),
   order: z.number(),
-  itens: z
-    .array(
-      z.object({
-        id: z.string().optional(),
-        amount: z.number().max(10000),
-        amount_alert: z.number().min(0).max(10000),
-        bypass_amount: z.boolean(),
-        code: z.string(),
-        status: z.boolean(),
-        name: z
-          .string()
-          .min(3, 'O nome deve ter pelo menos 3 caracteres')
-          .max(70, 'O nome deve ter no maúximo 70 caracteres'),
-        description: z.string().max(100, 'A descrição deve ter no maúximo 100 caracteres').nullable(),
-        customId: z.string().optional(),
-        value: z.number().transform((value) => parseFloat(Number(value).toFixed(2))),
-      })
-    ),
+  itens: z.array(
+    z.object({
+      id: z.string().optional(),
+      amount: z.number().max(10000),
+      amount_alert: z.number().min(0).max(10000),
+      bypass_amount: z.boolean(),
+      code: z.string(),
+      status: z.boolean(),
+      name: z
+        .string()
+        .min(3, 'O nome deve ter pelo menos 3 caracteres')
+        .max(70, 'O nome deve ter no maúximo 70 caracteres'),
+      description: z
+        .string()
+        .max(100, 'A descrição deve ter no máximo 100 caracteres')
+        .nullable(),
+      customId: z.string().optional(),
+      value: z
+        .number()
+        .transform((value) => parseFloat(Number(value).toFixed(2))),
+    })
+  ),
 })
 
-export type ComplementFormData = z.infer<typeof ComplementFormSchema> & { created_at?: string, originalId?: number, isDraft?: boolean }
+export type ComplementFormData = z.infer<typeof ComplementFormSchema> & {
+  created_at?: string
+  originalId?: number
+  isDraft?: boolean
+}
 type ComplementProps = {
   showVinculateComplement?: boolean
   typeModal: 'massive' | 'product'
@@ -77,11 +82,18 @@ export function ComponentComplement({
   invalidComplement,
   complementType,
 }: ComplementProps) {
-  const { watch, control, register, setValue } = useFormContext<{ complements: ComplementFormData[] }>()
-  const { append: appendComplement, remove: removeComplement, fields: complements, update: updateComplement } = useFieldArray({
+  const { watch, control, register, setValue } = useFormContext<{
+    complements: ComplementFormData[]
+  }>()
+  const {
+    append: appendComplement,
+    remove: removeComplement,
+    fields: complements,
+    update: updateComplement,
+  } = useFieldArray({
     control,
     name: 'complements',
-    keyName: 'customId'
+    keyName: 'customId',
   })
 
   const { t } = useTranslation()
@@ -102,7 +114,6 @@ export function ComponentComplement({
   let allComplements =
     complementType === 'default' ? productComplements : pizzaComplements
 
-
   useEffect(() => {
     setInvalidComplementName(!!invalidComplement)
   }, [invalidComplement])
@@ -114,7 +125,6 @@ export function ComponentComplement({
         setComplements.add(complement.id)
       }
     })
-
   }, [allComplements, removeComplements])
 
   const handleAddComplement = () => {
@@ -216,9 +226,7 @@ export function ComponentComplement({
       <Card.Body>
         {complements.map((complement, index) => {
           return complement.isDraft && complement.created_at ? (
-            <Card
-              className="wm-default text-dark"
-            >
+            <Card className="wm-default text-dark">
               <Card.Body>
                 <Row className="align-items-end">
                   <Col sm="6">
@@ -235,16 +243,18 @@ export function ComponentComplement({
                           key={`${complement.id}-${index}`}
                           value={`${complement.id}`}
                         >
-                          {`${complement.name} - [${complementType === 'default'
-                            ? products.find(
-                              (prod) => prod.id === complement.pivot?.productId
-                            )?.name
-                            : categories.find((cat) =>
-                              cat.product?.complements.some(
-                                (comp) => comp.id === complement.id
-                              )
-                            )?.name
-                            }]`}
+                          {`${complement.name} - [${
+                            complementType === 'default'
+                              ? products.find(
+                                  (prod) =>
+                                    prod.id === complement.pivot?.productId
+                                )?.name
+                              : categories.find((cat) =>
+                                  cat.product?.complements.some(
+                                    (comp) => comp.id === complement.id
+                                  )
+                                )?.name
+                          }]`}
                         </option>
                       ))}
                     </Form.Select>
@@ -273,7 +283,9 @@ export function ComponentComplement({
                           onChange={(e) => {
                             updateComplement(index, {
                               ...complement,
-                              id: e.target.checked ? complement.originalId : undefined,
+                              id: e.target.checked
+                                ? complement.originalId
+                                : undefined,
                             })
                           }}
                         />
@@ -401,11 +413,14 @@ export function ComponentComplement({
                         <div className="d-flex justify-content-end">
                           <p
                             className={
-                              watch(`complements.${index}.name`).length >= 50 ? 'text-red-500' : ''
+                              watch(`complements.${index}.name`).length >= 50
+                                ? 'text-red-500'
+                                : ''
                             }
                             data-name-length={complement.id}
                           >
-                            {watch(`complements.${index}.name`).length}/50 {t('characters')}
+                            {watch(`complements.${index}.name`).length}/50{' '}
+                            {t('characters')}
                           </p>
                         </div>
                       </div>
@@ -461,19 +476,29 @@ export function ComponentComplement({
                     md
                     className="d-flex justify-content-end mb-2 mt-auto gap-2"
                   >
-                    <Form.Label className='d-flex gap-3'>
+                    <Form.Label className="d-flex gap-3">
                       <Form.Check
                         id={`complemento-obrigatorio-${complement.id}`}
                         {...register(`complements.${index}.required`, {
                           onChange: (e) => {
                             if (watch(`complements.${index}.max`) <= 0) {
-                              setValue(`complements.${index}.max`, e.target.checked ? 1 : watch(`complements.${index}.max`))
+                              setValue(
+                                `complements.${index}.max`,
+                                e.target.checked
+                                  ? 1
+                                  : watch(`complements.${index}.max`)
+                              )
                             }
 
                             if (watch(`complements.${index}.min`) <= 0) {
-                              setValue(`complements.${index}.min`, e.target.checked ? 1 : watch(`complements.${index}.min`))
+                              setValue(
+                                `complements.${index}.min`,
+                                e.target.checked
+                                  ? 1
+                                  : watch(`complements.${index}.min`)
+                              )
                             }
-                          }
+                          },
                         })}
                       />
                       <span>{t('mandatory_addon')}</span>
@@ -514,8 +539,7 @@ export function ComponentComplement({
               </Card.Body>
             </Card>
           )
-        }
-        )}
+        })}
       </Card.Body>
     </Card>
   )
