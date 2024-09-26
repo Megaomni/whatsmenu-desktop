@@ -95,6 +95,7 @@ export function CreateCompany() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
   })
@@ -282,12 +283,12 @@ export function CreateCompany() {
           if (eventName === 'certificateCompany') {
             setCertificateBase64(base64 as string)
           }
+          setValue('arquivo_certificado_base64', base64)
         }
       }
       reader.readAsDataURL(file)
     }
   }
-
   return (
     <>
       <form id="createCompany" onSubmit={handleSubmit(createCompanyGroveNfe)}>
@@ -369,7 +370,6 @@ export function CreateCompany() {
                   {t('attach_certificate')}
                   <input
                     type="file"
-                    {...register('arquivo_certificado_base64')}
                     name="certificateCompany"
                     onChange={(e) => {
                       if (e.target.files) {
