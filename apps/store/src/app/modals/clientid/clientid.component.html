@@ -30,6 +30,7 @@
                 type="text"
                 id="nome"
                 class="form-control"
+                required
                 [(ngModel)]="customer.name"
               />
             </div>
@@ -72,7 +73,7 @@
           class="btn btn-success submit-button"
           id="myButton"
           (click)="saveCustomerId(data.customer?.id ? 'update' : 'create')"
-          [disabled]="validateUserContact()"
+          [disabled]="!data.customer.name && validateUserContact()"
         >
           {{ validateUserContact() || translate.text().advance }}
         </button>
