@@ -177,12 +177,12 @@ export interface ProfileFormPayment {
 export interface ProfileOptions {
   order: string
   integrations: {
-    grovenfe:{
+    grovenfe: {
       plan: any
-      config:{
-        fiscal_notes:{
+      config: {
+        fiscal_notes: {
           day_limiter: number | null
-          forms_payment: {type: string}[]
+          forms_payments: { type: string }[]
         }
       }
       created_at: string

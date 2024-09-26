@@ -36,11 +36,10 @@ export function ConfigEmission() {
           .day_limiter,
       forms_payments:
         profile.options.integrations?.grovenfe?.config?.fiscal_notes
-          .forms_payment ?? [],
+          .forms_payments ?? [],
     },
   })
 
-  //   forms_payment
   const handleFormsPayment = ({
     checked,
     typePayment,
