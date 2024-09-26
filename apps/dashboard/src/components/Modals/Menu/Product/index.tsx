@@ -30,7 +30,7 @@ import { ArrowModalFooter } from '../../../Generic/ArrowsModalFooter'
 import { OverlaySpinner } from '../../../OverlaySpinner'
 import { CropModal } from '../../CropModal'
 import { ComplementFormSchema, ComponentComplement } from '../Complements'
-import Product from '../../../../types/product'
+import Product, { ProductType } from '../../../../types/product'
 import { useSession } from 'next-auth/react'
 import { groveNfeApi } from 'src/lib/axios'
 import { Ncm } from '../../../../types/nfce'
@@ -199,13 +199,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
               break
             case 'update':
               if (category.id === data.product.categoryId) {
-                console.log(
-                  product.id === data.product.id,
-                  category.id === data.product.categoryId
-                )
                 category.products = category.products?.map((product) =>
-                  product.id === data.product.id
-                    ? new Product(data.product)
+                  product.id === body.id
+                    ? new Product({ ...product, ...body } as ProductType)
                     : product
                 )
               }
@@ -214,7 +210,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
           return category
         })
       })
-      setProduct(new Product(data.product))
+      setProduct(new Product({ ...product, ...body } as ProductType))
 
       setLowInventoryItems(data.inventory)
       handleShowToast({

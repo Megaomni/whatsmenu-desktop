@@ -416,7 +416,6 @@ class CartController {
             console.error('Erro ao criar a nota fiscal:', error)
           }
         }
-        return
       }
 
       const address = await ClientAddress.find(data.addressId)
@@ -821,9 +820,7 @@ class CartController {
                 console.error('Erro ao verificar as integrações:', error);
                 throw error;
               }
-              return
             }
-
             console.log('Transação finalizada com sucesso')
             return response.json({ cart })
           } catch (error) {

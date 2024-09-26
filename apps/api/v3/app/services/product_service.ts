@@ -137,24 +137,27 @@ export class ProductService {
     try {
       const product = await Product.findOrFail(productId)
 
-      product.merge({
-        categoryId: data.categoryId,
-        name: data.name,
-        description: data.description,
-        order: data.order,
-        value: data.value,
-        valueTable: data.valueTable,
-        promoteStatus: data.promoteStatus,
-        promoteValue: data.promoteValue,
-        promoteStatusTable: data.promoteStatusTable,
-        promoteValueTable: data.promoteValueTable,
-        disponibility: data.disponibility,
-        ncm_code: data.ncm_code,
-        amount: data.amount,
-        amount_alert: data.amount_alert,
-        bypass_amount: data.bypass_amount,
-      })
+      await product
+        .merge({
+          categoryId: data.categoryId,
+          name: data.name,
+          description: data.description,
+          order: data.order,
+          value: data.value,
+          valueTable: data.valueTable,
+          promoteStatus: data.promoteStatus,
+          promoteValue: data.promoteValue,
+          promoteStatusTable: data.promoteStatusTable,
+          promoteValueTable: data.promoteValueTable,
+          disponibility: data.disponibility,
+          ncm_code: data.ncm_code,
+          amount: data.amount,
+          amount_alert: data.amount_alert,
+          bypass_amount: data.bypass_amount,
+        })
+        .save()
 
+      console.log('Salvou antes da imagem')
       if (data.image) {
         const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${data.imageName}`
         const buffer = Buffer.from(data.image, 'base64')
@@ -167,8 +170,11 @@ export class ProductService {
       }
 
       await product.save()
+      console.log('Salvou depois da imagem')
 
       await product.load('complements')
+      console.log('carregando complementos')
+
       const existingComplements = product.complements.map((complement) => complement.id)
 
       let [newComplements, vinculatedComplements] = complements.reduce<
@@ -194,18 +200,19 @@ export class ProductService {
         )
         if (complementsToRemove.length) {
           await product.related('complements').detach(complementsToRemove)
+          console.log('removendo complementos')
         }
         // Anexar os novos complementos reutilizados
 
-        for await (const complement of vinculatedComplements) {
+        for (const complement of vinculatedComplements) {
           const complementToUpdate = await Complement.find(complement.id)
           if (complementToUpdate) {
-            complementToUpdate.merge(complement)
-            await complementToUpdate.save()
+            await complementToUpdate.merge(complement).save()
+            console.log(`atualizando complemento: ${complement.id}`)
           }
         }
 
-        await product.related('complements').sync(complementIds)
+        // await product.related('complements').sync(complementIds)
       }
 
       if (newComplements.length) {
@@ -219,18 +226,26 @@ export class ProductService {
               })) || [],
           }))
         )
+
+        console.log('criando complementos novos')
       }
 
       await product.load('complements')
+      console.log('carregando complementos novamente')
 
       const newProduct = await Product.query()
         .where('id', productId)
         .preload('complements')
         .firstOrFail()
 
-      console.log(`${product.name}:`, product.complements)
+      // const compls = await Complement.query().whereIn(
+      //   'id',
+      //   complements.map((complement) => complement.id)
+      // )
 
-      return { product: newProduct }
+      console.log('carregando produto complementos')
+
+      return { product: { ...newProduct } }
     } catch (error) {
       throw error
     }
