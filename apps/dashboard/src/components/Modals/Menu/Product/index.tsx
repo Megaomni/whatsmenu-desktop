@@ -149,6 +149,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const { register, handleSubmit, watch, setValue, reset, formState } = form
   const { ncm_code } = watch()
+  const [fetchNcm, setFetchNcm] = useState(false)
   //PROPRIEDADES DO PRODUTO
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
   const [invalidWeek, setInvalidWeek] = useState<boolean>(false)
@@ -257,7 +258,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   }
 
   const handleNcmList = useCallback(async () => {
-    if (ncm_code) {
+    if (ncm_code && fetchNcm) {
       let params: { codigo?: string; descricao?: string } = {}
 
       if (/\d+/g.test(ncm_code)) {
@@ -283,7 +284,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         setShowSpinner(false)
       }
     }
-  }, [ncm_code, setNcmList])
+  }, [ncm_code, setNcmList, fetchNcm])
 
   useEffect(() => {
     setValue('disponibility.week', week)
@@ -317,6 +318,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (ncm_code) {
+        setFetchNcm(true)
         handleNcmList()
       }
     }, 1000 * 1.5)
