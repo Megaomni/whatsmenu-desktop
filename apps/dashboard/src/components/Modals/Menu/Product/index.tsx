@@ -318,7 +318,6 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (ncm_code) {
-        setFetchNcm(true)
         handleNcmList()
       }
     }, 1000 * 1.5)
@@ -552,7 +551,11 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                       </Form.Label>
                                       <Form.Control
                                         list="ncm"
-                                        {...register('ncm_code')}
+                                        {...register('ncm_code', {
+                                          onChange: () => {
+                                            setFetchNcm(true)
+                                          }
+                                        })}
                                         placeholder="Selecione"
                                       />
                                       <datalist id="ncm">
