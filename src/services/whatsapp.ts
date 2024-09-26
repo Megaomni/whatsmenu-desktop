@@ -51,6 +51,7 @@ export class WhatsApp {
         "--no-first-run",
         "--no-zygote",
         "--disable-gpu",
+        store.get("configs.whatsapp.showHiddenWhatsApp") ? "--start-maximized" : "--window-position=-2000,-2000",
         // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
       ],
     };
