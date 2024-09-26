@@ -821,7 +821,6 @@ class CartController {
                 throw error;
               }
             }
-
             console.log('Transação finalizada com sucesso')
             return response.json({ cart })
           } catch (error) {
