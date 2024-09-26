@@ -32,7 +32,7 @@ const siteInfo = {
 //   description: '',
 //   whatsmenu: '5513996260670'
 // })
-Route.on("/wmd").render("wmd")
+// Route.on("/wmd").render("wmd")
 Route.any('/webhook', 'PageController.webhook').as('webhook')
 Route.get('/portal', 'PageController.portalHome').as('portalHome')
 Route.get('/portal/:city', 'PageController.portal').as('portal')
