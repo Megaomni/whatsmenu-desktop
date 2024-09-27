@@ -5,7 +5,6 @@ import env from '#start/env'
 import encryption from '@adonisjs/core/services/encryption'
 import { MultipartFile } from '@adonisjs/core/types/bodyparser'
 import drive from '@adonisjs/drive/services/main'
-import db from '@adonisjs/lucid/services/db'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
 type NewComplement = ModelAttributes<Complement>
@@ -135,7 +134,6 @@ export class ProductService {
    * @param {String} [params.data.image] - A imagem do produto.
    */
   async updateProduct({ profile, productId, complements, data }: UpdateProductPayload) {
-    const trx = await db.transaction()
     try {
       const product = await Product.findOrFail(productId)
       await product
@@ -156,7 +154,6 @@ export class ProductService {
           amount_alert: data.amount_alert,
           bypass_amount: data.bypass_amount,
         })
-        .useTransaction(trx)
         .save()
 
       if (data.image) {
@@ -170,7 +167,7 @@ export class ProductService {
         product.image = await drive.use('s3').getUrl(imageKey)
       }
 
-      await product.useTransaction(trx).save()
+      await product.save()
 
       let [newComplements, vinculatedComplements] = complements.reduce<
         [NewComplement[], VinculatedComplement[]]
@@ -187,12 +184,12 @@ export class ProductService {
       )
 
       // Atualizando complementos já vinculados (reutilizados)
-      // for (const complement of vinculatedComplements) {
-      //   let complementToUpdate = await Complement.find(complement.id)
-      //   if (complementToUpdate) {
-      //     await complementToUpdate.merge(complement).useTransaction(trx).save()
-      //   }
-      // }
+      for (const complement of vinculatedComplements) {
+        let complementToUpdate = await Complement.find(complement.id)
+        if (complementToUpdate) {
+          await complementToUpdate.merge(complement).save()
+        }
+      }
 
       if (newComplements.length) {
         newComplements = await product.related('complements').createMany(
@@ -206,17 +203,14 @@ export class ProductService {
           }))
         )
       }
-      await product.related('complements').sync(
-        vinculatedComplements.map((c) => c.id),
-        true,
-        trx
-      )
-      await trx.commit()
+
+      complements = [...vinculatedComplements, ...newComplements]
+
+      await product.related('complements').sync(complements.map((complement) => complement.id))
       await product.load('complements')
 
       return { product }
     } catch (error) {
-      await trx.rollback()
       throw error
     }
   }
