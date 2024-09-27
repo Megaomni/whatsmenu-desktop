@@ -5,7 +5,6 @@ import env from '#start/env'
 import encryption from '@adonisjs/core/services/encryption'
 import { MultipartFile } from '@adonisjs/core/types/bodyparser'
 import drive from '@adonisjs/drive/services/main'
-import db from '@adonisjs/lucid/services/db'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
 type NewComplement = ModelAttributes<Complement>
