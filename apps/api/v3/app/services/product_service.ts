@@ -5,6 +5,7 @@ import env from '#start/env'
 import encryption from '@adonisjs/core/services/encryption'
 import { MultipartFile } from '@adonisjs/core/types/bodyparser'
 import drive from '@adonisjs/drive/services/main'
+import db from '@adonisjs/lucid/services/db'
 import { ModelAttributes } from '@adonisjs/lucid/types/model'
 
 type NewComplement = ModelAttributes<Complement>
@@ -134,9 +135,11 @@ export class ProductService {
    * @param {String} [params.data.image] - A imagem do produto.
    */
   async updateProduct({ profile, productId, complements, data }: UpdateProductPayload) {
+    const trx = await db.transaction()
     try {
       const product = await Product.findOrFail(productId)
 
+      product.useTransaction(trx)
       await product
         .merge({
           categoryId: data.categoryId,
@@ -234,9 +237,10 @@ export class ProductService {
       console.log('carregando complementos novamente')
 
       console.log('carregando produto complementos')
-
+      await trx.commit()
       return { product }
     } catch (error) {
+      await trx.rollback()
       throw error
     }
   }
