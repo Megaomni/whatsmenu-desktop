@@ -62,6 +62,7 @@ const ProductFormSchema = z.object({
   image: z
     .string()
     .nullable()
+    .optional()
     .transform((value) => value && value.split(',')[1]),
   imageName: z
     .string()
