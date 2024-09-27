@@ -138,8 +138,6 @@ export class ProductService {
     const trx = await db.transaction()
     try {
       const product = await Product.findOrFail(productId)
-      await product.load('complements')
-
       await product
         .merge({
           categoryId: data.categoryId,
@@ -189,12 +187,12 @@ export class ProductService {
       )
 
       // Atualizando complementos já vinculados (reutilizados)
-      for (const complement of vinculatedComplements) {
-        let complementToUpdate = await Complement.find(complement.id)
-        if (complementToUpdate) {
-          await complementToUpdate.merge(complement).useTransaction(trx).save()
-        }
-      }
+      // for (const complement of vinculatedComplements) {
+      //   let complementToUpdate = await Complement.find(complement.id)
+      //   if (complementToUpdate) {
+      //     await complementToUpdate.merge(complement).useTransaction(trx).save()
+      //   }
+      // }
 
       if (newComplements.length) {
         newComplements = await product.related('complements').createMany(
@@ -209,11 +207,12 @@ export class ProductService {
         )
       }
       await product.related('complements').sync(
-        complements.map((c) => c.id),
+        vinculatedComplements.map((c) => c.id),
         true,
         trx
       )
       await trx.commit()
+      await product.load('complements')
 
       return { product }
     } catch (error) {
