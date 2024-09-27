@@ -212,7 +212,7 @@ export class ProductService {
           }
         }
 
-        // await product.related('complements').sync(complementIds)
+        await product.related('complements').sync(complementIds)
       }
 
       if (newComplements.length) {
@@ -233,19 +233,9 @@ export class ProductService {
       await product.load('complements')
       console.log('carregando complementos novamente')
 
-      const newProduct = await Product.query()
-        .where('id', productId)
-        .preload('complements')
-        .firstOrFail()
-
-      // const compls = await Complement.query().whereIn(
-      //   'id',
-      //   complements.map((complement) => complement.id)
-      // )
-
       console.log('carregando produto complementos')
 
-      return { product: { ...newProduct } }
+      return { product }
     } catch (error) {
       throw error
     }
