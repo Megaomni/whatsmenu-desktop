@@ -213,6 +213,7 @@ export interface ProfileOptions {
   }
   store: {
     productModal: {
+      imgFull: boolean
       infoPosition: 'last' | 'first'
     }
     catalogMode: {
