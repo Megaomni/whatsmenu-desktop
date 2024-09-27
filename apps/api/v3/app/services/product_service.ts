@@ -207,7 +207,7 @@ export class ProductService {
       complements = [...vinculatedComplements, ...newComplements]
 
       await product.related('complements').sync(complements.map((complement) => complement.id))
-      await new Promise<void>((resolve) => setTimeout(resolve, 5000))
+      await new Promise<void>((resolve) => setTimeout(resolve, 100))
       await product.load('complements')
 
       return { product }
