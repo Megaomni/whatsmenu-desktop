@@ -630,10 +630,13 @@ export function CreateCompany() {
                         {t('zip_code')}
                       </Form.Label>
                       <Form.Control
-                        maxLength={8}
+                        maxLength={9}
                         {...register('cep', { required: 'CEP obrigatório' })}
                         onChange={(event) => {
-                          mask(event, 'cep')
+                          event.target.value = event.target.value.replace(
+                            /^(\d{5})(\d)/g,
+                            '$1-$2'
+                          )
                           setCepMasked(event.target.value)
                         }}
                       ></Form.Control>
