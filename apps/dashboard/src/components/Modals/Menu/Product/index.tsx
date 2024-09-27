@@ -193,28 +193,29 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         body
       )
       updateProduct({ newProduct: data.product })
-      // setCategories((state) => {
-      //   return state.map((category) => {
-      //     switch (type) {
-      //       case 'create':
-      //         if (category.id === data.product.categoryId) {
-      //           category.products?.push(new Product(data.product))
-      //         }
-      //         break
-      //       case 'update':
-      //         if (category.id === data.product.categoryId) {
-      //           category.products = category.products?.map((product) =>
-      //             product.id === body.id
-      //               ? new Product({ ...product, ...body } as ProductType)
-      //               : product
-      //           )
-      //         }
-      //         break
-      //     }
-      //     return category
-      //   })
-      // })
-      // setProduct(new Product({ ...product, ...body } as ProductType))
+      setProduct(new Product(data.product))
+      setCategories((state) => {
+        return state.map((category) => {
+          switch (type) {
+            case 'create':
+              if (category.id === data.product.categoryId) {
+                category.products?.push(new Product(data.product))
+              }
+              break
+            case 'update':
+              if (category.id === data.product.categoryId) {
+                category.products = category.products?.map((product) =>
+                  product.id === body.id
+                    ? new Product({ ...product, ...body } as ProductType)
+                    : product
+                )
+              }
+              break
+          }
+          return category
+        })
+      })
+      setProduct(new Product({ ...product, ...body } as ProductType))
 
       setLowInventoryItems(data.inventory)
       handleShowToast({

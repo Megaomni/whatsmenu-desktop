@@ -130,7 +130,7 @@ export function MenuProvider({
     return products.filter((p) => p.id !== product.id).flatMap((product) => product.complements).some(c => c.pivot?.complementId === complementId)
   }
 
-  const  updateProduct = ({ newProduct }: { newProduct: ProductType }) => {
+  const updateProduct = ({ newProduct }: { newProduct: ProductType }) => {
     setCategories((state) => {
       const oldProduct = state.filter(c => c.type === 'default').flatMap(c => c.products).find(p => p!.id === newProduct.id)
       if (oldProduct?.categoryId !== newProduct.categoryId) {
@@ -160,15 +160,15 @@ export function MenuProvider({
 
   useEffect(() => {
     setProducts(categories.flatMap((cat) => cat.getAllProducts()))
-    setProduct((state) => {
-      const productUpdated = categories
-        .flatMap((cat) => cat.getAllProducts())
-        .find((p) => p.id === state.id)
-      if (productUpdated) {
-        return productUpdated
-      }
-      return state
-    })
+    // setProduct((state) => {
+    //   const productUpdated = categories
+    //     .flatMap((cat) => cat.getAllProducts())
+    //     .find((p) => p.id === state.id)
+    //   if (productUpdated) {
+    //     return productUpdated
+    //   }
+    //   return state
+    // })
     setProductComplements(
       categories.flatMap((cat) => cat.getAllProductsComplements())
     )
