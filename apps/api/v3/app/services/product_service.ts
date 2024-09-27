@@ -208,9 +208,9 @@ export class ProductService {
         // Anexar os novos complementos reutilizados
 
         for (const complement of vinculatedComplements) {
-          const complementToUpdate = await Complement.find(complement.id)
+          let complementToUpdate = product.complements.find((c) => c.id === complement.id)
           if (complementToUpdate) {
-            await complementToUpdate.merge(complement).save()
+            complementToUpdate = await complementToUpdate.merge(complement).save()
             console.log(`atualizando complemento: ${complement.id}`)
           }
         }
@@ -233,7 +233,6 @@ export class ProductService {
         console.log('criando complementos novos')
       }
 
-      await product.load('complements')
       console.log('carregando complementos novamente')
 
       console.log('carregando produto complementos', product.complements)
