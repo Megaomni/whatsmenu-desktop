@@ -42,6 +42,7 @@ class PizzaProduct extends Model {
     this.addHook('afterFind', (pizza) => {
       PizzaProduct.pizzaProductDecryptEmoji(pizza)
       PizzaProduct.jsonAddDefaultStorageValues(pizza, 'flavors')
+      pizza.ncm_code = '19022000'
     })
 
     this.addHook('afterSave', (pizza) => {
@@ -52,6 +53,7 @@ class PizzaProduct extends Model {
       pizzas.forEach((pizza) => {
         PizzaProduct.pizzaProductDecryptEmoji(pizza)
         PizzaProduct.jsonAddDefaultStorageValues(pizza, 'flavors')
+        pizza.ncm_code = '19022000'
       })
     })
 
@@ -60,6 +62,7 @@ class PizzaProduct extends Model {
         PizzaProduct.pizzaProductDecryptEmoji(pizza)
         pizza.disponibility = pizza.disponibility && JSON.parse(pizza.disponibility)
         PizzaProduct.jsonAddDefaultStorageValues(pizza, 'flavors')
+        pizza.ncm_code = '19022000'
       })
     })
   }
