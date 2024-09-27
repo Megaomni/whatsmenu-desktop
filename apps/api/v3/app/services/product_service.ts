@@ -191,8 +191,6 @@ export class ProductService {
         }
       }
 
-      await product.related('complements').sync(vinculatedComplements.map((c) => c.id))
-
       if (newComplements.length) {
         newComplements = await product.related('complements').createMany(
           newComplements.map(({ id, ...complement }) => ({
@@ -205,6 +203,7 @@ export class ProductService {
           }))
         )
       }
+      await product.related('complements').sync(complements.map((c) => c.id))
       await product.load('complements')
 
       return { product }
