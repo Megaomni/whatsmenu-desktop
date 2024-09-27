@@ -236,7 +236,7 @@ export class ProductService {
       await product.load('complements')
       console.log('carregando complementos novamente')
 
-      console.log('carregando produto complementos', product)
+      console.log('carregando produto complementos', product.complements)
       await trx.commit()
       return { product }
     } catch (error) {
