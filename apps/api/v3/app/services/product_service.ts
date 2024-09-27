@@ -138,6 +138,8 @@ export class ProductService {
     const trx = await db.transaction()
     try {
       const product = await Product.findOrFail(productId)
+      await product.load('complements')
+
       await product
         .merge({
           categoryId: data.categoryId,
@@ -212,7 +214,6 @@ export class ProductService {
         trx
       )
       await trx.commit()
-      await product.load('complements')
 
       return { product }
     } catch (error) {
