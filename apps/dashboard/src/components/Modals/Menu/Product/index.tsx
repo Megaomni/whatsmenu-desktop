@@ -207,7 +207,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
               if (category.id === data.product.categoryId) {
                 category.products = category.products?.map((product) =>
                   product.id === body.id
-                    ? new Product({ ...product, ...body } as ProductType)
+                    ? new Product({ ...product, ...data.product } as ProductType)
                     : product
                 )
               }
