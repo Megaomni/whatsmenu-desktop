@@ -778,7 +778,7 @@ class CartController {
                     },
                   })
 
-                  const { data: focus_note } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
+                  const { data: { focus_note } } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
 
                   await axios.post(`${Env.get('GROVE_NFE_URL')}/fiscalNotes/create/${companyId}`, {
                     external_id: String(cart.id),
