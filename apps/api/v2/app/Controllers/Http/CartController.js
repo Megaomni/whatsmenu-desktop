@@ -772,13 +772,13 @@ class CartController {
                 console.log("DEBUG FISCAL: ", { groveNfePayments, formpayment: data.formsPayment[0].payment });
                 if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
                   const companyId = integrations.grovenfe.company_id
-                  const { data: company } = axios.get(`${Env.get('GROVE_NFE_URL')}/v1/companies/${companyId}`, {
+                  const { data: { company } } = axios.get(`${Env.get('GROVE_NFE_URL')}/v1/companies/${companyId}`, {
                     headers: {
                       Authorization: `Bearer ${Env.get('GROVE_NFE_TOKEN')}`,
                     },
                   })
 
-                  const { data: focus_note } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
+                  const { data: { focus_note } } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
 
                   await axios.post(`${Env.get('GROVE_NFE_URL')}/v1/fiscalNotes/create/${companyId}`, {
                     external_id: String(cart.id),
