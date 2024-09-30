@@ -773,7 +773,7 @@ class CartController {
                   const companieId = integrations.grovenfe.company_id
                   const { data: { company } } = await axios.get(`${Env.get('GROVE_NFE_URL')}/companies/${companieId}`, {
                     headers: {
-                      Authorization: `Bearer oat_MQ.R2JqbDY5TGVsU3A1bVpzSmFPSk9FSWluY3RnSmo5UzR3SXhvT0NSMTQyMDU5NTc0MTM`,
+                      Authorization: `Bearer ${Env.get('GROVE_NFE_TOKEN')}`,
                     },
                   })
                   const { data: { focus_note } } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
@@ -783,7 +783,7 @@ class CartController {
                     nfce: focus_note,
                   }, {
                     headers: {
-                      Authorization: `Bearer oat_MQ.R2JqbDY5TGVsU3A1bVpzSmFPSk9FSWluY3RnSmo5UzR3SXhvT0NSMTQyMDU5NTc0MTM`,
+                      Authorization: `Bearer ${Env.get('GROVE_NFE_TOKEN')}`,
                     },
                   }
                   )
