@@ -769,16 +769,18 @@ class CartController {
             if (integrations && integrations.grovenfe) {
               try {
                 const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
+                console.log("DEBUG FISCAL: ", { groveNfePayments, formpayment: data.formsPayment[0].payment });
                 if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
-                  const companieId = integrations.grovenfe.company_id
-                  const { data: { company } } = await axios.get(`${Env.get('GROVE_NFE_URL')}/companies/${companieId}`, {
+                  const companyId = integrations.grovenfe.company_id
+                  const { data: { company } } = await axios.get(`${Env.get('GROVE_NFE_URL')}/companies/${companyId}`, {
                     headers: {
                       Authorization: `Bearer ${Env.get('GROVE_NFE_TOKEN')}`,
                     },
                   })
+
                   const { data: { focus_note } } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
 
-                  await axios.post(`${Env.get('GROVE_NFE_URL')}/fiscalNotes/create/${companieId}`, {
+                  await axios.post(`${Env.get('GROVE_NFE_URL')}/fiscalNotes/create/${companyId}`, {
                     external_id: String(cart.id),
                     nfce: focus_note,
                   }, {
@@ -790,7 +792,7 @@ class CartController {
 
                 }
               } catch (error) {
-                console.error('Erro ao verificar as integrações:', error);
+                console.error('Erro ao criar a nota fiscal:', error);
               }
             }
             console.log('Transação finalizada com sucesso')
