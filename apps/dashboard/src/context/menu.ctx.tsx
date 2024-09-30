@@ -15,7 +15,7 @@ import PizzaProduct, {
   PizzaImplementationType,
   PizzaSizeType,
 } from '../types/pizza-product'
-import Product from '../types/product'
+import Product, { ProductType } from '../types/product'
 import { ProductModal } from '../components/Modals/Menu/Product'
 import { PizzaSize } from '../components/Modals/Menu/PizzaSize'
 import { PizzaImplementation } from '../components/Modals/Menu/PizzaImplementation'
@@ -69,6 +69,7 @@ interface MenuContextData {
     type?: 'create' | 'update',
     tab?: string
   ): void
+  updateProduct({ newProduct }: { newProduct: ProductType }): void
 }
 
 export const MenuContext = createContext<MenuContextData>({} as MenuContextData)
@@ -129,17 +130,45 @@ export function MenuProvider({
     return products.filter((p) => p.id !== product.id).flatMap((product) => product.complements).some(c => c.pivot?.complementId === complementId)
   }
 
-  useEffect(() => {
-    setProducts(categories.flatMap((cat) => cat.getAllProducts()))
-    setProduct((state) => {
-      const productUpdated = categories
-        .flatMap((cat) => cat.getAllProducts())
-        .find((p) => p.id === state.id)
-      if (productUpdated) {
-        return productUpdated
+  const updateProduct = ({ newProduct }: { newProduct: ProductType }) => {
+    setCategories((state) => {
+      const oldProduct = state.filter(c => c.type === 'default').flatMap(c => c.products).find(p => p!.id === newProduct.id)
+      if (oldProduct?.categoryId !== newProduct.categoryId) {
+        state.map(c => {
+          if (c.id === oldProduct?.categoryId) {
+            c.products = c.products!.filter(p => p!.id !== newProduct.id)
+          }
+          if (c.id === newProduct.categoryId) {
+            c.products?.push(new Product(newProduct))
+          }
+        })
+      } else {
+        state.map(c => {
+          if (c.id === newProduct.categoryId) {
+            c.products?.map(p => {
+              if (p!.id === newProduct.id) {
+                p = new Product(newProduct)
+              }
+            })
+          }
+        })
       }
       return state
     })
+    setProduct(new Product(newProduct))
+  }
+
+  useEffect(() => {
+    setProducts(categories.flatMap((cat) => cat.getAllProducts()))
+    // setProduct((state) => {
+    //   const productUpdated = categories
+    //     .flatMap((cat) => cat.getAllProducts())
+    //     .find((p) => p.id === state.id)
+    //   if (productUpdated) {
+    //     return productUpdated
+    //   }
+    //   return state
+    // })
     setProductComplements(
       categories.flatMap((cat) => cat.getAllProductsComplements())
     )
@@ -164,7 +193,6 @@ export function MenuProvider({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
 
   const handleMenuModal = (
     show: boolean,
@@ -209,7 +237,8 @@ export function MenuProvider({
         typeModal,
         focusId,
         setFocusId,
-        componentIsLinked
+        componentIsLinked,
+        updateProduct
       }}
     >
       {children}

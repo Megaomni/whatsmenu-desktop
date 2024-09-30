@@ -73,7 +73,7 @@
           class="btn btn-success submit-button"
           id="myButton"
           (click)="saveCustomerId(data.customer?.id ? 'update' : 'create')"
-          [disabled]="!data.customer.name && validateUserContact()"
+          [disabled]="!data.customer?.name && validateUserContact()"
         >
           {{ validateUserContact() || translate.text().advance }}
         </button>

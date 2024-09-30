@@ -136,7 +136,6 @@ export class ProductService {
   async updateProduct({ profile, productId, complements, data }: UpdateProductPayload) {
     try {
       const product = await Product.findOrFail(productId)
-
       await product
         .merge({
           categoryId: data.categoryId,
@@ -157,7 +156,6 @@ export class ProductService {
         })
         .save()
 
-      console.log('Salvou antes da imagem')
       if (data.image) {
         const imageKey = `${env.get('NODE_ENV')}/${profile.slug}/products/${product.id}/${data.imageName}`
         const buffer = Buffer.from(data.image, 'base64')
@@ -170,12 +168,6 @@ export class ProductService {
       }
 
       await product.save()
-      console.log('Salvou depois da imagem')
-
-      await product.load('complements')
-      console.log('carregando complementos')
-
-      const existingComplements = product.complements.map((complement) => complement.id)
 
       let [newComplements, vinculatedComplements] = complements.reduce<
         [NewComplement[], VinculatedComplement[]]
@@ -192,27 +184,11 @@ export class ProductService {
       )
 
       // Atualizando complementos já vinculados (reutilizados)
-      if (vinculatedComplements.length) {
-        const complementIds = vinculatedComplements.map((complement) => complement.id)
-
-        const complementsToRemove = existingComplements.filter(
-          (existingId) => !complementIds.includes(existingId)
-        )
-        if (complementsToRemove.length) {
-          await product.related('complements').detach(complementsToRemove)
-          console.log('removendo complementos')
+      for (const complement of vinculatedComplements) {
+        let complementToUpdate = await Complement.find(complement.id)
+        if (complementToUpdate) {
+          await complementToUpdate.merge(complement).save()
         }
-        // Anexar os novos complementos reutilizados
-
-        for (const complement of vinculatedComplements) {
-          const complementToUpdate = await Complement.find(complement.id)
-          if (complementToUpdate) {
-            await complementToUpdate.merge(complement).save()
-            console.log(`atualizando complemento: ${complement.id}`)
-          }
-        }
-
-        // await product.related('complements').sync(complementIds)
       }
 
       if (newComplements.length) {
@@ -226,26 +202,15 @@ export class ProductService {
               })) || [],
           }))
         )
-
-        console.log('criando complementos novos')
       }
 
+      complements = [...vinculatedComplements, ...newComplements]
+
+      await product.related('complements').sync(complements.map((complement) => complement.id))
+      await new Promise<void>((resolve) => setTimeout(resolve, 100))
       await product.load('complements')
-      console.log('carregando complementos novamente')
 
-      const newProduct = await Product.query()
-        .where('id', productId)
-        .preload('complements')
-        .firstOrFail()
-
-      // const compls = await Complement.query().whereIn(
-      //   'id',
-      //   complements.map((complement) => complement.id)
-      // )
-
-      console.log('carregando produto complementos')
-
-      return { product: { ...newProduct } }
+      return { product }
     } catch (error) {
       throw error
     }

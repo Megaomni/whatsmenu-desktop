@@ -62,6 +62,7 @@ const ProductFormSchema = z.object({
   image: z
     .string()
     .nullable()
+    .optional()
     .transform((value) => value && value.split(',')[1]),
   imageName: z
     .string()
@@ -79,7 +80,7 @@ const ProductFormSchema = z.object({
   bypass_amount: z.boolean().default(true),
   amount: z.number(),
   amount_alert: z.number(),
-  ncm_code: z.string().optional(),
+  ncm_code: z.string().nullable(),
   disponibility: z.object({
     week: z.any(),
     store: z.object({
@@ -117,6 +118,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
     typeModal: type,
     setCategories,
     setProduct,
+    updateProduct,
   } = useContext(MenuContext)
 
   const form = useForm<ProductFormData>({
@@ -136,7 +138,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       promoteStatusTable: Boolean(product?.promoteStatusTable) || false,
       bypass_amount: Boolean(product?.bypass_amount) || true,
       name: product?.name,
-      ncm_code: product?.ncm_code,
+      ncm_code: product?.ncm_code || null,
       disponibility: {
         store: {
           delivery: product?.disponibility?.store?.delivery || true,
@@ -149,6 +151,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
 
   const { register, handleSubmit, watch, setValue, reset, formState } = form
   const { ncm_code } = watch()
+  console.log('Validação de formulário', formState.errors, ncm_code)
   const [fetchNcm, setFetchNcm] = useState(false)
   //PROPRIEDADES DO PRODUTO
   const [showSaveSpinner, setShowSaveSpinner] = useState<boolean>(false)
@@ -191,6 +194,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
         '/dashboard/products',
         body
       )
+      if (type === 'update') {
+        updateProduct({ newProduct: data.product })
+      }
       setCategories((state) => {
         return state.map((category) => {
           switch (type) {
@@ -203,7 +209,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
               if (category.id === data.product.categoryId) {
                 category.products = category.products?.map((product) =>
                   product.id === body.id
-                    ? new Product({ ...product, ...body } as ProductType)
+                    ? new Product({ ...product, ...data.product } as ProductType)
                     : product
                 )
               }
@@ -311,7 +317,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
       promoteStatusTable: Boolean(product.promoteStatusTable),
       bypass_amount: Boolean(product.bypass_amount),
       disponibility: product.disponibility,
-      ncm_code: product.ncm_code,
+      ncm_code: product.ncm_code || null,
     })
   }, [product, setValue, reset])
 

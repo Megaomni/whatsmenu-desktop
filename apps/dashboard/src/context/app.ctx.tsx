@@ -67,7 +67,6 @@ type ChangeType = {
   // setChangeState: Dispatch<SetStateAction<boolean>>;
   // setConfirmSave: Dispatch<SetStateAction<boolean | undefined>>;
 }
-
 //
 export type PackagePages = {
   data: Request[]
