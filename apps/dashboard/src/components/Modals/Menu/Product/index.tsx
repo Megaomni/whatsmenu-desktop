@@ -150,6 +150,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
   })
 
   const { register, handleSubmit, watch, setValue, reset, formState } = form
+  console.log('Validação de formulário', formState.errors)
   const { ncm_code } = watch()
   const [fetchNcm, setFetchNcm] = useState(false)
   //PROPRIEDADES DO PRODUTO
