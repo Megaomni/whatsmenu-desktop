@@ -1,9 +1,0 @@
-{
-  "reporter": ["text", "html"],
-  "all": true,
-  "include": ["app/**/*"],
-  "exclude": ["test/**/*", "app/@types", "app/lib/axios.ts"],
-  "report-dir": "./tests/coverage",
-  "check-coverage": true,
-  "statements": 100
-}

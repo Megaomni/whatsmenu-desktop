@@ -1,3 +1,0 @@
-{
-  "extends": ["@whatsmenu/typescript-config/base.json"],
-}
