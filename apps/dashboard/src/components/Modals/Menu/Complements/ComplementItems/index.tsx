@@ -164,7 +164,7 @@ export const ComplementItems = ({ complementIndex }: ComplementItemsProps) => {
                       style={{ flex: '1 1 150px' }}
                       tabIndex={-1}
                       onClick={() => {
-                        removeItem(complementIndex)
+                        removeItem(itemIndex)
                       }}
 
                     >
