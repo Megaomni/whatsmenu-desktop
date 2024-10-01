@@ -694,7 +694,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         </Button>
                                         <Form.Control
                                           disabled={watch('bypass_amount')}
-                                          {...register('amount')}
+                                          {...register('amount', {
+                                            valueAsNumber: true,
+                                          })}
                                         />
                                         <Button
                                           variant="secondary"
@@ -741,7 +743,9 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         </Button>
                                         <Form.Control
                                           disabled={watch('bypass_amount')}
-                                          {...register('amount_alert')}
+                                          {...register('amount_alert', {
+                                            valueAsNumber: true,
+                                          })}
                                         />
                                         <Button
                                           variant="secondary"
@@ -882,6 +886,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         <Form.Control
                                           {...register('promoteValue', {
                                             onChange: (e) => mask(e, 'currency'),
+                                            valueAsNumber: true,
                                           })}
                                           className="w-75"
                                         />
@@ -933,6 +938,7 @@ export function ProductModal({ show, handleClose }: ProductProps) {
                                         className="w-75"
                                         {...register('promoteValueTable', {
                                           onChange: (e) => mask(e, 'currency'),
+                                          valueAsNumber: true,
                                         })}
                                       />
                                     </div>
