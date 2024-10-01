@@ -766,10 +766,9 @@ class CartController {
             }
 
             const integrations = profile.options.integrations
-            if (integrations && integrations.grovenfe) {
+            if (data.type !== 'T' && integrations && integrations.grovenfe) {
               try {
                 const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
-                console.log("DEBUG FISCAL: ", { groveNfePayments, formpayment: data.formsPayment[0].payment });
                 if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
                   const companyId = integrations.grovenfe.company_id
                   const { data: { company } } = await axios.get(`${Env.get('GROVE_NFE_URL')}/companies/${companyId}`, {
