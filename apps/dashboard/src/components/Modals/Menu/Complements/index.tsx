@@ -110,7 +110,6 @@ export function ComponentComplement({
 
   const [invalidComplementName, setInvalidComplementName] =
     useState<boolean>(false)
-
   let allComplements =
     complementType === 'default' ? productComplements : pizzaComplements
 
@@ -161,7 +160,6 @@ export function ComponentComplement({
       created_at: allComplements[0].created_at,
     })
   }
-
   const handleAddItemComplement = (index: number) => {
     const complement = watch(`complements.${index}`)
     complement.itens.push({
@@ -236,6 +234,30 @@ export function ComponentComplement({
                     <Form.Select
                       {...register(`complements.${index}.originalId`, {
                         valueAsNumber: true,
+                        onChange: (e) => {
+                          const originalComplement = allComplements.find(c => c.id === Number(e.target.value))
+                          if (originalComplement) {
+                            const complementUpdated = {
+                              itens: originalComplement.itens.map((item) => ({
+                                ...item,
+                                amount: Number(item.amount) ?? 0,
+                                amount_alert: Number(item.amount_alert) ?? 0,
+                                bypass_amount: Boolean(item.bypass_amount),
+                              })),
+                              max: originalComplement.max,
+                              min: originalComplement.min,
+                              name: originalComplement.name,
+                              order: originalComplement.order,
+                              required: Boolean(originalComplement.required),
+                              type: originalComplement.type,
+                              created_at: originalComplement.created_at,
+                              id: undefined,
+                              isDraft: true,
+                              originalId: originalComplement.id,
+                            }
+                            updateComplement(index, complementUpdated)
+                          }
+                        }
                       })}
                     >
                       {allComplements.map((complement, index) => (
@@ -243,18 +265,18 @@ export function ComponentComplement({
                           key={`${complement.id}-${index}`}
                           value={`${complement.id}`}
                         >
-                          {`${complement.name} - [${
-                            complementType === 'default'
-                              ? products.find(
-                                  (prod) =>
-                                    prod.id === complement.pivot?.productId
-                                )?.name
-                              : categories.find((cat) =>
-                                  cat.product?.complements.some(
-                                    (comp) => comp.id === complement.id
-                                  )
-                                )?.name
-                          }]`}
+                          {`${complement.name} - [${complementType === 'default'
+                            ? products.find(
+                              (prod) =>
+                                Number(prod.id) === complement.pivot?.productId
+
+                            )?.name
+                            : categories.find((cat) =>
+                              cat.product?.complements.some(
+                                (comp) => comp.id === complement.id
+                              )
+                            )?.name
+                            }]`}
                         </option>
                       ))}
                     </Form.Select>
