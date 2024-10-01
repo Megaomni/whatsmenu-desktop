@@ -39,7 +39,7 @@ export default class GroveNfesController {
 
   async convertToFocusNote({ request, response }: HttpContext) {
     const { cart, company } = request.all()
-
+    //
     try {
       const focus_note = convertToFocusNfce({ cart, groveNfeCompany: company })
 

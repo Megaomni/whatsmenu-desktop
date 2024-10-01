@@ -395,29 +395,6 @@ class CartController {
         }
       }
 
-      const integrations = profile.options.integrations
-      if (integrations && integrations.grovenfe) {
-        const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
-        if (groveNfePayments.some((formpayment) => formpayment.type === data.formsPayment[0].payment)) {
-          try {
-            const companyId = integrations.grovenfe.company_id
-            const { data } = await axios.post(
-              `${Env.get('GROVENFE_API_URL')}/fiscalNotes/create/${companyId}`,
-              {
-                formPayment: data.formsPayment[0],
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
-                },
-              }
-            )
-          } catch (error) {
-            console.error('Erro ao criar a nota fiscal:', error)
-          }
-        }
-      }
-
       const address = await ClientAddress.find(data.addressId)
 
       const isPackageDeliveryDate =
@@ -789,36 +766,32 @@ class CartController {
             }
 
             const integrations = profile.options.integrations
-            if (integrations && integrations.grovenfe) {
+            if (data.type !== 'T' && integrations && integrations.grovenfe) {
               try {
                 const groveNfePayments = integrations.grovenfe.config.fiscal_notes.forms_payments
                 if (groveNfePayments.some(formpayment => formpayment.type === data.formsPayment[0].payment)) {
-                  try {
-                    const companieId = integrations.grovenfe.company_id
-                    const { company } = axios.get(`${Env.get('GROVENFE_API_URL')}/v1/companies/${companieId}`, {
-                      headers: {
-                        Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
-                      },
-                    })
+                  const companyId = integrations.grovenfe.company_id
+                  const { data: { company } } = await axios.get(`${Env.get('GROVE_NFE_URL')}/companies/${companyId}`, {
+                    headers: {
+                      Authorization: `Bearer ${Env.get('GROVE_NFE_TOKEN')}`,
+                    },
+                  })
 
-                    const { focus_note } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
+                  const { data: { focus_note } } = await axios.post(`${Env.get('V3_API')}/grovenfe/convertToFocusNote`, { cart, company })
 
-                    const { data } = await axios.post(`${Env.get('GROVENFE_API_URL')}/v1/fiscalNotes/create/${companieId}`, {
-                      external_id: String(cart.id),
-                      nfce: focus_note,
-                    }, {
-                      headers: {
-                        Authorization: `Bearer ${Env.get('GROVENFE_SECRET_TOKEN')}`,
-                      },
-                    }
-                    )
-                  } catch (error) {
-                    console.error('Erro ao criar a nota fiscal:', error);
+                  await axios.post(`${Env.get('GROVE_NFE_URL')}/fiscalNotes/create/${companyId}`, {
+                    external_id: String(cart.id),
+                    nfce: focus_note,
+                  }, {
+                    headers: {
+                      Authorization: `Bearer ${Env.get('GROVE_NFE_TOKEN')}`,
+                    },
                   }
+                  )
+
                 }
               } catch (error) {
-                console.error('Erro ao verificar as integrações:', error);
-                throw error;
+                console.error('Erro ao criar a nota fiscal:', error);
               }
             }
             console.log('Transação finalizada com sucesso')

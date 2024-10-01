@@ -104,7 +104,11 @@ export function Carts(data: any) {
     }
     try {
       const nfce = convertToFocusNfce({ cart, groveNfeCompany })
-      await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id })
+      const { data } = await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id, ignore_limit: true })
+      cart.controls.grovenfe = {
+        fiscal_note: data.fiscal_note
+      }
+      setCart(new Cart(cart))
     } catch (error) {
       throw error
     }
@@ -433,8 +437,8 @@ export function Carts(data: any) {
                               </td>
                               {profile.options.integrations?.grovenfe && (
                                 <td>
-                                  {cart.controls?.grovenfe?.fiscal_note ? (
-                                    <Link href={cart.controls?.grovenfe?.fiscal_note.url_consulta_nf} target='_blank'>
+                                  {cart.controls?.grovenfe?.fiscal_note.aditionalInfo.qrcode_url ? (
+                                    <Link href={cart.controls?.grovenfe?.fiscal_note.aditionalInfo.qrcode_url} target='_blank'>
                                       <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                     </Link>
                                   ) : (

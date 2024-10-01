@@ -51,5 +51,6 @@ export const convertToFocusNfce = ({
         bandeira_operadora: formPayment.flag ? formPayment.flag : null,
       };
     }),
+    valor_total: Number(cart.total.toFixed(2)),
   };
 };

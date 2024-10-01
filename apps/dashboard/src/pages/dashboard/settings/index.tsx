@@ -1202,6 +1202,26 @@ export default function Settings() {
                       })
                     }}
                   />
+                  <Form.Check
+                    type="switch"
+                    id="image-size-full"
+                    label="Ativar tamanho original da imagem "
+                    className="fs-7"
+                    checked={profileOptions.store.productModal.imgFull}
+                    onChange={(e) => {
+                      const isChecked = e.target.checked
+                      setProfileOptions({
+                        ...profileOptions,
+                        store: {
+                          ...profileOptions.store,
+                          productModal: {
+                            ...profileOptions.store.productModal,
+                            imgFull: isChecked ? true : false,
+                          },
+                        },
+                      })
+                    }}
+                  />
                 </Card.Body>
               </Card>
             </Col>

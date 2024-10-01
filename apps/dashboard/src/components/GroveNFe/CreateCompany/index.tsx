@@ -95,6 +95,8 @@ export function CreateCompany() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch
   } = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
   })
@@ -110,7 +112,6 @@ export function CreateCompany() {
   const toggleAdvancedSettingsNfce = () =>
     setAdvancedSettingsNfce(!advancedSettingsNfce)
 
-  const [nfce, setNfce] = useState(false)
   const [cnpjMasked, setCnpjMasked] = useState('')
   const [phoneMasked, setPhoneMasked] = useState('')
   const [cepMasked, setCepMasked] = useState('')
@@ -282,12 +283,12 @@ export function CreateCompany() {
           if (eventName === 'certificateCompany') {
             setCertificateBase64(base64 as string)
           }
+          setValue('arquivo_certificado_base64', base64)
         }
       }
       reader.readAsDataURL(file)
     }
   }
-
   return (
     <>
       <form id="createCompany" onSubmit={handleSubmit(createCompanyGroveNfe)}>
@@ -369,7 +370,6 @@ export function CreateCompany() {
                   {t('attach_certificate')}
                   <input
                     type="file"
-                    {...register('arquivo_certificado_base64')}
                     name="certificateCompany"
                     onChange={(e) => {
                       if (e.target.files) {
@@ -630,10 +630,13 @@ export function CreateCompany() {
                         {t('zip_code')}
                       </Form.Label>
                       <Form.Control
-                        maxLength={8}
+                        maxLength={9}
                         {...register('cep', { required: 'CEP obrigatório' })}
                         onChange={(event) => {
-                          mask(event, 'cep')
+                          event.target.value = event.target.value.replace(
+                            /^(\d{5})(\d)/g,
+                            '$1-$2'
+                          )
                           setCepMasked(event.target.value)
                         }}
                       ></Form.Control>
@@ -799,16 +802,13 @@ export function CreateCompany() {
                     label="NFCe"
                     {...register('habilita_nfce')}
                     className="mb-3 mt-3"
-                    onChange={(event) => {
-                      setNfce(event?.target.checked)
-                    }}
                   ></Form.Switch>
                   {errors.habilita_nfce && (
                     <span className="text-danger">
                       {errors.habilita_nfce.message}
                     </span>
                   )}
-                  {nfce && (
+                  {watch('habilita_nfce') && (
                     <Row className="d-flex">
                       <div className="mt-2">
                         <Row>
@@ -826,7 +826,6 @@ export function CreateCompany() {
                               {t('next_number')}
                             </Form.Label>
                             <Form.Control
-                              defaultValue="1"
                               {...register('proximo_numero_nfce_producao')}
                             ></Form.Control>
                           </Col>

@@ -1,18 +1,13 @@
 import { AppContext } from '@context/app.ctx'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mask } from '@utils/wm-functions'
-import axios from 'axios'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import {
   Button,
   Card,
   Col,
   Form,
-  FormGroup,
-  Nav,
-  Row,
-  Tab,
-  Tabs,
+  Row
 } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -21,7 +16,7 @@ import { z } from 'zod'
 
 const EditEmissonSchema = z.object({
   day_limiter: z.coerce.number().nullable(),
-  forms_payment: z.array(
+  forms_payments: z.array(
     z.object({
       type: z.string(),
     })
@@ -39,13 +34,12 @@ export function ConfigEmission() {
       day_limiter:
         profile.options.integrations?.grovenfe?.config?.fiscal_notes
           .day_limiter,
-      forms_payment:
+      forms_payments:
         profile.options.integrations?.grovenfe?.config?.fiscal_notes
-          .forms_payment ?? [],
+          .forms_payments ?? [],
     },
   })
 
-  //   forms_payment
   const handleFormsPayment = ({
     checked,
     typePayment,
@@ -53,16 +47,16 @@ export function ConfigEmission() {
     checked: boolean
     typePayment: string
   }) => {
-    let updatedPayments = getValues('forms_payment').filter(
+    let updatedPayments = getValues('forms_payments').filter(
       (payment) => payment.type !== typePayment
     )
     if (checked) {
-      setValue('forms_payment', [...updatedPayments, { type: typePayment }])
+      setValue('forms_payments', [...updatedPayments, { type: typePayment }])
     }
 
     if (!checked) {
       setValue(
-        'forms_payment',
+        'forms_payments',
         updatedPayments.filter((payment) => payment.type !== typePayment)
       )
     }
@@ -125,7 +119,7 @@ export function ConfigEmission() {
                         name={formPayment.payment}
                         className="my-3"
                         label={t(formPayment.payment)}
-                        checked={watch('forms_payment').some(
+                        checked={watch('forms_payments').some(
                           (payment) => payment.type === formPayment.payment
                         )}
                         onChange={(e) => {
