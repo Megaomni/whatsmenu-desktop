@@ -5,7 +5,6 @@ on:
     branches:
       - beta
       - main
-      - feat/dashboard/integrations
     paths:
       - "apps/api/v3/**"
       - ".github/workflows/deploy-api3.yml"
@@ -30,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOST_TWO) }}
+        ec2_host: ${{ fromJson(github.ref_name  == 'beta' && vars.EC2_DEPLOY_HOSTS_1 || vars.EC2_DEPLOY_HOSTS) }}
 
     steps:
       - name: Check out the repository
