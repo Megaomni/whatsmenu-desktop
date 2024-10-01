@@ -98,12 +98,12 @@ export function Carts(data: any) {
     }
   }
 
-  const handleEmitNote = async ({ cart, groveNfeCompany }: { cart: Cart, groveNfeCompany: any }) => {
+  const handleEmitNote = async ({ cart }: { cart: Cart }) => {
     if (!profile?.options?.integrations?.grovenfe) {
       return
     }
     try {
-      const nfce = convertToFocusNfce({ cart, groveNfeCompany })
+      const nfce = convertToFocusNfce({ cart, groveNfeCompany: groveNfeCompany?.company })
       const { data } = await groveNfeApi.post(`/v1/fiscalNotes/create/${profile.options.integrations.grovenfe.company_id}`, { nfce, external_id: cart.id, ignore_limit: true })
       cart.controls.grovenfe = {
         fiscal_note: data.fiscal_note
@@ -442,7 +442,7 @@ export function Carts(data: any) {
                                       <Image src="/images/grovenfe/nf-e-Emitida.svg" alt="NFCe Emitida" height={30} width={30} />
                                     </Link>
                                   ) : (
-                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({ cart, groveNfeCompany })} />
+                                    <Image src="/images/grovenfe/nf-e-Pendente.svg" alt="Nota Fiscal Pendente" height={30} width={30} onClick={() => handleEmitNote({ cart })} />
                                   )}
                                 </td>
                               )}

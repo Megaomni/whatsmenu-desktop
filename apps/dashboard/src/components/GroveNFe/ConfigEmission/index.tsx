@@ -27,7 +27,7 @@ type EditEmissonFormData = z.infer<typeof EditEmissonSchema>
 
 export function ConfigEmission() {
   const { t } = useTranslation()
-  const { setProfile, profile } = useContext(AppContext)
+  const { setProfile, profile, setGroveNfeCompany } = useContext(AppContext)
   const { register, setValue, getValues, handleSubmit, watch } = useForm({
     resolver: zodResolver(EditEmissonSchema),
     defaultValues: {
@@ -70,7 +70,7 @@ export function ConfigEmission() {
       },
     }
     try {
-      const { data } = await groveNfeApi.put(`/v1/companies/${company.id}`, { company })
+      const { data } = await groveNfeApi.put(`/v1/companies/${company.id}`, company)
       setProfile((prevProfile) => ({
         ...prevProfile!,
         options: {
@@ -84,6 +84,12 @@ export function ConfigEmission() {
           },
         },
       }))
+      setGroveNfeCompany(state => {
+        if (state) {
+          state.company = data.company
+        }
+        return state
+      })
     } catch (error) {
       console.error(error)
       throw error

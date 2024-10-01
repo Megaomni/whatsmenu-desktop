@@ -1,7 +1,6 @@
 import { AppContext } from '@context/app.ctx'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { mask } from '@utils/wm-functions'
-import axios from 'axios'
 import { useContext, useEffect, useRef, useState } from 'react'
 import {
   Button,
@@ -27,8 +26,8 @@ const createCompanySchema = z.object({
     })
     .min(10, 'CNPJ inválido'),
   nome: z.string().min(1, 'Digite um nome'),
-  arquivo_certificado_base64: z.string(),
-  senha_certificado: z.string().min(1, 'Senha obrigatória').optional(),
+  arquivo_certificado_base64: z.string().optional(),
+  senha_certificado: z.string({ message: 'Senha obrigatória' }).optional(),
   arquivo_logo_base64: z.object({}).optional(),
   nome_fantasia: z
     .string({
@@ -47,7 +46,7 @@ const createCompanySchema = z.object({
   telefone: z.string().min(10, 'Telefone inválido').optional(),
   cep: z.string().min(8, 'CEP inválido'),
   logradouro: z.string().min(5, 'Logradouro obrigatório'),
-  numero: z.coerce.number().min(1, 'Número obrigatório'),
+  numero: z.coerce.number({ message: 'Número obrigatório' }),
   complemento: z.string().optional(),
   bairro: z.string().min(1, 'Bairro obrigatório'),
   municipio: z.string().min(1, 'Município obrigatório'),
@@ -87,6 +86,7 @@ const createCompanySchema = z.object({
 type CreateCompanyFormData = z.infer<typeof createCompanySchema>
 
 export function CreateCompany() {
+  const { setProfile, profile, groveNfeCompany } = useContext(AppContext)
   const { t } = useTranslation()
   const buttonFooter = useRef<HTMLDivElement>(null)
 
@@ -100,17 +100,9 @@ export function CreateCompany() {
   } = useForm<CreateCompanyFormData>({
     resolver: zodResolver(createCompanySchema),
   })
-  const { setProfile, profile } = useContext(AppContext)
   const grovenfe = profile.options.integrations?.grovenfe?.created_at
 
   const [tabKey, setTabKey] = useState<string | null>('identification')
-
-  const [advancedSettings, setAdvancedSettings] = useState(false)
-  const toggleAdvancedSettings = () => setAdvancedSettings(!advancedSettings)
-
-  const [advancedSettingsNfce, setAdvancedSettingsNfce] = useState(false)
-  const toggleAdvancedSettingsNfce = () =>
-    setAdvancedSettingsNfce(!advancedSettingsNfce)
 
   const [cnpjMasked, setCnpjMasked] = useState('')
   const [phoneMasked, setPhoneMasked] = useState('')
@@ -136,6 +128,10 @@ export function CreateCompany() {
       external_id: profile.id,
     }
 
+    if (groveNfeCompany?.company) {
+      body.controls = groveNfeCompany.company.controls
+    }
+
     const haveIntegration = Boolean(profile?.options?.integrations?.grovenfe)
     let url = '/v1/companies'
     let method: 'put' | 'post' = 'post'
@@ -156,7 +152,7 @@ export function CreateCompany() {
               ...prevProfile!.options.integrations,
               grovenfe: {
                 ...prevProfile!.options.integrations?.grovenfe,
-                created_at: data.company.created_at,
+                created_at: groveNfeCompany?.company.created_at,
               },
             },
           },
@@ -172,66 +168,57 @@ export function CreateCompany() {
   }
 
   useEffect(() => {
-    if (profile.options.integrations?.grovenfe?.company_id) {
-      axios
-        .get(
-          `${process.env.NEXT_PUBLIC_GROVE_NFE_URL}/v1/companies/${profile.options.integrations.grovenfe.company_id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROVE_NFE_TOKEN}`,
-            },
-          }
-        )
-        .then(({ data }) => {
-          reset({
-            cnpj: data.company.doc_number
-              .replace(/(\d{2})(\d)/, '$1.$2')
-              .replace(/(\d{3})(\d)/, '$1.$2')
-              .replace(/(\d{3})(\d)/, '$1/$2')
-              .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
-            nome: data.focus_company_data.nome,
-            nome_fantasia: data.focus_company_data.nome_fantasia,
-            inscricao_estadual: data.company.aditionalInfo.inscricao_estadual,
-            inscricao_municipal: data.company.aditionalInfo.inscricao_municipal,
-            regime_tributario: data.company.aditionalInfo.regime_tributario,
-            email: data.focus_company_data.email,
-            email_contabilidade: data.company.aditionalInfo.email_contabilidade,
-            telefone: data.company.phone.replace(
-              /(\d{2})(\d{5})(\d{4})/,
-              '($1) $2-$3'
-            ),
-            cep: data.company.address.zip_code.replace(
-              /^(\d{5})(\d)/g,
-              '$1-$2'
-            ),
-            logradouro: data.focus_company_data.logradouro,
-            numero: data.focus_company_data.numero,
-            complemento: data.focus_company_data.complemento,
-            bairro: data.focus_company_data.bairro,
-            municipio: data.focus_company_data.municipio,
-            uf: data.focus_company_data.uf,
-            nome_responsavel: data.focus_company_data.nome_responsavel,
-            cpf_responsavel: data.focus_company_data.cpf_responsavel,
-            cpf_cnpj_contabilidade:
-              data.company.aditionalInfo.cpf_cnpj_contabilidade,
-            habilita_nfce: data.company.aditionalInfo.habilita_nfce,
-            enviar_email_destinatario:
-              data.focus_company_data.enviar_email_destinatario,
-            discrimina_impostos: data.company.aditionalInfo.discrimina_impostos,
-            habilita_contingencia_offline_nfce:
-              data.focus_company_data.habilita_contingencia_offline_nfce,
-            mostrar_danfse_badge:
-              data.company.aditionalInfo.mostrar_danfse_badge,
-            serie_nfce_producao: data.company.aditionalInfo.serie_nfce_producao,
-            proximo_numero_nfce_producao:
-              data.company.aditionalInfo.proximo_numero_nfce_producao,
-            id_token_nfce_producao:
-              data.company.aditionalInfo.id_token_nfce_producao,
-            csc_nfce_producao: data.company.aditionalInfo.csc_nfce_producao,
-          })
-        })
+    if (groveNfeCompany) {
+      reset({
+        cnpj: groveNfeCompany.company.doc_number
+          .replace(/(\d{2})(\d)/, '$1.$2')
+          .replace(/(\d{3})(\d)/, '$1.$2')
+          .replace(/(\d{3})(\d)/, '$1/$2')
+          .replace(/(\d{4})(\d{1,2})$/, '$1-$2'),
+        nome: groveNfeCompany.focus_company_data.nome,
+        nome_fantasia: groveNfeCompany.focus_company_data.nome_fantasia,
+        inscricao_estadual: groveNfeCompany.company.aditionalInfo.inscricao_estadual,
+        inscricao_municipal: groveNfeCompany.company.aditionalInfo.inscricao_municipal,
+        regime_tributario: groveNfeCompany.company.aditionalInfo.regime_tributario,
+        email: groveNfeCompany.focus_company_data.email,
+        email_contabilidade: groveNfeCompany.company.aditionalInfo.email_contabilidade,
+        telefone: groveNfeCompany.company.phone.replace(
+          /(\d{2})(\d{5})(\d{4})/,
+          '($1) $2-$3'
+        ),
+        cep: groveNfeCompany.company.address.zip_code.replace(
+          /^(\d{5})(\d)/g,
+          '$1-$2'
+        ),
+        logradouro: groveNfeCompany.focus_company_data.logradouro,
+        numero: groveNfeCompany.focus_company_data.numero,
+        complemento: groveNfeCompany.focus_company_data.complemento,
+        bairro: groveNfeCompany.focus_company_data.bairro,
+        municipio: groveNfeCompany.focus_company_data.municipio,
+        uf: groveNfeCompany.focus_company_data.uf,
+        nome_responsavel: groveNfeCompany.focus_company_data.nome_responsavel,
+        cpf_responsavel: groveNfeCompany.focus_company_data.cpf_responsavel,
+        cpf_cnpj_contabilidade:
+          groveNfeCompany.company.aditionalInfo.cpf_cnpj_contabilidade,
+        habilita_nfce: groveNfeCompany.company.aditionalInfo.habilita_nfce,
+        enviar_email_destinatario:
+          groveNfeCompany.focus_company_data.enviar_email_destinatario,
+        discrimina_impostos: groveNfeCompany.company.aditionalInfo.discrimina_impostos,
+        habilita_contingencia_offline_nfce:
+          groveNfeCompany.focus_company_data.habilita_contingencia_offline_nfce,
+        mostrar_danfse_badge:
+          groveNfeCompany.company.aditionalInfo.mostrar_danfse_badge,
+        serie_nfce_producao: groveNfeCompany.company.aditionalInfo.serie_nfce_producao,
+        proximo_numero_nfce_producao:
+          groveNfeCompany.company.aditionalInfo.proximo_numero_nfce_producao,
+        id_token_nfce_producao:
+          groveNfeCompany.company.aditionalInfo.id_token_nfce_producao,
+        csc_nfce_producao: groveNfeCompany.company.aditionalInfo.csc_nfce_producao,
+        senha_certificado: groveNfeCompany.company.aditionalInfo.senha_certificado,
+        arquivo_certificado_base64: groveNfeCompany.company.aditionalInfo.arquivo_certificado_base64,
+      })
     }
-  }, [])
+  }, [groveNfeCompany])
 
   useEffect(() => {
     if (
@@ -334,7 +321,7 @@ export function CreateCompany() {
                   className="d-flex justify-content-center align-items-center my-2 rounded"
                   style={{ border: '1px dashed #ccc', height: '120px' }}
                 >
-                  {!certificateName.length ? (
+                  {!certificateName.length && !groveNfeCompany?.company.aditionalInfo.arquivo_certificado_base64 ? (
                     <p className="m-0 p-3 text-center">
                       Carregue seu certificado na extensão PFX ou P12!
                     </p>

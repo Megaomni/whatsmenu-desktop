@@ -177,7 +177,11 @@ interface AppContextData {
     symbol?: boolean
     withoutSymbol?: boolean
   }) => string
-  groveNfeCompany: any
+  groveNfeCompany?: { company: any; focus_company_data: any }
+  setGroveNfeCompany: Dispatch<SetStateAction<{
+    company: any;
+    focus_company_data: any;
+  } | undefined>>
 }
 
 type RequestsToPrintType = {
@@ -295,7 +299,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const [wsCommand, setWsCommand] = useState<CommandType | null>(null)
   const [wsPrint, setWsPrint] = useState<Subscription | null>(null)
   const [prevent, setPrevent] = useState<boolean>(false)
-  const [groveNfeCompany, setGroveNfeCompany] = useState<any>()
+  const [groveNfeCompany, setGroveNfeCompany] = useState<{ company: any; focus_company_data: any }>()
 
   const [defaultDomain, setDefaultDomain] = useLocalStorage<string | null>(
     'defaultDomain',
@@ -998,8 +1002,7 @@ export function AppProvider({ children }: AppProviderProps) {
   useEffect(() => {
     if (profile && Boolean(profile?.options?.integrations?.grovenfe) && !groveNfeCompany) {
       groveNfeApi.get(`/v1/companies/${profile.options.integrations.grovenfe.company_id}`).then(({ data }) => {
-        setGroveNfeCompany(data.company)
-        console.log(data.company);
+        setGroveNfeCompany(data)
       })
     }
 
@@ -1086,6 +1089,7 @@ export function AppProvider({ children }: AppProviderProps) {
             setWhatsmenuDesktopDownloaded,
             currency,
             groveNfeCompany,
+            setGroveNfeCompany
             // overlaySpinnerConfig,
             // setOverlaySpinnerConfig,
           }}
