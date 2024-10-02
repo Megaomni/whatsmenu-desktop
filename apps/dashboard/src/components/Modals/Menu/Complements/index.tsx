@@ -51,7 +51,7 @@ export const ComplementFormSchema = z.object({
       status: z.boolean(),
       name: z
         .string()
-        .min(3, 'O nome deve ter pelo menos 3 caracteres')
+        .min(1, 'O nome deve ter pelo menos 3 caracteres')
         .max(70, 'O nome deve ter no maúximo 70 caracteres'),
       description: z
         .string()
