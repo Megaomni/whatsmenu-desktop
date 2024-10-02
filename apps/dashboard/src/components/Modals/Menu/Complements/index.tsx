@@ -34,7 +34,7 @@ export const ComplementFormSchema = z.object({
     .optional(),
   name: z
     .string()
-    .min(3, 'O nome deve ter pelo menos 3 caracteres')
+    .min(1, 'O nome deve ter pelo menos 1 caractere')
     .max(50, 'O nome deve ter no maúximo 50 caracteres'),
   required: z.boolean(),
   type: z.enum(['default', 'pizza']),
@@ -82,7 +82,7 @@ export function ComponentComplement({
   invalidComplement,
   complementType,
 }: ComplementProps) {
-  const { watch, control, register, setValue } = useFormContext<{
+  const { watch, control, register, setValue, formState } = useFormContext<{
     complements: ComplementFormData[]
   }>()
   const {
@@ -423,6 +423,7 @@ export function ComponentComplement({
                             className={`mb-2 ${index === 0 ? 'first-complement-focus' : ''}`}
                             {...register(`complements.${index}.name`)}
                             maxLength={50}
+                            isInvalid={Boolean(formState.errors?.complements?.[index]?.name)}
                           />
                           <Form.Control.Feedback
                             tooltip
