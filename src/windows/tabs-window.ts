@@ -55,30 +55,30 @@ export const tabsWindow = {
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       tabGroup.webContents.loadURL(
-        `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/tabs.html`
+        `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/tabs.html`,
       );
     } else {
       tabGroup.webContents.loadFile(
         path.join(
           __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/tabs.html`
-        )
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/tabs.html`,
+        ),
       );
     }
     window.setTitle(`WhatsMenu Desktop - ${app.getVersion()}`);
-    
-    window.contentView.addChildView(tabGroup)
-    window.tabs.forEach(tab => window.contentView.addChildView(tab))
-    tabGroup.webContents.on('did-finish-load', () => {
-      const profile = store.get('configs.profile') as ProfileType
-      const merchant = store.get('configs.merchant') as MerchantType
-      tabGroup.webContents.send('onProfileChange', profile)
-      tabGroup.webContents.send('onMerchantChange', merchant)
-      store.onDidChange('configs', (newValue) => {
-        tabGroup.webContents.send('onProfileChange', newValue.profile)
-        tabGroup.webContents.send('onMerchantChange', newValue.merchant)
-      })
-    })
+
+    window.contentView.addChildView(tabGroup);
+    window.tabs.forEach((tab) => window.contentView.addChildView(tab));
+    tabGroup.webContents.on("did-finish-load", () => {
+      const profile = store.get("configs.profile") as ProfileType;
+      const merchant = store.get("configs.merchant") as MerchantType;
+      tabGroup.webContents.send("onProfileChange", profile);
+      tabGroup.webContents.send("onMerchantChange", merchant);
+      store.onDidChange("configs", (newValue) => {
+        tabGroup.webContents.send("onProfileChange", newValue.profile);
+        tabGroup.webContents.send("onMerchantChange", newValue.merchant);
+      });
+    });
 
     window.contentView.addChildView(tabGroup);
     window.tabs.forEach((tab) => window.contentView.addChildView(tab));

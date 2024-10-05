@@ -1,28 +1,27 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import { ProfileType } from '../@types/profile';
-import * as RadixTabs from '@radix-ui/react-tabs';
+import React, { ReactNode, useEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { ProfileType } from "../@types/profile";
+import * as RadixTabs from "@radix-ui/react-tabs";
 
 import { FaCashRegister, FaRobot } from "react-icons/fa";
 import { IoSettings } from "react-icons/io5";
 import { MdMenuBook } from "react-icons/md";
-import { IconContext } from 'react-icons';
+import { IconContext } from "react-icons";
 
 const root = createRoot(document.body);
 
 type TabProps = RadixTabs.TabsTriggerProps & {
-  tabTitle: string
-  icon?: ReactNode
-}
+  tabTitle: string;
+  icon?: ReactNode;
+};
 
 const Tab = ({ icon, tabTitle, ...props }: TabProps) => {
-  const tabRef = useRef<HTMLButtonElement>(null)
+  const tabRef = useRef<HTMLButtonElement>(null);
   const handleSetTab = () => {
-    window.TabsApi.setActiveTab(props.value)
-  }
+    window.TabsApi.setActiveTab(props.value);
+  };
   return (
     <RadixTabs.Trigger
-      
       className='text-xs leading-snug flex items-center cursor-pointer justify-between text-center text-zinc-950 w-64 h-[34px] px-4 relative border-b-4 border-white
       data-[state=inactive]:before:content-["|"]
       data-[state=active]:bg-white data-[state=active]:border-b-0
@@ -44,69 +43,53 @@ const Tab = ({ icon, tabTitle, ...props }: TabProps) => {
       onClick={handleSetTab}
       {...props}
     >
-      <div className='flex gap-2 flex-grow items-center '>
+      <div className="flex gap-2 flex-grow items-center ">
         {icon}
         <span>{tabTitle}</span>
       </div>
     </RadixTabs.Trigger>
-  )
-}
+  );
+};
 const Tabs = () => {
-  const [profile, setProfile] = useState<ProfileType | null>()
+  const [profile, setProfile] = useState<ProfileType | null>();
 
   useEffect(() => {
     window.DesktopApi.onProfileChange((_, profile) => {
-      setProfile(profile)
-    })
-  }, [])
+      setProfile(profile);
+    });
+  }, []);
   return (
-    
-    <RadixTabs.Root defaultValue='dashboard'>
-      <IconContext.Provider value={{ size: '16', className: 'text-green-500' }}>
+    <RadixTabs.Root defaultValue="dashboard">
+      <IconContext.Provider value={{ size: "16", className: "text-green-500" }}>
         <div
           style={{
-            overflow: 'hidden'
+            overflow: "hidden",
           }}
-          className='bg-zinc-200 w-full  border-b-white border-2 overflow-y-hidden'
+          className="bg-zinc-200 w-full  border-b-white border-2 overflow-y-hidden"
         >
-
-        <RadixTabs.List 
-          style={{
-            overflow: 'hidden'
-          }}
-          className='flex p-2 pb-0 h-[38px]'
-        >
-          <Tab 
-            value="dashboard"
-            tabTitle='Painel'
-            icon={<IoSettings />}
+          <RadixTabs.List
+            style={{
+              overflow: "hidden",
+            }}
+            className="flex p-2 pb-0 h-[38px]"
           >
-            
-          </Tab>
+            <Tab
+              value="dashboard"
+              tabTitle="Painel"
+              icon={<IoSettings />}
+            ></Tab>
             {profile && (
-            <>
-              <Tab 
-                value="pdv" 
-                tabTitle='PDV'
-                icon={<FaCashRegister />}
-              />
-              <Tab 
-                value="menu"
-                tabTitle='Menu'
-                icon={<MdMenuBook />}
-              />
-              <Tab 
-                value="bot"
-                tabTitle='Robô Whatsapp'
-                icon={<FaRobot />}
-              />
-            </>
+              <>
+                <Tab value="pdv" tabTitle="PDV" icon={<FaCashRegister />} />
+                <Tab value="menu" tabTitle="Menu" icon={<MdMenuBook />} />
+                <Tab value="bot" tabTitle="Robô Whatsapp" icon={<FaRobot />} />
+              </>
             )}
-        </RadixTabs.List>
+          </RadixTabs.List>
         </div>
       </IconContext.Provider>
     </RadixTabs.Root>
-  )
-}
+  );
+};
 
-root.render(<Tabs />)
+root.render(<Tabs />);

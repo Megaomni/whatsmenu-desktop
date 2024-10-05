@@ -22,7 +22,6 @@ export const create_dashboard_tab = () => {
     let merchant: MerchantType;
     let open = false;
     if (profile) {
-
       const day = DateTime.local().setZone(profile.timeZone).toISO();
       const today = DateTime.fromISO(day, { zone: profile.timeZone })
         .toFormat("EEEE")
@@ -33,10 +32,10 @@ export const create_dashboard_tab = () => {
         open = false;
       }
       const now = parseFloat(
-        DateTime.local().setZone(profile.timeZone).toFormat("HH.mm")
+        DateTime.local().setZone(profile.timeZone).toFormat("HH.mm"),
       );
       const filter = profile.week[today].filter(
-        (d: WeekDayType) => now >= convert(d.open) && now <= convert(d.close)
+        (d: WeekDayType) => now >= convert(d.open) && now <= convert(d.close),
       );
 
       if (filter.length) {
@@ -46,12 +45,15 @@ export const create_dashboard_tab = () => {
       store.onDidAnyChange((newValue) => {
         if (newValue.configs.profile.options.integrations) {
           getMerchantApi({ profile });
-          merchant = getMerchant();          
+          merchant = getMerchant();
           if (open && merchant) {
             if (pollingInterval) {
               clearInterval(pollingInterval);
             }
-            pollingInterval = setInterval(() => polling({ merchant, profile }), 30 * 1000);
+            pollingInterval = setInterval(
+              () => polling({ merchant, profile }),
+              30 * 1000,
+            );
           }
         }
       });

@@ -5,16 +5,18 @@ import { Switch } from "./shadcn-ui/components/ui/switch";
 import { ProfileType } from "../@types/profile";
 import { whatsmenu_api } from "../lib/axios";
 import { Ws, wsURL } from "../services/ws";
-import { MerchantType } from '../@types/merchant';
+import { MerchantType } from "../@types/merchant";
 
 const root = createRoot(document.body);
 
 const BotRoot = () => {
-  const [qrcode, setQrcode] = useState('');
-  const [connected, setConnected] = useState(false)
-  const [disconnectedReason, setDisconnectedReason] = useState<string | null>(null)
-  const [merchant, setMerchant] = useState<MerchantType | null>(null)
- 
+  const [qrcode, setQrcode] = useState("");
+  const [connected, setConnected] = useState(false);
+  const [disconnectedReason, setDisconnectedReason] = useState<string | null>(
+    null,
+  );
+  const [merchant, setMerchant] = useState<MerchantType | null>(null);
+
   const [loading, setLoading] = useState({
     status: true,
     message: null,
@@ -46,7 +48,7 @@ const BotRoot = () => {
     window.DesktopApi.onProfileChange((event, data) => {
       setProfile(data);
     });
-    
+
     window.DesktopApi.getMerchant();
     window.DesktopApi.getProfile();
   }, []);
@@ -70,7 +72,7 @@ const BotRoot = () => {
   }, [profile]);
 
   const handleWhatsBotConfig = async (
-    whatsapp: ProfileType["options"]["bot"]["whatsapp"]
+    whatsapp: ProfileType["options"]["bot"]["whatsapp"],
   ) => {
     if (profile) {
       try {

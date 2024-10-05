@@ -116,7 +116,7 @@ export class WhatsApp {
       });
       const firstMessage = !lastMessage;
       const penultimateMessageDate = DateTime.fromSeconds(
-        penultimateMessage.timestamp
+        penultimateMessage.timestamp,
       );
       const lastMessageDate = lastMessage
         ? DateTime.fromSeconds(lastMessage.timestamp)
@@ -169,7 +169,7 @@ export class WhatsApp {
         .filter(
           (voucher) =>
             voucher.expirationDate &&
-            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
+            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0,
         )
         .forEach((voucher) => deleteVoucherToNotify(voucher.id));
     };
@@ -181,14 +181,15 @@ export class WhatsApp {
             (voucher) =>
               voucher.afterPurchaseDate &&
               DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
-                .minutes <= 0
+                .minutes <= 0,
           );
           break;
         case "remember":
           list = getVoucherToNotifyList().filter(
             (voucher) =>
               voucher.rememberDate &&
-              DateTime.fromISO(voucher.rememberDate).diffNow(["days"]).days <= 0
+              DateTime.fromISO(voucher.rememberDate).diffNow(["days"]).days <=
+                0,
           );
           break;
         case "expire":
@@ -196,7 +197,7 @@ export class WhatsApp {
             (voucher) =>
               voucher.expirationDate &&
               DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <=
-                0
+                0,
           );
           break;
         default:
@@ -206,7 +207,7 @@ export class WhatsApp {
         const contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
         await this.bot.sendMessage(
           contact._serialized,
-          botMessages.cashback[messageType]({ voucher, profile })
+          botMessages.cashback[messageType]({ voucher, profile }),
         );
         switch (messageType) {
           case "afterPurchase":
@@ -264,7 +265,7 @@ export class WhatsApp {
 
   validateContact(
     callback: (contact: string) => Promise<WAWebJS.ContactId>,
-    contact: string
+    contact: string,
   ): Promise<WAWebJS.ContactId> {
     return new Promise((resolve, reject) => {
       setTimeout(() => {

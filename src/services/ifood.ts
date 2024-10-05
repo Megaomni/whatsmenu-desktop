@@ -17,7 +17,7 @@ export const getMerchantApi = async ({
       throw new Error("Perfil não encontrado!");
     }
     const { data } = await whatsmenu_api_v3.get(
-      `/ifood/merchant?slug=${profile.slug}`
+      `/ifood/merchant?slug=${profile.slug}`,
     );
     store.set("configs.merchant", data);
   } catch (error) {
@@ -46,7 +46,7 @@ export const polling = async ({
           Authorization: `Bearer ${merchant.token}`,
           "x-polling-merchants": `${merchant.merchantId}`,
         },
-      }
+      },
     );
 
     pollingData = data;
@@ -70,7 +70,7 @@ export const polling = async ({
           headers: {
             Authorization: `Bearer ${merchant?.token}`,
           },
-        }
+        },
       );
     }
   } catch (error) {

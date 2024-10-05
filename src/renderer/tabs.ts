@@ -27,5 +27,5 @@
  */
 
 // Add this to the end of the existing file
-import '../react/tabs';
-import './index.css';
+import "../react/tabs";
+import "./index.css";
