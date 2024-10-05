@@ -11,7 +11,7 @@ export const whatsmenu_api_v3 = axios.create({
 
 export const integration_api = axios.create({
   baseURL: env.INTEGRATION_API,
-})
+});
 
 export const whatsmenu_api_integration = axios.create({
   // baseURL: 'https://api4.whatsmenu.com.br/api/v4/desktop/'

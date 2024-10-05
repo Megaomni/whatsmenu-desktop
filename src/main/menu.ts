@@ -239,7 +239,7 @@ const updateMenu = async () => {
       label: "+ Adicionar Impressora",
       click: async (_: MenuItem, window: BrowserWindow) => {
         const printers = (await window.webContents.getPrintersAsync()).filter(
-          (printer) => !clientPrinters.some((p) => p.name === printer.name)
+          (printer) => !clientPrinters.some((p) => p.name === printer.name),
         );
         if (!printers.length) {
           return dialog.showMessageBox(window, {

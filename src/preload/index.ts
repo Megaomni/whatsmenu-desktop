@@ -11,24 +11,24 @@ import { MerchantType } from "../@types/merchant";
 export const WhatsAppBotApi = {
   // Events
   onqrcode: (
-    callback: (event: Electron.IpcRendererEvent, qrcode: string) => void
+    callback: (event: Electron.IpcRendererEvent, qrcode: string) => void,
   ) => ipcRenderer.on("onqrcode", callback),
   onloading: (
     callback: (
       event: Electron.IpcRendererEvent,
-      value: { percent: number; message: string }
-    ) => void
+      value: { percent: number; message: string },
+    ) => void,
   ) => ipcRenderer.on("onloading", callback),
   onready: (callback: (event: Electron.IpcRendererEvent) => void) =>
     ipcRenderer.on("onready", callback),
   ondisconnected: (
     callback: (
       event: Electron.IpcRendererEvent,
-      reason: WAWebJS.WAState | "NAVIGATION"
-    ) => void
+      reason: WAWebJS.WAState | "NAVIGATION",
+    ) => void,
   ) => ipcRenderer.on("ondisconnected", callback),
   onmessagesend: (
-    callback: (event: Electron.IpcRendererEvent, client: ClientType) => void
+    callback: (event: Electron.IpcRendererEvent, client: ClientType) => void,
   ) => ipcRenderer.once("onmessagesend", callback),
 
   // Methods
@@ -46,7 +46,7 @@ export const WhatsMenuPrintApi = {
 
 export const DesktopApi = {
   onProfileChange: (
-    callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void
+    callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void,
   ) => ipcRenderer.on("onProfileChange", callback),
   onCart: (cart: { id: number; client?: ClientType }) =>
     ipcRenderer.send("onCart", cart),
