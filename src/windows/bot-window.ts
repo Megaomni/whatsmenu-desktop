@@ -4,7 +4,7 @@ import { whatsAppService } from "../main";
 import isDev from "electron-is-dev";
 
 let window: BrowserWindow;
-let forceClose = false
+let forceClose = false;
 
 const botWindow = {
   async createWindow() {
@@ -59,12 +59,12 @@ const botWindow = {
         dialog.showErrorBox("Ops!", err);
       });
 
-      window.on('close', (e) => {
+      window.on("close", (e) => {
         if (!forceClose) {
           e.preventDefault();
-          window.hide()
+          window.hide();
         }
-      })
+      });
 
       window.maximize();
     } else {
@@ -75,7 +75,7 @@ const botWindow = {
     return window;
   },
   windowIsOpen: !!window,
-  forceCloseWindow: () => forceClose = true,
+  forceCloseWindow: () => (forceClose = true),
 };
 
 export { botWindow };

@@ -5,6 +5,7 @@ import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
 import { vouchersToNotifyQueue } from "../lib/queue";
+import { MerchantType } from "../@types/merchant";
 
 export interface Store {
   configs: {
@@ -18,6 +19,7 @@ export interface Store {
     profile: ProfileType | null;
     contacts_cache: CacheContact[];
     voucherToNotify: VoucherNotification[];
+    merchant: MerchantType | null;
   };
 }
 
@@ -30,6 +32,9 @@ export const store = new ElectronStore<Store>({
     "0.2.4": (store) => {
       store.set("configs.voucherToNotify", []);
     },
+    "0.4.5": (store) => {
+      store.set("configs.merchant", null);
+    },
   },
   defaults: {
     configs: {
@@ -40,6 +45,7 @@ export const store = new ElectronStore<Store>({
         showHiddenWhatsApp: false,
       },
       profile: null,
+      merchant: null,
       contacts_cache: [],
       voucherToNotify: [],
     },
@@ -48,7 +54,7 @@ export const store = new ElectronStore<Store>({
 
 export const getPrinters = () =>
   store.get<"configs.printing.printers", Printer[]>(
-    "configs.printing.printers"
+    "configs.printing.printers",
   );
 
 export const getPrinter = (id: string) =>
@@ -83,24 +89,26 @@ export const deletePrinter = (id: string) =>
   store.set(
     "configs.printing.printers",
     (store.get("configs.printing.printers") as Printer[]).filter(
-      (p) => p.id !== id
-    )
+      (p) => p.id !== id,
+    ),
   );
 
 export const getProfile = () =>
   store.get<"configs.profile", ProfileType>("configs.profile");
+export const getMerchant = () =>
+  store.get<"configs.merchant", MerchantType>("configs.merchant");
 
 export const setCacheContactList = (cacheContact: CacheContact) =>
   store.set("configs.contacts_cache", cacheContact);
 
 export const getCacheContactList = () =>
   store.get<"configs.contacts_cache", Store["configs"]["contacts_cache"]>(
-    "configs.contacts_cache"
+    "configs.contacts_cache",
   );
 
 export const setCacheContactByWhatsapp = (
   whatsapp: string,
-  payload: Partial<CacheContact>
+  payload: Partial<CacheContact>,
 ) => {
   const cacheList = getCacheContactList();
   const cacheListUpdated = cacheList.map((cached) => {
@@ -138,7 +146,7 @@ export const findCacheContact = async (whatsapp: string) => {
         ) {
           try {
             response = await whatsmenu_api_v3.get(
-              `/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`
+              `/findClient?whatsapp=${whatsapp}&profileId=${profile?.id}`,
             );
           } catch (error) {
             return null;
@@ -188,7 +196,7 @@ export const storeVoucherToNotify = (payload: VoucherNotification) =>
 export const removeDuplicateVouchers = (): void => {
   const currentVouchers = getVoucherToNotifyList() || [];
   const uniqueVouchers = Array.from(
-    new Map(currentVouchers.map((voucher) => [voucher.id, voucher])).values()
+    new Map(currentVouchers.map((voucher) => [voucher.id, voucher])).values(),
   );
   return store.set("configs.voucherToNotify", uniqueVouchers);
 };
@@ -202,19 +210,19 @@ export const getVoucherToNotifyList = () => {
     store.set("configs.voucherToNotify", []);
   }
   return store.get<"configs.voucherToNotify", VoucherNotification[]>(
-    "configs.voucherToNotify"
+    "configs.voucherToNotify",
   );
 };
 
 export const deleteVoucherToNotify = (id: number) =>
   store.set(
     "configs.voucherToNotify",
-    getVoucherToNotifyList().filter((voucher) => voucher.id !== id)
+    getVoucherToNotifyList().filter((voucher) => voucher.id !== id),
   );
 
 export const updateVoucherToNotify = (
   id: number,
-  payload: Partial<VoucherNotification>
+  payload: Partial<VoucherNotification>,
 ) => {
   store.set(
     "configs.voucherToNotify",
@@ -226,7 +234,7 @@ export const updateVoucherToNotify = (
         };
       }
       return voucher;
-    })
+    }),
   );
 };
 
