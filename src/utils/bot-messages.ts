@@ -1,5 +1,5 @@
 import { VoucherNotification } from "../@types/store";
-import { ProfileType } from "../@types/profile";
+import { ProfileType } from "./../@types/profile";
 import { formatCurrency } from "./format-currency";
 
 export const botMessages = {
