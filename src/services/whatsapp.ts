@@ -51,6 +51,7 @@ export class WhatsApp {
         "--no-first-run",
         "--no-zygote",
         "--disable-gpu",
+        store.get("configs.whatsapp.showHiddenWhatsApp") ? "--start-maximized" : "--window-position=-2000,-2000",
         // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
       ],
     };
@@ -59,23 +60,24 @@ export class WhatsApp {
       !isDev ||
       process.platform === "win32"
     ) {
-      const command =
-        'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
+      // const command =
+      //   'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
 
-      try {
-        const { stderr, stdout } = await promisify(child_process.exec)(command);
-        if (stderr) {
-          console.error(stderr);
-        }
-        if (stdout) {
-          const match = stdout.match(/(.*)(REG_SZ\s+)(.*)/);
-          const chromePath = match && match[3];
+      // try {
+      //   const { stderr, stdout } = await promisify(child_process.exec)(command);
+      //   if (stderr) {
+      //     console.error(stderr);
+      //   }
+      //   if (stdout) {
+      //     const match = stdout.match(/(.*)(REG_SZ\s+)(.*)/);
+      //     const chromePath = match && match[3];
 
-          config.puppeteer.executablePath = chromePath;
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      //     config.puppeteer.executablePath = chromePath;
+      //   }
+      // } catch (error) {
+      //   console.error(error);
+      // }
+      config.puppeteer.executablePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
     }
 
     if (store.get("configs.executablePath")) {
