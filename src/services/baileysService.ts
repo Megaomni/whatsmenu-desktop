@@ -7,6 +7,7 @@ import {
     ConnectionState, 
     AnyMessageContent
 } from '@whiskeysockets/baileys';
+import { DateTime } from 'luxon';
 import { Boom } from "@hapi/boom";
 import fs from "fs";
 
@@ -117,13 +118,26 @@ export class BaileysService {
         this.socket.ev.on('connection.update', connectionUpdate);
 
         this.socket.ev.on("messages.upsert", async (m) => {
-            console.log(JSON.stringify(m, undefined, 2));
-            console.log("replying to ", m.messages[0].key.remoteJid);
-            // await this.socket.sendMessage(m.messages[0].key.remoteJid, { text: 'Teste' });
+            // console.log(JSON.stringify(m, undefined, 2));
+            let currPhoneNum: string | undefined = undefined;
+            if (!m.messages[0].key.participant) {
+                currPhoneNum = m.messages[0].key.remoteJid;
+            }
+            
+            // console.log("replying to ", currPhoneNum);
+            const messagesFromSender = m.messages.filter((m) => !m.key.fromMe && m.key.remoteJid === currPhoneNum);
 
-            if (m.messages[0].key.fromMe || m.messages[0].key.participant) {
+            const timeDifference = (currTime: number | Long, prevTime: number | Long): boolean => {
+                const diff = Number(currTime) - Number(prevTime);
+                return diff >= 3600;
+            }
+            
+            
+            if ((m.messages[0].key.fromMe || m.messages[0].key.participant) && timeDifference(m.messages[0].messageTimestamp, messagesFromSender[0].messageTimestamp)) {
+                console.log("teste\n", messagesFromSender);
                 return;
             }
+
 
             await sendMessageToContact(m.messages[0].key.remoteJid, { text: `Eaí ${m.messages[0].pushName}, beleza?` });
         })

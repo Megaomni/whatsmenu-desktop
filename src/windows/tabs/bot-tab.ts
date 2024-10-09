@@ -1,7 +1,5 @@
 // import { dialog, screen } from "electron"
 import path from "node:path"
-import { Boom } from "@hapi/boom"
-import fs from "fs"
 import { whatsAppService } from "../../main"
 import { WebTabContentsView } from "../../extends/tab"
 import { DisconnectReason, ConnectionState } from "@whiskeysockets/baileys"
