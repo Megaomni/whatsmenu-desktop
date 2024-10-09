@@ -4,7 +4,7 @@ import { Boom } from "@hapi/boom"
 import fs from "fs"
 import { whatsAppService } from "../../main"
 import { WebTabContentsView } from "../../extends/tab"
-import { DisconnectReason } from "@whiskeysockets/baileys"
+import { DisconnectReason, ConnectionState } from "@whiskeysockets/baileys"
 
 export const create_bot_tab = () => {
   
@@ -34,36 +34,27 @@ export const create_bot_tab = () => {
     //   tab.webContents.send("log", qr);
     // })
 
-    const connectionUpdate = async (update: any) => {
-      const { connection, lastDisconnect } = update;
+    const connectionUpdate = async (update: ConnectionState) => {
+      const { connection } = update;
+      const QRCodeGen = whatsAppService.socket.ev.on('connection.update', ({ qr }) => {
+        tab.webContents.send("onqrcode", qr);
+        tab.webContents.send("log", qr);
+      })
 
-      let shouldReconnect = true;
-      if (lastDisconnect) {
-        shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-      }
-      const authFolder = "C:/projects/whatsmenu/apps/desktop/auth";
-
-      if (connection === 'open') {
-        whatsAppService.socket.ev.off('connection.update', connectionUpdate)
+      if (!connection) {
+        QRCodeGen;
       } else {
         switch (connection) {
-        case "connecting":
-          tab.webContents.send("onloading", { percent: 50, message: 'carregando mensagens' });
-          break;
-        case "close":
-          if (!shouldReconnect && fs.existsSync(authFolder)) {
-            fs.rmdirSync(authFolder, { recursive: true });
-            tab.webContents.send("ondisconnected", "Conexão encerrada");
-          }
-          whatsAppService.socket.ev.on('connection.update', ({ qr }) => {
-            tab.webContents.send("onqrcode", qr);
-            tab.webContents.send("log", qr);
-          })
-          whatsAppService.socket.ev.off('connection.update', connectionUpdate)
-          break;
-        default:
-          tab.webContents.send("onloading", { percent: 50, message: 'carregando mensagens' });
-          break;
+          case "connecting":
+            tab.webContents.send("onloading", { percent: 50, message: 'carregando mensagens' });
+            break;
+          case "close":
+            tab.webContents.send("ondisconnected", "disconnected");
+            QRCodeGen;
+            break;
+          case "open":
+            tab.webContents.send("onready");
+            break;
         }
       }
     }

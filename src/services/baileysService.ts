@@ -3,11 +3,12 @@ import {
     Browsers, 
     DisconnectReason, 
     makeInMemoryStore, 
-    makeWASocket, 
-    // AnyMessageContent
+    makeWASocket,
+    ConnectionState, 
+    AnyMessageContent
 } from '@whiskeysockets/baileys';
 import { Boom } from "@hapi/boom";
-// import fs from "fs";
+import fs from "fs";
 
 
 export class BaileysService {
@@ -34,6 +35,7 @@ export class BaileysService {
             markOnlineOnConnect: false,
             browser: Browsers.windows("Mobile"),
             generateHighQualityLinkPreview: true,
+            qrTimeout: 15000,
         });
         this.store.bind(this.socket.ev);
 
@@ -47,63 +49,86 @@ export class BaileysService {
 
         this.socket.ev.on("creds.update", saveCreds);
 
-        const connectionUpdate = async (update: any) => {
+        const checkNumber = async (number: string) => {
+            try {
+                if (!this.socket) {
+                    await this.connect();
+                    await new Promise((res) => setTimeout(res, 5000));
+                }
+                return this.socket.onWhatsApp(number);
+            } catch (e) {
+                console.error(e);
+                throw e;
+            }
+        }
+
+        const sendMessageToContact = async (number: string, message: AnyMessageContent) => {
+            try {
+                if (!this.socket) {
+                    await this.connect();
+                    await new Promise((res) => setTimeout(res, 5000));
+                }
+                const [{ jid, exists }] = await checkNumber(number);
+                if (!exists) {
+                    throw new Error("Number not found");
+                }
+                return this.socket.sendMessage(jid, message);
+            } catch (e) {
+                console.error(e);
+                throw e;
+            }
+        }
+
+        const connectionUpdate = async (update: ConnectionState) => {
+            const storeFile = 'C:/projects/whatsmenu/apps/desktop/baileys_store.json'
+            const authFolder = "C:/projects/whatsmenu/apps/desktop/auth";
+
             const { connection, lastDisconnect } = update;
             console.log("connection update", connection);
+            console.log("last disconnect", lastDisconnect);
+            
             await saveCreds();
-            if (connection === "open") {
-                this.socket.ev.off('connection.update', connectionUpdate);
-            }
-            if (connection === "close") {             
-                const shouldReconnect = (lastDisconnect.error as Boom)?.output?.statusCode !== DisconnectReason.loggedOut;
-                // console.log('connection closed due to ', lastDisconnect.error, ', reconnecting ', shouldReconnect)
-                // console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', lastDisconnect.error, ', reconnecting ', shouldReconnect)
-                
-                if (shouldReconnect) {
-                    // console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-                    
-                    await this.connect();
+            if (connection === "close") {
+                const lastDiscReason = (lastDisconnect.error as Boom).output.statusCode;
+                switch (lastDiscReason) {
+                    case DisconnectReason.restartRequired || DisconnectReason.timedOut || DisconnectReason.connectionLost || DisconnectReason.connectionClosed: 
+                        console.log(DisconnectReason);
+                        console.log("Reconnecting...");
+                        this.connect();
+                        break;
+                    case DisconnectReason.badSession:
+                        console.log("Bad session");
+                        break;
+                    case DisconnectReason.connectionReplaced:
+                        console.log("Connection replaced");
+                        break;
+                    case DisconnectReason.loggedOut:
+                        console.log("Logged out");
+                        fs.rmdirSync(authFolder, { recursive: true });
+                        fs.rmSync(storeFile);
+                        break;
+                    default:
+                        console.log("Unknown reason");
+                        break;
                 }
             }
         }
 
         this.socket.ev.on('connection.update', connectionUpdate);
 
-        // const checkNumber = async (number: string) => {
-        //     try {
-        //         if (!this.socket) {
-        //             await this.connect();
-        //             await new Promise((res) => setTimeout(res, 5000));
-        //         }
-        //         return this.socket.onWhatsApp(number);
-        //     } catch (e) {
-        //         console.error(e);
-        //         throw e;
-        //     }
-        // }
-
-        // const sendMessageToContact = async (number: string, message: AnyMessageContent) => {
-        //     try {
-        //         if (!this.socket) {
-        //             await this.connect();
-        //             await new Promise((res) => setTimeout(res, 5000));
-        //         }
-        //         const [{ jid, exists }] = await checkNumber(number);
-        //         if (!exists) {
-        //             throw new Error("Number not found");
-        //         }
-        //         return this.socket.sendMessage(jid, message);
-        //     } catch (e) {
-        //         console.error(e);
-        //         throw e;
-        //     }
-        // }
-
         this.socket.ev.on("messages.upsert", async (m) => {
-            // console.log(JSON.stringify(m, undefined, 2));
-            // console.log("replying to ", m.messages[0].key.remoteJid);
+            console.log(JSON.stringify(m, undefined, 2));
+            console.log("replying to ", m.messages[0].key.remoteJid);
             // await this.socket.sendMessage(m.messages[0].key.remoteJid, { text: 'Teste' });
-            // await sendMessageToContact(m.messages[0].key.remoteJid, { text: 'Teste' });
+
+            if (m.messages[0].key.fromMe || m.messages[0].key.participant) {
+                return;
+            }
+
+            await sendMessageToContact(m.messages[0].key.remoteJid, { text: `Eaí ${m.messages[0].pushName}, beleza?` });
         })
     }
+        
+
+        
 }
