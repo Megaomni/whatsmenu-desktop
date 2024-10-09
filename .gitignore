@@ -94,3 +94,6 @@ typings/
 
 # Electron-Forge
 out/
+
+auth/
+baileys_store.json
