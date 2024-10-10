@@ -19,6 +19,7 @@ export const getMerchantApi = async ({
     const { data } = await whatsmenu_api_v3.get(
       `/ifood/merchant?slug=${profile.slug}`,
     );
+    console.log(data)
     store.set("configs.merchant", data);
   } catch (error) {
     throw error;
@@ -74,6 +75,7 @@ export const polling = async ({
       );
     }
   } catch (error) {
+    console.error("POLLING ERROR: ", error)
     throw error;
   }
 };
