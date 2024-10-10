@@ -2,7 +2,7 @@
 import path from "node:path"
 import { whatsAppService } from "../../main"
 import { WebTabContentsView } from "../../extends/tab"
-import { DisconnectReason, ConnectionState } from "@whiskeysockets/baileys"
+import { ConnectionState } from "@whiskeysockets/baileys"
 
 export const create_bot_tab = () => {
   
