@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
@@ -6,6 +6,7 @@ import axios from "axios";
 import path from "node:path";
 import {
   deleteVoucherToNotify,
+  getMerchant,
   getProfile,
   getVoucherToNotifyList,
   setCacheContactByWhatsapp,
@@ -26,7 +27,7 @@ ipcMain.on(
       contact,
       message,
       client,
-    }: { contact: string; message: string; client?: ClientType }
+    }: { contact: string; message: string; client?: ClientType },
   ) => {
     const botState = await whatsAppService.bot?.getState();
     try {
@@ -48,7 +49,7 @@ ipcMain.on(
         }
       }
     }
-  }
+  },
 );
 
 ipcMain.on("show-whatsapp", async (_, show) => {
@@ -59,7 +60,7 @@ ipcMain.on("show-whatsapp", async (_, show) => {
 ipcMain.on("executablePath", (_, executablePath) => {
   store.set(
     "configs.executablePath",
-    executablePath.replaceAll("\\", "/").replaceAll("/", "\\")
+    executablePath.replaceAll("\\", "/").replaceAll("/", "\\"),
   );
 });
 
@@ -75,6 +76,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
     const { printTypeMode = "whatsmenu", ...payload } =
       JSON.parse(serializedPayload);
+
     if (printTypeMode === "html") {
       win.webContents.executeJavaScript(`
           const printBody = document.body
@@ -85,8 +87,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
             printBody.style.height = '1400px' 
           }
           printBody.innerHTML = ${JSON.stringify(payload.html)}
-          
-          `);
+        `);
     }
     if (printTypeMode === "whatsmenu") {
       try {
@@ -95,15 +96,15 @@ ipcMain.on("print", async (_, serializedPayload) => {
         payload.profile.options.print.textOnly = isGeneric;
         const { data } = await axios.post(
           "https://next.whatsmenu.com.br/api/printLayout",
-          { ...payload, html: true, electron: true }
+          { ...payload, html: true, electron: true },
         );
         win.webContents.executeJavaScript(`
           const printBody = document.body
           let link = document.getElementById('bootstrap-link')
           link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
-          data.reactComponentString[paperSize < 65 ? 58 : 80]
-        )}
+            data.reactComponentString[paperSize < 65 ? 58 : 80],
+          )}
         `);
       } catch (error) {
         console.error(error);
@@ -122,8 +123,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
       const height = Math.ceil(
         (await win.webContents.executeJavaScript(
-          "document.body.offsetHeight"
-        )) * 264.5833
+          "document.body.offsetHeight",
+        )) * 264.5833,
       );
       setTimeout(() => {
         win.webContents.print(
@@ -137,21 +138,21 @@ ipcMain.on("print", async (_, serializedPayload) => {
           (success, failureReason) => {
             console.log("Print Initiated in Main...");
             if (!success) console.error(failureReason);
-          }
+          },
         );
       }, 2000);
     });
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       win.webContents.loadURL(
-        `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+        `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`,
       );
     } else {
       win.webContents.loadFile(
         path.join(
           __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-        )
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`,
+        ),
       );
     }
   }
@@ -161,6 +162,10 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
 ipcMain.on("storeProfile", (_, profile) => {
   store.set("configs.profile", profile);
+});
+
+ipcMain.on("storeMerchant", (_, merchant) => {
+  store.set("configs.merchant", merchant);
 });
 
 ipcMain.on("getProfile", (event) => {
@@ -180,6 +185,11 @@ ipcMain.on("getProfile", (event) => {
   event.reply("onProfileChange", profile);
 });
 
+ipcMain.on("getMerchant", (event) => {
+  const merchant = getMerchant();
+  event.reply("onMerchantChange", merchant);
+});
+
 ipcMain.on("onCart", (_, cart: { id: number; client?: ClientType }) => {
   if (cart.client) {
     setCacheContactByWhatsapp(cart.client.whatsapp, {
@@ -193,8 +203,8 @@ ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
   const rememberDays = Math.floor(
     DateTime.fromISO(voucher.expirationDate).diff(
       DateTime.fromISO(voucher.created_at),
-      "days"
-    ).days / 2
+      "days",
+    ).days / 2,
   );
 
   if (!voucher.client?.vouchers?.some((v) => v.id === voucher.id)) {
@@ -229,4 +239,16 @@ ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
 
 ipcMain.on("env", (event) => {
   event.returnValue = process.env;
+});
+
+ipcMain.on("polling", async (event, data) => {
+  try {
+    console.log("POLLING", data, "POLLING");
+  } catch (error) {
+    console.error("erro ao enviar o polling", error);
+  }
+});
+
+ipcMain.on("openLink", (_, url) => {
+  shell.openExternal(url);
 });
