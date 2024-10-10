@@ -8,10 +8,8 @@ import {
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { DateTime } from 'luxon';
 import { Boom } from "@hapi/boom";
 import fs from "fs";
-
 
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
@@ -121,32 +119,39 @@ export class BaileysService {
 
         this.socket.ev.on("messages.upsert", async (m) => {
             let currPhoneNum: string | undefined = undefined;
-            if (!m.messages[0].key.fromMe && !m.messages[0].key.participant) {
+            if (!m.messages[0].key.participant) {
                 this.messageHistory.push(m.messages[0]);
                 currPhoneNum = m.messages[0].key.remoteJid;
             }
             
             const messagesFromSender = this.messageHistory.filter((m) => !m.key.fromMe && m.key.remoteJid === currPhoneNum);
+            const myMessages = this.messageHistory.filter((m) => m.key.fromMe && m.key.remoteJid === currPhoneNum);
 
-            const timeDifference = (currTime: number | Long | undefined, prevTime: number | Long | undefined): boolean => {
+            
+            /**
+             * Checa se a diferença entre os dois horários é maior que o tempo dado em horas.
+             * Caso seja a primeira mensagem, retorna true
+             * @param {number | Long | undefined} currTime horário da mensagem atual.
+             * @param {number | Long | undefined} prevTime horário da última mensagem.
+             * @param {number} timespan intervalo de tempo em horas.
+             * @returns {boolean} true se a diferença de tempo entre as mensagens é maior ou igual ao valor passado, ou se é a primeira mensagem do usuário.
+             */
+            const timeDifference = (currTime: number | Long | undefined, prevTime: number | Long | undefined, timespan: number): boolean => {
                 if (!prevTime) {
                     return true;
                 } else {
                     const diff = Number(currTime) - Number(prevTime);
-                    return diff >= 10800; // diferença de 3h em segundos
+                    return diff >= timespan * 3600; // conta para converter horas para segundos.
                 }
             }
 
             const currTime = messagesFromSender[messagesFromSender.length - 1].messageTimestamp;
             const prevTime = messagesFromSender.length > 1 ? messagesFromSender[messagesFromSender.length - 2].messageTimestamp : undefined;
+            const myLastMsgTime = myMessages.length > 0 ? myMessages[myMessages.length - 1].messageTimestamp : undefined;
             
-            if (!m.messages[0].key.fromMe && !m.messages[0].key.participant && timeDifference(currTime, prevTime)) {
-                console.log("teste\n", messagesFromSender);
+            if (!m.messages[0].key.fromMe && !m.messages[0].key.participant && timeDifference(currTime, prevTime, 3) && timeDifference(currTime, myLastMsgTime, 5)) {
                 await sendMessageToContact(m.messages[0].key.remoteJid, { text: `Eaí ${m.messages[0].pushName}, beleza?` });
             }
         })
     }
-        
-
-        
 }
