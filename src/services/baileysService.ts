@@ -5,7 +5,8 @@ import {
     makeInMemoryStore, 
     makeWASocket,
     ConnectionState, 
-    AnyMessageContent
+    AnyMessageContent,
+    WAMessage
 } from '@whiskeysockets/baileys';
 import { DateTime } from 'luxon';
 import { Boom } from "@hapi/boom";
@@ -15,6 +16,7 @@ import fs from "fs";
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
     private store = makeInMemoryStore({});
+    private messageHistory: WAMessage[] = []
 
     connect = async () => {
         this.store.readFromFile("./baileys_store.json");
@@ -118,28 +120,30 @@ export class BaileysService {
         this.socket.ev.on('connection.update', connectionUpdate);
 
         this.socket.ev.on("messages.upsert", async (m) => {
-            // console.log(JSON.stringify(m, undefined, 2));
             let currPhoneNum: string | undefined = undefined;
-            if (!m.messages[0].key.participant) {
+            if (!m.messages[0].key.fromMe && !m.messages[0].key.participant) {
+                this.messageHistory.push(m.messages[0]);
                 currPhoneNum = m.messages[0].key.remoteJid;
             }
             
-            // console.log("replying to ", currPhoneNum);
-            const messagesFromSender = m.messages.filter((m) => !m.key.fromMe && m.key.remoteJid === currPhoneNum);
+            const messagesFromSender = this.messageHistory.filter((m) => !m.key.fromMe && m.key.remoteJid === currPhoneNum);
 
-            const timeDifference = (currTime: number | Long, prevTime: number | Long): boolean => {
-                const diff = Number(currTime) - Number(prevTime);
-                return diff >= 3600;
+            const timeDifference = (currTime: number | Long | undefined, prevTime: number | Long | undefined): boolean => {
+                if (!prevTime) {
+                    return true;
+                } else {
+                    const diff = Number(currTime) - Number(prevTime);
+                    return diff >= 10800; // diferença de 3h em segundos
+                }
             }
+
+            const currTime = messagesFromSender[messagesFromSender.length - 1].messageTimestamp;
+            const prevTime = messagesFromSender.length > 1 ? messagesFromSender[messagesFromSender.length - 2].messageTimestamp : undefined;
             
-            
-            if ((m.messages[0].key.fromMe || m.messages[0].key.participant) && timeDifference(m.messages[0].messageTimestamp, messagesFromSender[0].messageTimestamp)) {
+            if (!m.messages[0].key.fromMe && !m.messages[0].key.participant && timeDifference(currTime, prevTime)) {
                 console.log("teste\n", messagesFromSender);
-                return;
+                await sendMessageToContact(m.messages[0].key.remoteJid, { text: `Eaí ${m.messages[0].pushName}, beleza?` });
             }
-
-
-            await sendMessageToContact(m.messages[0].key.remoteJid, { text: `Eaí ${m.messages[0].pushName}, beleza?` });
         })
     }
         
