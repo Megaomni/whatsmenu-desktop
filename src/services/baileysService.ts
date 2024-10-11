@@ -1,17 +1,14 @@
 import {
     useMultiFileAuthState,
     Browsers,
-    DisconnectReason,
     makeInMemoryStore,
     makeWASocket,
     ConnectionState,
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
+import { getProfile, findCacheContact, setCacheContactByWhatsapp, getCacheContactList } from '../main/store';
 import { EventEmitter } from 'events';
-import { Boom } from "@hapi/boom";
-import fs from "fs";
-import { boolean } from 'zod';
 
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
@@ -34,6 +31,36 @@ export class BaileysService {
         } else {
             const diff = Number(currTime) - Number(prevTime);
             return diff >= timespan * 3600; // conta para converter horas para segundos.
+        }
+    }
+
+    checkNumber = async (number: string) => {
+        try {
+            if (!this.socket) {
+                await this.connect();
+                await new Promise((res) => setTimeout(res, 5000));
+            }
+            return this.socket.onWhatsApp(number);
+        } catch (e) {
+            console.error(e);
+            throw e;
+        }
+    }
+
+    sendMessageToContact = async (number: string, message: AnyMessageContent) => {
+        try {
+            if (!this.socket) {
+                await this.connect();
+                await new Promise((res) => setTimeout(res, 5000));
+            }
+            const [{ jid, exists }] = await this.checkNumber(number);
+            if (!exists) {
+                throw new Error("Number not found");
+            }
+            return this.socket.sendMessage(jid, message);
+        } catch (e) {
+            console.error(e);
+            throw e;
         }
     }
 
@@ -62,44 +89,14 @@ export class BaileysService {
         this.store.bind(this.socket.ev);
 
         this.socket.ev.on('chats.upsert', () => {
-            // console.log("got chats", this.store.chats.all());
+            console.log("got chats", this.store.chats.all());
         });
 
         this.socket.ev.on("contacts.upsert", () => {
-            // console.log("got contacts", Object.values(this.store.contacts));
+            console.log("got contacts", Object.values(this.store.contacts));
         })
 
         this.socket.ev.on("creds.update", saveCreds);
-
-        const checkNumber = async (number: string) => {
-            try {
-                if (!this.socket) {
-                    await this.connect();
-                    await new Promise((res) => setTimeout(res, 5000));
-                }
-                return this.socket.onWhatsApp(number);
-            } catch (e) {
-                console.error(e);
-                throw e;
-            }
-        }
-
-        const sendMessageToContact = async (number: string, message: AnyMessageContent) => {
-            try {
-                if (!this.socket) {
-                    await this.connect();
-                    await new Promise((res) => setTimeout(res, 5000));
-                }
-                const [{ jid, exists }] = await checkNumber(number);
-                if (!exists) {
-                    throw new Error("Number not found");
-                }
-                return this.socket.sendMessage(jid, message);
-            } catch (e) {
-                console.error(e);
-                throw e;
-            }
-        }
 
         const connectionUpdate = async (update: ConnectionState) => {
             this.events.emit("connectionUpdate", update);
@@ -117,21 +114,39 @@ export class BaileysService {
             let currPhoneNum: string | undefined = undefined;
             const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
             const isMessageFromGroup = Boolean(m.messages[0].key.participant);
+
             if (!isMessageFromGroup) {
                 this.messageHistory.push(m.messages[0]);
                 currPhoneNum = m.messages[0].key.remoteJid;
             }
 
+            const profile = getProfile();
+            const fullCachedContactList = getCacheContactList();
+
+            if (!fullCachedContactList.some((customer) => customer.contact === currPhoneNum)) {
+                setCacheContactByWhatsapp(currPhoneNum, {
+                    contact: currPhoneNum,
+                    messageType: "cupomFirst",
+                });
+            }
+            const cachedContact = fullCachedContactList.find((customer) => customer.contact === currPhoneNum);
+
             const messagesFromSender = this.messageHistory.filter((m) => !isMessageFromMe && m.key.remoteJid === currPhoneNum);
             const myMessages = this.messageHistory.filter((m) => isMessageFromMe && m.key.remoteJid === currPhoneNum);
-
             const currTime = messagesFromSender[messagesFromSender.length - 1].messageTimestamp;
             const prevTime = messagesFromSender.length > 1 ? messagesFromSender[messagesFromSender.length - 2].messageTimestamp : undefined;
             const myLastMsgTime = myMessages.length > 0 ? myMessages[myMessages.length - 1].messageTimestamp : undefined;
 
-
             if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5)) {
-                await sendMessageToContact(m.messages[0].key.remoteJid, { text: `Eaí ${m.messages[0].pushName}, beleza?` });
+                if (cachedContact && cachedContact.messageType === "cupomFirst") {
+                    await this.sendMessageToContact(
+                        currPhoneNum,
+                        { text: `Olá ${m.messages[0].pushName}!\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você` });
+                } else {
+                    await this.sendMessageToContact(
+                        currPhoneNum,
+                        { text: `Olá ${m.messages[0].pushName}!\n\nSeja bem vindo ao ${profile.name}\n\nVeja o nosso cardápio para fazer seu pedido\n\nhttps://www.whatsmenu.com.br/${profile.slug}\n\n*Ofertas exclusivas para pedidos no link* \n\nEquipe ${profile.name}` });
+                }
             }
         })
     }
