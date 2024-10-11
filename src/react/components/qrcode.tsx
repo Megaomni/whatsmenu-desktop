@@ -10,10 +10,6 @@ export const Qrcode = () => {
   const [loading, setLoading] = useState({ status: true, message: null, percent: 0 })
   
   useEffect(() => {
-    console.log("connected on qrcode file", connected);
-    console.log("profile on qrcode file", qrcode);
-    console.log("loading on qrcode file", loading);
-
     window.WhatsAppBotApi.onqrcode((_ ,qr: string) => {
       setLoading((state) => ({ ...state, status: false }))
       setQrcode(qr)
