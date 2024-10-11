@@ -24,11 +24,6 @@ const BotRoot = () => {
   const wsRef = useRef<Ws>(null);
 
   useEffect(() => {
-    console.log("connected on bot file", connected);
-    console.log("profile on bot file", profile);
-    console.log("loading on bot file", loading);
-    
-    
     window.WhatsAppBotApi.onqrcode((_, qr: string) => {
       setLoading((state) => ({ ...state, status: false }));
       setQrcode(qr);
