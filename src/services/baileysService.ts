@@ -7,7 +7,7 @@ import {
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { getProfile, findCacheContact, setCacheContactByWhatsapp, getCacheContactList } from '../main/store';
+import { getProfile, setCacheContactByWhatsapp, getCacheContactList } from '../main/store';
 import { EventEmitter } from 'events';
 
 export class BaileysService {
