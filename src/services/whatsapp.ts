@@ -1,8 +1,9 @@
 import { Notification } from "electron";
 import isDev from "electron-is-dev";
-import child_process from "node:child_process";
-import { promisify } from "util";
-import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
+// import child_process from "node:child_process";
+// import { promisify } from "util";
+import { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
+import { whatsAppService } from "../main";
 import {
   deleteVoucherToNotify,
   findCacheContact,
@@ -41,20 +42,20 @@ export class WhatsApp {
       config = {};
     }
     config.authStrategy = new LocalAuth();
-    config.puppeteer = {
-      headless: !store.get("configs.whatsapp.showHiddenWhatsApp"),
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--no-first-run",
-        "--no-zygote",
-        "--disable-gpu",
-        store.get("configs.whatsapp.showHiddenWhatsApp") ? "--start-maximized" : "--window-position=-2000,-2000",
-        // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
-      ],
-    };
+    // config.puppeteer = {
+    //   headless: !store.get("configs.whatsapp.showHiddenWhatsApp"),
+    //   args: [
+    //     "--no-sandbox",
+    //     "--disable-setuid-sandbox",
+    //     "--disable-dev-shm-usage",
+    //     "--disable-accelerated-2d-canvas",
+    //     "--no-first-run",
+    //     "--no-zygote",
+    //     "--disable-gpu",
+    //     store.get("configs.whatsapp.showHiddenWhatsApp") ? "--start-maximized" : "--window-position=-2000,-2000",
+    //     // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
+    //   ],
+    // };
     if (
       !store.get("configs.executablePath") ||
       !isDev ||
@@ -146,11 +147,12 @@ export class WhatsApp {
 
     return this.bot;
   }
+
   async sendQueuedmessages() {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
-        const contactId = this.checkNinthDigit(contact);
+        const contactId = whatsAppService.checkNumber(contact);
 
         try {
           setTimeout(() => {
@@ -197,8 +199,7 @@ export class WhatsApp {
           list = getVoucherToNotifyList().filter(
             (voucher) =>
               voucher.expirationDate &&
-              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <=
-                0
+              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <= 0
           );
           break;
         default:
@@ -242,37 +243,37 @@ export class WhatsApp {
     return;
   }
 
-  checkNinthDigit = (contact: string): WAWebJS.ContactId => {
-    if (contact.startsWith("55")) {
-      if (
-        contact.length === 13 &&
-        contact[4] === "9" &&
-        parseInt(contact.slice(2, 4)) > 28
-      ) {
-        contact = contact.slice(0, 4) + contact.slice(5);
-      }
-    } else {
-      throw new Error("Invalid contact number");
-    }
+  // checkNinthDigit = (contact: string): WAWebJS.ContactId => {
+  //   if (contact.startsWith("55")) {
+  //     if (
+  //       contact.length === 13 &&
+  //       contact[4] === "9" &&
+  //       parseInt(contact.slice(2, 4)) > 28
+  //     ) {
+  //       contact = contact.slice(0, 4) + contact.slice(5);
+  //     }
+  //   } else {
+  //     throw new Error("Invalid contact number");
+  //   }
 
-    const contactId: WAWebJS.ContactId = {
-      user: contact,
-      server: "c.us",
-      _serialized: `${contact}@c.us`,
-    };
+  //   const contactId: WAWebJS.ContactId = {
+  //     user: contact,
+  //     server: "c.us",
+  //     _serialized: `${contact}@c.us`,
+  //   };
 
-    return contactId;
-  };
+  //   return contactId;
+  // };
 
-  validateContact(
-    callback: (contact: string) => Promise<WAWebJS.ContactId>,
-    contact: string
-  ): Promise<WAWebJS.ContactId> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error("Timeout", { cause: "timeout" }));
-      }, 5 * 1000);
-      callback(contact).then(resolve).catch(reject);
-    });
-  }
+  // validateContact(
+  //   callback: (contact: string) => Promise<WAWebJS.ContactId>,
+  //   contact: string
+  // ): Promise<WAWebJS.ContactId> {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(() => {
+  //       reject(new Error("Timeout", { cause: "timeout" }));
+  //     }, 5 * 1000);
+  //     callback(contact).then(resolve).catch(reject);
+  //   });
+  // }
 }
