@@ -1,6 +1,5 @@
 import {
     useMultiFileAuthState,
-    Browsers,
     makeInMemoryStore,
     makeWASocket,
     ConnectionState,
@@ -9,6 +8,7 @@ import {
 } from '@whiskeysockets/baileys';
 import { getProfile, setCacheContactByWhatsapp, getCacheContactList } from '../main/store';
 import { EventEmitter } from 'events';
+import { app } from 'electron';
 
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
@@ -40,6 +40,7 @@ export class BaileysService {
                 await this.connect();
                 await new Promise((res) => setTimeout(res, 5000));
             }
+            console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", number);
             return this.socket.onWhatsApp(number);
         } catch (e) {
             console.error(e);
@@ -54,6 +55,7 @@ export class BaileysService {
                 await new Promise((res) => setTimeout(res, 5000));
             }
             const [{ jid, exists }] = await this.checkNumber(number);
+
             if (!exists) {
                 throw new Error("Number not found");
             }
@@ -63,6 +65,27 @@ export class BaileysService {
             throw e;
         }
     }
+
+    // sendMessageToUser = async (number: string, message: AnyMessageContent, client: string | ClientType) => {
+    //     try {
+    //         if (!this.socket) {
+    //             await this.connect();
+    //             await new Promise((res) => setTimeout(res, 5000));
+    //         }
+    //         const [{ jid, exists }] = await this.checkNumber(number);
+    //         if (!exists) {
+    //             throw new Error("Number not found");
+    //         }
+    //         if (!client) {
+    //             return this.socket.sendMessage(jid, message);
+    //         } else {
+    //             return this.socket.sendMessage(jid, message, client);
+    //         }
+    //     } catch (e) {
+    //         console.error(e);
+    //         throw e;
+    //     }
+    // }
 
     connect = async () => {
         this.store.readFromFile("./baileys_store.json");
@@ -82,7 +105,7 @@ export class BaileysService {
             printQRInTerminal: false,
             syncFullHistory: false,
             markOnlineOnConnect: false,
-            browser: Browsers.windows("Mobile"),
+            browser: ['WhatsMenu', '', app.getVersion()],
             generateHighQualityLinkPreview: true,
             qrTimeout: 15000,
         });

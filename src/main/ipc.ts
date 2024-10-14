@@ -25,27 +25,19 @@ ipcMain.on(
     {
       contact,
       message,
-      client,
-    }: { contact: string; message: string; client?: ClientType }
+      // client,
+    }: {
+      contact: string; message: string;
+      // client?: string | ClientType
+    }
   ) => {
-    const botState = await whatsAppService.bot?.getState();
     try {
-      if (botState === "CONNECTED") {
-        whatsAppService.sendMessageToContact(contact, { text: message })
-      } else {
-        whatsAppService.messagesQueue.push({
-          contact: `${contact}`,
-          client,
-          message,
-        });
-      }
+      await whatsAppService.sendMessageToContact(contact, { text: message })
+      // } else {
+      //   await whatsAppService.sendMessageToUser(contact, { text: message }, client)
+      // }
     } catch (error) {
-      console.error(error, "error");
-      if (error instanceof Error) {
-        if (error.cause === "checkNinthDigit") {
-          dialog.showErrorBox("Ops!", error.message);
-        }
-      }
+      console.error("error: ", error);
     }
   }
 );
