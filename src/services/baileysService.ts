@@ -9,6 +9,9 @@ import {
 import { getProfile, setCacheContactByWhatsapp, getCacheContactList } from '../main/store';
 import { EventEmitter } from 'events';
 import { app } from 'electron';
+import { WhatsApp } from './whatsapp';
+
+const whatsapp = new WhatsApp();
 
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
@@ -134,6 +137,8 @@ export class BaileysService {
         this.socket.ev.on('connection.update', connectionUpdate);
 
         this.socket.ev.on("messages.upsert", async (m) => {
+            await whatsapp.sendQueuedmessages();
+            whatsapp.cashbackCron();
             let currPhoneNum: string | undefined = undefined;
             const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
             const isMessageFromGroup = Boolean(m.messages[0].key.participant);

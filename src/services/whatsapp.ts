@@ -152,11 +152,11 @@ export class WhatsApp {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
-        const contactId = whatsAppService.checkNumber(contact);
+        const [{ jid }] = await whatsAppService.checkNumber(contact);
 
         try {
           setTimeout(() => {
-            this.bot.sendMessage(contactId?._serialized, message);
+            whatsAppService.sendMessageToContact(jid, { text: message });
           }, 1000);
         } catch (error) {
           console.error(error);
@@ -206,10 +206,10 @@ export class WhatsApp {
           break;
       }
       for await (const voucher of list) {
-        const contact = this.checkNinthDigit(`55${voucher.client.whatsapp}`);
-        await this.bot.sendMessage(
-          contact._serialized,
-          botMessages.cashback[messageType]({ voucher, profile })
+        const [{ jid }] = await whatsAppService.checkNumber(`55${voucher.client.whatsapp}`);
+        await whatsAppService.sendMessageToContact(
+          jid,
+          { text: botMessages.cashback[messageType]({ voucher, profile }) }
         );
         switch (messageType) {
           case "afterPurchase":
