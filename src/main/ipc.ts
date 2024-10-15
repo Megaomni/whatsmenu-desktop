@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
