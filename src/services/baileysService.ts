@@ -43,7 +43,6 @@ export class BaileysService {
                 await this.connect();
                 await new Promise((res) => setTimeout(res, 5000));
             }
-            console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", number);
             return this.socket.onWhatsApp(number);
         } catch (e) {
             console.error(e);
@@ -69,27 +68,6 @@ export class BaileysService {
         }
     }
 
-    // sendMessageToUser = async (number: string, message: AnyMessageContent, client: string | ClientType) => {
-    //     try {
-    //         if (!this.socket) {
-    //             await this.connect();
-    //             await new Promise((res) => setTimeout(res, 5000));
-    //         }
-    //         const [{ jid, exists }] = await this.checkNumber(number);
-    //         if (!exists) {
-    //             throw new Error("Number not found");
-    //         }
-    //         if (!client) {
-    //             return this.socket.sendMessage(jid, message);
-    //         } else {
-    //             return this.socket.sendMessage(jid, message, client);
-    //         }
-    //     } catch (e) {
-    //         console.error(e);
-    //         throw e;
-    //     }
-    // }
-
     connect = async () => {
         this.store.readFromFile("./baileys_store.json");
         setInterval(() => {
@@ -97,11 +75,6 @@ export class BaileysService {
         }, 10000);
 
         const { state, saveCreds } = await useMultiFileAuthState("auth");
-
-        // const authFolder = "C:/projects/whatsmenu/apps/desktop/auth";
-        // if (DisconnectReason && fs.existsSync(authFolder)) {
-        //     fs.rmdirSync(authFolder, { recursive: true });
-        // }
 
         this.socket = makeWASocket({
             auth: state,
@@ -129,7 +102,6 @@ export class BaileysService {
 
             const { connection, lastDisconnect } = update;
             console.log("connection update", connection);
-            console.log("last disconnect", lastDisconnect);
 
             await saveCreds();
         }

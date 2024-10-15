@@ -7,7 +7,6 @@ import "./ipc";
 import "./menu";
 import "./tray";
 
-// import { WhatsApp } from "../services/whatsapp";
 import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";

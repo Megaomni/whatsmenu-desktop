@@ -1,7 +1,5 @@
 import { Notification } from "electron";
 import isDev from "electron-is-dev";
-// import child_process from "node:child_process";
-// import { promisify } from "util";
 import { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
 import { whatsAppService } from "../main";
 import {
@@ -42,42 +40,11 @@ export class WhatsApp {
       config = {};
     }
     config.authStrategy = new LocalAuth();
-    // config.puppeteer = {
-    //   headless: !store.get("configs.whatsapp.showHiddenWhatsApp"),
-    //   args: [
-    //     "--no-sandbox",
-    //     "--disable-setuid-sandbox",
-    //     "--disable-dev-shm-usage",
-    //     "--disable-accelerated-2d-canvas",
-    //     "--no-first-run",
-    //     "--no-zygote",
-    //     "--disable-gpu",
-    //     store.get("configs.whatsapp.showHiddenWhatsApp") ? "--start-maximized" : "--window-position=-2000,-2000",
-    //     // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
-    //   ],
-    // };
     if (
       !store.get("configs.executablePath") ||
       !isDev ||
       process.platform === "win32"
     ) {
-      // const command =
-      //   'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
-
-      // try {
-      //   const { stderr, stdout } = await promisify(child_process.exec)(command);
-      //   if (stderr) {
-      //     console.error(stderr);
-      //   }
-      //   if (stdout) {
-      //     const match = stdout.match(/(.*)(REG_SZ\s+)(.*)/);
-      //     const chromePath = match && match[3];
-
-      //     config.puppeteer.executablePath = chromePath;
-      //   }
-      // } catch (error) {
-      //   console.error(error);
-      // }
       config.puppeteer.executablePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
     }
 
@@ -242,38 +209,4 @@ export class WhatsApp {
     }, 1000 * 60);
     return;
   }
-
-  // checkNinthDigit = (contact: string): WAWebJS.ContactId => {
-  //   if (contact.startsWith("55")) {
-  //     if (
-  //       contact.length === 13 &&
-  //       contact[4] === "9" &&
-  //       parseInt(contact.slice(2, 4)) > 28
-  //     ) {
-  //       contact = contact.slice(0, 4) + contact.slice(5);
-  //     }
-  //   } else {
-  //     throw new Error("Invalid contact number");
-  //   }
-
-  //   const contactId: WAWebJS.ContactId = {
-  //     user: contact,
-  //     server: "c.us",
-  //     _serialized: `${contact}@c.us`,
-  //   };
-
-  //   return contactId;
-  // };
-
-  // validateContact(
-  //   callback: (contact: string) => Promise<WAWebJS.ContactId>,
-  //   contact: string
-  // ): Promise<WAWebJS.ContactId> {
-  //   return new Promise((resolve, reject) => {
-  //     setTimeout(() => {
-  //       reject(new Error("Timeout", { cause: "timeout" }));
-  //     }, 5 * 1000);
-  //     callback(contact).then(resolve).catch(reject);
-  //   });
-  // }
 }

@@ -105,16 +105,6 @@ export const setCacheContactByWhatsapp = (
   const cacheList = getCacheContactList();
   const isInList = cacheList.some((cached) => cached?.contact === whatsapp);
   const cacheListUpdated = isInList ? cacheList : [...cacheList, payload];
-  // const cacheListUpdated = cacheList.map((cached) => {
-  //   if (cached.contact === whatsapp) {
-  //     return {
-  //       ...cached,
-  //       ...payload,
-  //     };
-  //   }
-  //   return cached;
-
-  // });
   store.set("configs.contacts_cache", cacheListUpdated);
 };
 
