@@ -173,7 +173,7 @@ export class WhatsApp {
         .filter(
           (voucher) =>
             voucher.expirationDate &&
-            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
+            DateTime.fromISO(voucher.expirationDate).diffNow(["minutes"]).minutes < - 2
         )
         .forEach((voucher) => deleteVoucherToNotify(voucher.id));
     };
@@ -225,7 +225,7 @@ export class WhatsApp {
           case "expire":
             updateVoucherToNotify(voucher.id, {
               expirationDate: null,
-            });
+            })
             break;
           default:
             break;
