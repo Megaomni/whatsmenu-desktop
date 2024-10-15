@@ -27,7 +27,6 @@ export class BaileysService {
      * @param {number} timespan intervalo de tempo em horas.
      * @returns {boolean} true se a diferença de tempo entre as mensagens é maior ou igual ao valor passado, ou se é a primeira mensagem do usuário.
      */
-
     timeDifference = (currTime: number | Long | undefined, prevTime: number | Long | undefined, timespan: number): boolean => {
         if (!prevTime) {
             return true;
@@ -37,7 +36,16 @@ export class BaileysService {
         }
     }
 
-    checkNumber = async (number: string) => {
+
+    /**
+     * Verifica se um determinado número de telefone está conectado no WhatsApp.
+     * Se o número estiver conectado, retorna um objeto com as informações do contato.
+     * Caso o número não esteja conectado, lança um erro.
+     * @param {string} number número de telefone a ser verificado.
+     * @returns {Promise<import('@whiskeysockets/baileys').WAContact>} objeto com as informações do contato.
+     * @throws {Error} caso o número não esteja conectado.
+     */
+    async checkNumber(number: string) {
         try {
             if (!this.socket) {
                 await this.connect();
@@ -50,7 +58,18 @@ export class BaileysService {
         }
     }
 
-    sendMessageToContact = async (number: string, message: AnyMessageContent) => {
+
+    /**
+     * Envia uma mensagem para um contato no WhatsApp.
+     * Verifica se o socket está conectado, caso não esteja, conecta-se.
+     * Verifica se o número de telefone existe, caso não exista, lança um erro.
+     * Envia a mensagem para o contato.
+     * @param {string} number número de telefone a ser verificado.
+     * @param {AnyMessageContent} message mensagem a ser enviada.
+     * @returns {Promise<WAMessage>} objeto com as informações da mensagem enviada.
+     * @throws {Error} caso o número não esteja conectado.
+     */
+    async sendMessageToContact(number: string, message: AnyMessageContent) {
         try {
             if (!this.socket) {
                 await this.connect();
@@ -68,7 +87,17 @@ export class BaileysService {
         }
     }
 
-    connect = async () => {
+    /**
+     * Conecta ao WhatsApp e configura os listeners de eventos.
+     * Lida com o armazenamento de credenciais, atualização de contatos, chats e mensagens.
+     * Verifica se o número do contato existe e envia mensagens de boas-vindas ou de cupom.
+     * Verifica se a diferença entre os horários de mensagens do contato é maior que 5 minutos.
+     * Verifica se a diferença entre os horários de mensagens do contato é maior que 3 horas.
+     * Verifica se a mensagem é do tipo "cupomFirst" e envia a mensagem de cupom.
+     * Verifica se a mensagem é do tipo "welcome" e envia a mensagem de boas-vindas.
+     * @returns {Promise<void>}
+     */
+    async connect() {
         this.store.readFromFile("./baileys_store.json");
         setInterval(() => {
             this.store.writeToFile("./baileys_store.json");
@@ -100,7 +129,7 @@ export class BaileysService {
         const connectionUpdate = async (update: ConnectionState) => {
             this.events.emit("connectionUpdate", update);
 
-            const { connection, lastDisconnect } = update;
+            const { connection } = update;
             console.log("connection update", connection);
 
             await saveCreds();
@@ -141,11 +170,11 @@ export class BaileysService {
                 if (cachedContact && cachedContact.messageType === "cupomFirst") {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: `Olá ${m.messages[0].pushName}!\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você` });
+                        { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
                 } else {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: `Olá ${m.messages[0].pushName}!\n\nSeja bem vindo ao ${profile.name}\n\nVeja o nosso cardápio para fazer seu pedido\n\nhttps://www.whatsmenu.com.br/${profile.slug}\n\n*Ofertas exclusivas para pedidos no link* \n\nEquipe ${profile.name}` });
+                        { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
                 }
             }
         })
