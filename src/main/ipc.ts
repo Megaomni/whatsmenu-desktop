@@ -25,17 +25,12 @@ ipcMain.on(
     {
       contact,
       message,
-      // client,
     }: {
       contact: string; message: string;
-      // client?: string | ClientType
     }
   ) => {
     try {
-      await whatsAppService.sendMessageToContact(contact, { text: message })
-      // } else {
-      //   await whatsAppService.sendMessageToUser(contact, { text: message }, client)
-      // }
+      await whatsAppService.sendMessageToContact(contact, { text: message });
     } catch (error) {
       console.error("error: ", error);
     }
