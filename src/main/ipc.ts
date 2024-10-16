@@ -196,7 +196,7 @@ ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
       .plus({ days: rememberDays })
       .toISO(),
     afterPurchaseDate: DateTime.fromISO(voucher.created_at)
-      .plus({ minutes: 20 })
+      .plus({ minutes: 2 })
       .toISO(),
     client: {
       whatsapp: voucher.client.whatsapp,
