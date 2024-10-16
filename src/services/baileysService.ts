@@ -151,11 +151,12 @@ export class BaileysService {
 
             const profile = getProfile();
             const fullCachedContactList = getCacheContactList();
+            const greeting = profile.firstOnlyCupom === null ? "welcome" : "cupomFirst";
 
             if (!fullCachedContactList.some((customer) => customer.contact === currPhoneNum)) {
                 setCacheContactByWhatsapp(currPhoneNum, {
                     contact: currPhoneNum,
-                    messageType: "cupomFirst",
+                    messageType: greeting ?? "welcome",
                 });
             }
             const cachedContact = fullCachedContactList.find((customer) => customer.contact === currPhoneNum);
@@ -165,8 +166,13 @@ export class BaileysService {
             const currTime = messagesFromSender[messagesFromSender.length - 1].messageTimestamp;
             const prevTime = messagesFromSender.length > 1 ? messagesFromSender[messagesFromSender.length - 2].messageTimestamp : undefined;
             const myLastMsgTime = myMessages.length > 0 ? myMessages[myMessages.length - 1].messageTimestamp : undefined;
+            const dontDisturb = profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
 
-            if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5)) {
+            if (dontDisturb && this.timeDifference(currTime, myLastMsgTime, 0)) {
+                await this.sendMessageToContact(
+                    currPhoneNum,
+                    { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+            } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5)) {
                 if (cachedContact && cachedContact.messageType === "cupomFirst") {
                     await this.sendMessageToContact(
                         currPhoneNum,
@@ -177,6 +183,7 @@ export class BaileysService {
                         { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
                 }
             }
+
         })
     }
 }
