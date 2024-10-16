@@ -47,7 +47,7 @@ const BotRoot = () => {
     });
 
     window.DesktopApi.getProfile();
-  }, []);
+  }, [connected]);
 
   useEffect(() => {
     if (profile) {

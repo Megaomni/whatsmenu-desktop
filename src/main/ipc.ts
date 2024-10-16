@@ -1,4 +1,4 @@
-import { BrowserWindow, app, dialog, ipcMain } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
@@ -25,28 +25,14 @@ ipcMain.on(
     {
       contact,
       message,
-      client,
-    }: { contact: string; message: string; client?: ClientType }
+    }: {
+      contact: string; message: string;
+    }
   ) => {
-    const botState = await whatsAppService.bot?.getState();
     try {
-      if (botState === "CONNECTED") {
-        const contactId = whatsAppService.checkNinthDigit(contact);
-        whatsAppService.bot.sendMessage(contactId._serialized, message);
-      } else {
-        whatsAppService.messagesQueue.push({
-          contact: `${contact}`,
-          client,
-          message,
-        });
-      }
+      await whatsAppService.sendMessageToContact(contact, { text: message });
     } catch (error) {
-      console.error(error, "error");
-      if (error instanceof Error) {
-        if (error.cause === "checkNinthDigit") {
-          dialog.showErrorBox("Ops!", error.message);
-        }
-      }
+      console.error("error: ", error);
     }
   }
 );
@@ -102,8 +88,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
           let link = document.getElementById('bootstrap-link')
           link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
-            data.reactComponentString[paperSize < 65 ? 58 : 80]
-          )}
+          data.reactComponentString[paperSize < 65 ? 58 : 80]
+        )}
         `);
       } catch (error) {
         console.error(error);

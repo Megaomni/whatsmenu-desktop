@@ -8,6 +8,7 @@ let forceClose = false
 
 const botWindow = {
   async createWindow() {
+
     // Create the browser window.
     if (!window) {
       window = new BrowserWindow({
@@ -16,18 +17,7 @@ const botWindow = {
         },
       });
       isDev && window.webContents.openDevTools();
-      // and load the index.html of the app.
-      // if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-      //   window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-      //   window.setTitle("WhatsMenu Bot");
-      // } else {
-      //   window.loadFile(
-      //     path.join(
-      //       __dirname,
-      //       `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-      //     )
-      //   );
-      // }
+
       await whatsAppService.initBot();
 
       whatsAppService.bot.on("ready", () => {

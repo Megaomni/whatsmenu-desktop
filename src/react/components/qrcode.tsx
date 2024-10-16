@@ -27,7 +27,7 @@ export const Qrcode = () => {
       setLoading(() => ({ status: true, message, percent }))
       setQrcode('')
     })
-  }, [])
+  }, [connected, qrcode, loading])
 
   return (
     <>
