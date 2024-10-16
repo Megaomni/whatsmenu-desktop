@@ -6,7 +6,7 @@ import {
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { getProfile, setCacheContactByWhatsapp, getCacheContactList } from '../main/store';
+import { getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers } from '../main/store';
 import { EventEmitter } from 'events';
 import { app } from 'electron';
 import { WhatsApp } from './whatsapp';
@@ -140,6 +140,7 @@ export class BaileysService {
         this.socket.ev.on("messages.upsert", async (m) => {
             await whatsapp.sendQueuedmessages();
             whatsapp.cashbackCron();
+            removeDuplicateVouchers();
             let currPhoneNum: string | undefined = undefined;
             const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
             const isMessageFromGroup = Boolean(m.messages[0].key.participant);
@@ -168,11 +169,11 @@ export class BaileysService {
             const myLastMsgTime = myMessages.length > 0 ? myMessages[myMessages.length - 1].messageTimestamp : undefined;
             const dontDisturb = profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
 
-            if (dontDisturb && this.timeDifference(currTime, myLastMsgTime, 0)) {
+            if (dontDisturb && this.timeDifference(currTime, myLastMsgTime, 0) && !isMessageFromMe && !isMessageFromGroup) {
                 await this.sendMessageToContact(
                     currPhoneNum,
                     { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
-            } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5)) {
+            } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5) && !dontDisturb) {
                 if (cachedContact && cachedContact.messageType === "cupomFirst") {
                     await this.sendMessageToContact(
                         currPhoneNum,
@@ -183,7 +184,6 @@ export class BaileysService {
                         { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
                 }
             }
-
         })
     }
 }
