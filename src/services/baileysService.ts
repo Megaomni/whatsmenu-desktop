@@ -6,7 +6,7 @@ import {
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers } from '../main/store';
+import { getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers, setContactWelcomeMessage } from '../main/store';
 import { EventEmitter } from 'events';
 import { app } from 'electron';
 import { WhatsApp } from './whatsapp';
@@ -152,15 +152,16 @@ export class BaileysService {
 
             const profile = getProfile();
             const fullCachedContactList = getCacheContactList();
-            const greeting = profile.firstOnlyCupom === null ? "welcome" : "cupomFirst";
+            const cachedContact = fullCachedContactList.find((customer) => customer.contact === currPhoneNum);
 
-            if (!fullCachedContactList.some((customer) => customer.contact === currPhoneNum)) {
+            if (cachedContact && cachedContact.messageType === "cupomFirst") {
+                setContactWelcomeMessage(cachedContact)
+            } else if (!cachedContact) {
                 setCacheContactByWhatsapp(currPhoneNum, {
                     contact: currPhoneNum,
-                    messageType: greeting ?? "welcome",
+                    messageType: profile.firstOnlyCupom ? "cupomFirst" : "welcome",
                 });
             }
-            const cachedContact = fullCachedContactList.find((customer) => customer.contact === currPhoneNum);
 
             const messagesFromSender = this.messageHistory.filter((m) => !isMessageFromMe && m.key.remoteJid === currPhoneNum);
             const myMessages = this.messageHistory.filter((m) => isMessageFromMe && m.key.remoteJid === currPhoneNum);
@@ -170,11 +171,17 @@ export class BaileysService {
             const dontDisturb = profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
 
             if (dontDisturb && this.timeDifference(currTime, myLastMsgTime, 0) && !isMessageFromMe && !isMessageFromGroup) {
-                await this.sendMessageToContact(
-                    currPhoneNum,
-                    { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+                if (!cachedContact || cachedContact.messageType === "cupomFirst") {
+                    await this.sendMessageToContact(
+                        currPhoneNum,
+                        { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
+                } else {
+                    await this.sendMessageToContact(
+                        currPhoneNum,
+                        { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+                }
             } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5) && !dontDisturb) {
-                if (cachedContact && cachedContact.messageType === "cupomFirst") {
+                if (!cachedContact || cachedContact.messageType === "cupomFirst") {
                     await this.sendMessageToContact(
                         currPhoneNum,
                         { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
