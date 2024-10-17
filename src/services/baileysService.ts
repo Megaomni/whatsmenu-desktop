@@ -171,7 +171,7 @@ export class BaileysService {
             const dontDisturb = profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
 
             if (dontDisturb && this.timeDifference(currTime, myLastMsgTime, 0) && !isMessageFromMe && !isMessageFromGroup) {
-                if (!cachedContact || cachedContact.messageType === "cupomFirst") {
+                if (profile.firstOnlyCupom && (!cachedContact || cachedContact.messageType === "cupomFirst")) {
                     await this.sendMessageToContact(
                         currPhoneNum,
                         { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
@@ -181,7 +181,7 @@ export class BaileysService {
                         { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
                 }
             } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5) && !dontDisturb) {
-                if (!cachedContact || cachedContact.messageType === "cupomFirst") {
+                if (profile.firstOnlyCupom && (!cachedContact || cachedContact.messageType === "cupomFirst")) {
                     await this.sendMessageToContact(
                         currPhoneNum,
                         { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
