@@ -95,7 +95,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
           paperSize !== 58 ? "302px" : "219px";
         payload.profile.options.print.textOnly = isGeneric;
         const { data } = await axios.post(
-          "https://next.whatsmenu.com.br/api/printLayout",
+          "https://ifood.whatsmenu.com.br/api/printLayout",
           { ...payload, html: true, electron: true },
         );
         win.webContents.executeJavaScript(`
