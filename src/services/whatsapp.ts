@@ -135,48 +135,58 @@ export class WhatsApp {
 
   cashbackCron() {
     const profile = getProfile();
+    const vouchersFromAllUsers = getVoucherToNotifyList();
     const removeExpiredVouchers = async () => {
-      getVoucherToNotifyList()
-        .filter(
+      vouchersFromAllUsers.forEach((user) => {
+        user.vouchers.filter(
           (voucher) =>
             voucher.expirationDate &&
             DateTime.fromISO(voucher.expirationDate).diffNow(["minutes"]).minutes < - 2
-        )
-        .forEach((voucher) => deleteVoucherToNotify(voucher.id));
+        ).forEach((voucher) => deleteVoucherToNotify(voucher.id));
+      })
     };
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
-          list = getVoucherToNotifyList().filter(
-            (voucher) =>
-              voucher.afterPurchaseDate &&
-              DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
-                .minutes <= 0
+          list = vouchersFromAllUsers.filter(
+            (user) =>
+              user.vouchers.some((voucher) =>
+                voucher.afterPurchaseDate &&
+                DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
+                  .minutes <= 0
+              )
           );
           break;
         case "remember":
-          list = getVoucherToNotifyList().filter(
-            (voucher) =>
-              voucher.rememberDate &&
-              DateTime.fromISO(voucher.rememberDate).diffNow(["days"]).days <= 0
+          list = vouchersFromAllUsers.filter(
+            (user) =>
+              user.vouchers.some((voucher) =>
+                voucher.rememberDate &&
+                DateTime.fromISO(voucher.rememberDate).diffNow(["days"])
+                  .days <= 0
+              )
           );
           break;
         case "expire":
-          list = getVoucherToNotifyList().filter(
-            (voucher) =>
-              voucher.expirationDate &&
-              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <= 0
+          list = vouchersFromAllUsers.filter(
+            (user) =>
+              user.vouchers.some((voucher) =>
+                voucher.expirationDate &&
+                DateTime.fromISO(voucher.expirationDate).diffNow(["days"])
+                  .days <= 0
+              )
           );
           break;
         default:
           break;
       }
-      for await (const voucher of list) {
-        const [{ jid }] = await whatsAppService.checkNumber(`55${voucher.client.whatsapp}`);
+      for await (const user of list) {
+        const [{ jid }] = await whatsAppService.checkNumber(`55${user.whatsapp}`);
+        const voucher = user.vouchers.find((v) => v.expirationDate === DateTime.local().toISO() || v.afterPurchaseDate === DateTime.local().toISO() || v.rememberDate === DateTime.local().toISO());
         await whatsAppService.sendMessageToContact(
           jid,
-          { text: botMessages.cashback[messageType]({ voucher, profile }) }
+          { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
         );
         switch (messageType) {
           case "afterPurchase":

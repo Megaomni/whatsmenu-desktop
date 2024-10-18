@@ -1,6 +1,6 @@
 import ElectronStore from "electron-store";
 import { ProfileType } from "../@types/profile";
-import { CacheContact, Printer, VoucherNotification } from "../@types/store";
+import { CacheContact, Printer, VoucherNotification, VoucherObj } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
@@ -174,18 +174,48 @@ export const findCacheContact = async (whatsapp: string) => {
   return cache;
 };
 
+const storeVoucherToNotify = (
+  whatsapp: string,
+  totalPrice: number,
+  payload: VoucherObj
+) => {
+  const currentVouchers = getVoucherToNotifyList() || [];
+  const userFound = currentVouchers.find((voucher) => voucher.whatsapp === whatsapp);
+  const newTotalUser = {
+    ...userFound,
+    vouchersTotal: totalPrice,
+  };
+  const voucherExists = userFound.vouchers.some((voucher) => voucher.id === payload.id);
+
+  if (!voucherExists) {
+    newTotalUser.vouchers.push(payload);
+  }
+
+  const updatedVouchers = currentVouchers.map((voucher) => voucher.whatsapp === whatsapp ? newTotalUser : voucher);
+
+  store.set("configs.voucherToNotify", updatedVouchers);
+};
+
 /**
  * Armazena uma notificação de voucher na fila.
  *
  * @param {VoucherNotification} payload - A notificação de voucher a ser armazenada.
  * @return {Promise<void>} Uma promessa que é resolvida quando a notificação de voucher é armazenada.
  */
-export const storeVoucherToNotify = (payload: VoucherNotification) =>
+export const storeNewUserToNotify = (payload: VoucherNotification) =>
   vouchersToNotifyQueue.push(async () => {
     const currentVouchers = getVoucherToNotifyList() || [];
-    const exists = currentVouchers.some((voucher) => voucher.id === payload.id);
+    const exists = currentVouchers.some((voucher) => voucher.whatsapp === payload.whatsapp);
 
-    if (!exists) {
+    if (exists) {
+      const currUser = currentVouchers.find((voucher) => voucher.whatsapp === payload.whatsapp);
+      const total = currUser.vouchers.reduce((total, voucher) => total + voucher.value, 0);
+      storeVoucherToNotify(
+        payload.whatsapp,
+        total,
+        payload.vouchers[0]
+      );
+    } else {
       store.set("configs.voucherToNotify", [...currentVouchers, payload]);
     }
   });
@@ -197,9 +227,11 @@ export const storeVoucherToNotify = (payload: VoucherNotification) =>
  */
 export const removeDuplicateVouchers = (): void => {
   const currentVouchers = getVoucherToNotifyList() || [];
-  const uniqueVouchers = Array.from(
-    new Map(currentVouchers.map((voucher) => [voucher.id, voucher])).values()
-  );
+  const uniqueVouchers = currentVouchers.filter((user) => {
+    return Array.from(
+      new Map(user.vouchers.map((voucher) => [voucher.id, voucher])).values()
+    );
+  });
   return store.set("configs.voucherToNotify", uniqueVouchers);
 };
 
@@ -216,27 +248,30 @@ export const getVoucherToNotifyList = () => {
   );
 };
 
-export const deleteVoucherToNotify = (id: number) =>
+export const deleteVoucherToNotify = (id: number) => {
+  const currentVouchers = getVoucherToNotifyList();
+  const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
   store.set(
     "configs.voucherToNotify",
-    getVoucherToNotifyList().filter((voucher) => voucher.id !== id)
+    foundUser.vouchers.filter((voucher) => voucher.id !== id)
   );
+}
 
 export const updateVoucherToNotify = (
   id: number,
-  payload: Partial<VoucherNotification>
+  payload: Partial<VoucherObj>
 ) => {
+  const currentVouchers = getVoucherToNotifyList();
+  const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
+  const updatedUser = {
+    ...foundUser,
+    vouchers: foundUser.vouchers.map((voucher) => voucher.id === id ?
+      { ...voucher, ...payload } : voucher),
+  }
+  const updatedVouchers = currentVouchers.map((user) => user.whatsapp === foundUser.whatsapp ? updatedUser : user);
   store.set(
     "configs.voucherToNotify",
-    getVoucherToNotifyList().map((voucher) => {
-      if (voucher.id === id) {
-        return {
-          ...voucher,
-          ...payload,
-        };
-      }
-      return voucher;
-    })
+    updatedVouchers
   );
 };
 

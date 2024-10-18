@@ -10,7 +10,7 @@ import {
   getVoucherToNotifyList,
   setCacheContactByWhatsapp,
   store,
-  storeVoucherToNotify,
+  storeNewUserToNotify,
 } from "./store";
 import { Printer } from "../@types/store";
 import { DateTime } from "luxon";
@@ -155,9 +155,11 @@ ipcMain.on("getProfile", (event) => {
     const { data } = await whatsmenu_api_v3.get(
       `/vouchers/${profile.id}/getByStatus/avaliable`
     );
-    const vouchers = getVoucherToNotifyList().filter(
-      (voucher) =>
+    const allVouchers = getVoucherToNotifyList();
+    const vouchers = allVouchers.filter(
+      (user) => user.vouchers.some((voucher) =>
         !data.vouchers.flatMap((v: VoucherType) => v.id).includes(voucher.id)
+      )
     );
 
     store.set("configs.voucherToNotify", vouchers);
@@ -187,25 +189,48 @@ ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
     voucher.client.vouchers?.push(voucher);
   }
 
-  storeVoucherToNotify({
-    id: voucher.id,
-    value: voucher.value,
-    expirationDate: voucher.expirationDate,
-    rememberDays,
-    rememberDate: DateTime.fromISO(voucher.created_at)
-      .plus({ days: rememberDays })
-      .toISO(),
-    afterPurchaseDate: DateTime.fromISO(voucher.created_at)
-      .plus({ minutes: 20 })
-      .toISO(),
-    client: {
-      whatsapp: voucher.client.whatsapp,
-      name: voucher.client.name,
-      vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => {
-        (total += voucher.value), 0;
-        return total || 0;
-      }, 0),
-    },
+  // storeNewUserToNotify({
+  //   id: voucher.id,
+  //   value: voucher.value,
+  //   expirationDate: voucher.expirationDate,
+  //   rememberDays,
+  //   rememberDate: DateTime.fromISO(voucher.created_at)
+  //     .plus({ days: rememberDays })
+  //     .toISO(),
+  //   afterPurchaseDate: DateTime.fromISO(voucher.created_at)
+  //     .plus({ minutes: 20 })
+  //     .toISO(),
+  //   client: {
+  //     whatsapp: voucher.client.whatsapp,
+  //     name: voucher.client.name,
+  //     vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => {
+  //       (total += voucher.value), 0;
+  //       return total || 0;
+  //     }, 0),
+  //   },
+  // });
+
+  storeNewUserToNotify({
+    whatsapp: voucher.client.whatsapp,
+    name: voucher.client.name,
+    vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => {
+      (total += voucher.value), 0;
+      return total || 0;
+    }, 0),
+    vouchers: [
+      {
+        id: voucher.id,
+        value: voucher.value,
+        expirationDate: voucher.expirationDate,
+        rememberDays,
+        rememberDate: DateTime.fromISO(voucher.created_at)
+          .plus({ days: rememberDays })
+          .toISO(),
+        afterPurchaseDate: DateTime.fromISO(voucher.created_at)
+          .plus({ minutes: 1 })
+          .toISO(),
+      }
+    ]
   });
 });
 
