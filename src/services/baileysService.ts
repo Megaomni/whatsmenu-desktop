@@ -139,7 +139,7 @@ export class BaileysService {
 
         this.socket.ev.on("messages.upsert", async (m) => {
             await whatsapp.sendQueuedmessages();
-            whatsapp.cashbackCron();
+            // whatsapp.cashbackCron();
             removeDuplicateVouchers();
             let currPhoneNum: string | undefined = undefined;
             const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
