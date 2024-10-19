@@ -151,11 +151,16 @@ export class WhatsApp {
         case "afterPurchase":
           list = vouchersFromAllUsers.filter(
             (user) =>
-              user.vouchers.some((voucher) =>
-                voucher.afterPurchaseDate &&
-                DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
-                  .minutes <= 0
-              )
+              user.vouchers.some((voucher) => {
+                console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+                console.log(DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
+                  .minutes <= 0);
+                console.log(voucher.afterPurchaseDate);
+
+                return voucher.afterPurchaseDate &&
+                  DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
+                    .minutes <= 0
+              })
           );
           break;
         case "remember":
@@ -168,7 +173,7 @@ export class WhatsApp {
               )
           );
           break;
-        case "expire":
+        case "expiration":
           list = vouchersFromAllUsers.filter(
             (user) =>
               user.vouchers.some((voucher) =>
@@ -181,31 +186,36 @@ export class WhatsApp {
         default:
           break;
       }
+
+      if (list.length === 0) {
+        return;
+      }
+
       for await (const user of list) {
         const [{ jid }] = await whatsAppService.checkNumber(`55${user.whatsapp}`);
-        const voucher = user.vouchers.find((v) => v.expirationDate === DateTime.local().toISO() || v.afterPurchaseDate === DateTime.local().toISO() || v.rememberDate === DateTime.local().toISO());
-        await whatsAppService.sendMessageToContact(
-          jid,
-          { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
-        );
-        switch (messageType) {
-          case "afterPurchase":
-            updateVoucherToNotify(voucher.id, {
-              afterPurchaseDate: null,
-            });
-            break;
-          case "remember":
-            updateVoucherToNotify(voucher.id, {
-              rememberDate: null,
-            });
-            break;
-          case "expire":
-            updateVoucherToNotify(voucher.id, {
-              expirationDate: null,
-            })
-            break;
-          default:
-            break;
+        const voucher = user.vouchers.find((v) => v.expirationDate <= DateTime.local().toISO() || v.afterPurchaseDate <= DateTime.local().toISO() || v.rememberDate <= DateTime.local().toISO());
+        // console.log("YYYYYYYYYYYYYYYYYYYY", voucher[`${messageType}Date`]);
+
+        if (!voucher[`${messageType}Date`]) {
+          return;
+        } else {
+          await whatsAppService.sendMessageToContact(
+            jid,
+            { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
+          );
+          switch (messageType) {
+            case "afterPurchase":
+              updateVoucherToNotify(voucher.id, "afterPurchaseDate");
+              break;
+            case "remember":
+              updateVoucherToNotify(voucher.id, "rememberDate");
+              break;
+            case "expiration":
+              updateVoucherToNotify(voucher.id, "expirationDate")
+              break;
+            default:
+              break;
+          }
         }
       }
     };
@@ -214,7 +224,7 @@ export class WhatsApp {
         await removeExpiredVouchers();
         await cronLoop("afterPurchase");
         await cronLoop("remember");
-        await cronLoop("expire");
+        await cronLoop("expiration");
       });
     }, 1000 * 60);
     return;

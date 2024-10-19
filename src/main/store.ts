@@ -179,7 +179,7 @@ const storeVoucherToNotify = (
   totalPrice: number,
   payload: VoucherObj
 ) => {
-  const currentVouchers = getVoucherToNotifyList() || [];
+  const currentVouchers = getVoucherToNotifyList();
   const userFound = currentVouchers.find((voucher) => voucher.whatsapp === whatsapp);
   const newTotalUser = {
     ...userFound,
@@ -204,7 +204,7 @@ const storeVoucherToNotify = (
  */
 export const storeNewUserToNotify = (payload: VoucherNotification) =>
   vouchersToNotifyQueue.push(async () => {
-    const currentVouchers = getVoucherToNotifyList() || [];
+    const currentVouchers = getVoucherToNotifyList();
     const exists = currentVouchers.some((voucher) => voucher.whatsapp === payload.whatsapp);
 
     if (exists) {
@@ -251,22 +251,25 @@ export const getVoucherToNotifyList = () => {
 export const deleteVoucherToNotify = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
+  const newListAfterDelete = currentVouchers.filter((user) => user.whatsapp !== foundUser.whatsapp);
   store.set(
     "configs.voucherToNotify",
-    foundUser.vouchers.filter((voucher) => voucher.id !== id)
+    newListAfterDelete
   );
 }
 
 export const updateVoucherToNotify = (
   id: number,
-  payload: Partial<VoucherObj>
+  payload: "rememberDate" | "expirationDate" | "afterPurchaseDate"
 ) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
+  const foundVoucher = foundUser.vouchers.find((v) => v.id === id);
+  delete foundVoucher[payload];
   const updatedUser = {
     ...foundUser,
     vouchers: foundUser.vouchers.map((voucher) => voucher.id === id ?
-      { ...voucher, ...payload } : voucher),
+      foundVoucher : voucher),
   }
   const updatedVouchers = currentVouchers.map((user) => user.whatsapp === foundUser.whatsapp ? updatedUser : user);
   store.set(

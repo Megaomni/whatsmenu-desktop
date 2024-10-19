@@ -36,10 +36,10 @@ export type CacheContact = {
 export type VoucherObj = {
   id: number,
   value: number,
-  afterPurchaseDate: string | null
-  rememberDate: string | null
+  afterPurchaseDate?: string | null
+  rememberDate?: string | null
   rememberDays: number
-  expirationDate: string | null
+  expirationDate?: string | null
 }
 
 export type VoucherNotification = {

@@ -6,7 +6,11 @@ import {
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers, setContactWelcomeMessage } from '../main/store';
+import {
+    getProfile, setCacheContactByWhatsapp, getCacheContactList,
+    removeDuplicateVouchers,
+    setContactWelcomeMessage
+} from '../main/store';
 import { EventEmitter } from 'events';
 import { app } from 'electron';
 import { WhatsApp } from './whatsapp';
@@ -139,7 +143,7 @@ export class BaileysService {
 
         this.socket.ev.on("messages.upsert", async (m) => {
             await whatsapp.sendQueuedmessages();
-            // whatsapp.cashbackCron();
+            whatsapp.cashbackCron();
             removeDuplicateVouchers();
             let currPhoneNum: string | undefined = undefined;
             const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
