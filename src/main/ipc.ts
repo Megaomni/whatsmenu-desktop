@@ -189,6 +189,9 @@ ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
     voucher.client.vouchers?.push(voucher);
   }
 
+  // console.log("XXXXXXXXXXXXXXXXXXXXX", voucher.client?.vouchers);
+
+
   // storeNewUserToNotify({
   //   id: voucher.id,
   //   value: voucher.value,

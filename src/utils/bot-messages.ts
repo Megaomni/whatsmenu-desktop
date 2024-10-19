@@ -24,7 +24,7 @@ export const botMessages = {
       profile: ProfileType;
     }) =>
       `*Atenção ${user.name}*,\n\nO seu saldo CashBack vence em ${voucher.rememberDays} dias, use agora para não perder\n\nSeu saldo é de *${formatCurrency(voucher.value)}* em desconto no seu próximo pedido\n\n*https://www.whatsmenu.com.br/${profile.slug}*\n\n*VOCÊ TEM ${formatCurrency(user.vouchersTotal)} EM CASHBACK USE AGORA PARA NÃO PERDER*`,
-    expire: ({
+    expiration: ({
       user,
       voucher,
       profile,
