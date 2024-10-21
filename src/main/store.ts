@@ -93,6 +93,23 @@ export const getProfile = () =>
 export const setCacheContactList = (cacheContact: CacheContact) =>
   store.set("configs.contacts_cache", cacheContact);
 
+export const setContactWelcomeMessage = (cacheContact: CacheContact) => {
+  const allContacts = getCacheContactList();
+  const cacheFiltered = allContacts.filter(
+    (contact) => contact?.contact !== cacheContact?.contact
+  )
+  const selectedContact = allContacts.find(
+    (contact) => contact?.contact === cacheContact?.contact
+  );
+  store.set("configs.contacts_cache", [
+    ...cacheFiltered,
+    {
+      ...selectedContact,
+      messageType: "welcome",
+    },
+  ]);
+}
+
 export const getCacheContactList = () =>
   store.get<"configs.contacts_cache", Store["configs"]["contacts_cache"]>(
     "configs.contacts_cache"
@@ -103,15 +120,8 @@ export const setCacheContactByWhatsapp = (
   payload: Partial<CacheContact>
 ) => {
   const cacheList = getCacheContactList();
-  const cacheListUpdated = cacheList.map((cached) => {
-    if (cached.contact === whatsapp) {
-      return {
-        ...cached,
-        ...payload,
-      };
-    }
-    return cached;
-  });
+  const isInList = cacheList.some((cached) => cached?.contact === whatsapp);
+  const cacheListUpdated = isInList ? cacheList : [...cacheList, payload];
   store.set("configs.contacts_cache", cacheListUpdated);
 };
 
@@ -134,7 +144,7 @@ export const findCacheContact = async (whatsapp: string) => {
           !cache ||
           (cache &&
             DateTime.fromISO(cache.created_at).diffNow("hours").hours >=
-              cache.revalidateTime)
+            cache.revalidateTime)
         ) {
           try {
             response = await whatsmenu_api_v3.get(
@@ -150,7 +160,7 @@ export const findCacheContact = async (whatsapp: string) => {
             contact,
             messageType:
               !response.data.client?.last_requests.length &&
-              profile?.firstOnlyCupom
+                profile?.firstOnlyCupom
                 ? "cupomFirst"
                 : "welcome",
             created_at: DateTime.local().toISO(),

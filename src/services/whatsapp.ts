@@ -1,8 +1,7 @@
 import { Notification } from "electron";
 import isDev from "electron-is-dev";
-import child_process from "node:child_process";
-import { promisify } from "util";
-import WAWebJS, { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
+import { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
+import { whatsAppService } from "../main";
 import {
   deleteVoucherToNotify,
   findCacheContact,
@@ -42,41 +41,12 @@ export class WhatsApp {
       config = {};
     }
     config.authStrategy = new LocalAuth();
-    config.puppeteer = {
-      headless: !store.get("configs.whatsapp.showHiddenWhatsApp"),
-      args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
-        "--disable-accelerated-2d-canvas",
-        "--no-first-run",
-        "--no-zygote",
-        "--disable-gpu",
-        // "--single-process", // Desativar o modo de processamento único - comentar caso seja necessário utilizar headless
-      ],
-    };
     if (
       !store.get("configs.executablePath") ||
       !isDev ||
       process.platform === "win32"
     ) {
-      const command =
-        'reg query "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\chrome.exe"';
-
-      try {
-        const { stderr, stdout } = await promisify(child_process.exec)(command);
-        if (stderr) {
-          console.error(stderr);
-        }
-        if (stdout) {
-          const match = stdout.match(/(.*)(REG_SZ\s+)(.*)/);
-          const chromePath = match && match[3];
-
-          config.puppeteer.executablePath = chromePath;
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      config.puppeteer.executablePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
     }
 
     if (store.get("configs.executablePath")) {
@@ -145,15 +115,16 @@ export class WhatsApp {
 
     return this.bot;
   }
+
   async sendQueuedmessages() {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
-        const contactId = this.checkNinthDigit(contact);
+        const [{ jid }] = await whatsAppService.checkNumber(contact);
 
         try {
           setTimeout(() => {
-            this.bot.sendMessage(contactId?._serialized, message);
+            whatsAppService.sendMessageToContact(jid, { text: message });
           }, 1000);
         } catch (error) {
           console.error(error);
@@ -170,7 +141,7 @@ export class WhatsApp {
         .filter(
           (voucher) =>
             voucher.expirationDate &&
-            DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days < 0
+            DateTime.fromISO(voucher.expirationDate).diffNow(["minutes"]).minutes < - 2
         )
         .forEach((voucher) => deleteVoucherToNotify(voucher.id));
     };
@@ -197,23 +168,19 @@ export class WhatsApp {
           list = getVoucherToNotifyList().filter(
             (voucher) =>
               voucher.expirationDate &&
-              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <=
-                0
+              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <= 0
           );
           break;
         default:
           break;
       }
-      let contact: WAWebJS.ContactId | null = null;
       for await (const voucher of list) {
-        const { ddi } = formatDDIBotMessage({ language });
-        contact = this.checkNinthDigit(`${ddi}${voucher.client.whatsapp}`);
-        if (contact) {
-          await this.bot.sendMessage(
-            contact._serialized,
-            botMessages.cashback[messageType]({ voucher, profile })
-          );
-        }
+      const { ddi } = formatDDIBotMessage({ language });        
+      const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${voucher.client.whatsapp}`);
+        await whatsAppService.sendMessageToContact(
+          jid,
+          { text: botMessages.cashback[messageType]({ voucher, profile }) }
+        );
         switch (messageType) {
           case "afterPurchase":
             updateVoucherToNotify(voucher.id, {
@@ -228,7 +195,7 @@ export class WhatsApp {
           case "expire":
             updateVoucherToNotify(voucher.id, {
               expirationDate: null,
-            });
+            })
             break;
           default:
             break;
@@ -244,37 +211,5 @@ export class WhatsApp {
       });
     }, 1000 * 60);
     return;
-  }
-
-  checkNinthDigit = (contact: string): WAWebJS.ContactId => {
-    if (contact.startsWith("55")) {
-      if (
-        contact.length === 13 &&
-        contact[4] === "9" &&
-        parseInt(contact.slice(2, 4)) > 28
-      ) {
-        contact = contact.slice(0, 4) + contact.slice(5);
-      }
-    }
-
-    const contactId: WAWebJS.ContactId = {
-      user: contact,
-      server: "c.us",
-      _serialized: `${contact}@c.us`,
-    };
-
-    return contactId;
-  };
-
-  validateContact(
-    callback: (contact: string) => Promise<WAWebJS.ContactId>,
-    contact: string
-  ): Promise<WAWebJS.ContactId> {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error("Timeout", { cause: "timeout" }));
-      }, 5 * 1000);
-      callback(contact).then(resolve).catch(reject);
-    });
   }
 }
