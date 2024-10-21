@@ -93,6 +93,23 @@ export const getProfile = () =>
 export const setCacheContactList = (cacheContact: CacheContact) =>
   store.set("configs.contacts_cache", cacheContact);
 
+export const setContactWelcomeMessage = (cacheContact: CacheContact) => {
+  const allContacts = getCacheContactList();
+  const cacheFiltered = allContacts.filter(
+    (contact) => contact?.contact !== cacheContact?.contact
+  )
+  const selectedContact = allContacts.find(
+    (contact) => contact?.contact === cacheContact?.contact
+  );
+  store.set("configs.contacts_cache", [
+    ...cacheFiltered,
+    {
+      ...selectedContact,
+      messageType: "welcome",
+    },
+  ]);
+}
+
 export const getCacheContactList = () =>
   store.get<"configs.contacts_cache", Store["configs"]["contacts_cache"]>(
     "configs.contacts_cache"
