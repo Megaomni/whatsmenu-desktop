@@ -1,6 +1,5 @@
 import {
     useMultiFileAuthState,
-    makeInMemoryStore,
     makeWASocket,
     ConnectionState,
     AnyMessageContent,
@@ -15,7 +14,6 @@ const whatsapp = new WhatsApp();
 
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
-    private store = makeInMemoryStore({});
     private messageHistory: WAMessage[] = []
     events = new EventEmitter();
 
@@ -98,11 +96,6 @@ export class BaileysService {
      * @returns {Promise<void>}
      */
     async connect() {
-        this.store.readFromFile("./baileys_store.json");
-        setInterval(() => {
-            this.store.writeToFile("./baileys_store.json");
-        }, 10000);
-
         const { state, saveCreds } = await useMultiFileAuthState("auth");
 
         this.socket = makeWASocket({
@@ -114,15 +107,6 @@ export class BaileysService {
             generateHighQualityLinkPreview: true,
             qrTimeout: 15000,
         });
-        this.store.bind(this.socket.ev);
-
-        this.socket.ev.on('chats.upsert', () => {
-            console.log("got chats", this.store.chats.all());
-        });
-
-        this.socket.ev.on("contacts.upsert", () => {
-            console.log("got contacts", Object.values(this.store.contacts));
-        })
 
         this.socket.ev.on("creds.update", saveCreds);
 
