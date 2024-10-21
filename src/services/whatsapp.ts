@@ -19,6 +19,7 @@ import { DateTime } from "luxon";
 import { VoucherNotification } from "../@types/store";
 import { vouchersToNotifyQueue } from "../lib/queue";
 import { botMessages } from "../utils/bot-messages";
+import { formatDDIBotMessage } from "../utils/ddi-bot-message";
 
 export class WhatsApp {
   messagesQueue: Array<{
@@ -145,6 +146,7 @@ export class WhatsApp {
         .forEach((voucher) => deleteVoucherToNotify(voucher.id));
     };
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
+      const language = profile.options.locale.language;
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
@@ -173,7 +175,8 @@ export class WhatsApp {
           break;
       }
       for await (const voucher of list) {
-        const [{ jid }] = await whatsAppService.checkNumber(`55${voucher.client.whatsapp}`);
+      const { ddi } = formatDDIBotMessage({ language });        
+      const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${voucher.client.whatsapp}`);
         await whatsAppService.sendMessageToContact(
           jid,
           { text: botMessages.cashback[messageType]({ voucher, profile }) }
