@@ -38,7 +38,6 @@ export const create_bot_tab = () => {
       }
 
       const lastDiscReason = (lastDisconnect?.error as Boom)?.output?.statusCode;
-      const storeFile = 'C:/projects/whatsmenu/apps/desktop/baileys_store.json'
       const authFolder = "C:/projects/whatsmenu/apps/desktop/auth";
 
       switch (connection) {
@@ -62,7 +61,9 @@ export const create_bot_tab = () => {
             case DisconnectReason.loggedOut:
               console.log("Logged out");
               fs.rmdirSync(authFolder, { recursive: true });
-              fs.rmSync(storeFile);
+              if (fs.existsSync('C:/projects/whatsmenu/apps/desktop/baileys_store.json')) {
+                fs.rmSync('C:/projects/whatsmenu/apps/desktop/baileys_store.json');
+              }
               break;
             default:
               console.log("Unknown reason");
