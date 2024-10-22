@@ -5,10 +5,14 @@ import {
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers, setContactWelcomeMessage } from '../main/store';
+import {
+    getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers, setContactWelcomeMessage
+} from '../main/store';
 import { EventEmitter } from 'events';
 import { app } from 'electron';
 import { WhatsApp } from './whatsapp';
+import path from 'node:path';
+import os from 'node:os';
 
 const whatsapp = new WhatsApp();
 
@@ -16,6 +20,8 @@ export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
     private messageHistory: WAMessage[] = []
     events = new EventEmitter();
+    appData: string = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
+    appDataPath = path.join(this.appData, 'whatsmenu-desktop', 'auth');
 
     /**
      * Checa se a diferença entre os dois horários é maior que o tempo dado em horas.
@@ -96,7 +102,7 @@ export class BaileysService {
      * @returns {Promise<void>}
      */
     async connect() {
-        const { state, saveCreds } = await useMultiFileAuthState("auth");
+        const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
         this.socket = makeWASocket({
             auth: state,
@@ -108,7 +114,9 @@ export class BaileysService {
             qrTimeout: 15000,
         });
 
-        this.socket.ev.on("creds.update", saveCreds);
+        this.socket.ev.on("creds.update", async () => {
+            await saveCreds();
+        });
 
         const connectionUpdate = async (update: ConnectionState) => {
             this.events.emit("connectionUpdate", update);
