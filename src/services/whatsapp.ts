@@ -134,10 +134,8 @@ export class WhatsApp {
   }
 
   cashbackCron() {
-    const profile = getProfile();
-    const vouchersFromAllUsers = getVoucherToNotifyList();
     const removeExpiredVouchers = async () => {
-      vouchersFromAllUsers.forEach((user) => {
+      getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
           (voucher) =>
             voucher.expirationDate &&
@@ -145,22 +143,20 @@ export class WhatsApp {
         ).forEach((voucher) => deleteVoucherToNotify(voucher.id));
       })
     };
+
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
+      const profile = getProfile();
+      const vouchersFromAllUsers = getVoucherToNotifyList();
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
           list = vouchersFromAllUsers.filter(
             (user) =>
-              user.vouchers.some((voucher) => {
-                console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-                console.log(DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
-                  .minutes <= 0);
-                console.log(voucher.afterPurchaseDate);
-
-                return voucher.afterPurchaseDate &&
-                  DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
-                    .minutes <= 0
-              })
+              user.vouchers.some((voucher) =>
+                voucher.afterPurchaseDate &&
+                DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
+                  .minutes <= 0
+              )
           );
           break;
         case "remember":
@@ -187,16 +183,12 @@ export class WhatsApp {
           break;
       }
 
-      if (list.length === 0) {
-        return;
-      }
-
       for await (const user of list) {
         const [{ jid }] = await whatsAppService.checkNumber(`55${user.whatsapp}`);
-        const voucher = user.vouchers.find((v) => v.expirationDate <= DateTime.local().toISO() || v.afterPurchaseDate <= DateTime.local().toISO() || v.rememberDate <= DateTime.local().toISO());
-        // console.log("YYYYYYYYYYYYYYYYYYYY", voucher[`${messageType}Date`]);
+        const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
+        const key = `${messageType}Date`;
 
-        if (!voucher[`${messageType}Date`]) {
+        if (!(key in voucher)) {
           return;
         } else {
           await whatsAppService.sendMessageToContact(
