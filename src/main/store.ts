@@ -264,7 +264,7 @@ export const updateVoucherToNotify = (
 ) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
-  const foundVoucher = foundUser.vouchers.find((v) => v.id === id);
+  const foundVoucher = foundUser.vouchers.find((voucher) => voucher.id === id);
   delete foundVoucher[payload];
   const updatedUser = {
     ...foundUser,
