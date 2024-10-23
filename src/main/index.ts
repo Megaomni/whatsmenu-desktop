@@ -8,7 +8,7 @@ import "../main/menu";
 import "../main/tray";
 import "../services/ws_integration";
 
-import { WhatsApp } from "../services/whatsapp";
+import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";
 import { TabBrowser } from "../extends/tab-browser";
@@ -18,7 +18,7 @@ export let mainWindow: TabBrowser;
 if (require("electron-squirrel-startup")) {
   app.quit();
 }
-export const whatsAppService = new WhatsApp();
+export const whatsAppService = new BaileysService();
 const main = () => {
   mainWindow = tabsWindow.createWindow();
   const printers = getPrinters();

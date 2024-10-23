@@ -51,7 +51,7 @@ const BotRoot = () => {
 
     window.DesktopApi.getMerchant();
     window.DesktopApi.getProfile();
-  }, []);
+  }, [connected]);
 
   useEffect(() => {
     if (profile) {

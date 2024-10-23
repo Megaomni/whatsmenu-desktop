@@ -27,29 +27,14 @@ ipcMain.on(
       contact,
       message,
       client,
-    }: { contact: string; message: string; client?: ClientType },
+    }: { contact: string; message: string; client?: ClientType }
   ) => {
-    const botState = await whatsAppService.bot?.getState();
     try {
-      if (botState === "CONNECTED") {
-        const contactId = whatsAppService.checkNinthDigit(contact);
-        whatsAppService.bot.sendMessage(contactId._serialized, message);
-      } else {
-        whatsAppService.messagesQueue.push({
-          contact: `${contact}`,
-          client,
-          message,
-        });
-      }
+      await whatsAppService.sendMessageToContact(contact, { text: message });
     } catch (error) {
-      console.error(error, "error");
-      if (error instanceof Error) {
-        if (error.cause === "checkNinthDigit") {
-          dialog.showErrorBox("Ops!", error.message);
-        }
-      }
+      console.error("error: ", error);
     }
-  },
+  }
 );
 
 ipcMain.on("show-whatsapp", async (_, show) => {
@@ -60,7 +45,7 @@ ipcMain.on("show-whatsapp", async (_, show) => {
 ipcMain.on("executablePath", (_, executablePath) => {
   store.set(
     "configs.executablePath",
-    executablePath.replaceAll("\\", "/").replaceAll("/", "\\"),
+    executablePath.replaceAll("\\", "/").replaceAll("/", "\\")
   );
 });
 
@@ -96,14 +81,14 @@ ipcMain.on("print", async (_, serializedPayload) => {
         payload.profile.options.print.textOnly = isGeneric;
         const { data } = await axios.post(
           "https://ifood.whatsmenu.com.br/api/printLayout",
-          { ...payload, html: true, electron: true },
+          { ...payload, html: true, electron: true }
         );
         win.webContents.executeJavaScript(`
           const printBody = document.body
           let link = document.getElementById('bootstrap-link')
           link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
-            data.reactComponentString[paperSize < 65 ? 58 : 80],
+            data.reactComponentString[paperSize < 65 ? 58 : 80]
           )}
         `);
       } catch (error) {
@@ -123,8 +108,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
       const height = Math.ceil(
         (await win.webContents.executeJavaScript(
-          "document.body.offsetHeight",
-        )) * 264.5833,
+          "document.body.offsetHeight"
+        )) * 264.5833
       );
       setTimeout(() => {
         win.webContents.print(
@@ -138,21 +123,21 @@ ipcMain.on("print", async (_, serializedPayload) => {
           (success, failureReason) => {
             console.log("Print Initiated in Main...");
             if (!success) console.error(failureReason);
-          },
+          }
         );
       }, 2000);
     });
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
       win.webContents.loadURL(
-        `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`,
+        `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
       );
     } else {
       win.webContents.loadFile(
         path.join(
           __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`,
-        ),
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+        )
       );
     }
   }
@@ -203,8 +188,8 @@ ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
   const rememberDays = Math.floor(
     DateTime.fromISO(voucher.expirationDate).diff(
       DateTime.fromISO(voucher.created_at),
-      "days",
-    ).days / 2,
+      "days"
+    ).days / 2
   );
 
   if (!voucher.client?.vouchers?.some((v) => v.id === voucher.id)) {

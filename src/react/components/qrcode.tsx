@@ -29,10 +29,10 @@ export const Qrcode = () => {
       setQrcode("");
     });
     window.WhatsAppBotApi.onloading((event, { message, percent }) => {
-      setLoading(() => ({ status: true, message, percent }));
-      setQrcode("");
-    });
-  }, []);
+      setLoading(() => ({ status: true, message, percent }))
+      setQrcode('')
+    })
+  }, [connected, qrcode, loading])
 
   return (
     <>
