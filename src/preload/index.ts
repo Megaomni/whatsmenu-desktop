@@ -32,8 +32,8 @@ export const WhatsAppBotApi = {
   ) => ipcRenderer.once("onmessagesend", callback),
 
   // Methods
-  sendMessage: (contact: string, message: string, client?: ClientType) =>
-    ipcRenderer.send("send-message", { contact, message, client }),
+  sendMessage: (contact: string, message: string) =>
+    ipcRenderer.send("send-message", { contact, message }),
   showWhatsapp: (show: boolean) => ipcRenderer.send("show-whatsapp", show),
   setExecutablePath: (executablePath: string) => {
     ipcRenderer.send("executablePath", executablePath);
