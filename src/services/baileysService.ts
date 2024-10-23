@@ -1,23 +1,27 @@
 import {
     useMultiFileAuthState,
-    makeInMemoryStore,
     makeWASocket,
     ConnectionState,
     AnyMessageContent,
     WAMessage
 } from '@whiskeysockets/baileys';
-import { getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers, setContactWelcomeMessage } from '../main/store';
+import {
+    getProfile, setCacheContactByWhatsapp, getCacheContactList, removeDuplicateVouchers, setContactWelcomeMessage
+} from '../main/store';
 import { EventEmitter } from 'events';
 import { app } from 'electron';
 import { WhatsApp } from './whatsapp';
+import path from 'node:path';
+import os from 'node:os';
 
 const whatsapp = new WhatsApp();
 
 export class BaileysService {
     socket: ReturnType<typeof makeWASocket> | null = null;
-    private store = makeInMemoryStore({});
     private messageHistory: WAMessage[] = []
     events = new EventEmitter();
+    appData: string = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming');
+    appDataPath = path.join(this.appData, 'whatsmenu-desktop', 'auth');
 
     /**
      * Checa se a diferença entre os dois horários é maior que o tempo dado em horas.
@@ -98,12 +102,7 @@ export class BaileysService {
      * @returns {Promise<void>}
      */
     async connect() {
-        this.store.readFromFile("./baileys_store.json");
-        setInterval(() => {
-            this.store.writeToFile("./baileys_store.json");
-        }, 10000);
-
-        const { state, saveCreds } = await useMultiFileAuthState("auth");
+        const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
         this.socket = makeWASocket({
             auth: state,
@@ -114,17 +113,10 @@ export class BaileysService {
             generateHighQualityLinkPreview: true,
             qrTimeout: 15000,
         });
-        this.store.bind(this.socket.ev);
 
-        this.socket.ev.on('chats.upsert', () => {
-            console.log("got chats", this.store.chats.all());
+        this.socket.ev.on("creds.update", async () => {
+            await saveCreds();
         });
-
-        this.socket.ev.on("contacts.upsert", () => {
-            console.log("got contacts", Object.values(this.store.contacts));
-        })
-
-        this.socket.ev.on("creds.update", saveCreds);
 
         const connectionUpdate = async (update: ConnectionState) => {
             this.events.emit("connectionUpdate", update);
@@ -174,21 +166,21 @@ export class BaileysService {
                 if (profile.firstOnlyCupom && (!cachedContact || cachedContact.messageType === "cupomFirst")) {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom` });
                 } else {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n` });
                 }
             } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5) && !dontDisturb) {
                 if (profile.firstOnlyCupom && (!cachedContact || cachedContact.messageType === "cupomFirst")) {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom` });
                 } else {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n` });
                 }
             }
         })
