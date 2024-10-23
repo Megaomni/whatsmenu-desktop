@@ -158,21 +158,21 @@ export class BaileysService {
                 if (profile.firstOnlyCupom && (!cachedContact || cachedContact.messageType === "cupomFirst")) {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom` });
                 } else {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n` });
                 }
             } else if (!isMessageFromMe && !isMessageFromGroup && this.timeDifference(currTime, prevTime, 3) && this.timeDifference(currTime, myLastMsgTime, 5) && !dontDisturb) {
                 if (profile.firstOnlyCupom && (!cachedContact || cachedContact.messageType === "cupomFirst")) {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.cupomFirstMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom` });
                 } else {
                     await this.sendMessageToContact(
                         currPhoneNum,
-                        { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
+                        { text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n` });
                 }
             }
         })
