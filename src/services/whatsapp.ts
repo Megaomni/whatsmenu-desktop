@@ -138,8 +138,7 @@ export class WhatsApp {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
           (voucher) =>
-            voucher.expirationDate &&
-            DateTime.fromISO(voucher.expirationDate).diffNow(["minutes"]).minutes < - 2
+            !voucher.expirationDate
         ).forEach((voucher) => deleteVoucherToNotify(voucher.id));
       })
     };
