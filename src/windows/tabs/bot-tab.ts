@@ -40,7 +40,6 @@ export const create_bot_tab = () => {
 
       const lastDiscReason = (lastDisconnect?.error as Boom)?.output
         ?.statusCode;
-      const authFolder = "C:/projects/whatsmenu/apps/desktop/auth";
 
       switch (connection) {
         case "connecting":
@@ -59,7 +58,10 @@ export const create_bot_tab = () => {
                 "log",
                 `lastdisc - ${JSON.stringify({ lastDiscReason, DisconnectReason }, null, 2)}`
               );
-              console.log(DisconnectReason);
+              console.log(
+                "Disconnect reason: ",
+                DisconnectReason[lastDiscReason]
+              );
               console.log("Reconnecting...");
               whatsAppService.connect();
               break;
@@ -71,7 +73,7 @@ export const create_bot_tab = () => {
               break;
             case DisconnectReason.loggedOut:
               console.log("Logged out");
-              fs.rmdirSync(authFolder, { recursive: true });
+              fs.rmdirSync(whatsAppService.appDataPath, { recursive: true });
               if (
                 fs.existsSync(
                   "C:/projects/whatsmenu/apps/desktop/baileys_store.json"
@@ -83,7 +85,10 @@ export const create_bot_tab = () => {
               }
               break;
             default:
-              console.log("Unknown reason");
+              console.log(
+                "Disconnect reason: ",
+                DisconnectReason[lastDiscReason]
+              );
               break;
           }
           tab.webContents.send("ondisconnected", "disconnected");
