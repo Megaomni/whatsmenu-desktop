@@ -204,6 +204,8 @@ const storeVoucherToNotify = (
  */
 export const storeNewUserToNotify = (payload: VoucherNotification) =>
   vouchersToNotifyQueue.push(async () => {
+    console.log("XXXXXXXXXXXXXXXXXXXX", payload);
+
     const currentVouchers = getVoucherToNotifyList();
     const exists = currentVouchers.some((voucher) => voucher.whatsapp === payload.whatsapp);
 

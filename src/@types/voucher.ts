@@ -5,7 +5,7 @@ export interface VoucherType {
   profileId: number
   clientId: number
   client?: ClientType
-  status: boolean
+  status: "avaliable" | "cancelled" | "used"
   value: number
   expirationDate: string
   created_at: string

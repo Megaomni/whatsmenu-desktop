@@ -216,7 +216,7 @@ ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
   storeNewUserToNotify({
     whatsapp: voucher.client.whatsapp,
     name: voucher.client.name,
-    vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => {
+    vouchersTotal: voucher.client.vouchers?.filter((voucher) => voucher.status === "avaliable").reduce((total, voucher) => {
       (total += voucher.value), 0;
       return total || 0;
     }, 0),
