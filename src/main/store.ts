@@ -250,12 +250,21 @@ export const getVoucherToNotifyList = () => {
 
 export const deleteVoucherToNotify = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
-  const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
-  const newListAfterDelete = currentVouchers.filter((user) => user.whatsapp !== foundUser.whatsapp);
-  store.set(
-    "configs.voucherToNotify",
-    newListAfterDelete
-  );
+  const foundUser = currentVouchers.find((user) => user.vouchers.some((voucher) => voucher.id === id));
+  const listWithoutExpiredVoucher = foundUser.vouchers.filter((voucher) => voucher.id !== id);
+  const newTotal = listWithoutExpiredVoucher.reduce((total, voucher) => total + voucher.value, 0);
+  const updatedUser = {
+    ...foundUser,
+    vouchersTotal: newTotal,
+    vouchers: listWithoutExpiredVoucher,
+  }
+  const listWithoutuser = currentVouchers.filter((user) => user.whatsapp !== foundUser.whatsapp);
+  if (updatedUser.vouchers.length === 0) {
+    store.set("configs.voucherToNotify", listWithoutuser);
+  } else {
+    const updatedList = currentVouchers.map((user) => user.whatsapp === foundUser.whatsapp ? updatedUser : user);
+    store.set("configs.voucherToNotify", updatedList);
+  }
 }
 
 export const updateVoucherToNotify = (
