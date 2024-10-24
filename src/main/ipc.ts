@@ -26,8 +26,10 @@ ipcMain.on(
     {
       contact,
       message,
-      client,
-    }: { contact: string; message: string; client?: ClientType }
+    }: {
+      contact: string;
+      message: string;
+    }
   ) => {
     try {
       await whatsAppService.sendMessageToContact(contact, { text: message });

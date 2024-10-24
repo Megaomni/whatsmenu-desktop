@@ -182,6 +182,9 @@ export class WhatsApp {
         await whatsAppService.sendMessageToContact(jid, {
           text: botMessages.cashback[messageType]({ voucher, profile }),
         });
+        await whatsAppService.sendMessageToContact(jid, {
+          text: botMessages.cashback[messageType]({ voucher, profile }),
+        });
         switch (messageType) {
           case "afterPurchase":
             updateVoucherToNotify(voucher.id, {
