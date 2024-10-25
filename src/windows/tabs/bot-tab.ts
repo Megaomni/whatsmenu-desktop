@@ -1,21 +1,22 @@
-import path from "node:path"
-import { whatsAppService } from "../../main"
-import { WebTabContentsView } from "../../extends/tab"
-import { ConnectionState, DisconnectReason } from "@whiskeysockets/baileys"
-import fs from "fs"
-import { Boom } from "@hapi/boom"
+import path from "node:path";
+import { whatsAppService } from "../../main";
+import { WebTabContentsView } from "../../extends/tab";
+import { ConnectionState, DisconnectReason } from "@whiskeysockets/baileys";
+import fs from "fs";
+import { Boom } from "@hapi/boom";
 
 export const create_bot_tab = () => {
-
   const tab = new WebTabContentsView({
     id: "bot",
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(__dirname, "preload.js"),
     },
-  })
+  });
 
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    tab.webContents.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/bot.html`);
+    tab.webContents.loadURL(
+      `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/bot.html`
+    );
   } else {
     tab.webContents.loadFile(
       path.join(
@@ -24,9 +25,9 @@ export const create_bot_tab = () => {
       )
     );
   }
-  tab.setVisible(false)
+  tab.setVisible(false);
 
-  tab.webContents.on('did-finish-load', async () => {
+  tab.webContents.on("did-finish-load", async () => {
     await whatsAppService.connect();
 
     const connectionUpdate = async (update: ConnectionState) => {
@@ -37,19 +38,30 @@ export const create_bot_tab = () => {
         return;
       }
 
-      const lastDiscReason = (lastDisconnect?.error as Boom)?.output?.statusCode;
-      const storeFile = 'C:/projects/whatsmenu/apps/desktop/baileys_store.json'
-      const authFolder = "C:/projects/whatsmenu/apps/desktop/auth";
+      const lastDiscReason = (lastDisconnect?.error as Boom)?.output
+        ?.statusCode;
 
       switch (connection) {
         case "connecting":
-          tab.webContents.send("onloading", { percent: 50, message: 'carregando mensagens' });
+          tab.webContents.send("onloading", {
+            percent: 50,
+            message: "carregando mensagens",
+          });
           break;
         case "close":
           switch (lastDiscReason) {
-            case DisconnectReason.restartRequired || DisconnectReason.timedOut || DisconnectReason.connectionLost || DisconnectReason.connectionClosed:
-              tab.webContents.send("log", `lastdisc - ${JSON.stringify({ lastDiscReason, DisconnectReason }, null, 2)}`);
-              console.log(DisconnectReason);
+            case DisconnectReason.restartRequired ||
+              DisconnectReason.timedOut ||
+              DisconnectReason.connectionLost ||
+              DisconnectReason.connectionClosed:
+              tab.webContents.send(
+                "log",
+                `lastdisc - ${JSON.stringify({ lastDiscReason, DisconnectReason }, null, 2)}`
+              );
+              console.log(
+                "Disconnect reason: ",
+                DisconnectReason[lastDiscReason]
+              );
               console.log("Reconnecting...");
               whatsAppService.connect();
               break;
@@ -61,11 +73,22 @@ export const create_bot_tab = () => {
               break;
             case DisconnectReason.loggedOut:
               console.log("Logged out");
-              fs.rmdirSync(authFolder, { recursive: true });
-              fs.rmSync(storeFile);
+              fs.rmdirSync(whatsAppService.appDataPath, { recursive: true });
+              if (
+                fs.existsSync(
+                  "C:/projects/whatsmenu/apps/desktop/baileys_store.json"
+                )
+              ) {
+                fs.rmSync(
+                  "C:/projects/whatsmenu/apps/desktop/baileys_store.json"
+                );
+              }
               break;
             default:
-              console.log("Unknown reason");
+              console.log(
+                "Disconnect reason: ",
+                DisconnectReason[lastDiscReason]
+              );
               break;
           }
           tab.webContents.send("ondisconnected", "disconnected");
@@ -74,10 +97,10 @@ export const create_bot_tab = () => {
           tab.webContents.send("onready");
           break;
       }
-    }
+    };
 
     whatsAppService.events.on("connectionUpdate", connectionUpdate);
-  })
+  });
 
-  return tab
-}
+  return tab;
+};

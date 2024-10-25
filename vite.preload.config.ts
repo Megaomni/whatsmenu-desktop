@@ -1,10 +1,10 @@
-import type { ConfigEnv, UserConfig } from 'vite';
-import { defineConfig, mergeConfig } from 'vite';
-import { getBuildConfig, external, pluginHotRestart } from './vite.base.config';
+import type { ConfigEnv, UserConfig } from "vite";
+import { defineConfig, mergeConfig } from "vite";
+import { getBuildConfig, external, pluginHotRestart } from "./vite.base.config";
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
-  const forgeEnv = env as ConfigEnv<'build'>;
+  const forgeEnv = env as ConfigEnv<"build">;
   const { forgeConfigSelf } = forgeEnv;
   const config: UserConfig = {
     build: {
@@ -13,16 +13,16 @@ export default defineConfig((env) => {
         // Preload scripts may contain Web assets, so use the `build.rollupOptions.input` instead `build.lib.entry`.
         input: forgeConfigSelf.entry!,
         output: {
-          format: 'cjs',
+          format: "cjs",
           // It should not be split chunks.
           inlineDynamicImports: true,
-          entryFileNames: 'preload.js',
-          chunkFileNames: 'preload.js',
-          assetFileNames: 'preload.[ext]',
+          entryFileNames: "preload.js",
+          chunkFileNames: "preload.js",
+          assetFileNames: "preload.[ext]",
         },
       },
     },
-    plugins: [pluginHotRestart('reload')],
+    plugins: [pluginHotRestart("reload")],
   };
 
   return mergeConfig(getBuildConfig(forgeEnv), config);

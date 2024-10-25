@@ -42,7 +42,7 @@ describe.only("storeVoucherToNotify", () => {
 
     expect(setSpy).toHaveBeenCalledWith(
       "configs.voucherToNotify",
-      voucherToNotifyMock
+      voucherToNotifyMock,
     );
   });
 });
