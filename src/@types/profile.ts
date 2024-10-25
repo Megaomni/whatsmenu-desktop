@@ -69,6 +69,9 @@ interface ProfileOptions {
     };
     cashierManagement: boolean;
   };
+  integrations: {
+    ifood: string;
+  };
   asaas?: {
     id: string;
     apiKey: string;
@@ -142,36 +145,32 @@ interface ProfileOptions {
   };
   locale: {
     language: string;
-    currency: string;
-  };
-  legacyPix: boolean;
-  onlinePix: boolean;
-  forceClose: string | null;
-  onlineCard: boolean;
-  activeCupom: boolean;
-  forceLogout?: string;
-  linkWhatsapp: boolean;
-  placeholders: {
-    pizzaObs: string;
-    clientText: string;
-    productObs: string;
-    statusSend: string;
-    statusToRemove: string;
-    statusProduction: string;
-    welcomeMessage: string;
-    absenceMessage: string;
-    cupomFirstMessage: string;
-  };
-  disponibility: {
-    showProductsWhenPaused: boolean;
-  };
-  inventoryControl: boolean;
-  bot: {
-    whatsapp: {
-      welcomeMessage: {
-        status: boolean;
-        alwaysSend: boolean;
+    onlineCard: boolean;
+    activeCupom: boolean;
+    forceLogout?: string;
+    linkWhatsapp: boolean;
+    placeholders: {
+      pizzaObs: string;
+      clientText: string;
+      productObs: string;
+      statusSend: string;
+      statusToRemove: string;
+      statusProduction: string;
+      welcomeMessage: string;
+      absenceMessage: string;
+      cupomFirstMessage: string;
+    };
+    disponibility: {
+      showProductsWhenPaused: boolean;
+    };
+    inventoryControl: boolean;
+    bot: {
+      whatsapp: {
+        welcomeMessage: {
+          status: boolean;
+          alwaysSend: boolean;
+        };
       };
     };
-  };
+  }
 }

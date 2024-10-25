@@ -10,7 +10,7 @@ import {
   removeDuplicateVouchers,
   store,
   updateVoucherToNotify,
-} from "../main/store";
+} from "./../main/store";
 
 import { EventEmitter } from "node:events";
 import { ClientType } from "../@types/client";
@@ -46,7 +46,8 @@ export class WhatsApp {
       !isDev ||
       process.platform === "win32"
     ) {
-      config.puppeteer.executablePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
+      config.puppeteer.executablePath =
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
     }
 
     if (store.get("configs.executablePath")) {
@@ -141,7 +142,8 @@ export class WhatsApp {
         .filter(
           (voucher) =>
             voucher.expirationDate &&
-            DateTime.fromISO(voucher.expirationDate).diffNow(["minutes"]).minutes < - 2
+            DateTime.fromISO(voucher.expirationDate).diffNow(["minutes"])
+              .minutes < -2
         )
         .forEach((voucher) => deleteVoucherToNotify(voucher.id));
     };
@@ -168,19 +170,24 @@ export class WhatsApp {
           list = getVoucherToNotifyList().filter(
             (voucher) =>
               voucher.expirationDate &&
-              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <= 0
+              DateTime.fromISO(voucher.expirationDate).diffNow(["days"]).days <=
+              0
           );
           break;
         default:
           break;
       }
       for await (const voucher of list) {
-      const { ddi } = formatDDIBotMessage({ language });        
-      const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${voucher.client.whatsapp}`);
-        await whatsAppService.sendMessageToContact(
-          jid,
-          { text: botMessages.cashback[messageType]({ voucher, profile }) }
+        const { ddi } = formatDDIBotMessage({ language });
+        const [{ jid }] = await whatsAppService.checkNumber(
+          `${ddi}${voucher.client.whatsapp}`
         );
+        await whatsAppService.sendMessageToContact(jid, {
+          text: botMessages.cashback[messageType]({ voucher, profile }),
+        });
+        await whatsAppService.sendMessageToContact(jid, {
+          text: botMessages.cashback[messageType]({ voucher, profile }),
+        });
         switch (messageType) {
           case "afterPurchase":
             updateVoucherToNotify(voucher.id, {
@@ -195,7 +202,7 @@ export class WhatsApp {
           case "expire":
             updateVoucherToNotify(voucher.id, {
               expirationDate: null,
-            })
+            });
             break;
           default:
             break;

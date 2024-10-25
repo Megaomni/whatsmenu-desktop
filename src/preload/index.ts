@@ -5,28 +5,30 @@ import WAWebJS from "whatsapp-web.js";
 import { ClientType } from "../@types/client";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
+import { Env } from "../environments";
+import { MerchantType } from "../@types/merchant";
 
 export const WhatsAppBotApi = {
   // Events
   onqrcode: (
-    callback: (event: Electron.IpcRendererEvent, qrcode: string) => void
+    callback: (event: Electron.IpcRendererEvent, qrcode: string) => void,
   ) => ipcRenderer.on("onqrcode", callback),
   onloading: (
     callback: (
       event: Electron.IpcRendererEvent,
-      value: { percent: number; message: string }
-    ) => void
+      value: { percent: number; message: string },
+    ) => void,
   ) => ipcRenderer.on("onloading", callback),
   onready: (callback: (event: Electron.IpcRendererEvent) => void) =>
     ipcRenderer.on("onready", callback),
   ondisconnected: (
     callback: (
       event: Electron.IpcRendererEvent,
-      reason: WAWebJS.WAState | "NAVIGATION"
-    ) => void
+      reason: WAWebJS.WAState | "NAVIGATION",
+    ) => void,
   ) => ipcRenderer.on("ondisconnected", callback),
   onmessagesend: (
-    callback: (event: Electron.IpcRendererEvent, client: ClientType) => void
+    callback: (event: Electron.IpcRendererEvent, client: ClientType) => void,
   ) => ipcRenderer.once("onmessagesend", callback),
 
   // Methods
@@ -44,7 +46,7 @@ export const WhatsMenuPrintApi = {
 
 export const DesktopApi = {
   onProfileChange: (
-    callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void
+    callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void,
   ) => ipcRenderer.on("onProfileChange", callback),
   onCart: (cart: { id: number; client?: ClientType }) =>
     ipcRenderer.send("onCart", cart),
@@ -54,8 +56,26 @@ export const DesktopApi = {
 
   storeProfile: (profile: ProfileType) =>
     ipcRenderer.send("storeProfile", profile),
+  storeMerchant: (merchant: MerchantType) =>
+    ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),
+  getMerchant: () => ipcRenderer.send("getMerchant"),
+  /**
+   * Abre um link no navegador padrão.
+   *
+   * @param {string} url - A URL a ser aberta.
+   * @return {void}
+   */
+  openLink: (url: string): void => {
+    ipcRenderer.send("openLink", url);
+  },
 };
+//   storeProfile: (profile: ProfileType) => ipcRenderer.send('storeProfile', profile),
+//   storeMerchant: (merchant: MerchantType) => ipcRenderer.send('storeMerchant', merchant),
+//   getProfile: () => ipcRenderer.send('getProfile'),
+//   onMerchantChange: (callback: (event: Electron.IpcRendererEvent, merchant: MerchantType) => void) => ipcRenderer.on('onMerchantChange', callback),
+//   getMerchant: () => ipcRenderer.send('getMerchant'),
+// }
 
 export const TabsApi = {
   setActiveTab: (tab: string) => ipcRenderer.send("setActiveTab", tab),

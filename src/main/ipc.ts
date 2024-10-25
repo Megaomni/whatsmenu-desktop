@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain } from "electron";
+import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
@@ -6,6 +6,7 @@ import axios from "axios";
 import path from "node:path";
 import {
   deleteVoucherToNotify,
+  getMerchant,
   getProfile,
   getVoucherToNotifyList,
   setCacheContactByWhatsapp,
@@ -26,7 +27,8 @@ ipcMain.on(
       contact,
       message,
     }: {
-      contact: string; message: string;
+      contact: string;
+      message: string;
     }
   ) => {
     try {
@@ -61,6 +63,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
     const { printTypeMode = "whatsmenu", ...payload } =
       JSON.parse(serializedPayload);
+
     if (printTypeMode === "html") {
       win.webContents.executeJavaScript(`
           const printBody = document.body
@@ -71,8 +74,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
             printBody.style.height = '1400px' 
           }
           printBody.innerHTML = ${JSON.stringify(payload.html)}
-          
-          `);
+        `);
     }
     if (printTypeMode === "whatsmenu") {
       try {
@@ -80,7 +82,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
           paperSize !== 58 ? "302px" : "219px";
         payload.profile.options.print.textOnly = isGeneric;
         const { data } = await axios.post(
-          "https://next.whatsmenu.com.br/api/printLayout",
+          "https://ifood.whatsmenu.com.br/api/printLayout",
           { ...payload, html: true, electron: true }
         );
         win.webContents.executeJavaScript(`
@@ -88,8 +90,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
           let link = document.getElementById('bootstrap-link')
           link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
-          data.reactComponentString[paperSize < 65 ? 58 : 80]
-        )}
+            data.reactComponentString[paperSize < 65 ? 58 : 80]
+          )}
         `);
       } catch (error) {
         console.error(error);
@@ -149,6 +151,10 @@ ipcMain.on("storeProfile", (_, profile) => {
   store.set("configs.profile", profile);
 });
 
+ipcMain.on("storeMerchant", (_, merchant) => {
+  store.set("configs.merchant", merchant);
+});
+
 ipcMain.on("getProfile", (event) => {
   const profile = getProfile();
   vouchersToNotifyQueue.push(async () => {
@@ -164,6 +170,11 @@ ipcMain.on("getProfile", (event) => {
   });
 
   event.reply("onProfileChange", profile);
+});
+
+ipcMain.on("getMerchant", (event) => {
+  const merchant = getMerchant();
+  event.reply("onMerchantChange", merchant);
 });
 
 ipcMain.on("onCart", (_, cart: { id: number; client?: ClientType }) => {
@@ -215,4 +226,16 @@ ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
 
 ipcMain.on("env", (event) => {
   event.returnValue = process.env;
+});
+
+ipcMain.on("polling", async (event, data) => {
+  try {
+    console.log("POLLING", data, "POLLING");
+  } catch (error) {
+    console.error("erro ao enviar o polling", error);
+  }
+});
+
+ipcMain.on("openLink", (_, url) => {
+  shell.openExternal(url);
 });

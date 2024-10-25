@@ -1,38 +1,46 @@
-import type { ForgeConfig } from '@electron-forge/shared-types';
-import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-import { MakerZIP } from '@electron-forge/maker-zip';
-import { MakerDeb } from '@electron-forge/maker-deb';
-import { MakerRpm } from '@electron-forge/maker-rpm';
-import { VitePlugin } from '@electron-forge/plugin-vite';
-import { FusesPlugin } from '@electron-forge/plugin-fuses';
-import { FuseV1Options, FuseVersion } from '@electron/fuses';
+import type { ForgeConfig } from "@electron-forge/shared-types";
+import { MakerSquirrel } from "@electron-forge/maker-squirrel";
+import { MakerZIP } from "@electron-forge/maker-zip";
+import { MakerDeb } from "@electron-forge/maker-deb";
+import { MakerRpm } from "@electron-forge/maker-rpm";
+import { VitePlugin } from "@electron-forge/plugin-vite";
+import { FusesPlugin } from "@electron-forge/plugin-fuses";
+import { FuseV1Options, FuseVersion } from "@electron/fuses";
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    icon: './src/images/app_icon.ico',
+    icon: "./src/images/app_icon.ico",
     extraResource: [],
     protocols: [
       {
-        name: 'WhatsMenu WhatsApp Bot',
-        schemes: ['whatsmenu-whatsapp-bot'],
-      }
-    ]
+        name: "WhatsMenu WhatsApp Bot",
+        schemes: ["whatsmenu-whatsapp-bot"],
+      },
+    ],
   },
   rebuildConfig: {},
-  
-  makers: [new MakerSquirrel({ setupIcon: './src/images/install_icon.ico', iconUrl: 'https://whatsmenu.com.br/favicon/app_icon.ico' }), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+
+  makers: [
+    new MakerSquirrel({
+      setupIcon: "./src/images/install_icon.ico",
+      iconUrl: "https://whatsmenu.com.br/favicon/app_icon.ico",
+    }),
+    new MakerZIP({}, ["darwin"]),
+    new MakerRpm({}),
+    new MakerDeb({}),
+  ],
   publishers: [
     {
-      name: '@electron-forge/publisher-github',
+      name: "@electron-forge/publisher-github",
       config: {
         repository: {
-          owner: 'megaomni',
-          name: 'whatsmenu-desktop'
+          owner: "megaomni",
+          name: "whatsmenu-desktop",
         },
         prerelease: true,
-      }
-    }
+      },
+    },
   ],
   plugins: [
     new VitePlugin({
@@ -41,30 +49,30 @@ const config: ForgeConfig = {
       build: [
         {
           // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
-          entry: 'src/main/index.ts',
-          config: 'vite.main.config.ts',
+          entry: "src/main/index.ts",
+          config: "vite.main.config.ts",
         },
         {
-          entry: 'src/preload/index.ts',
-          config: 'vite.preload.config.ts',
+          entry: "src/preload/index.ts",
+          config: "vite.preload.config.ts",
         },
       ],
       renderer: [
         {
-          name: 'main_window',
-          config: 'vite.renderer.config.ts',
+          name: "main_window",
+          config: "vite.renderer.config.ts",
         },
         {
-          name: 'tab_window',
-          config: 'vite.renderer.config.ts',
+          name: "tab_window",
+          config: "vite.renderer.config.ts",
         },
         {
-          name: 'bot_window',
-          config: 'vite.renderer.config.ts',
+          name: "bot_window",
+          config: "vite.renderer.config.ts",
         },
         {
-          name: 'print_window',
-          config: 'vite.renderer.config.ts',
+          name: "print_window",
+          config: "vite.renderer.config.ts",
         },
       ],
     }),
