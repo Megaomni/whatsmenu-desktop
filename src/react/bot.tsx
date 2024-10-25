@@ -5,6 +5,7 @@ import { Switch } from "./shadcn-ui/components/ui/switch";
 import { ProfileType } from "../@types/profile";
 import { whatsmenu_api } from "../lib/axios";
 import { Ws, wsURL } from "../services/ws";
+import { getVouchersFromDB } from "../main/ipc";
 
 const root = createRoot(document.body);
 
@@ -50,12 +51,12 @@ const BotRoot = () => {
   }, [connected]);
 
   useEffect(() => {
-    if (profile) {
+    if (profile) {      
       wsRef.current = new Ws({ url: window.env().WM_WEBSOCKET as wsURL });
       wsRef.current.connection.on("connect", () => {
         wsRef.current.join(`${profile.slug}:voucher`);
         wsRef.current.connection.on("voucher:avaliable", (voucher) => {
-          window.DesktopApi.onVoucher(voucher);
+            window.DesktopApi.onVoucher(voucher);
         });
         wsRef.current.connection.on("voucher:used", (voucher) => {
           window.DesktopApi.removeVoucher(voucher);

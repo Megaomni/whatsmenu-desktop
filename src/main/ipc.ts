@@ -151,22 +151,16 @@ ipcMain.on("storeProfile", (_, profile) => {
 
 ipcMain.on("getProfile", (event) => {
   const profile = getProfile();
-  vouchersToNotifyQueue.push(async () => {
-    const { data } = await whatsmenu_api_v3.get(
-      `/vouchers/${profile.id}/getByStatus/avaliable`
-    );
-    const allVouchers = getVoucherToNotifyList();
-    const vouchers = allVouchers.filter(
-      (user) => user.vouchers.some((voucher) =>
-        !data.vouchers.flatMap((v: VoucherType) => v.id).includes(voucher.id)
-      )
-    );
-
-    store.set("configs.voucherToNotify", vouchers);
-  });
-
   event.reply("onProfileChange", profile);
 });
+
+export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
+  const profile = getProfile();
+  const { data } = await whatsmenu_api_v3.get(
+    `/vouchers/${profile.id}/getByStatus/avaliable`
+  );
+  return data.vouchers as VoucherType[];
+}
 
 ipcMain.on("onCart", (_, cart: { id: number; client?: ClientType }) => {
   if (cart.client) {
@@ -177,64 +171,45 @@ ipcMain.on("onCart", (_, cart: { id: number; client?: ClientType }) => {
   }
 });
 
-ipcMain.on("onVoucher", (_, voucher: VoucherType) => {
-  const rememberDays = Math.floor(
-    DateTime.fromISO(voucher.expirationDate).diff(
-      DateTime.fromISO(voucher.created_at),
-      "days"
-    ).days / 2
-  );
+ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
+  const allVouchers = await getVouchersFromDB();
+  const vouchersFromUser = allVouchers.filter((vouch) => vouch.clientId === voucher.clientId);
 
-  if (!voucher.client?.vouchers?.some((v) => v.id === voucher.id)) {
-    voucher.client.vouchers?.push(voucher);
-  }
+  vouchersFromUser.forEach((vouchFromDB) => {
+    const rememberDays = Math.floor(
+      DateTime.fromISO(vouchFromDB.expirationDate).diff(
+        DateTime.fromISO(vouchFromDB.created_at),
+        "days"
+      ).days / 2
+    );
 
-  // console.log("XXXXXXXXXXXXXXXXXXXXX", voucher.client?.vouchers);
+    if (!voucher.client?.vouchers?.some((v) => v.id === voucher.id)) {
+      voucher.client.vouchers?.push(voucher);
+    }
 
-
-  // storeNewUserToNotify({
-  //   id: voucher.id,
-  //   value: voucher.value,
-  //   expirationDate: voucher.expirationDate,
-  //   rememberDays,
-  //   rememberDate: DateTime.fromISO(voucher.created_at)
-  //     .plus({ days: rememberDays })
-  //     .toISO(),
-  //   afterPurchaseDate: DateTime.fromISO(voucher.created_at)
-  //     .plus({ minutes: 20 })
-  //     .toISO(),
-  //   client: {
-  //     whatsapp: voucher.client.whatsapp,
-  //     name: voucher.client.name,
-  //     vouchersTotal: voucher.client.vouchers?.reduce((total, voucher) => {
-  //       (total += voucher.value), 0;
-  //       return total || 0;
-  //     }, 0),
-  //   },
-  // });
-
-  storeNewUserToNotify({
-    whatsapp: voucher.client.whatsapp,
-    name: voucher.client.name,
-    vouchersTotal: voucher.client.vouchers?.filter((voucher) => voucher.status === "avaliable").reduce((total, voucher) => {
-      (total += voucher.value), 0;
-      return total || 0;
-    }, 0),
-    vouchers: [
-      {
-        id: voucher.id,
-        value: voucher.value,
-        expirationDate: voucher.expirationDate,
-        rememberDays,
-        rememberDate: DateTime.fromISO(voucher.created_at)
-          .plus({ days: rememberDays })
-          .toISO(),
-        afterPurchaseDate: DateTime.fromISO(voucher.created_at)
-          .plus({ minutes: 1 })
-          .toISO(),
-      }
-    ]
-  });
+    storeNewUserToNotify({
+      whatsapp: voucher.client.whatsapp,
+      name: voucher.client.name,
+      vouchersTotal: voucher.client.vouchers?.filter((voucher) => voucher.status === "avaliable").reduce((total, voucher) => {
+        (total += voucher.value), 0;
+        return total || 0;
+      }, 0),
+      vouchers: [
+        {
+          id: vouchFromDB.id,
+          value: vouchFromDB.value,
+          expirationDate: vouchFromDB.expirationDate,
+          rememberDays,
+          rememberDate: DateTime.fromISO(vouchFromDB.created_at)
+            .plus({ days: rememberDays })
+            .toISO(),
+          afterPurchaseDate: DateTime.fromISO(vouchFromDB.created_at)
+            .plus({ minutes: 1 })
+            .toISO(),
+        }
+      ]
+    });
+  })
 });
 
 ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
