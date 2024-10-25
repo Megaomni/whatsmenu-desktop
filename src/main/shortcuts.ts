@@ -54,10 +54,10 @@ export const registerShortCuts = (window: TabBrowser): void => {
   window.on("blur", () => {
     globalShortcut.unregisterAll();
   });
-  
+
   window.tabs.forEach((tab) => {
     tab.webContents.on("devtools-focused", () => {
-      globalShortcut.unregisterAll()
-    })
-  })
+      globalShortcut.unregisterAll();
+    });
+  });
 };
