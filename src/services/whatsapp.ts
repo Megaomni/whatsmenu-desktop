@@ -10,7 +10,7 @@ import {
   removeDuplicateVouchers,
   store,
   updateVoucherToNotify,
-} from "../main/store";
+} from "./../main/store";
 
 import { EventEmitter } from "node:events";
 import { ClientType } from "../@types/client";
@@ -45,7 +45,8 @@ export class WhatsApp {
       !isDev ||
       process.platform === "win32"
     ) {
-      config.puppeteer.executablePath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
+      config.puppeteer.executablePath =
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
     }
 
     if (store.get("configs.executablePath")) {
