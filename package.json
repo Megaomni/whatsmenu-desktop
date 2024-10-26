@@ -1,7 +1,7 @@
 {
   "name": "whatsmenu-desktop",
   "productName": "WhatsMenu Desktop",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Versão Desktop para WhatsMenu",
   "main": ".vite/build/main.js",
   "scripts": {
