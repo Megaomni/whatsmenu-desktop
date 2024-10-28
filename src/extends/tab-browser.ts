@@ -1,5 +1,5 @@
 import { BaseWindowConstructorOptions, BrowserWindow } from "electron";
-import { WebTabContentsView } from "./tab";
+import { WebTabContentsView } from "../extends/tab";
 import { contextMenu } from "../main/menu";
 
 type TabBrowserConstructorOptions = BaseWindowConstructorOptions & {
