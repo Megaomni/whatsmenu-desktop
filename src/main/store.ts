@@ -1,6 +1,6 @@
 import ElectronStore from "electron-store";
 import { ProfileType } from "../@types/profile";
-import { CacheContact, Printer, VoucherNotification, VoucherObj } from "../@types/store";
+import { CacheContact, OldVoucher, Printer, VoucherNotification, VoucherObj } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
@@ -174,16 +174,87 @@ export const findCacheContact = async (whatsapp: string) => {
   return cache;
 };
 
+function isOldVoucher(voucher: VoucherNotification | OldVoucher): voucher is OldVoucher {
+  return 'client' in voucher;
+}
+
+function isVoucherNotification(voucher: VoucherNotification | OldVoucher): voucher is VoucherNotification {
+  return 'vouchers' in voucher;
+}
+
+export const getVoucherToNotifyList = () => {
+  const vouchersToNotify = store.get<
+    "configs.voucherToNotify",
+    (VoucherNotification | OldVoucher)[]
+  >("configs.voucherToNotify");
+  if (!vouchersToNotify) {
+    store.set("configs.voucherToNotify", []);
+  }
+  return vouchersToNotify.filter(isVoucherNotification);
+};
+
+const getOldVoucherList = () => {
+  const vouchersToNotify = store.get<
+    "configs.voucherToNotify",
+    (VoucherNotification | OldVoucher)[]
+  >("configs.voucherToNotify");
+  if (!vouchersToNotify) {
+    store.set("configs.voucherToNotify", []);
+  }
+  return vouchersToNotify.filter(isOldVoucher);
+};
+
+const formatOldVoucher = (oldVoucher: OldVoucher): VoucherNotification => {
+  return {
+    whatsapp: oldVoucher.client.whatsapp,
+    name: oldVoucher.client.name,
+    vouchersTotal: oldVoucher.client.vouchersTotal,
+    vouchers: [
+      {
+        id: oldVoucher.id,
+        value: oldVoucher.value,
+        expirationDate: oldVoucher.expirationDate,
+        rememberDays: oldVoucher.rememberDays,
+        rememberDate: DateTime.fromISO(oldVoucher.rememberDate).diffNow(["minutes"]).minutes <= 0
+          ? null : oldVoucher.rememberDate,
+        afterPurchaseDate: DateTime.fromISO(oldVoucher.afterPurchaseDate).diffNow(["minutes"]).minutes <= 0
+          ? null : oldVoucher.afterPurchaseDate
+      },
+    ]
+  }
+}
+
+// const deleteOldVouchers = () => {
+//   const newFormatVouchers = getVoucherToNotifyList();
+//   store.set("configs.voucherToNotify", newFormatVouchers);
+// };
+
+const checkOldVouchers = () => {
+  const currentOldVouchers = getOldVoucherList();
+  const oldVoucherExists = currentOldVouchers.length > 0;
+  let updatedVouchers = [] as VoucherNotification[];
+  if (oldVoucherExists) {
+    currentOldVouchers.forEach((voucher) => {
+      updatedVouchers = [
+        ...updatedVouchers,
+        formatOldVoucher(voucher)
+      ];
+    })
+  }
+  return updatedVouchers
+};
+
 const storeVoucherToNotify = (
   whatsapp: string,
-  totalPrice: number,
+  price: number,
   payload: VoucherObj
 ) => {
   const currentVouchers = getVoucherToNotifyList();
   const userFound = currentVouchers.find((voucher) => voucher.whatsapp === whatsapp);
+  const prevTotal = userFound.vouchers.reduce((total, voucher) => total + voucher.value, 0);
   const newTotalUser = {
     ...userFound,
-    vouchersTotal: totalPrice,
+    vouchersTotal: prevTotal + price,
   };
   const voucherExists = userFound.vouchers.some((voucher) => voucher.id === payload.id);
 
@@ -193,7 +264,10 @@ const storeVoucherToNotify = (
 
   const updatedVouchers = currentVouchers.map((voucher) => voucher.whatsapp === whatsapp ? newTotalUser : voucher);
 
-  store.set("configs.voucherToNotify", updatedVouchers);
+  removeDuplicateUsers();
+  removeDuplicateVouchers();
+  return updatedVouchers;
+  // store.set("configs.voucherToNotify", updatedVouchers);
 };
 
 /**
@@ -202,23 +276,45 @@ const storeVoucherToNotify = (
  * @param {VoucherNotification} payload - A notificação de voucher a ser armazenada.
  * @return {Promise<void>} Uma promessa que é resolvida quando a notificação de voucher é armazenada.
  */
-export const storeNewUserToNotify = (payload: VoucherNotification) =>
+export const storeNewUserToNotify = (payload: VoucherNotification) => {
+  const currentVouchers = getVoucherToNotifyList();
   vouchersToNotifyQueue.push(async () => {
-    const currentVouchers = getVoucherToNotifyList();
-    const exists = currentVouchers.some((voucher) => voucher.whatsapp === payload.whatsapp);
+    const formatedVouchers = checkOldVouchers();
+    const allVouchers = [...formatedVouchers, payload];
+    console.log("allVouchers", allVouchers);
+    const updatedVouchers = [...currentVouchers]
 
-    if (exists) {
-      const currUser = currentVouchers.find((voucher) => voucher.whatsapp === payload.whatsapp);
-      const total = currUser.vouchers.reduce((total, voucher) => total + voucher.value, 0);
-      storeVoucherToNotify(
-        payload.whatsapp,
-        total,
-        payload.vouchers[0]
-      );
-    } else {
-      store.set("configs.voucherToNotify", [...currentVouchers, payload]);
-    }
-  });
+    allVouchers.forEach((voucherToAdd) => {
+      const exists = currentVouchers.some((voucher) => voucher.whatsapp === voucherToAdd.whatsapp);
+      console.log("Agora está rodando o voucher do ", voucherToAdd.name);
+      console.log("Este é o voucher completo ", voucherToAdd);
+      if (exists) {
+        console.log("O voucher do ", voucherToAdd.name, " caiu no if");
+        const updatedUsers = storeVoucherToNotify(
+          voucherToAdd.whatsapp,
+          voucherToAdd.vouchers[0].value,
+          voucherToAdd.vouchers[0]
+        );
+        store.set("configs.voucherToNotify", updatedUsers);
+
+      } else {
+        console.log("O voucher do ", voucherToAdd.name, " caiu no else");
+        updatedVouchers.push(voucherToAdd);
+        store.set("configs.voucherToNotify", updatedVouchers);
+      }
+    })
+  })
+  removeDuplicateUsers();
+  removeDuplicateVouchers();
+};
+
+export const removeDuplicateUsers = () => {
+  const currentVouchers = getVoucherToNotifyList();
+  const uniqueUsers = Array.from(
+    new Map(currentVouchers.map(user => [user.whatsapp, user])).values()
+  );
+  return store.set("configs.voucherToNotify", uniqueUsers);
+}
 
 /**
  * Remove vouchers duplicados da chave "configs.voucherToNotify" no armazenamento.
@@ -233,19 +329,6 @@ export const removeDuplicateVouchers = (): void => {
     );
   });
   return store.set("configs.voucherToNotify", uniqueVouchers);
-};
-
-export const getVoucherToNotifyList = () => {
-  const vouchersToNotify = store.get<
-    "configs.voucherToNotify",
-    VoucherNotification[]
-  >("configs.voucherToNotify");
-  if (!vouchersToNotify) {
-    store.set("configs.voucherToNotify", []);
-  }
-  return store.get<"configs.voucherToNotify", VoucherNotification[]>(
-    "configs.voucherToNotify"
-  );
 };
 
 export const deleteVoucherToNotify = (id: number) => {
@@ -269,16 +352,16 @@ export const deleteVoucherToNotify = (id: number) => {
 
 export const updateVoucherToNotify = (
   id: number,
-  payload: "rememberDate" | "expirationDate" | "afterPurchaseDate"
+  payload: Partial<VoucherObj>
 ) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
   const foundVoucher = foundUser.vouchers.find((voucher) => voucher.id === id);
-  delete foundVoucher[payload];
+  const updatedVouch = { ...foundVoucher, ...payload };
   const updatedUser = {
     ...foundUser,
     vouchers: foundUser.vouchers.map((voucher) => voucher.id === id ?
-      foundVoucher : voucher),
+      updatedVouch : voucher),
   }
   const updatedVouchers = currentVouchers.map((user) => user.whatsapp === foundUser.whatsapp ? updatedUser : user);
   store.set(

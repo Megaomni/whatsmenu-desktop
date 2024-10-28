@@ -7,6 +7,7 @@ import {
   findCacheContact,
   getProfile,
   getVoucherToNotifyList,
+  removeDuplicateUsers,
   removeDuplicateVouchers,
   store,
   updateVoucherToNotify,
@@ -65,6 +66,7 @@ export class WhatsApp {
 
       this.sendQueuedmessages();
       this.cashbackCron();
+      removeDuplicateUsers();
       removeDuplicateVouchers();
     });
     this.bot.on("disconnected", () => {
@@ -138,7 +140,7 @@ export class WhatsApp {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
           (voucher) =>
-            !voucher.expirationDate
+            voucher.expirationDate === null
         ).forEach((voucher) => deleteVoucherToNotify(voucher.id));
       })
     };
@@ -152,7 +154,7 @@ export class WhatsApp {
           list = vouchersFromAllUsers.filter(
             (user) =>
               user.vouchers.some((voucher) =>
-                voucher.afterPurchaseDate &&
+                voucher.afterPurchaseDate !== null &&
                 DateTime.fromISO(voucher.afterPurchaseDate).diffNow(["minutes"])
                   .minutes <= 0
               )
@@ -162,7 +164,7 @@ export class WhatsApp {
           list = vouchersFromAllUsers.filter(
             (user) =>
               user.vouchers.some((voucher) =>
-                voucher.rememberDate &&
+                voucher.rememberDate !== null &&
                 DateTime.fromISO(voucher.rememberDate).diffNow(["days"])
                   .days <= 0
               )
@@ -172,7 +174,7 @@ export class WhatsApp {
           list = vouchersFromAllUsers.filter(
             (user) =>
               user.vouchers.some((voucher) =>
-                voucher.expirationDate &&
+                voucher.expirationDate !== null &&
                 DateTime.fromISO(voucher.expirationDate).diffNow(["days"])
                   .days <= 0
               )
@@ -182,27 +184,39 @@ export class WhatsApp {
           break;
       }
 
+      console.log("XXXXXXXXXXXXXXXXX", list);
+
+
       for await (const user of list) {
         const [{ jid }] = await whatsAppService.checkNumber(`55${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
-        const key = `${messageType}Date`;
 
-        if (!(key in voucher)) {
+        if (voucher[`${messageType}Date`] === null) {
           return;
         } else {
+
           await whatsAppService.sendMessageToContact(
             jid,
             { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
           );
           switch (messageType) {
             case "afterPurchase":
-              updateVoucherToNotify(voucher.id, "afterPurchaseDate");
+              updateVoucherToNotify(voucher.id, {
+                afterPurchaseDate: null,
+              }
+              );
               break;
             case "remember":
-              updateVoucherToNotify(voucher.id, "rememberDate");
+              updateVoucherToNotify(voucher.id, {
+                rememberDate: null
+              }
+              );
               break;
             case "expiration":
-              updateVoucherToNotify(voucher.id, "expirationDate")
+              updateVoucherToNotify(voucher.id, {
+                expirationDate: null
+              }
+              )
               break;
             default:
               break;

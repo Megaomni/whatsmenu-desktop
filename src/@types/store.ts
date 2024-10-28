@@ -19,19 +19,19 @@ export type CacheContact = {
   created_at: string
 }
 
-// export type VoucherNotification = {
-//   id: number,
-//   value: number,
-//   client: {
-//     whatsapp: string
-//     name: string
-//     vouchersTotal: number
-//   }
-//   afterPurchaseDate: string | null
-//   rememberDate: string | null
-//   rememberDays: number
-//   expirationDate: string | null
-// }
+export type OldVoucher = {
+  id: number,
+  value: number,
+  client: {
+    whatsapp: string
+    name: string
+    vouchersTotal: number
+  }
+  afterPurchaseDate: string | null
+  rememberDate: string | null
+  rememberDays: number
+  expirationDate: string | null
+}
 
 export type VoucherObj = {
   id: number,

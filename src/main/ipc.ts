@@ -187,6 +187,9 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
       voucher.client.vouchers?.push(voucher);
     }
 
+    const rememberValue = DateTime.fromISO(vouchFromDB.created_at).plus({ days: rememberDays }).toISO();
+    const afterValue = DateTime.fromISO(vouchFromDB.created_at).plus({ minutes: 20 }).toISO();
+
     storeNewUserToNotify({
       whatsapp: voucher.client.whatsapp,
       name: voucher.client.name,
@@ -200,12 +203,10 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
           value: vouchFromDB.value,
           expirationDate: vouchFromDB.expirationDate,
           rememberDays,
-          rememberDate: DateTime.fromISO(vouchFromDB.created_at)
-            .plus({ days: rememberDays })
-            .toISO(),
-          afterPurchaseDate: DateTime.fromISO(vouchFromDB.created_at)
-            .plus({ minutes: 1 })
-            .toISO(),
+          rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
+            ? null : rememberValue,
+          afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
+            ? null : afterValue,
         }
       ]
     });
