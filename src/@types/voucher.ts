@@ -1,4 +1,4 @@
-import { ClientType } from "./client"
+import { ClientType } from "./client";
 
 export interface VoucherType {
   id: number
