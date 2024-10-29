@@ -16,6 +16,9 @@ export function formatDDIBotMessage({ language }: { language: string }) {
     case "en-US":
       ddi = "1";
       break;
+      case 'en-GB':
+        ddi = "44"
+      break
   }
   return { ddi };
 }
