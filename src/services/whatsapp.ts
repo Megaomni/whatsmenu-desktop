@@ -20,6 +20,7 @@ import { DateTime } from "luxon";
 import { VoucherNotification } from "../@types/store";
 import { vouchersToNotifyQueue } from "../lib/queue";
 import { botMessages } from "../utils/bot-messages";
+import { formatDDIBotMessage } from "../utils/ddi-bot-message";
 
 export class WhatsApp {
   messagesQueue: Array<{
@@ -149,6 +150,7 @@ export class WhatsApp {
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
+      const language = profile.options.locale.language;
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
@@ -186,13 +188,13 @@ export class WhatsApp {
       }
 
       for await (const user of list) {
-        const [{ jid }] = await whatsAppService.checkNumber(`55${user.whatsapp}`);
+        const { ddi } = formatDDIBotMessage({ language });
+        const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
 
         if (voucher[`${messageType}Date`] === null) {
           return;
         } else {
-
           await whatsAppService.sendMessageToContact(
             jid,
             { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
@@ -201,20 +203,17 @@ export class WhatsApp {
             case "afterPurchase":
               updateVoucherToNotify(voucher.id, {
                 afterPurchaseDate: null,
-              }
-              );
+              });
               break;
             case "remember":
               updateVoucherToNotify(voucher.id, {
                 rememberDate: null
-              }
-              );
+              });
               break;
             case "expiration":
               updateVoucherToNotify(voucher.id, {
                 expirationDate: null
-              }
-              )
+              });
               break;
             default:
               break;
