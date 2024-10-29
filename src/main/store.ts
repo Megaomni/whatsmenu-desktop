@@ -257,7 +257,7 @@ const storeVoucherToNotify = (
   const prevTotal = userFound.vouchers.reduce((total, voucher) => total + voucher.value, 0);
   const newTotalUser = {
     ...userFound,
-    vouchersTotal: prevTotal + price,
+    vouchersTotal: prevTotal,
   };
   const voucherExists = userFound.vouchers.some((voucher) => voucher.id === payload.id);
 
