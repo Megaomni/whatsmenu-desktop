@@ -143,34 +143,34 @@ interface ProfileOptions {
     pixel: string;
     google: string;
   };
-  legacyPix: boolean;
-  onlinePix: boolean;
-  forceClose: string | null;
-  onlineCard: boolean;
-  activeCupom: boolean;
-  forceLogout?: string;
-  linkWhatsapp: boolean;
-  placeholders: {
-    pizzaObs: string;
-    clientText: string;
-    productObs: string;
-    statusSend: string;
-    statusToRemove: string;
-    statusProduction: string;
-    welcomeMessage: string;
-    absenceMessage: string;
-    cupomFirstMessage: string;
-  };
-  disponibility: {
-    showProductsWhenPaused: boolean;
-  };
-  inventoryControl: boolean;
-  bot: {
-    whatsapp: {
-      welcomeMessage: {
-        status: boolean;
-        alwaysSend: boolean;
+  locale: {
+    language: string;
+    onlineCard: boolean;
+    activeCupom: boolean;
+    forceLogout?: string;
+    linkWhatsapp: boolean;
+    placeholders: {
+      pizzaObs: string;
+      clientText: string;
+      productObs: string;
+      statusSend: string;
+      statusToRemove: string;
+      statusProduction: string;
+      welcomeMessage: string;
+      absenceMessage: string;
+      cupomFirstMessage: string;
+    };
+    disponibility: {
+      showProductsWhenPaused: boolean;
+    };
+    inventoryControl: boolean;
+    bot: {
+      whatsapp: {
+        welcomeMessage: {
+          status: boolean;
+          alwaysSend: boolean;
+        };
       };
     };
-  };
+  }
 }
