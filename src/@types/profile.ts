@@ -62,6 +62,14 @@ interface ProfileAddress {
 }
 
 interface ProfileOptions {
+  bot: {
+    whatsapp: {
+      welcomeMessage: {
+        status: boolean;
+        alwaysSend: boolean;
+      };
+    }
+  };
   pdv: {
     clientConfig: {
       required: boolean;
