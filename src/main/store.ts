@@ -289,15 +289,11 @@ export const storeNewUserToNotify = (payload: VoucherNotification) => {
   vouchersToNotifyQueue.push(async () => {
     const formatedVouchers = checkOldVouchers();
     const allVouchers = [...formatedVouchers, payload];
-    console.log("allVouchers", allVouchers);
     const updatedVouchers = [...currentVouchers]
 
     allVouchers.forEach((voucherToAdd) => {
       const exists = currentVouchers.some((voucher) => voucher.whatsapp === voucherToAdd.whatsapp);
-      console.log("Agora está rodando o voucher do ", voucherToAdd.name);
-      console.log("Este é o voucher completo ", voucherToAdd);
       if (exists) {
-        console.log("O voucher do ", voucherToAdd.name, " caiu no if");
         const updatedUsers = storeVoucherToNotify(
           voucherToAdd.whatsapp,
           voucherToAdd.vouchers[0]
@@ -305,7 +301,6 @@ export const storeNewUserToNotify = (payload: VoucherNotification) => {
         store.set("configs.voucherToNotify", updatedUsers);
 
       } else {
-        console.log("O voucher do ", voucherToAdd.name, " caiu no else");
         updatedVouchers.push(voucherToAdd);
         store.set("configs.voucherToNotify", updatedVouchers);
       }
