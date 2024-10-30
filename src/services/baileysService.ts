@@ -182,6 +182,9 @@ export class BaileysService {
           : undefined;
       const dontDisturb =
         profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
+      const sendMenu =
+        profile.options.bot.whatsapp.welcomeMessage.status;
+
 
       if (
         dontDisturb &&
@@ -197,7 +200,7 @@ export class BaileysService {
             text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
           });
         } else {
-          await this.sendMessageToContact(currPhoneNum, {
+          sendMenu && await this.sendMessageToContact(currPhoneNum, {
             text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n`,
           });
         }
@@ -216,7 +219,7 @@ export class BaileysService {
             text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
           });
         } else {
-          await this.sendMessageToContact(currPhoneNum, {
+          sendMenu && await this.sendMessageToContact(currPhoneNum, {
             text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n`,
           });
         }
