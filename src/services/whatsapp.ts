@@ -190,7 +190,6 @@ export class WhatsApp {
       for await (const user of list) {
 
         const { ddi } = formatDDIBotMessage({ language });
-        console.log(`Enviando mensagem de cashback para ${ddi}${user.whatsapp}`);
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
 
