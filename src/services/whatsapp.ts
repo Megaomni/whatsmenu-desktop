@@ -1,19 +1,18 @@
-import { Notification } from "electron";
-import isDev from "electron-is-dev";
-import { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
+// import { Notification } from "electron";
+// import isDev from "electron-is-dev";
 import { whatsAppService } from "../main";
 import {
   deleteVoucherToNotify,
-  findCacheContact,
+  // findCacheContact,
   getProfile,
   getVoucherToNotifyList,
-  removeDuplicateUsers,
-  removeDuplicateVouchers,
-  store,
+  // removeDuplicateUsers,
+  // removeDuplicateVouchers,
+  // store,
   updateVoucherToNotify,
 } from "./../main/store";
 
-import { EventEmitter } from "node:events";
+// import { EventEmitter } from "node:events";
 import { ClientType } from "../@types/client";
 
 import { DateTime } from "luxon";
@@ -28,96 +27,6 @@ export class WhatsApp {
     message: string;
     client?: ClientType;
   }> = [];
-  bot: Client | null = null;
-  firstConection = false;
-  events = new EventEmitter();
-  /**
-   * Constructor for the class with optional client options.
-   *
-   * @param {ClientOptions} [config] - Optional configuration for the client
-   */
-
-  async initBot(config?: ClientOptions) {
-    if (!config) {
-      config = {};
-    }
-    config.authStrategy = new LocalAuth();
-    if (
-      !store.get("configs.executablePath") ||
-      !isDev ||
-      process.platform === "win32"
-    ) {
-      config.puppeteer.executablePath =
-        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-    }
-
-    if (store.get("configs.executablePath")) {
-      config.puppeteer.executablePath = store.get("configs.executablePath");
-    }
-
-    this.bot = new Client(config);
-    this.bot.on("qr", () => {
-      // this.firstConection = true;
-    });
-
-    this.bot.on("ready", async () => {
-      new Notification({
-        title: "Robô pronto!",
-        body: "Pronto para enviar mensagens",
-      }).show();
-
-      this.sendQueuedmessages();
-      this.cashbackCron();
-      removeDuplicateUsers();
-      removeDuplicateVouchers();
-    });
-    this.bot.on("disconnected", () => {
-      new Notification({
-        title: "Robô desconectado!",
-        body: "Não será possível enviar mensagens",
-      }).show();
-    });
-
-    // BOT MESSAGES
-    this.bot.on("message", async (message) => {
-      const profile = getProfile();
-      const chat = await message.getChat();
-      if (chat.isGroup || !profile.options.bot.whatsapp.welcomeMessage.status) {
-        return;
-      }
-      const [penultimateMessage, lastMessage] = await chat.fetchMessages({
-        limit: 2,
-      });
-      const firstMessage = !lastMessage;
-      const penultimateMessageDate = DateTime.fromSeconds(
-        penultimateMessage.timestamp
-      );
-      const lastMessageDate = lastMessage
-        ? DateTime.fromSeconds(lastMessage.timestamp)
-        : DateTime.local();
-
-      const { days, hours } = lastMessageDate.diff(penultimateMessageDate, [
-        "days",
-        "hours",
-      ]);
-
-      if (
-        firstMessage ||
-        days > 0 ||
-        hours >= 3 ||
-        profile.options.bot.whatsapp.welcomeMessage.alwaysSend
-      ) {
-        const cachedContact = await findCacheContact(chat.id._serialized);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        // prettier-ignore
-        await chat.sendMessage(cachedContact && cachedContact.messageType === "cupomFirst" ? profile.options.placeholders.cupomFirstMessage.replaceAll("[NOME]", message._data.notifyName ?? '') : profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName ?? ""));
-        await chat.markUnread();
-      }
-    });
-
-    return this.bot;
-  }
 
   async sendQueuedmessages() {
     setTimeout(async () => {
