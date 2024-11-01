@@ -17,7 +17,6 @@ import { app } from "electron";
 import { WhatsApp } from "./whatsapp";
 import path from "node:path";
 import os from "node:os";
-import { printTest } from "./printService";
 
 const whatsapp = new WhatsApp();
 

@@ -1,16 +1,51 @@
 import { PosPrintData, PosPrinter } from "electron-pos-printer";
+import { getProfile } from "../main/store";
+import { DateTime } from "luxon";
 
-export const printTest = async () => {
+export const printTest = async (cart: any) => {
+    console.log("xxxxxxxxxxxxxxxxxxxxxxx", cart);
+
+    const profile = getProfile();
     // Dados de teste
-    const data: PosPrintData[] = [
+    const upperPrint: PosPrintData[] = [
         {
-            type: "text",
-            value: 'Impressão de Teste',
-            style: { 'fontSize': '12' }
-        },
+            type: 'text',
+            position: 'center',
+            value: profile.name,
+            style: { fontWeight: "700", textAlign: 'center', fontSize: "24px" }
+        }, {
+            type: 'text',
+            value: DateTime.fromSQL(cart.created_at, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm:ss"),
+            style: { fontWeight: "300", fontSize: "15px" }
+        }, {
+            type: 'text',
+            value: `Pedido: wm${cart.code}-${cart.type}`,
+            style: { fontWeight: "300", fontSize: "15px" }
+        }, {
+            type: 'text',
+            value: `Cliente: ${cart.client}`,
+            style: { fontWeight: "300", fontSize: "15px" }
+        }, {
+            type: 'text',
+            value: `Tel: ${cart.client?.whatsapp}`,
+            style: { fontWeight: "300", fontSize: "15px" }
+        }
     ];
 
-    await PosPrinter.print(data, {
+    const printBody: PosPrintData[] = cart.items.map((item: any) => {
+        return {
+            type: 'text',
+            value: `${item.quantity}x ${item.product.name} R$${item.price}`,
+            style: { fontWeight: "300", fontSize: "15px" }
+        }
+    });
+
+    const fullPrint: PosPrintData[] = [
+        ...upperPrint,
+        ...printBody
+    ];
+
+    await PosPrinter.print(fullPrint, {
         printerName: 'POS-80C',
         preview: false,
         silent: true,
