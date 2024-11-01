@@ -138,8 +138,6 @@ export class WhatsApp {
   }
 
   cashbackCron() {
-    console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
-
     const removeExpiredVouchers = async () => {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
@@ -150,8 +148,6 @@ export class WhatsApp {
     };
 
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
-      console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
       const language = profile.options.locale.language;
@@ -192,7 +188,6 @@ export class WhatsApp {
       }
 
       for await (const user of list) {
-
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
