@@ -160,14 +160,13 @@ ipcMain.on("getProfile", (event) => {
   event.reply("onProfileChange", profile);
 });
 
-
 export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const profile = getProfile();
   const { data } = await whatsmenu_api_v3.get(
     `/vouchers/${profile.id}/getByStatus/avaliable`
   );
   return data.vouchers as VoucherType[];
-}
+};
 
 ipcMain.on("getMerchant", (event) => {
   const merchant = getMerchant();
@@ -185,7 +184,9 @@ ipcMain.on("onCart", (_, cart: { id: number; client?: ClientType }) => {
 
 ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
   const allVouchers = await getVouchersFromDB();
-  const vouchersFromUser = allVouchers.filter((vouch) => vouch.clientId === voucher.clientId);
+  const vouchersFromUser = allVouchers.filter(
+    (vouch) => vouch.clientId === voucher.clientId
+  );
 
   vouchersFromUser.forEach((vouchFromDB) => {
     const rememberDays = Math.floor(
@@ -199,30 +200,40 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
       voucher.client.vouchers?.push(voucher);
     }
 
-    const rememberValue = DateTime.fromISO(vouchFromDB.created_at).plus({ days: rememberDays }).toISO();
-    const afterValue = DateTime.fromISO(vouchFromDB.created_at).plus({ minutes: 20 }).toISO();
+    const rememberValue = DateTime.fromISO(vouchFromDB.created_at)
+      .plus({ days: rememberDays })
+      .toISO();
+    const afterValue = DateTime.fromISO(vouchFromDB.created_at)
+      .plus({ minutes: 20 })
+      .toISO();
 
     storeNewUserToNotify({
       whatsapp: voucher.client.whatsapp,
       name: voucher.client.name,
-      vouchersTotal: voucher.client.vouchers?.filter((voucher) => voucher.status === "avaliable").reduce((total, voucher) => {
-        (total += voucher.value), 0;
-        return total || 0;
-      }, 0),
+      vouchersTotal: voucher.client.vouchers
+        ?.filter((voucher) => voucher.status === "avaliable")
+        .reduce((total, voucher) => {
+          (total += voucher.value), 0;
+          return total || 0;
+        }, 0),
       vouchers: [
         {
           id: vouchFromDB.id,
           value: vouchFromDB.value,
           expirationDate: vouchFromDB.expirationDate,
           rememberDays,
-          rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
-            ? null : rememberValue,
-          afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
-            ? null : afterValue,
-        }
-      ]
+          rememberDate:
+            DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
+              ? null
+              : rememberValue,
+          afterPurchaseDate:
+            DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
+              ? null
+              : afterValue,
+        },
+      ],
     });
-  })
+  });
 });
 
 ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
@@ -231,14 +242,6 @@ ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
 
 ipcMain.on("env", (event) => {
   event.returnValue = process.env;
-});
-
-ipcMain.on("polling", async (event, data) => {
-  try {
-    console.log("POLLING", data, "POLLING");
-  } catch (error) {
-    console.error("erro ao enviar o polling", error);
-  }
 });
 
 ipcMain.on("openLink", (_, url) => {
