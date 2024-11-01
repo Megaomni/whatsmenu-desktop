@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from "electron";
+import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
@@ -7,11 +7,12 @@ import "../main/ipc";
 import "../main/menu";
 import "../main/tray";
 import "../services/ws_integration";
+import "./sentry";
 
+import { TabBrowser } from "../extends/tab-browser";
 import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
 import { getPrinters, updatePrinter } from "./store";
-import { TabBrowser } from "../extends/tab-browser";
 
 export let mainWindow: TabBrowser;
 
@@ -42,7 +43,7 @@ if (isDev && process.platform === "win32") {
   app.setAsDefaultProtocolClient(
     "whatsmenu-whatsapp-bot-dev",
     process.execPath,
-    [path.resolve(process.argv[1]), ""],
+    [path.resolve(process.argv[1]), ""]
   );
 } else {
   app.setAsDefaultProtocolClient("whatsmenu-whatsapp-bot");
@@ -58,14 +59,6 @@ app.on("ready", main);
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
-  }
-});
-
-ipcMain.on("polling", async (event, data) => {
-  try {
-    console.log("POLLING NO INDEX", data);
-  } catch (error) {
-    console.error("erro ao enviar o polling", error);
   }
 });
 
