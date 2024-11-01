@@ -109,6 +109,9 @@ export class BaileysService {
    * @returns {Promise<void>}
    */
   async connect() {
+    await whatsapp.sendQueuedmessages();
+    whatsapp.cashbackCron();
+    removeDuplicateVouchers();
     const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
     this.socket = makeWASocket({
@@ -137,9 +140,6 @@ export class BaileysService {
     this.socket.ev.on("connection.update", connectionUpdate);
 
     this.socket.ev.on("messages.upsert", async (m) => {
-      await whatsapp.sendQueuedmessages();
-      whatsapp.cashbackCron();
-      removeDuplicateVouchers();
       let currPhoneNum: string | undefined = undefined;
       const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
       const isMessageFromGroup = Boolean(m.messages[0].key.participant);
@@ -200,9 +200,8 @@ export class BaileysService {
             text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
           });
         } else {
-          sendMenu && await this.sendMessageToContact(currPhoneNum, {
-            text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n`,
-          });
+          sendMenu && await this.sendMessageToContact(currPhoneNum,
+            { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
         }
       } else if (
         !isMessageFromMe &&
@@ -219,9 +218,8 @@ export class BaileysService {
             text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
           });
         } else {
-          sendMenu && await this.sendMessageToContact(currPhoneNum, {
-            text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n`,
-          });
+          sendMenu && await this.sendMessageToContact(currPhoneNum,
+            { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) });
         }
       }
     });

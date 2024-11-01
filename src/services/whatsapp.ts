@@ -138,6 +138,8 @@ export class WhatsApp {
   }
 
   cashbackCron() {
+    console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY");
+
     const removeExpiredVouchers = async () => {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
@@ -148,6 +150,8 @@ export class WhatsApp {
     };
 
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
+      console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
       const language = profile.options.locale.language;
