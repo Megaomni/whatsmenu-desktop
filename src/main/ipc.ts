@@ -90,8 +90,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
           let link = document.getElementById('bootstrap-link')
           link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
-            data.reactComponentString[paperSize < 65 ? 58 : 80]
-          )}
+          data.reactComponentString[paperSize < 65 ? 58 : 80]
+        )}
         `);
       } catch (error) {
         console.error(error);
