@@ -29,7 +29,6 @@ export const create_bot_tab = () => {
 
   tab.webContents.on("did-finish-load", async () => {
     await whatsAppService.connect();
-
     const connectionUpdate = async (update: ConnectionState) => {
       const { connection, lastDisconnect, qr } = update;
       if (qr) {
@@ -67,12 +66,15 @@ export const create_bot_tab = () => {
               break;
             case DisconnectReason.badSession:
               console.log("Bad session");
+              tab.setVisible(true);
               break;
             case DisconnectReason.connectionReplaced:
               console.log("Connection replaced");
+              tab.setVisible(true);
               break;
             case DisconnectReason.loggedOut:
               console.log("Logged out");
+              tab.setVisible(true);
               fs.rmdirSync(whatsAppService.appDataPath, { recursive: true });
               if (
                 fs.existsSync(
@@ -89,6 +91,7 @@ export const create_bot_tab = () => {
                 "Disconnect reason: ",
                 DisconnectReason[lastDiscReason]
               );
+              tab.setVisible(true);
               break;
           }
           tab.webContents.send("ondisconnected", "disconnected");
