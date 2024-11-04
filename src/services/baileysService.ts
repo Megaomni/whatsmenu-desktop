@@ -109,6 +109,9 @@ export class BaileysService {
    * @returns {Promise<void>}
    */
   async connect() {
+    await whatsapp.sendQueuedmessages();
+    whatsapp.cashbackCron();
+    removeDuplicateVouchers();
     const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
     this.socket = makeWASocket({
@@ -137,9 +140,6 @@ export class BaileysService {
     this.socket.ev.on("connection.update", connectionUpdate);
 
     this.socket.ev.on("messages.upsert", async (m) => {
-      await whatsapp.sendQueuedmessages();
-      whatsapp.cashbackCron();
-      removeDuplicateVouchers();
       let currPhoneNum: string | undefined = undefined;
       const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
       const isMessageFromGroup = Boolean(m.messages[0].key.participant);
