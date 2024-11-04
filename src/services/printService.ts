@@ -4,6 +4,8 @@ import { DateTime } from "luxon";
 
 export const printTest = async (cart: any) => {
     console.log("xxxxxxxxxxxxxxxxxxxxxxx", cart);
+    console.log("yyyyyyyyyyyyyyyyyyyyyyy", cart.itens[0].details.value);
+
 
     const profile = getProfile();
     // Dados de teste
@@ -23,7 +25,7 @@ export const printTest = async (cart: any) => {
             style: { fontWeight: "300", fontSize: "15px" }
         }, {
             type: 'text',
-            value: `Cliente: ${cart.client}`,
+            value: `Cliente: ${cart.client.name}`,
             style: { fontWeight: "300", fontSize: "15px" }
         }, {
             type: 'text',
@@ -32,10 +34,10 @@ export const printTest = async (cart: any) => {
         }
     ];
 
-    const printBody: PosPrintData[] = cart.items.map((item: any) => {
+    const printBody: PosPrintData[] = cart.itens.map((item: any) => {
         return {
             type: 'text',
-            value: `${item.quantity}x ${item.product.name} R$${item.price}`,
+            value: `${item.quantity}x | ${item.name} R$${item.details.value}`,
             style: { fontWeight: "300", fontSize: "15px" }
         }
     });
@@ -52,6 +54,6 @@ export const printTest = async (cart: any) => {
         pageSize: '80mm',
         margin: '0 0 0 0',
     }).catch((error) =>
-        console.error("Erro na impressão:", error)
+        console.error("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX Erro na impressão:", error)
     );
 };
