@@ -93,8 +93,8 @@ export const create_bot_tab = () => {
             case DisconnectReason.restartRequired ||
               DisconnectReason.timedOut ||
               DisconnectReason.connectionLost ||
-              DisconnectReason.connectionReplaced ||
-              DisconnectReason.connectionClosed:
+              DisconnectReason.connectionClosed ||
+              DisconnectReason.unavailableService:
               tab.webContents.send(
                 "log",
                 `lastdisc - ${JSON.stringify({ lastDiscReason, DisconnectReason }, null, 2)}`
@@ -110,6 +110,9 @@ export const create_bot_tab = () => {
               console.log("Bad session");
               tab.setVisible(true);
               tab.webContents.reload();
+              break;
+            case DisconnectReason.connectionReplaced:
+              console.log("Connection replaced");
               break;
             case DisconnectReason.loggedOut:
               console.log("Logged out");
