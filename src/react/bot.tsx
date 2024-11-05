@@ -92,15 +92,31 @@ const BotRoot = () => {
 
   return (
     <main className="flex flex-col items-center justify-center h-screen gap-4">
-      <div className="relative">
-        <img
-          src="../../bot.png"
-          alt="Minha Imagem"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 top-[75%] bg-gradient-to-b from-transparent to-white opacity-100"></div>
-      </div>
-
+        {
+          loading.status ? (
+            <div className="relative text-center text-red-600 w-1/3">
+              <h1 className="font-bold text-4xl">ATENÇÃO!</h1>
+              <h3 className="font-bold text-2xl">Mantenha a tela do seu ceular aberta até que a tela de sincronização feche sozinha!</h3>
+              <div className="flex justify-center">
+                <img
+                  src="../../whats_scan1.png"
+                  alt="Minha Imagem"
+                  className="object-cover"
+                />
+              </div>
+              <div className="absolute inset-0 top-[75%] bg-gradient-to-b from-transparent to-white opacity-100" />
+            </div>
+          ) : (
+            <div className="relative">
+              <img
+                src="../../bot.png"
+                alt="Minha Imagem"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 top-[75%] bg-gradient-to-b from-transparent to-white opacity-100" />
+            </div>
+          )
+        }
       <div className="text-center text-gray-500 text-4xl ">
         <h2 className="font-bold">Robô de atendimento</h2>
         <p>WhatsMenu</p>
