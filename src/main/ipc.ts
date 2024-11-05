@@ -1,14 +1,12 @@
-import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
+import { BrowserWindow, app, ipcMain, shell } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
-
 import path from "node:path";
 import {
   deleteVoucherToNotify,
   getMerchant,
   getProfile,
-  getVoucherToNotifyList,
   setCacheContactByWhatsapp,
   store,
   storeNewUserToNotify,
@@ -17,7 +15,6 @@ import { Printer } from "../@types/store";
 import { DateTime } from "luxon";
 import { VoucherType } from "../@types/voucher";
 import { whatsmenu_api_v3 } from "../lib/axios";
-import { vouchersToNotifyQueue } from "../lib/queue";
 
 ipcMain.on(
   "send-message",
@@ -90,8 +87,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
           let link = document.getElementById('bootstrap-link')
           link.parentNode.removeChild(link)
           printBody.innerHTML = ${JSON.stringify(
-            data.reactComponentString[paperSize < 65 ? 58 : 80]
-          )}
+          data.reactComponentString[paperSize < 65 ? 58 : 80]
+        )}
         `);
       } catch (error) {
         console.error(error);
@@ -165,8 +162,10 @@ export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const { data } = await whatsmenu_api_v3.get(
     `/vouchers/${profile.id}/getByStatus/avaliable`
   );
-  return data.vouchers as VoucherType[];
-};
+  if (data.vouchers) {
+    return data.vouchers as VoucherType[];
+  }
+}
 
 ipcMain.on("getMerchant", (event) => {
   const merchant = getMerchant();
@@ -197,7 +196,7 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
     );
 
     if (!voucher.client?.vouchers?.some((v) => v.id === voucher.id)) {
-      voucher.client.vouchers?.push(voucher);
+      voucher.client.vouchers.push(voucher);
     }
 
     const rememberValue = DateTime.fromISO(vouchFromDB.created_at)

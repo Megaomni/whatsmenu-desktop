@@ -249,23 +249,28 @@ const checkOldVouchers = () => {
 
 const storeVoucherToNotify = (
   whatsapp: string,
-  price: number,
   payload: VoucherObj
 ) => {
   const currentVouchers = getVoucherToNotifyList();
   const userFound = currentVouchers.find((voucher) => voucher.whatsapp === whatsapp);
-  const prevTotal = userFound.vouchers.reduce((total, voucher) => total + voucher.value, 0);
-  const newTotalUser = {
-    ...userFound,
-    vouchersTotal: prevTotal + price,
-  };
-  const voucherExists = userFound.vouchers.some((voucher) => voucher.id === payload.id);
+  if (userFound) {
+    const voucherExists = userFound.vouchers.some((voucher) => voucher.id === payload.id);
 
-  if (!voucherExists) {
-    newTotalUser.vouchers.push(payload);
+    if (!voucherExists) {
+      userFound.vouchers.push(payload);
+    }
+
+    userFound.vouchersTotal = userFound.vouchers.reduce((total, voucher) => total + voucher.value, 0);
+  } else {
+    currentVouchers.push({
+      whatsapp,
+      name: userFound?.name,
+      vouchersTotal: payload.value,
+      vouchers: [payload],
+    })
   }
 
-  const updatedVouchers = currentVouchers.map((voucher) => voucher.whatsapp === whatsapp ? newTotalUser : voucher);
+  const updatedVouchers = currentVouchers.map((voucher) => voucher.whatsapp === whatsapp ? userFound : voucher);
 
   removeDuplicateUsers();
   removeDuplicateVouchers();
@@ -284,24 +289,18 @@ export const storeNewUserToNotify = (payload: VoucherNotification) => {
   vouchersToNotifyQueue.push(async () => {
     const formatedVouchers = checkOldVouchers();
     const allVouchers = [...formatedVouchers, payload];
-    console.log("allVouchers", allVouchers);
     const updatedVouchers = [...currentVouchers]
 
     allVouchers.forEach((voucherToAdd) => {
       const exists = currentVouchers.some((voucher) => voucher.whatsapp === voucherToAdd.whatsapp);
-      console.log("Agora está rodando o voucher do ", voucherToAdd.name);
-      console.log("Este é o voucher completo ", voucherToAdd);
       if (exists) {
-        console.log("O voucher do ", voucherToAdd.name, " caiu no if");
         const updatedUsers = storeVoucherToNotify(
           voucherToAdd.whatsapp,
-          voucherToAdd.vouchers[0].value,
           voucherToAdd.vouchers[0]
         );
         store.set("configs.voucherToNotify", updatedUsers);
 
       } else {
-        console.log("O voucher do ", voucherToAdd.name, " caiu no else");
         updatedVouchers.push(voucherToAdd);
         store.set("configs.voucherToNotify", updatedVouchers);
       }

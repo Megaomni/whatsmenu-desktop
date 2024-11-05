@@ -1,6 +1,5 @@
 import { Notification } from "electron";
 import isDev from "electron-is-dev";
-import { Client, ClientOptions, LocalAuth } from "whatsapp-web.js";
 import { whatsAppService } from "../main";
 import {
   deleteVoucherToNotify,
