@@ -94,7 +94,8 @@ export const create_bot_tab = () => {
               DisconnectReason.timedOut ||
               DisconnectReason.connectionLost ||
               DisconnectReason.connectionReplaced ||
-              DisconnectReason.connectionClosed:
+              DisconnectReason.connectionClosed ||
+              DisconnectReason.unavailableService:
               tab.webContents.send(
                 "log",
                 `lastdisc - ${JSON.stringify({ lastDiscReason, DisconnectReason }, null, 2)}`
