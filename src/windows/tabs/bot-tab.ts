@@ -7,7 +7,7 @@ import { Boom } from "@hapi/boom";
 import { store } from "../../main/store";
 import { ProfileType } from "../../@types/profile";
 import { DateTime } from "luxon";
-import axios from "axios";
+import axios from "axios"; ''
 
 export const create_bot_tab = () => {
   const tab = new WebTabContentsView({
@@ -109,6 +109,7 @@ export const create_bot_tab = () => {
             case DisconnectReason.badSession:
               console.log("Bad session");
               tab.setVisible(true);
+              tab.webContents.reload();
               break;
             case DisconnectReason.loggedOut:
               console.log("Logged out");
@@ -123,6 +124,7 @@ export const create_bot_tab = () => {
                   "C:/projects/whatsmenu/apps/desktop/baileys_store.json"
                 );
               }
+              tab.webContents.reload();
               break;
             default:
               console.log(
