@@ -7,7 +7,7 @@ import { Boom } from "@hapi/boom";
 import { store } from "../../main/store";
 import { ProfileType } from "../../@types/profile";
 import { DateTime } from "luxon";
-import axios from "axios"; ''
+import axios from "axios";
 
 export const create_bot_tab = () => {
   const tab = new WebTabContentsView({
@@ -37,7 +37,7 @@ export const create_bot_tab = () => {
     } catch (err) {
       console.error(err);
     }
-  }
+  };
 
   const botDebugger = async (discReason: number) => {
     if (discReason !== 408 && discReason !== 440 && discReason !== 515) {
@@ -65,7 +65,7 @@ export const create_bot_tab = () => {
       await sendToWebhook(debugMessage);
       console.log(debugMessage);
     }
-  }
+  };
 
   tab.webContents.on("did-finish-load", async () => {
     await whatsAppService.connect();
@@ -131,6 +131,7 @@ export const create_bot_tab = () => {
                 "Disconnect reason: ",
                 DisconnectReason[lastDiscReason]
               );
+              tab.webContents.reload();
               tab.setVisible(true);
               break;
           }
