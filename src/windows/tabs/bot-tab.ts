@@ -4,10 +4,6 @@ import { WebTabContentsView } from "../../extends/tab";
 import { ConnectionState, DisconnectReason } from "@whiskeysockets/baileys";
 import fs from "fs";
 import { Boom } from "@hapi/boom";
-import { store } from "../../main/store";
-import { ProfileType } from "../../@types/profile";
-import { DateTime } from "luxon";
-import axios from "axios";
 
 export const create_bot_tab = () => {
   const tab = new WebTabContentsView({
@@ -31,42 +27,6 @@ export const create_bot_tab = () => {
   }
   tab.setVisible(false);
 
-  const sendToWebhook = async (message: string) => {
-    try {
-      await axios.post("https://whatsmenu.com.br/webhook", message);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const botDebugger = async (discReason: number) => {
-    if (discReason !== 408 && discReason !== 440 && discReason !== 515) {
-      const profile = store.get("configs.profile") as ProfileType;
-      let reason: string;
-      switch (discReason) {
-        case 500:
-          reason = "bad session";
-          break;
-        case 440:
-          reason = "connection replaced";
-          break;
-        case 401:
-          reason = "logged out";
-          break;
-        case 503:
-          reason = "unavailable service";
-          break;
-        default:
-          reason = `unknown - code: ${discReason}`;
-          break;
-      }
-      const debugMessage = `${DateTime.local().toFormat("dd/MM/yyyy HH:mm:ss")}
-      O estabelecimento ${profile.name} foi desconectado - ${reason}`;
-      await sendToWebhook(debugMessage);
-      console.log(debugMessage);
-    }
-  };
-
   tab.webContents.on("did-finish-load", async () => {
     await whatsAppService.connect();
     const connectionUpdate = async (update: ConnectionState) => {
@@ -88,7 +48,6 @@ export const create_bot_tab = () => {
           });
           break;
         case "close":
-          botDebugger(lastDiscReason);
           switch (lastDiscReason) {
             case DisconnectReason.restartRequired ||
               DisconnectReason.timedOut ||
