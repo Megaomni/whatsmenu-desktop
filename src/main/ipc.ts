@@ -162,7 +162,7 @@ export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const { data } = await whatsmenu_api_v3.get(
     `/vouchers/${profile.id}/getByStatus/avaliable`
   );
-  if ('vouchers' in data) {
+  if (data.vouchers) {
     return data.vouchers as VoucherType[];
   }
 }
@@ -235,8 +235,8 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
   });
 });
 
-ipcMain.on("removeVoucher", (_, voucher: VoucherType | number) => {
-  deleteVoucherToNotify(voucher);
+ipcMain.on("removeVoucher", (_, voucherOrId: VoucherType | number) => {
+  deleteVoucherToNotify(voucherOrId);
 });
 
 ipcMain.on("env", (event) => {

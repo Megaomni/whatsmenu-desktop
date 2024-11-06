@@ -372,8 +372,6 @@ export const removeDuplicateVouchers = (): void => {
 const deleteExpiredVoucher = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((voucher) => voucher.id === id));
-  console.log('foundUser', foundUser);
-
   const listWithoutExpiredVoucher = foundUser.vouchers.filter((voucher) => voucher.id !== id);
   const newTotal = listWithoutExpiredVoucher.reduce((total, voucher) => total + voucher.value, 0);
   const updatedUser = {
@@ -401,11 +399,11 @@ const deleteUsedVouchers = async (voucherFromDB: VoucherType, client: ClientType
   }
 }
 
-export const deleteVoucherToNotify = (id: number | VoucherType) => {
-  if (typeof id === 'number') {
-    deleteExpiredVoucher(id);
+export const deleteVoucherToNotify = (voucherOrId: number | VoucherType) => {
+  if (typeof voucherOrId === 'number') {
+    deleteExpiredVoucher(voucherOrId);
   } else {
-    deleteUsedVouchers(id, id.client);
+    deleteUsedVouchers(voucherOrId, voucherOrId.client);
   }
 }
 
