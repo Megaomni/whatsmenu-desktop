@@ -29,11 +29,29 @@ export const create_bot_tab = () => {
 
   tab.webContents.on("did-finish-load", async () => {
     await whatsAppService.connect();
+    let needRefreshOnDisconnect = false;
+
+    /**
+     * Recarrega a aba atual e a torna visível.
+     */
+    const refreshTab = () => {
+      if (needRefreshOnDisconnect) {
+        tab.webContents.reload();
+        tab.setVisible(true);
+      }
+    }
+    
+  /**
+   * Função chamada a cada mudança do estado da conexão do WhatsApp.
+   * @param {ConnectionState} update - atualiza o do estado da conexão.
+   * @returns {Promise<void>}
+   */
     const connectionUpdate = async (update: ConnectionState) => {
       const { connection, lastDisconnect, qr } = update;
       if (qr) {
         tab.webContents.send("onqrcode", qr);
         tab.webContents.send("log", qr);
+        needRefreshOnDisconnect = false;
         return;
       }
 
@@ -46,6 +64,7 @@ export const create_bot_tab = () => {
             percent: 50,
             message: "carregando mensagens",
           });
+          needRefreshOnDisconnect = true;
           break;
         case "close":
           switch (lastDiscReason) {
@@ -67,15 +86,13 @@ export const create_bot_tab = () => {
               break;
             case DisconnectReason.badSession:
               console.log("Bad session");
-              tab.setVisible(true);
-              tab.webContents.reload();
+              refreshTab();
               break;
             case DisconnectReason.connectionReplaced:
               console.log("Connection replaced");
               break;
             case DisconnectReason.loggedOut:
               console.log("Logged out");
-              tab.setVisible(true);
               fs.rmdirSync(whatsAppService.appDataPath, { recursive: true });
               if (
                 fs.existsSync(
@@ -86,20 +103,20 @@ export const create_bot_tab = () => {
                   "C:/projects/whatsmenu/apps/desktop/baileys_store.json"
                 );
               }
-              tab.webContents.reload();
+              refreshTab();
               break;
             default:
               console.log(
                 "Disconnect reason: ",
                 DisconnectReason[lastDiscReason]
               );
-              tab.webContents.reload();
-              tab.setVisible(true);
+              refreshTab();
               break;
           }
           tab.webContents.send("ondisconnected", "disconnected");
           break;
         case "open":
+          needRefreshOnDisconnect = true;
           tab.webContents.send("onready");
           break;
       }
