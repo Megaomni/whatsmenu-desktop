@@ -66,7 +66,7 @@ const BotRoot = () => {
           window.DesktopApi.removeVoucher(voucher);
         });
         wsRef.current.connection.on("voucher:cancelled", (voucher) => {
-          window.DesktopApi.removeVoucher(voucher);
+          window.DesktopApi.removeVoucher(voucher.id);
         });
       });
     }

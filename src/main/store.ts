@@ -6,6 +6,9 @@ import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
 import { vouchersToNotifyQueue } from "../lib/queue";
 import { MerchantType } from "../@types/merchant";
+import { VoucherType } from "../@types/voucher";
+import { getVouchersFromDB } from "./ipc";
+import { ClientType } from "../@types/client";
 
 export interface Store {
   configs: {
@@ -232,6 +235,39 @@ const formatOldVoucher = (oldVoucher: OldVoucher): VoucherNotification => {
   }
 }
 
+const formatVouchFromDB = (vouchFromDB: VoucherType, client: ClientType): VoucherNotification => {
+  const rememberDays = Math.floor(
+    DateTime.fromISO(vouchFromDB.expirationDate).diff(
+      DateTime.fromISO(vouchFromDB.created_at),
+      "days"
+    ).days / 2
+  );
+
+  const rememberValue = DateTime.fromISO(vouchFromDB.created_at)
+    .plus({ days: rememberDays })
+    .toISO();
+
+  const afterValue = DateTime.fromISO(vouchFromDB.created_at)
+    .plus({ minutes: 20 })
+    .toISO();
+
+  return {
+    whatsapp: client.whatsapp,
+    name: client.name,
+    vouchersTotal: vouchFromDB.value,
+    vouchers: [
+      {
+        id: vouchFromDB.id,
+        value: vouchFromDB.value,
+        expirationDate: vouchFromDB.expirationDate,
+        rememberDays,
+        rememberDate: rememberValue,
+        afterPurchaseDate: afterValue
+      },
+    ]
+  }
+}
+
 const checkOldVouchers = () => {
   const currentOldVouchers = getOldVoucherList();
   const oldVoucherExists = currentOldVouchers.length > 0;
@@ -333,9 +369,11 @@ export const removeDuplicateVouchers = (): void => {
   return store.set("configs.voucherToNotify", uniqueVouchers);
 };
 
-export const deleteVoucherToNotify = (id: number) => {
+const deleteExpiredVoucher = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((voucher) => voucher.id === id));
+  console.log('foundUser', foundUser);
+
   const listWithoutExpiredVoucher = foundUser.vouchers.filter((voucher) => voucher.id !== id);
   const newTotal = listWithoutExpiredVoucher.reduce((total, voucher) => total + voucher.value, 0);
   const updatedUser = {
@@ -349,6 +387,25 @@ export const deleteVoucherToNotify = (id: number) => {
   } else {
     const updatedList = currentVouchers.map((user) => user.whatsapp === foundUser.whatsapp ? updatedUser : user);
     store.set("configs.voucherToNotify", updatedList);
+  }
+}
+
+const deleteUsedVouchers = async (voucherFromDB: VoucherType, client: ClientType) => {
+  const allVouchersFromDB = await getVouchersFromDB();
+  const currentVouchers = getVoucherToNotifyList();
+  const voucherFromUser = allVouchersFromDB.find((voucher) => voucher.clientId === voucherFromDB.clientId);
+  if (voucherFromUser) {
+    const newFormatvoucher = formatVouchFromDB(voucherFromUser, client);
+    const updatedList = currentVouchers.map((user) => user.whatsapp === newFormatvoucher.whatsapp ? newFormatvoucher : user);
+    store.set("configs.voucherToNotify", updatedList);
+  }
+}
+
+export const deleteVoucherToNotify = (id: number | VoucherType) => {
+  if (typeof id === 'number') {
+    deleteExpiredVoucher(id);
+  } else {
+    deleteUsedVouchers(id, id.client);
   }
 }
 

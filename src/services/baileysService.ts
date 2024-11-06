@@ -88,10 +88,11 @@ export class BaileysService {
       }
       const [{ jid, exists }] = await this.checkNumber(number);
 
-      if (!exists) {
+      if (!exists || !jid) {
         throw new Error("Number not found");
+      } else {
+        return this.socket.sendMessage(jid, message);
       }
-      return this.socket.sendMessage(jid, message);
     } catch (e) {
       console.error(e);
       throw e;
@@ -171,7 +172,7 @@ export class BaileysService {
         (m) => isMessageFromMe && m.key.remoteJid === currPhoneNum
       );
       const currTime =
-        messagesFromSender[messagesFromSender.length - 1].messageTimestamp;
+        messagesFromSender[messagesFromSender.length - 1]?.messageTimestamp;
       const prevTime =
         messagesFromSender.length > 1
           ? messagesFromSender[messagesFromSender.length - 2].messageTimestamp
