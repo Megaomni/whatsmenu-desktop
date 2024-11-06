@@ -124,6 +124,10 @@ export class WhatsApp {
         const { contact, message } = messageQueued;
         const [{ jid }] = await whatsAppService.checkNumber(contact);
 
+        if (!jid) {
+          return;
+        }
+
         try {
           setTimeout(() => {
             whatsAppService.sendMessageToContact(jid, { text: message });
@@ -190,6 +194,10 @@ export class WhatsApp {
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
+
+        if (!jid) {
+          return;
+        }
 
         if (voucher[`${messageType}Date`] === null) {
           return;
