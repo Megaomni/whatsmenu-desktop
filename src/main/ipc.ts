@@ -162,8 +162,6 @@ export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const { data } = await whatsmenu_api_v3.get(
     `/vouchers/${profile.id}/getByStatus/avaliable`
   );
-  console.log("XXXXXXXXXXXXXXXXX", data.vouchers);
-
   if (data.vouchers) {
     return data.vouchers as VoucherType[];
   }

@@ -135,7 +135,6 @@ export const create_bot_tab = () => {
       }
     };
 
-    // whatsAppService.events.off("connectionUpdate", connectionUpdate);
     whatsAppService.events.on("connectionUpdate", connectionUpdate);
   });
 
