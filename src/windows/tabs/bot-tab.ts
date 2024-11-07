@@ -28,6 +28,7 @@ export const create_bot_tab = () => {
   tab.setVisible(false);
 
   tab.webContents.on("did-finish-load", async () => {
+    whatsAppService.events.removeAllListeners();
     await whatsAppService.connect();
     let needRefreshOnDisconnect = false;
 
@@ -40,19 +41,28 @@ export const create_bot_tab = () => {
         tab.setVisible(true);
       }
     }
-    
-  /**
-   * Função chamada a cada mudança do estado da conexão do WhatsApp.
-   * @param {ConnectionState} update - atualiza o do estado da conexão.
-   * @returns {Promise<void>}
-   */
-    const connectionUpdate = async (update: ConnectionState) => {
+
+    /**
+     * Função chamada a cada mudança do estado da conexão do WhatsApp.
+     * @param {ConnectionState} update - atualiza o do estado da conexão.
+     * @returns {Promise<void>}
+     */
+    const connectionUpdate = (update: ConnectionState) => {
       const { connection, lastDisconnect, qr } = update;
       if (qr) {
         tab.webContents.send("onqrcode", qr);
         tab.webContents.send("log", qr);
         needRefreshOnDisconnect = false;
         return;
+      }
+
+      let appStateFilesInAuth: number;
+
+      if (fs.existsSync(whatsAppService.appDataPath)) {
+        fs.readdir(whatsAppService.appDataPath, (err: NodeJS.ErrnoException | null, files: string[]) => {
+          const allAppState = files.filter((file) => file.startsWith("app-state-sync-"));
+          appStateFilesInAuth = allAppState.length;
+        });
       }
 
       const lastDiscReason = (lastDisconnect?.error as Boom)?.output
@@ -69,7 +79,6 @@ export const create_bot_tab = () => {
         case "close":
           switch (lastDiscReason) {
             case DisconnectReason.restartRequired ||
-              DisconnectReason.timedOut ||
               DisconnectReason.connectionLost ||
               DisconnectReason.connectionClosed ||
               DisconnectReason.unavailableService:
@@ -83,6 +92,10 @@ export const create_bot_tab = () => {
               );
               console.log("Reconnecting...");
               whatsAppService.connect();
+              break;
+            case DisconnectReason.timedOut:
+              console.log("Timeout");
+              appStateFilesInAuth > 20 ? whatsAppService.connect() : tab.webContents.reload();
               break;
             case DisconnectReason.badSession:
               console.log("Bad session");
@@ -122,6 +135,7 @@ export const create_bot_tab = () => {
       }
     };
 
+    // whatsAppService.events.off("connectionUpdate", connectionUpdate);
     whatsAppService.events.on("connectionUpdate", connectionUpdate);
   });
 
