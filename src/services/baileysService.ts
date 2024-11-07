@@ -122,7 +122,6 @@ export class BaileysService {
       markOnlineOnConnect: false,
       browser: ["WhatsMenu", "", app.getVersion()],
       generateHighQualityLinkPreview: true,
-      qrTimeout: 15000,
     });
 
     this.socket.ev.on("creds.update", async () => {
