@@ -63,7 +63,11 @@ export class BaileysService {
         await this.connect();
         await new Promise((res) => setTimeout(res, 5000));
       }
-      return this.socket.onWhatsApp(number);
+      let checkObj = await this.socket.onWhatsApp(number);
+      if (checkObj.length === 0) {
+        checkObj = [{ jid: "Número não está no whatsapp", exists: false }];
+      }
+      return checkObj;
     } catch (e) {
       console.error(e);
       throw e;
@@ -88,7 +92,7 @@ export class BaileysService {
       }
       const [{ jid, exists }] = await this.checkNumber(number);
 
-      if (!exists || !jid) {
+      if (!exists || jid === "Número não está no whatsapp") {
         throw new Error("Number not found");
       } else {
         return this.socket.sendMessage(jid, message);
@@ -180,14 +184,14 @@ export class BaileysService {
         myMessages.length > 0
           ? myMessages[myMessages.length - 1].messageTimestamp
           : undefined;
-      const dontDisturb =
+      const alwaysSend =
         profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
       const sendMenu =
         profile.options.bot.whatsapp.welcomeMessage.status;
 
 
       if (
-        dontDisturb &&
+        alwaysSend &&
         this.timeDifference(currTime, myLastMsgTime, 0) &&
         !isMessageFromMe &&
         !isMessageFromGroup
@@ -209,7 +213,7 @@ export class BaileysService {
         !isMessageFromGroup &&
         this.timeDifference(currTime, prevTime, 3) &&
         this.timeDifference(currTime, myLastMsgTime, 5) &&
-        !dontDisturb
+        !alwaysSend
       ) {
         if (
           profile.firstOnlyCupom &&
