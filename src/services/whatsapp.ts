@@ -124,7 +124,7 @@ export class WhatsApp {
         const { contact, message } = messageQueued;
         const [{ jid }] = await whatsAppService.checkNumber(contact);
 
-        if (!jid) {
+        if (jid === "Número não está no whatsapp") {
           return;
         }
 
@@ -151,6 +151,7 @@ export class WhatsApp {
     };
 
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
+
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
       const language = profile.options.locale.language;
@@ -195,7 +196,9 @@ export class WhatsApp {
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
 
-        if (!jid) {
+        if (jid === "Número não está no whatsapp") {
+          voucher.expirationDate <= DateTime.local().toISO() &&
+            deleteVoucherToNotify(voucher.id);
           return;
         }
 
