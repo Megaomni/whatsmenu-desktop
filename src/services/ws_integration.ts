@@ -16,4 +16,4 @@ io.on("connection", (socket) => {
   });
 });
 
-io.listen(9487);
+io.listen(3434);
