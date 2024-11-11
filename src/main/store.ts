@@ -372,6 +372,9 @@ export const removeDuplicateVouchers = (): void => {
 const deleteExpiredVoucher = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((voucher) => voucher.id === id));
+  if (!foundUser) {
+    return;
+  }
   const listWithoutExpiredVoucher = foundUser.vouchers.filter((voucher) => voucher.id !== id);
   const newTotal = listWithoutExpiredVoucher.reduce((total, voucher) => total + voucher.value, 0);
   const updatedUser = {
