@@ -151,10 +151,10 @@ export class WhatsApp {
     };
 
     const cronLoop = async (messageType: keyof typeof botMessages.cashback) => {
-
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
       const language = profile.options.locale.language;
+
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
@@ -191,16 +191,12 @@ export class WhatsApp {
           break;
       }
 
+
+
       for await (const user of list) {
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
-
-        if (jid === "Número não está no whatsapp") {
-          voucher.expirationDate <= DateTime.local().toISO() &&
-            deleteVoucherToNotify(voucher.id);
-          return;
-        }
 
         if (voucher[`${messageType}Date`] === null) {
           return;
