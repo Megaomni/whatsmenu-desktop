@@ -93,7 +93,7 @@ export class BaileysService {
       const [{ jid, exists }] = await this.checkNumber(number);
 
       if (!exists || jid === "Número não está no whatsapp") {
-        throw new Error("Number not found");
+        return
       } else {
         return this.socket.sendMessage(jid, message);
       }
