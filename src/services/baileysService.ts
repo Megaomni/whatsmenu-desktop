@@ -92,7 +92,7 @@ export class BaileysService {
       }
       const [{ jid, exists }] = await this.checkNumber(number);
 
-      if (message.text === "") {
+      if ("text" in message && message.text === "") {
         console.error("Mensagem vazia");
         return;
       }
