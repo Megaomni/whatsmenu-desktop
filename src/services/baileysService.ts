@@ -92,6 +92,11 @@ export class BaileysService {
       }
       const [{ jid, exists }] = await this.checkNumber(number);
 
+      if ("text" in message && message.text === "") {
+        console.error("Mensagem vazia");
+        return;
+      }
+
       if (!exists || jid === "Número não está no whatsapp") {
         return
       } else {
