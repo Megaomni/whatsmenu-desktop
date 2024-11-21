@@ -146,6 +146,7 @@ interface ProfileOptions {
   delivery: {
     enableKm: boolean;
     disableDelivery: boolean;
+    deactivated?: boolean;
   };
   tracking: {
     pixel: string;
