@@ -27,96 +27,96 @@ export class WhatsApp {
     message: string;
     client?: ClientType;
   }> = [];
-  bot: Client | null = null;
-  firstConection = false;
-  events = new EventEmitter();
-  /**
-   * Constructor for the class with optional client options.
-   *
-   * @param {ClientOptions} [config] - Optional configuration for the client
-   */
+  //   bot: Client | null = null;
+  //   firstConection = false;
+  //   events = new EventEmitter();
+  //   /**
+  //    * Constructor for the class with optional client options.
+  //    *
+  //    * @param {ClientOptions} [config] - Optional configuration for the client
+  //    */
 
-  async initBot(config?: ClientOptions) {
-    if (!config) {
-      config = {};
-    }
-    config.authStrategy = new LocalAuth();
-    if (
-      !store.get("configs.executablePath") ||
-      !isDev ||
-      process.platform === "win32"
-    ) {
-      config.puppeteer.executablePath =
-        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
-    }
+  //   async initBot(config?: ClientOptions) {
+  //     if (!config) {
+  //       config = {};
+  //     }
+  //     config.authStrategy = new LocalAuth();
+  //     if (
+  //       !store.get("configs.executablePath") ||
+  //       !isDev ||
+  //       process.platform === "win32"
+  //     ) {
+  //       config.puppeteer.executablePath =
+  //         "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe";
+  //     }
 
-    if (store.get("configs.executablePath")) {
-      config.puppeteer.executablePath = store.get("configs.executablePath");
-    }
+  //     if (store.get("configs.executablePath")) {
+  //       config.puppeteer.executablePath = store.get("configs.executablePath");
+  //     }
 
-    this.bot = new Client(config);
-    this.bot.on("qr", () => {
-      // this.firstConection = true;
-    });
+  //     this.bot = new Client(config);
+  //     this.bot.on("qr", () => {
+  //       // this.firstConection = true;
+  //     });
 
-    this.bot.on("ready", async () => {
-      new Notification({
-        title: "Robô pronto!",
-        body: "Pronto para enviar mensagens",
-      }).show();
+  //     this.bot.on("ready", async () => {
+  //       new Notification({
+  //         title: "Robô pronto!",
+  //         body: "Pronto para enviar mensagens",
+  //       }).show();
 
-      this.sendQueuedmessages();
-      this.cashbackCron();
-      removeDuplicateUsers();
-      removeDuplicateVouchers();
-    });
-    this.bot.on("disconnected", () => {
-      new Notification({
-        title: "Robô desconectado!",
-        body: "Não será possível enviar mensagens",
-      }).show();
-    });
+  //       this.sendQueuedmessages();
+  //       this.cashbackCron();
+  //       removeDuplicateUsers();
+  //       removeDuplicateVouchers();
+  //     });
+  //     this.bot.on("disconnected", () => {
+  //       new Notification({
+  //         title: "Robô desconectado!",
+  //         body: "Não será possível enviar mensagens",
+  //       }).show();
+  //     });
 
-    // BOT MESSAGES
-    this.bot.on("message", async (message) => {
-      const profile = getProfile();
-      const chat = await message.getChat();
-      if (chat.isGroup || !profile.options.bot.whatsapp.welcomeMessage.status) {
-        return;
-      }
-      const [penultimateMessage, lastMessage] = await chat.fetchMessages({
-        limit: 2,
-      });
-      const firstMessage = !lastMessage;
-      const penultimateMessageDate = DateTime.fromSeconds(
-        penultimateMessage.timestamp
-      );
-      const lastMessageDate = lastMessage
-        ? DateTime.fromSeconds(lastMessage.timestamp)
-        : DateTime.local();
+  //     // BOT MESSAGES
+  //     this.bot.on("message", async (message) => {
+  //       const profile = getProfile();
+  //       const chat = await message.getChat();
+  //       if (chat.isGroup || !profile.options.bot.whatsapp.welcomeMessage.status) {
+  //         return;
+  //       }
+  //       const [penultimateMessage, lastMessage] = await chat.fetchMessages({
+  //         limit: 2,
+  //       });
+  //       const firstMessage = !lastMessage;
+  //       const penultimateMessageDate = DateTime.fromSeconds(
+  //         penultimateMessage.timestamp
+  //       );
+  //       const lastMessageDate = lastMessage
+  //         ? DateTime.fromSeconds(lastMessage.timestamp)
+  //         : DateTime.local();
 
-      const { days, hours } = lastMessageDate.diff(penultimateMessageDate, [
-        "days",
-        "hours",
-      ]);
+  //       const { days, hours } = lastMessageDate.diff(penultimateMessageDate, [
+  //         "days",
+  //         "hours",
+  //       ]);
 
-      if (
-        firstMessage ||
-        days > 0 ||
-        hours >= 3 ||
-        profile.options.bot.whatsapp.welcomeMessage.alwaysSend
-      ) {
-        const cachedContact = await findCacheContact(chat.id._serialized);
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        // prettier-ignore
-        await chat.sendMessage(cachedContact && cachedContact.messageType === "cupomFirst" ? profile.options.placeholders.cupomFirstMessage.replaceAll("[NOME]", message._data.notifyName ?? '') : profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName ?? ""));
-        await chat.markUnread();
-      }
-    });
+  //       if (
+  //         firstMessage ||
+  //         days > 0 ||
+  //         hours >= 3 ||
+  //         profile.options.bot.whatsapp.welcomeMessage.alwaysSend
+  //       ) {
+  //         const cachedContact = await findCacheContact(chat.id._serialized);
+  //         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //         //@ts-ignore
+  //         // prettier-ignore
+  //         await chat.sendMessage(cachedContact && cachedContact.messageType === "cupomFirst" ? profile.options.placeholders.cupomFirstMessage.replaceAll("[NOME]", message._data.notifyName ?? '') : profile.options.placeholders.welcomeMessage.replaceAll("[NOME]", message._data.notifyName ?? ""));
+  //         await chat.markUnread();
+  //       }
+  //     });
 
-    return this.bot;
-  }
+  //     return this.bot;
+  //   }
 
   async sendQueuedmessages() {
     setTimeout(async () => {
@@ -191,8 +191,6 @@ export class WhatsApp {
           break;
       }
 
-
-
       for await (const user of list) {
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
@@ -227,13 +225,29 @@ export class WhatsApp {
         }
       }
     };
-    setInterval(() => {
-      vouchersToNotifyQueue.push(async () => {
-        await removeExpiredVouchers();
-        await cronLoop("afterPurchase");
-        await cronLoop("remember");
-        await cronLoop("expiration");
-      });
+
+    let isProcessing = false;
+
+    setInterval(async () => {
+      if (isProcessing) {
+        return;
+      }
+      isProcessing = true;
+
+      try {
+        vouchersToNotifyQueue.push(async () => {
+          await removeExpiredVouchers();
+          if (getProfile().options.voucher[0].status === true) {
+            await cronLoop("afterPurchase");
+            await cronLoop("remember");
+            await cronLoop("expiration");
+          }
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isProcessing = false;
+      }
     }, 1000 * 60);
     return;
   }
