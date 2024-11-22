@@ -61,7 +61,15 @@ interface ProfileAddress {
   neigborhood: string;
 }
 
+interface CashbackVouch {
+  status: boolean;
+  percentage: number;
+  expirationDays: number;
+  created_at: string;
+}
+
 interface ProfileOptions {
+  voucher: CashbackVouch[];
   bot: {
     whatsapp: {
       welcomeMessage: {
