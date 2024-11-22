@@ -94,7 +94,6 @@ export class BaileysService {
       const [{ jid, exists }] = await this.checkNumber(number);
 
       if ("text" in message && message.text === "") {
-        console.log("XXXXXXXXXXXXXXX caiu no primeiro return");
         console.error("Mensagem vazia");
         return;
       }
