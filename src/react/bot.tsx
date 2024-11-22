@@ -96,7 +96,7 @@ const BotRoot = () => {
           loading.status ? (
             <div className="relative text-center text-red-600 w-1/3">
               <h1 className="font-bold text-4xl">ATENÇÃO!</h1>
-              <h3 className="font-bold text-2xl">Mantenha a tela do seu ceular aberta até que a tela de sincronização feche sozinha!</h3>
+              <h3 className="font-bold text-2xl">Mantenha a tela do seu celular aberta até que a tela de sincronização feche sozinha!</h3>
               <div className="flex justify-center">
                 <img
                   src="../../whats_scan1.png"
