@@ -53,8 +53,8 @@ export const DesktopApi = {
   removeVoucher: (voucher: VoucherType) =>
     ipcRenderer.send("removeVoucher", voucher),
 
-  storeProfile: (profile: ProfileType) =>
-    ipcRenderer.send("storeProfile", profile),
+  storeProfile: (profile: ProfileType, updateBot: boolean) =>
+    ipcRenderer.send("storeProfile", profile, updateBot),
   storeMerchant: (merchant: MerchantType) =>
     ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),
