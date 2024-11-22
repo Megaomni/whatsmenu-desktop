@@ -144,7 +144,11 @@ ipcMain.on("print", async (_, serializedPayload) => {
   return "shown print dialog";
 });
 
-ipcMain.on("storeProfile", (_, profile) => {
+ipcMain.on("storeProfile", (_, profile, updateBot = false) => {
+  const oldProfile = getProfile();
+  if (!updateBot && oldProfile) {
+    profile.options.bot.whatsapp = oldProfile.options.bot.whatsapp;
+  }
   store.set("configs.profile", profile);
 });
 

@@ -250,11 +250,9 @@ export class WhatsApp {
       try {
         vouchersToNotifyQueue.push(async () => {
           await removeExpiredVouchers();
-          if (getProfile().options.voucher[0].status === true) {
-            await cronLoop("afterPurchase");
-            await cronLoop("remember");
-            await cronLoop("expiration");
-          }
+          await cronLoop("afterPurchase");
+          await cronLoop("remember");
+          await cronLoop("expiration");
         });
       } catch (error) {
         console.error(error);

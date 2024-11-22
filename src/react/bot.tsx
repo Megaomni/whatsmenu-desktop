@@ -82,7 +82,7 @@ const BotRoot = () => {
           whatsapp,
         });
         profile.options.bot.whatsapp = data.whatsapp;
-        window.DesktopApi.storeProfile(profile);
+        window.DesktopApi.storeProfile(profile, true);
         setProfile({ ...profile });
       } catch (error) {
         console.error(error);
