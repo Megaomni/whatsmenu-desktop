@@ -231,6 +231,14 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
               : afterValue,
         },
       ],
+      voucherTwoFactor: [
+        {
+          id: vouchFromDB.id,
+          expirationDate: false,
+          rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0,
+          afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
+        },
+      ],
     });
   });
 });

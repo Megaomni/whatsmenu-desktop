@@ -11,6 +11,7 @@ import {
   getCacheContactList,
   removeDuplicateVouchers,
   setContactWelcomeMessage,
+  convertToTwoFactor,
 } from "../main/store";
 import { EventEmitter } from "events";
 import { app } from "electron";
@@ -93,6 +94,7 @@ export class BaileysService {
       const [{ jid, exists }] = await this.checkNumber(number);
 
       if ("text" in message && message.text === "") {
+        console.log("XXXXXXXXXXXXXXX caiu no primeiro return");
         console.error("Mensagem vazia");
         return;
       }
@@ -122,6 +124,7 @@ export class BaileysService {
     await whatsapp.sendQueuedmessages();
     whatsapp.cashbackCron();
     removeDuplicateVouchers();
+    convertToTwoFactor();
     const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
     this.socket = makeWASocket({

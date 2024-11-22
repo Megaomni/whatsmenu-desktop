@@ -9,6 +9,7 @@ import {
   removeDuplicateUsers,
   removeDuplicateVouchers,
   store,
+  updateTwoFactor,
   updateVoucherToNotify,
 } from "./../main/store";
 
@@ -197,14 +198,21 @@ export class WhatsApp {
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
+        const voucherFactor = user.voucherTwoFactor.find((v) => v.id === voucher?.id);
+        let messageSent = false;
 
-        if (voucher[`${messageType}Date`] === null) {
+        if (
+          voucher[`${messageType}Date`] === null ||
+          voucherFactor[`${messageType}Date`] === true ||
+          jid === "Número não está no whatsapp"
+        ) {
           return;
         } else {
           await whatsAppService.sendMessageToContact(
             jid,
             { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
           );
+          messageSent = true;
           switch (messageType) {
             case "afterPurchase":
               updateVoucherToNotify(voucher.id, {
@@ -223,6 +231,11 @@ export class WhatsApp {
               break;
             default:
               break;
+          }
+          if (messageSent) {
+            updateTwoFactor(voucher.id, {
+              [`${messageType}Date`]: true
+            });
           }
         }
       }
