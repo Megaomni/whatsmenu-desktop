@@ -1,6 +1,6 @@
 import ElectronStore from "electron-store";
 import { ProfileType } from "../@types/profile";
-import { CacheContact, OldVoucher, Printer, VoucherNotification, VoucherObj } from "../@types/store";
+import { CacheContact, OldVoucher, Printer, VoucherNotification, VoucherObj, VoucherTwoFactorObj } from "../@types/store";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { DateTime } from "luxon";
 import { AxiosResponse } from "axios";
@@ -231,6 +231,14 @@ const formatOldVoucher = (oldVoucher: OldVoucher): VoucherNotification => {
         afterPurchaseDate: DateTime.fromISO(oldVoucher.afterPurchaseDate).diffNow(["minutes"]).minutes <= 0
           ? null : oldVoucher.afterPurchaseDate
       },
+    ],
+    voucherTwoFactor: [
+      {
+        id: oldVoucher.id,
+        expirationDate: false,
+        rememberDate: DateTime.fromISO(oldVoucher.rememberDate).diffNow(["minutes"]).minutes <= 0,
+        afterPurchaseDate: DateTime.fromISO(oldVoucher.rememberDate).diffNow(["minutes"]).minutes <= 0
+      }
     ]
   }
 }
@@ -264,6 +272,14 @@ const formatVouchFromDB = (vouchFromDB: VoucherType, client: ClientType): Vouche
         rememberDate: rememberValue,
         afterPurchaseDate: afterValue
       },
+    ],
+    voucherTwoFactor: [
+      {
+        id: vouchFromDB.id,
+        expirationDate: false,
+        rememberDate: false,
+        afterPurchaseDate: false
+      }
     ]
   }
 }
@@ -303,6 +319,14 @@ const storeVoucherToNotify = (
       name: userFound?.name,
       vouchersTotal: payload.value,
       vouchers: [payload],
+      voucherTwoFactor: [
+        {
+          id: payload.id,
+          expirationDate: false,
+          rememberDate: payload.rememberDate === null ? false : true,
+          afterPurchaseDate: payload.afterPurchaseDate === null ? false : true
+        }
+      ]
     })
   }
 
@@ -376,11 +400,13 @@ const deleteExpiredVoucher = (id: number) => {
     return;
   }
   const listWithoutExpiredVoucher = foundUser.vouchers.filter((voucher) => voucher.id !== id);
+  const listWithoutExpiredTwoFactor = foundUser.voucherTwoFactor.filter((voucher) => voucher.id !== id);
   const newTotal = listWithoutExpiredVoucher.reduce((total, voucher) => total + voucher.value, 0);
   const updatedUser = {
     ...foundUser,
     vouchersTotal: newTotal,
     vouchers: listWithoutExpiredVoucher,
+    voucherTwoFactor: listWithoutExpiredTwoFactor
   }
   const listWithoutuser = currentVouchers.filter((user) => user.whatsapp !== foundUser.whatsapp);
   if (updatedUser.vouchers.length === 0) {
@@ -429,5 +455,49 @@ export const updateVoucherToNotify = (
     updatedVouchers
   );
 };
+
+export const updateTwoFactor = (
+  id: number,
+  payload: Partial<VoucherTwoFactorObj>
+) => {
+  const currentVouchers = getVoucherToNotifyList();
+  const foundUser = currentVouchers.find((user) => user.vouchers.some((v) => v.id === id));
+  const foundVoucher = foundUser.voucherTwoFactor.find((voucher) => voucher.id === id);
+  const updatedVouch = { ...foundVoucher, ...payload };
+  const updatedUser = {
+    ...foundUser,
+    voucherTwoFactor: foundUser.voucherTwoFactor.map((voucher) => voucher.id === id ?
+      updatedVouch : voucher),
+  }
+  const updatedVouchers = currentVouchers.map((user) => user.whatsapp === foundUser.whatsapp ? updatedUser : user);
+  store.set(
+    "configs.voucherToNotify",
+    updatedVouchers
+  );
+};
+
+export const convertToTwoFactor = () => {
+  const currentVouchers = getVoucherToNotifyList();
+  const alreadyConverted = currentVouchers.every((user) => user.voucherTwoFactor && user.voucherTwoFactor.length === user.vouchers.length);
+  if (alreadyConverted) {
+    return;
+  }
+  const convertedVouchers = currentVouchers.map((user) => {
+    if (user.voucherTwoFactor && user.voucherTwoFactor.length === user.vouchers.length) {
+      return user;
+    }
+    const twoFactor: VoucherTwoFactorObj[] = []
+    user.vouchers.forEach((voucher) => {
+      twoFactor.push({
+        id: voucher.id,
+        expirationDate: false,
+        rememberDate: voucher.rememberDate === null ? true : false,
+        afterPurchaseDate: voucher.afterPurchaseDate === null ? true : false
+      })
+    })
+    return { ...user, voucherTwoFactor: twoFactor }
+  })
+  store.set("configs.voucherToNotify", convertedVouchers);
+}
 
 console.log(store.path);
