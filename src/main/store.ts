@@ -500,4 +500,9 @@ export const convertToTwoFactor = () => {
   store.set("configs.voucherToNotify", convertedVouchers);
 }
 
+export const fetchVouchers = async () => {
+  const allVouchersFromDB = await getVouchersFromDB();
+  console.log(allVouchersFromDB);
+}
+
 console.log(store.path);
