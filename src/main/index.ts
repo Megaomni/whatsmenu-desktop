@@ -16,8 +16,14 @@ import { getPrinters, updatePrinter } from "./store";
 
 export let mainWindow: TabBrowser;
 
-if (require("electron-squirrel-startup")) {
-  app.quit();
+if (require('electron-squirrel-startup')) {
+  const squirrelEvent = process.argv[1];
+
+  if (squirrelEvent === '--squirrel-install' || squirrelEvent === '--squirrel-updated') {
+    setTimeout(() => {
+      app.quit();
+    }, 3000);
+  }
 }
 export const whatsAppService = new BaileysService();
 const main = () => {

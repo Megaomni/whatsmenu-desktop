@@ -11,6 +11,7 @@ import {
   getCacheContactList,
   removeDuplicateVouchers,
   setContactWelcomeMessage,
+  convertToTwoFactor,
 } from "../main/store";
 import { EventEmitter } from "events";
 import { app } from "electron";
@@ -122,6 +123,7 @@ export class BaileysService {
     await whatsapp.sendQueuedmessages();
     whatsapp.cashbackCron();
     removeDuplicateVouchers();
+    convertToTwoFactor();
     const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
     this.socket = makeWASocket({
@@ -151,9 +153,9 @@ export class BaileysService {
     this.socket.ev.on("messages.upsert", async (m) => {
       let currPhoneNum: string | undefined = undefined;
       const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
-      const isMessageFromGroup = Boolean(m.messages[0].key.participant);
+      const shouldSendMessage = Boolean(m.messages[0].key.participant || m.messages[0].key.remoteJid.endsWith("@g.us") || !m.messages[0].pushName);
 
-      if (!isMessageFromGroup) {
+      if (!shouldSendMessage) {
         this.messageHistory.push(m.messages[0]);
         currPhoneNum = m.messages[0].key.remoteJid;
       }
@@ -199,7 +201,7 @@ export class BaileysService {
         alwaysSend &&
         this.timeDifference(currTime, myLastMsgTime, 0) &&
         !isMessageFromMe &&
-        !isMessageFromGroup
+        !shouldSendMessage
       ) {
         if (
           profile.firstOnlyCupom &&
@@ -215,7 +217,7 @@ export class BaileysService {
         }
       } else if (
         !isMessageFromMe &&
-        !isMessageFromGroup &&
+        !shouldSendMessage &&
         this.timeDifference(currTime, prevTime, 3) &&
         this.timeDifference(currTime, myLastMsgTime, 5) &&
         !alwaysSend
