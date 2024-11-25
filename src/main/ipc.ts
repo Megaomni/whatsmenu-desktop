@@ -144,7 +144,11 @@ ipcMain.on("print", async (_, serializedPayload) => {
   return "shown print dialog";
 });
 
-ipcMain.on("storeProfile", (_, profile) => {
+ipcMain.on("storeProfile", (_, profile, updateBot = false) => {
+  const oldProfile = getProfile();
+  if (!updateBot && oldProfile) {
+    profile.options.bot.whatsapp = oldProfile.options.bot.whatsapp;
+  }
   store.set("configs.profile", profile);
 });
 
@@ -229,6 +233,14 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
             DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
               ? null
               : afterValue,
+        },
+      ],
+      voucherTwoFactor: [
+        {
+          id: vouchFromDB.id,
+          expirationDate: false,
+          rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0,
+          afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
         },
       ],
     });
