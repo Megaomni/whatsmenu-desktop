@@ -1,6 +1,7 @@
 import { whatsAppService } from "../main";
 import {
   deleteVoucherToNotify,
+  fetchVouchers,
   getProfile,
   getVoucherToNotifyList,
   updateTwoFactor,
@@ -44,7 +45,8 @@ export class WhatsApp {
     }, 5 * 1000);
   }
 
-  cashbackCron() {
+  async cashbackCron() {
+    await fetchVouchers();
     const removeExpiredVouchers = async () => {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
