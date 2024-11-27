@@ -12,7 +12,7 @@ import "./sentry";
 import { TabBrowser } from "../extends/tab-browser";
 import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
-import { getPrinters, updatePrinter } from "./store";
+import { fetchVouchers, getPrinters, updatePrinter } from "./store";
 
 export let mainWindow: TabBrowser;
 
@@ -26,9 +26,10 @@ if (require('electron-squirrel-startup')) {
   }
 }
 export const whatsAppService = new BaileysService();
-const main = () => {
+const main = async () => {
   mainWindow = tabsWindow.createWindow();
   const printers = getPrinters();
+  await fetchVouchers();
   if (printers.length > 0) {
     printers.forEach((printer) => {
       if (!printer.margins) {

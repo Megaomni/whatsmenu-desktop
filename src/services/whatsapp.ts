@@ -46,7 +46,7 @@ export class WhatsApp {
   }
 
   async cashbackCron() {
-    await fetchVouchers();
+    // await fetchVouchers();
     const removeExpiredVouchers = async () => {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
