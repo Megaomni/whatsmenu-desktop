@@ -11,6 +11,7 @@ import {
   getCacheContactList,
   removeDuplicateVouchers,
   setContactWelcomeMessage,
+  convertToTwoFactor,
 } from "../main/store";
 import { EventEmitter } from "events";
 import { app } from "electron";
@@ -63,7 +64,11 @@ export class BaileysService {
         await this.connect();
         await new Promise((res) => setTimeout(res, 5000));
       }
-      return this.socket.onWhatsApp(number);
+      let checkObj = await this.socket.onWhatsApp(number);
+      if (checkObj.length === 0) {
+        checkObj = [{ jid: "Número não está no whatsapp", exists: false }];
+      }
+      return checkObj;
     } catch (e) {
       console.error(e);
       throw e;
@@ -88,10 +93,16 @@ export class BaileysService {
       }
       const [{ jid, exists }] = await this.checkNumber(number);
 
-      if (!exists) {
-        throw new Error("Number not found");
+      if ("text" in message && message.text === "") {
+        console.error("Mensagem vazia");
+        return;
       }
-      return this.socket.sendMessage(jid, message);
+
+      if (!exists || jid === "Número não está no whatsapp") {
+        return
+      } else {
+        return this.socket.sendMessage(jid, message);
+      }
     } catch (e) {
       console.error(e);
       throw e;
@@ -109,6 +120,10 @@ export class BaileysService {
    * @returns {Promise<void>}
    */
   async connect() {
+    await whatsapp.sendQueuedmessages();
+    whatsapp.cashbackCron();
+    removeDuplicateVouchers();
+    convertToTwoFactor();
     const { state, saveCreds } = await useMultiFileAuthState(this.appDataPath);
 
     this.socket = makeWASocket({
@@ -118,7 +133,6 @@ export class BaileysService {
       markOnlineOnConnect: false,
       browser: ["WhatsMenu", "", app.getVersion()],
       generateHighQualityLinkPreview: true,
-      qrTimeout: 15000,
     });
 
     this.socket.ev.on("creds.update", async () => {
@@ -137,14 +151,11 @@ export class BaileysService {
     this.socket.ev.on("connection.update", connectionUpdate);
 
     this.socket.ev.on("messages.upsert", async (m) => {
-      await whatsapp.sendQueuedmessages();
-      whatsapp.cashbackCron();
-      removeDuplicateVouchers();
       let currPhoneNum: string | undefined = undefined;
       const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
-      const isMessageFromGroup = Boolean(m.messages[0].key.participant);
+      const shouldSendMessage = Boolean(m.messages[0].key.participant || m.messages[0].key.remoteJid.endsWith("@g.us") || !m.messages[0].pushName);
 
-      if (!isMessageFromGroup) {
+      if (!shouldSendMessage) {
         this.messageHistory.push(m.messages[0]);
         currPhoneNum = m.messages[0].key.remoteJid;
       }
@@ -171,7 +182,7 @@ export class BaileysService {
         (m) => isMessageFromMe && m.key.remoteJid === currPhoneNum
       );
       const currTime =
-        messagesFromSender[messagesFromSender.length - 1].messageTimestamp;
+        messagesFromSender[messagesFromSender.length - 1]?.messageTimestamp;
       const prevTime =
         messagesFromSender.length > 1
           ? messagesFromSender[messagesFromSender.length - 2].messageTimestamp
@@ -180,14 +191,17 @@ export class BaileysService {
         myMessages.length > 0
           ? myMessages[myMessages.length - 1].messageTimestamp
           : undefined;
-      const dontDisturb =
+      const alwaysSend =
         profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
+      const sendMenu =
+        profile.options.bot.whatsapp.welcomeMessage.status;
+
 
       if (
-        dontDisturb &&
+        alwaysSend &&
         this.timeDifference(currTime, myLastMsgTime, 0) &&
         !isMessageFromMe &&
-        !isMessageFromGroup
+        !shouldSendMessage
       ) {
         if (
           profile.firstOnlyCupom &&
@@ -197,16 +211,16 @@ export class BaileysService {
             text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
           });
         } else {
-          await this.sendMessageToContact(currPhoneNum, {
-            text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n`,
-          });
+          sendMenu && await this.sendMessageToContact(currPhoneNum,
+            { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) }
+          );
         }
       } else if (
         !isMessageFromMe &&
-        !isMessageFromGroup &&
+        !shouldSendMessage &&
         this.timeDifference(currTime, prevTime, 3) &&
         this.timeDifference(currTime, myLastMsgTime, 5) &&
-        !dontDisturb
+        !alwaysSend
       ) {
         if (
           profile.firstOnlyCupom &&
@@ -216,9 +230,9 @@ export class BaileysService {
             text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
           });
         } else {
-          await this.sendMessageToContact(currPhoneNum, {
-            text: `Olá ${m.messages[0].pushName}!\nSeja bem vindo ao ${profile.name}\nVeja o nosso cardápio para fazer seu pedido\n \nhttps://www.whatsmenu.com.br/${profile.slug}\n \n*Ofertas exclusivas para pedidos no link*\n \nEquipe ${profile.name}\n`,
-          });
+          sendMenu && await this.sendMessageToContact(currPhoneNum,
+            { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) }
+          );
         }
       }
     });

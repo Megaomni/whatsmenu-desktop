@@ -13,22 +13,46 @@ export type Printer = Electron.PrinterInfo & {
 };
 
 export type CacheContact = {
-  contact: string;
-  messageType: "welcome" | "cupomFirst";
-  revalidateTime?: number;
-  created_at: string;
-};
+  contact: string,
+  messageType: 'welcome' | 'cupomFirst',
+  revalidateTime?: number,
+  created_at: string
+}
+
+export type OldVoucher = {
+  id: number,
+  value: number,
+  client: {
+    whatsapp: string
+    name: string
+    vouchersTotal: number
+  }
+  afterPurchaseDate: string | null
+  rememberDate: string | null
+  rememberDays: number
+  expirationDate: string | null
+}
+
+export type VoucherObj = {
+  id: number,
+  value: number,
+  afterPurchaseDate?: string | null,
+  rememberDate?: string | null,
+  rememberDays: number,
+  expirationDate?: string | null,
+}
+
+export type VoucherTwoFactorObj = {
+  id: number,
+  afterPurchaseDate: boolean,
+  rememberDate: boolean,
+  expirationDate: boolean,
+}
 
 export type VoucherNotification = {
-  id: number;
-  value: number;
-  client: {
-    whatsapp: string;
-    name: string;
-    vouchersTotal: number;
-  };
-  afterPurchaseDate: string | null;
-  rememberDate: string | null;
-  rememberDays: number;
-  expirationDate: string | null;
-};
+  name: string
+  whatsapp: string
+  vouchers: VoucherObj[]
+  voucherTwoFactor: VoucherTwoFactorObj[]
+  vouchersTotal: number
+}

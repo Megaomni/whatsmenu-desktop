@@ -7,6 +7,7 @@ const envSchema = z.object({
   WM_DASHBOARD: z.string(),
   WM_STORE: z.string(),
   WM_WEBSOCKET: z.string(),
+  SENTRY_DSN: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

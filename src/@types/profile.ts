@@ -61,7 +61,23 @@ interface ProfileAddress {
   neigborhood: string;
 }
 
+interface CashbackVouch {
+  status: boolean;
+  percentage: number;
+  expirationDays: number;
+  created_at: string;
+}
+
 interface ProfileOptions {
+  voucher: CashbackVouch[];
+  bot: {
+    whatsapp: {
+      welcomeMessage: {
+        status: boolean;
+        alwaysSend: boolean;
+      };
+    }
+  };
   pdv: {
     clientConfig: {
       required: boolean;
@@ -138,14 +154,16 @@ interface ProfileOptions {
   delivery: {
     enableKm: boolean;
     disableDelivery: boolean;
+    deactivated?: boolean;
   };
   tracking: {
     pixel: string;
     google: string;
   };
-  legacyPix: boolean;
-  onlinePix: boolean;
-  forceClose: string | null;
+  locale: {
+    language: string;
+    currency: string;
+  };
   onlineCard: boolean;
   activeCupom: boolean;
   forceLogout?: string;
@@ -165,12 +183,4 @@ interface ProfileOptions {
     showProductsWhenPaused: boolean;
   };
   inventoryControl: boolean;
-  bot: {
-    whatsapp: {
-      welcomeMessage: {
-        status: boolean;
-        alwaysSend: boolean;
-      };
-    };
-  };
 }

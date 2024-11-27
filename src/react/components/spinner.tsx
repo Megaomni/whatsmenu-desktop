@@ -3,7 +3,7 @@ import React from "react";
 export const Spinner = () => {
   return (
     <svg
-      className="h-40 w-40 motion-safe:animate-spin stroke-gray-500"
+      className="h-20 w-20 motion-safe:animate-spin stroke-gray-500"
       viewBox="0 0 256 256"
     >
       <line
