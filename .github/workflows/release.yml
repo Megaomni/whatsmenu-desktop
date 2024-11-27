@@ -2,6 +2,8 @@ name: Build/release WhatsMenu Desktop
 
 on:
   push:
+    branches:
+      - master
     tags:
       - v*.*.*
 
@@ -36,6 +38,7 @@ jobs:
           echo WM_DASHBOARD='${{ secrets.WM_DASHBOARD }}' >> .env
           echo WM_STORE='${{ secrets.WM_STORE }}' >> .env
           echo WM_WEBSOCKET='${{ secrets.WM_WEBSOCKET }}' >> .env
+          echo SENTRY_DSN='${{ secrets.SENTRY_DSN }}' >> .env
       - name: Build
         run: npm run make
 
