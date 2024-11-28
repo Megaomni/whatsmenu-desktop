@@ -4,6 +4,8 @@ import {
   ConnectionState,
   AnyMessageContent,
   WAMessage,
+  isJidGroup,
+  isJidUser
 } from "@whiskeysockets/baileys";
 import {
   getProfile,
@@ -153,9 +155,14 @@ export class BaileysService {
     this.socket.ev.on("messages.upsert", async (m) => {
       let currPhoneNum: string | undefined = undefined;
       const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
-      const shouldSendMessage = Boolean(m.messages[0].key.participant || m.messages[0].key.remoteJid.endsWith("@g.us") || !m.messages[0].pushName);
+      const isGroupMessage = Boolean(m.messages[0].key.participant || isJidGroup(m.messages[0].key.remoteJid));
+      const shouldSendMessage = Boolean(!isGroupMessage && m.messages[0].pushName && isJidUser(m.messages[0].key.remoteJid));
 
-      if (!shouldSendMessage) {
+      if (isGroupMessage) {
+        return;
+      }
+
+      if (shouldSendMessage) {
         this.messageHistory.push(m.messages[0]);
         currPhoneNum = m.messages[0].key.remoteJid;
       }
@@ -200,8 +207,7 @@ export class BaileysService {
       if (
         alwaysSend &&
         this.timeDifference(currTime, myLastMsgTime, 0) &&
-        !isMessageFromMe &&
-        !shouldSendMessage
+        !isMessageFromMe
       ) {
         if (
           profile.firstOnlyCupom &&
@@ -217,7 +223,6 @@ export class BaileysService {
         }
       } else if (
         !isMessageFromMe &&
-        !shouldSendMessage &&
         this.timeDifference(currTime, prevTime, 3) &&
         this.timeDifference(currTime, myLastMsgTime, 5) &&
         !alwaysSend

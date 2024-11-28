@@ -506,7 +506,7 @@ export const fetchVouchers = async () => {
   console.log("aoba!");
   const allVouchersFromDB = await getVouchersFromDB();
   const vouchersFormatedFromDB = allVouchersFromDB.map((voucher) => formatVouchFromDB(voucher, voucher.client));
-  let vouchersToNotify: VoucherNotification[] = [];
+  const vouchersToNotify: VoucherNotification[] = [];
   vouchersFormatedFromDB.forEach((voucher) => {
     const userFound = vouchersToNotify.find((user) => user.whatsapp === voucher.whatsapp);
     if (!userFound) {
