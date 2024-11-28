@@ -503,7 +503,6 @@ export const convertToTwoFactor = () => {
 }
 
 export const fetchVouchers = async () => {
-  console.log("aoba!");
   const allVouchersFromDB = await getVouchersFromDB();
   const vouchersFormatedFromDB = allVouchersFromDB.map((voucher) => formatVouchFromDB(voucher, voucher.client));
   const vouchersToNotify: VoucherNotification[] = [];
