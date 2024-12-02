@@ -269,16 +269,18 @@ const formatVouchFromDB = (vouchFromDB: VoucherType, client: ClientType): Vouche
         value: vouchFromDB.value,
         expirationDate: vouchFromDB.expirationDate,
         rememberDays,
-        rememberDate: rememberValue,
-        afterPurchaseDate: afterValue
+        rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
+          ? null : rememberValue,
+        afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
+          ? null : afterValue
       },
     ],
     voucherTwoFactor: [
       {
         id: vouchFromDB.id,
         expirationDate: false,
-        rememberDate: false,
-        afterPurchaseDate: false
+        rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0,
+        afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
       }
     ]
   }
@@ -498,6 +500,29 @@ export const convertToTwoFactor = () => {
     return { ...user, voucherTwoFactor: twoFactor }
   })
   store.set("configs.voucherToNotify", convertedVouchers);
+}
+
+export const fetchVouchers = async () => {
+  const allVouchersFromDB = await getVouchersFromDB();
+  const vouchersFormatedFromDB = allVouchersFromDB.map((voucher) => formatVouchFromDB(voucher, voucher.client));
+  const vouchersToNotify: VoucherNotification[] = [];
+  vouchersFormatedFromDB.forEach((voucher) => {
+    const userFound = vouchersToNotify.find((user) => user.whatsapp === voucher.whatsapp);
+    if (!userFound) {
+      vouchersToNotify.push({
+        whatsapp: voucher.whatsapp,
+        name: voucher.name,
+        vouchersTotal: voucher.vouchers[0].value,
+        vouchers: [...voucher.vouchers],
+        voucherTwoFactor: [...voucher.voucherTwoFactor],
+      });
+    } else {
+      userFound.vouchersTotal += voucher.vouchers[0].value;
+      userFound.vouchers.push(...voucher.vouchers);
+      userFound.voucherTwoFactor.push(...voucher.voucherTwoFactor);
+    }
+  });
+  store.set("configs.voucherToNotify", vouchersToNotify);
 }
 
 console.log(store.path);
