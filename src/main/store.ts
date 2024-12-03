@@ -224,7 +224,7 @@ const formatOldVoucher = (oldVoucher: OldVoucher): VoucherNotification => {
       {
         id: oldVoucher.id,
         value: oldVoucher.value,
-        expirationDate: oldVoucher.expirationDate,
+        expirationDate: DateTime.fromISO(oldVoucher.expirationDate).toISO(),
         rememberDays: oldVoucher.rememberDays,
         rememberDate: DateTime.fromISO(oldVoucher.rememberDate).diffNow(["minutes"]).minutes <= 0
           ? null : oldVoucher.rememberDate,
@@ -267,7 +267,7 @@ const formatVouchFromDB = (vouchFromDB: VoucherType, client: ClientType): Vouche
       {
         id: vouchFromDB.id,
         value: vouchFromDB.value,
-        expirationDate: vouchFromDB.expirationDate,
+        expirationDate: DateTime.fromISO(vouchFromDB.expirationDate).toISO(),
         rememberDays,
         rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
           ? null : rememberValue,
