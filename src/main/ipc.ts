@@ -203,6 +203,7 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
       voucher.client.vouchers.push(voucher);
     }
 
+    const expirationDate = DateTime.fromISO(vouchFromDB.expirationDate).toISO();
     const rememberValue = DateTime.fromISO(vouchFromDB.created_at)
       .plus({ days: rememberDays })
       .toISO();
@@ -223,7 +224,7 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
         {
           id: vouchFromDB.id,
           value: vouchFromDB.value,
-          expirationDate: vouchFromDB.expirationDate,
+          expirationDate: expirationDate,
           rememberDays,
           rememberDate:
             DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
