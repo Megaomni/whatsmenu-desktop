@@ -4,8 +4,6 @@ import { DateTime } from "luxon";
 
 export const printTest = async (cart: any) => {
     console.log("xxxxxxxxxxxxxxxxxxxxxxx", cart);
-    console.log("yyyyyyyyyyyyyyyyyyyyyyy", cart.itens[0].details.value);
-
 
     const profile = getProfile();
     // Dados de teste
