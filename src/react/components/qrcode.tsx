@@ -96,7 +96,7 @@ export const Qrcode = () => {
               data-loading={loading.status}
               className='transition-opacity delay-300 opacity-0 invisible data-[loading="false"]:opacity-100 data-[loading="false"]:visible'
             />
-            <div className="flex flex-col gap-4 items-center">
+            <div className="flex flex-row gap-4 items-center">
               {loading.status && <Spinner />}
 
               {loading.message && !qrcode && (

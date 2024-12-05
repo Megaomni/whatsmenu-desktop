@@ -1,14 +1,12 @@
-import { BrowserWindow, app, dialog, ipcMain, shell } from "electron";
+import { BrowserWindow, app, ipcMain, shell } from "electron";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
 import axios from "axios";
-
 import path from "node:path";
 import {
   deleteVoucherToNotify,
   getMerchant,
   getProfile,
-  getVoucherToNotifyList,
   setCacheContactByWhatsapp,
   store,
   storeNewUserToNotify,
@@ -65,39 +63,39 @@ ipcMain.on("executablePath", (_, executablePath) => {
 //     const { printTypeMode = "whatsmenu", ...payload } =
 //       JSON.parse(serializedPayload);
 
-//     if (printTypeMode === "html") {
-//       win.webContents.executeJavaScript(`
-//           const printBody = document.body
-//           if (${isGeneric}) {
-//             let link = document.getElementById('bootstrap-link')
-//             link.parentNode.removeChild(link)
-//           } else {
-//             printBody.style.height = '1400px' 
-//           }
-//           printBody.innerHTML = ${JSON.stringify(payload.html)}
-//         `);
-//     }
-//     if (printTypeMode === "whatsmenu") {
-//       try {
-//         payload.profile.options.print.width =
-//           paperSize !== 58 ? "302px" : "219px";
-//         payload.profile.options.print.textOnly = isGeneric;
-//         const { data } = await axios.post(
-//           "https://ifood.whatsmenu.com.br/api/printLayout",
-//           { ...payload, html: true, electron: true }
-//         );
-//         win.webContents.executeJavaScript(`
-//           const printBody = document.body
-//           let link = document.getElementById('bootstrap-link')
-//           link.parentNode.removeChild(link)
-//           printBody.innerHTML = ${JSON.stringify(
-//           data.reactComponentString[paperSize < 65 ? 58 : 80]
-//         )}
-//         `);
-//       } catch (error) {
-//         console.error(error);
+// if (printTypeMode === "html") {
+//   win.webContents.executeJavaScript(`
+//       const printBody = document.body
+//       if (${isGeneric}) {
+//         let link = document.getElementById('bootstrap-link')
+//         link.parentNode.removeChild(link)
+//       } else {
+//         printBody.style.height = '1400px' 
 //       }
-//     }
+//       printBody.innerHTML = ${JSON.stringify(payload.html)}
+//     `);
+// }
+// if (printTypeMode === "whatsmenu") {
+//   try {
+//     payload.profile.options.print.width =
+//       paperSize !== 58 ? "302px" : "219px";
+//     payload.profile.options.print.textOnly = isGeneric;
+//     const { data } = await axios.post(
+//       "https://ifood.whatsmenu.com.br/api/printLayout",
+//       { ...payload, html: true, electron: true }
+//     );
+//     win.webContents.executeJavaScript(`
+//       const printBody = document.body
+//       let link = document.getElementById('bootstrap-link')
+//       link.parentNode.removeChild(link)
+//       printBody.innerHTML = ${JSON.stringify(
+//       data.reactComponentString[paperSize < 65 ? 58 : 80]
+//     )}
+//     `);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// }
 
 //     const printOptions: Electron.WebContentsPrintOptions = {
 //       deviceName: name,
@@ -148,7 +146,11 @@ ipcMain.on("executablePath", (_, executablePath) => {
 //   return "shown print dialog";
 // });
 
-ipcMain.on("storeProfile", (_, profile) => {
+ipcMain.on("storeProfile", (_, profile, updateBot = false) => {
+  const oldProfile = getProfile();
+  if (!updateBot && oldProfile) {
+    profile.options.bot.whatsapp = oldProfile.options.bot.whatsapp;
+  }
   store.set("configs.profile", profile);
 });
 
@@ -161,13 +163,14 @@ ipcMain.on("getProfile", (event) => {
   event.reply("onProfileChange", profile);
 });
 
-
 export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const profile = getProfile();
   const { data } = await whatsmenu_api_v3.get(
     `/vouchers/${profile.id}/getByStatus/avaliable`
   );
-  return data.vouchers as VoucherType[];
+  if (data.vouchers) {
+    return data.vouchers as VoucherType[];
+  }
 }
 
 ipcMain.on("getMerchant", (event) => {
@@ -188,7 +191,9 @@ ipcMain.on("onCart", async (_, cart: { id: number; client?: ClientType }) => {
 
 ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
   const allVouchers = await getVouchersFromDB();
-  const vouchersFromUser = allVouchers.filter((vouch) => vouch.clientId === voucher.clientId);
+  const vouchersFromUser = allVouchers.filter(
+    (vouch) => vouch.clientId === voucher.clientId
+  );
 
   vouchersFromUser.forEach((vouchFromDB) => {
     const rememberDays = Math.floor(
@@ -199,49 +204,60 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
     );
 
     if (!voucher.client?.vouchers?.some((v) => v.id === voucher.id)) {
-      voucher.client.vouchers?.push(voucher);
+      voucher.client.vouchers.push(voucher);
     }
 
-    const rememberValue = DateTime.fromISO(vouchFromDB.created_at).plus({ days: rememberDays }).toISO();
-    const afterValue = DateTime.fromISO(vouchFromDB.created_at).plus({ minutes: 20 }).toISO();
+    const expirationDate = DateTime.fromISO(vouchFromDB.expirationDate).toISO();
+    const rememberValue = DateTime.fromISO(vouchFromDB.created_at)
+      .plus({ days: rememberDays })
+      .toISO();
+    const afterValue = DateTime.fromISO(vouchFromDB.created_at)
+      .plus({ minutes: 20 })
+      .toISO();
 
     storeNewUserToNotify({
       whatsapp: voucher.client.whatsapp,
       name: voucher.client.name,
-      vouchersTotal: voucher.client.vouchers?.filter((voucher) => voucher.status === "avaliable").reduce((total, voucher) => {
-        (total += voucher.value), 0;
-        return total || 0;
-      }, 0),
+      vouchersTotal: voucher.client.vouchers
+        ?.filter((voucher) => voucher.status === "avaliable")
+        .reduce((total, voucher) => {
+          (total += voucher.value), 0;
+          return total || 0;
+        }, 0),
       vouchers: [
         {
           id: vouchFromDB.id,
           value: vouchFromDB.value,
-          expirationDate: vouchFromDB.expirationDate,
+          expirationDate: expirationDate,
           rememberDays,
-          rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
-            ? null : rememberValue,
+          rememberDate:
+            DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
+              ? null
+              : rememberValue,
+          afterPurchaseDate:
+            DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
+              ? null
+              : afterValue,
+        },
+      ],
+      voucherTwoFactor: [
+        {
+          id: vouchFromDB.id,
+          expirationDate: false,
+          rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0,
           afterPurchaseDate: DateTime.fromISO(afterValue).diffNow(["minutes"]).minutes <= 0
-            ? null : afterValue,
-        }
-      ]
+        },
+      ],
     });
-  })
+  });
 });
 
-ipcMain.on("removeVoucher", (_, voucher: VoucherType) => {
-  deleteVoucherToNotify(voucher.id);
+ipcMain.on("removeVoucher", (_, voucherOrId: VoucherType | number) => {
+  deleteVoucherToNotify(voucherOrId);
 });
 
 ipcMain.on("env", (event) => {
   event.returnValue = process.env;
-});
-
-ipcMain.on("polling", async (event, data) => {
-  try {
-    console.log("POLLING", data, "POLLING");
-  } catch (error) {
-    console.error("erro ao enviar o polling", error);
-  }
 });
 
 ipcMain.on("openLink", (_, url) => {

@@ -26,8 +26,9 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo WM_API_V2='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
-          echo WM_API_V3='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env
+          echo WM_API_V2='${{ secrets.WM_API_V2 }}' >> .env
+          echo WM_API_V3='${{ secrets.WM_API_V3 }}' >> .env
+          echo INTEGRATION_API='${{ secrets.INTEGRATION_API }}' >> .env
           echo IFOOD_CLIENT_ID='${{ secrets.IFOOD_CLIENT_ID }}' >> .env
           echo IFOOD_CLIENT_SECRET='${{ secrets.IFOOD_CLIENT_SECRET }}' >> .env
           echo IFOOD_INTEGRATION_TOKEN='${{ secrets.IFOOD_INTEGRATION_TOKEN }}' >> .env

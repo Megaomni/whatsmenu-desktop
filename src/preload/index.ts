@@ -1,7 +1,6 @@
 // See the Electron documentation for details on how to use preload scripts:
 
 import { contextBridge, ipcRenderer } from "electron";
-import WAWebJS from "whatsapp-web.js";
 import { ClientType } from "../@types/client";
 import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
@@ -24,7 +23,7 @@ export const WhatsAppBotApi = {
   ondisconnected: (
     callback: (
       event: Electron.IpcRendererEvent,
-      reason: WAWebJS.WAState | "NAVIGATION",
+      reason: "NAVIGATION",
     ) => void,
   ) => ipcRenderer.on("ondisconnected", callback),
   onmessagesend: (
@@ -54,8 +53,8 @@ export const DesktopApi = {
   removeVoucher: (voucher: VoucherType) =>
     ipcRenderer.send("removeVoucher", voucher),
 
-  storeProfile: (profile: ProfileType) =>
-    ipcRenderer.send("storeProfile", profile),
+  storeProfile: (profile: ProfileType, updateBot: boolean) =>
+    ipcRenderer.send("storeProfile", profile, updateBot),
   storeMerchant: (merchant: MerchantType) =>
     ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),

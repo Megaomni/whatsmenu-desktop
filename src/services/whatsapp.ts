@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { Notification } from "electron";
 // import isDev from "electron-is-dev";
 import { whatsAppService } from "../main";
@@ -13,6 +14,17 @@ import {
 } from "./../main/store";
 
 // import { EventEmitter } from "node:events";
+=======
+import { whatsAppService } from "../main";
+import {
+  deleteVoucherToNotify,
+  fetchVouchers,
+  getProfile,
+  getVoucherToNotifyList,
+  updateTwoFactor,
+  updateVoucherToNotify,
+} from "./../main/store";
+>>>>>>> 4d7d347a0b72a595a8a67b9bdca86dc5cef66099
 import { ClientType } from "../@types/client";
 
 import { DateTime } from "luxon";
@@ -27,12 +39,20 @@ export class WhatsApp {
     message: string;
     client?: ClientType;
   }> = [];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 4d7d347a0b72a595a8a67b9bdca86dc5cef66099
 
   async sendQueuedmessages() {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
         const { contact, message } = messageQueued;
         const [{ jid }] = await whatsAppService.checkNumber(contact);
+
+        if (jid === "Número não está no whatsapp") {
+          return;
+        }
 
         try {
           setTimeout(() => {
@@ -46,7 +66,7 @@ export class WhatsApp {
     }, 5 * 1000);
   }
 
-  cashbackCron() {
+  async cashbackCron() {
     const removeExpiredVouchers = async () => {
       getVoucherToNotifyList().forEach((user) => {
         user.vouchers.filter(
@@ -60,6 +80,7 @@ export class WhatsApp {
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
       const language = profile.options.locale.language;
+
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
@@ -97,18 +118,24 @@ export class WhatsApp {
       }
 
       for await (const user of list) {
-
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
+        const voucherFactor = user.voucherTwoFactor.find((v) => v.id === voucher?.id);
+        let messageSent = false;
 
-        if (voucher[`${messageType}Date`] === null) {
+        if (
+          voucher[`${messageType}Date`] === null ||
+          voucherFactor[`${messageType}Date`] === true ||
+          jid === "Número não está no whatsapp"
+        ) {
           return;
         } else {
           await whatsAppService.sendMessageToContact(
             jid,
             { text: botMessages.cashback[messageType]({ user, voucher, profile }) }
           );
+          messageSent = true;
           switch (messageType) {
             case "afterPurchase":
               updateVoucherToNotify(voucher.id, {
@@ -128,16 +155,35 @@ export class WhatsApp {
             default:
               break;
           }
+          if (messageSent) {
+            updateTwoFactor(voucher.id, {
+              [`${messageType}Date`]: true
+            });
+          }
         }
       }
     };
-    setInterval(() => {
-      vouchersToNotifyQueue.push(async () => {
-        await removeExpiredVouchers();
-        await cronLoop("afterPurchase");
-        await cronLoop("remember");
-        await cronLoop("expiration");
-      });
+
+    let isProcessing = false;
+
+    setInterval(async () => {
+      if (isProcessing) {
+        return;
+      }
+      isProcessing = true;
+
+      try {
+        vouchersToNotifyQueue.push(async () => {
+          await removeExpiredVouchers();
+          await cronLoop("afterPurchase");
+          await cronLoop("remember");
+          await cronLoop("expiration");
+        });
+      } catch (error) {
+        console.error(error);
+      } finally {
+        isProcessing = false;
+      }
     }, 1000 * 60);
     return;
   }
