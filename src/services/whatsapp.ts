@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-// import { Notification } from "electron";
-// import isDev from "electron-is-dev";
-import { whatsAppService } from "../main";
-import {
-  deleteVoucherToNotify,
-  // findCacheContact,
-  getProfile,
-  getVoucherToNotifyList,
-  // removeDuplicateUsers,
-  // removeDuplicateVouchers,
-  // store,
-  updateVoucherToNotify,
-} from "./../main/store";
-
-// import { EventEmitter } from "node:events";
-=======
 import { whatsAppService } from "../main";
 import {
   deleteVoucherToNotify,
@@ -24,7 +7,6 @@ import {
   updateTwoFactor,
   updateVoucherToNotify,
 } from "./../main/store";
->>>>>>> 4d7d347a0b72a595a8a67b9bdca86dc5cef66099
 import { ClientType } from "../@types/client";
 
 import { DateTime } from "luxon";
@@ -39,10 +21,6 @@ export class WhatsApp {
     message: string;
     client?: ClientType;
   }> = [];
-<<<<<<< HEAD
-=======
-
->>>>>>> 4d7d347a0b72a595a8a67b9bdca86dc5cef66099
 
   async sendQueuedmessages() {
     setTimeout(async () => {
