@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 
 export const printTest = async (cart: any) => {
     console.log("xxxxxxxxxxxxxxxxxxxxxxx", cart);
-    console.log("yyyyyyyyyyyyyyyyyyyyyyy", cart.command.opened.commands[0].carts);
+    // console.log("yyyyyyyyyyyyyyyyyyyyyyy", cart.command.opened.commands[0].carts);
     const profile = getProfile();
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
