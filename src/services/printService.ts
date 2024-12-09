@@ -1,11 +1,10 @@
 import { PosPrintData, PosPrinter } from "electron-pos-printer";
-import { getProfile } from "../main/store";
+// import { getProfile } from "../main/store";
 import { DateTime } from "luxon";
 
-export const printTest = async (cart: any) => {
-    console.log("xxxxxxxxxxxxxxxxxxxxxxx", cart);
-    // console.log("yyyyyyyyyyyyyyyyyyyyyyy", cart.command.opened.commands[0].carts);
-    const profile = getProfile();
+export const printTest = async (payload: any) => {
+    const { cart, profile, table, command } = payload;
+    console.log(payload);
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
 
@@ -62,14 +61,38 @@ export const printTest = async (cart: any) => {
             }
             upperPrint.push(clientPhone);
         } else {
+            const creationTime = DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }).toFormat("HH:mm");
+            const checkoutTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).toFormat("HH:mm");
+            const stayingTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).diff(DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }), ['minutes']).minutes;
+
             const orderCode: PosPrintData = {
                 type: 'text',
-                value: `Mesa: Mesa ${cart.command.opened.table.name}`,
+                value: `Mesa: Mesa ${table.name}`,
                 style: { fontWeight: "bold", fontSize: "15px" }
             }
             upperPrint.push(orderCode);
-        }
 
+            const clientName: PosPrintData = payload.printType && payload.printType === 'command'
+                ? {
+                    type: 'text',
+                    value: `Comanda: ${command.name}`,
+                    style: { fontWeight: "bold", fontSize: "15px" }
+                }
+                : {
+                    type: 'text',
+                    value: `Comanda: ${table.opened.commands.map((command: any) => command.name)}`,
+                    style: { fontWeight: "bold", fontSize: "15px" }
+                }
+            upperPrint.push(clientName);
+
+            const totalStayingTime: PosPrintData = {
+                type: 'text',
+                value: `Tempo de permanência:
+                ${creationTime} / ${checkoutTime} - ${Math.round(stayingTime)}min`,
+                style: { fontWeight: "bold", fontSize: "15px" }
+            }
+            upperPrint.push(totalStayingTime);
+        }
     }
     getUpperPrint();
 
@@ -99,7 +122,7 @@ export const printTest = async (cart: any) => {
 
         const finalPrice = {
             type: 'text',
-            value: `R$${price * Number(item.quantity)}`,
+            value: `R$${(price * Number(item.quantity)).toFixed(2)}`,
             style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: "10px", textAlign: "right" }
         }
 
@@ -108,13 +131,20 @@ export const printTest = async (cart: any) => {
 
     const printBody: PosPrintData[] = [];
 
-    cart.itens.map((item: any) => getPrintBody(item, printBody));
+    if (isTable) {
+        const { commands } = table.opened;
+        commands.map((command: any) => command.carts.map((cart: any) => cart.itens.map((item: any) => getPrintBody(item, printBody))));
+    } else {
+        cart.itens.map((item: any) => getPrintBody(item, printBody));
+    }
 
     const printPayment: PosPrintData[] = [hr];
 
+    let cartTotal = 0
+
     const getPayments = () => {
         const array: PosPrintData[] = [];
-        const valueArray: number[] = [cart.total];
+        const valueArray: number[] = [];
 
         if (cart.cupom) {
             const cupomName: PosPrintData = {
@@ -128,15 +158,64 @@ export const printTest = async (cart: any) => {
             array.push(cupomName);
         }
 
-        const subtotal: PosPrintData = {
-            type: 'text',
-            value: `<div style="display: flex; justify-content: space-between;">
+        if (isTable) {
+            const tableTotalPrices: number[] = table.opened.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
+            cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
+            const subtotal: PosPrintData = {
+                type: 'text',
+                value: `<div style="display: flex; justify-content: space-between;">
                     <span>Sub-total:</span>
-                    <span>${cart.total.toFixed(2)}</span>
+                    <span>${cartTotal.toFixed(2)}</span>
                 </div>`,
-            style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+            }
+            array.push(subtotal);
+            valueArray.push(cartTotal);
+        } else {
+            cartTotal = cart.total;
+            const subtotal: PosPrintData = {
+                type: 'text',
+                value: `<div style="display: flex; justify-content: space-between;">
+                        <span>Sub-total:</span>
+                        <span>${cartTotal.toFixed(2)}</span>
+                    </div>`,
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+            }
+            array.push(subtotal);
+            valueArray.push(cartTotal);
         }
-        array.push(subtotal);
+
+
+        if (isTable) {
+            cart.command.fees.map((fee: any) => {
+                if (fee.type === 'percent') {
+                    const percentValue = (fee.value * cartTotal) / 100;
+                    const tax: PosPrintData = {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
+                                <span>${fee.code}:</span>
+                                <span>${percentValue.toFixed(2)}</span>
+                            </div>`,
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+                    }
+                    array.push(tax);
+                    valueArray.push(percentValue);
+                }
+
+                if (fee.type === 'fixed') {
+                    const tax: PosPrintData = {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
+                                <span>${fee.code}:</span>
+                                <span>${fee.value.toFixed(2)}</span>
+                            </div>`,
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+                    }
+                    array.push(tax);
+                    valueArray.push(fee.value);
+                }
+            })
+        }
 
         if (isDelivery) {
             const taxDelivery: PosPrintData = {
@@ -157,7 +236,7 @@ export const printTest = async (cart: any) => {
         if (cart.cupom) {
             const { type, value } = cart.cupom;
             if (type === "percent") {
-                const percentValue = (value * cart.total) / 100;
+                const percentValue = (value * cartTotal) / 100;
                 const cupomPercent: PosPrintData = {
                     type: 'text',
                     value: `<div style="display: flex; justify-content: space-between;">
@@ -199,13 +278,13 @@ export const printTest = async (cart: any) => {
                 value: `<div style="display: flex; justify-content: space-between;">
                         <span>Cashback:</span>
                         <span>${cart.formsPayment.length === 1 ?
-                        `-${cart.total.toFixed(2)}` :
+                        `-${cartTotal.toFixed(2)}` :
                         `-${cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2)}`}</span>
                     </div>`,
                 style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
             }
             const cashbackValue = cart.formsPayment.length === 1 ?
-                cart.total.toFixed(2) * -1 :
+                Number((cartTotal * -1).toFixed(2)) :
                 cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2) * -1;
 
             array.push(cashback);
@@ -240,14 +319,25 @@ export const printTest = async (cart: any) => {
         }
         array.push(total);
 
-        const paidWith: PosPrintData = {
-            type: 'text',
-            value: `<div style="display: flex; justify-content: space-between;">
+        const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+            ? {
+                type: 'text',
+                value: `<div style="display: flex; justify-content: space-between;">
                     <span>Pagamento em:</span>
-                    <span>${cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
+                    <span>${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                 </div>`,
-            style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
-        }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+            }
+            : {
+                type: 'text',
+                value: `<div style="display: flex; justify-content: space-between;">
+                    <span>Pagamento em:</span>
+                    <span>${isTable
+                        ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
+                        : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
+                </div>`,
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+            }
         array.push(paidWith);
 
         if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money")) {
@@ -302,7 +392,7 @@ export const printTest = async (cart: any) => {
         hr,
         {
             type: 'text',
-            value: `**${isDelivery ? "Delivery" : "Vou retirar no local"}**`,
+            value: `**${isTable ? "Pedido Mesa" : isDelivery ? "Delivery" : "Vou retirar no local"}**`,
             style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "10px" }
         },
         {
