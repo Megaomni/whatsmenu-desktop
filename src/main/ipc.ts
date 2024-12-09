@@ -78,7 +78,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
     if (printTypeMode === "whatsmenu") {
 
       try {
-        await printTest(payload.cart);
+        await printTest(payload);
+        // await printTest(payload.cart.type === "T" ? payload.table : payload.cart);
 
         //     payload.profile.options.print.width =
         //       paperSize !== 58 ? "302px" : "219px";
@@ -183,8 +184,6 @@ ipcMain.on("getMerchant", (event) => {
 });
 
 ipcMain.on("onCart", async (_, cart: { id: number; client?: ClientType }) => {
-  await printTest(cart);
-
   if (cart.client) {
     setCacheContactByWhatsapp(cart.client.whatsapp, {
       contact: cart.client.whatsapp,
