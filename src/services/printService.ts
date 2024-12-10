@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 
 export const printTest = async (payload: any) => {
     const { cart, profile, table, command } = payload;
-    console.log(payload);
+    console.log({ payload });
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
 
@@ -131,11 +131,32 @@ export const printTest = async (payload: any) => {
 
     const printBody: PosPrintData[] = [];
 
-    if (isTable) {
-        const { commands } = table.opened;
-        commands.map((command: any) => command.carts.map((cart: any) => cart.itens.map((item: any) => getPrintBody(item, printBody))));
+    if (payload.printType && payload.printType === 'command') {
+        command.carts.map((cart: any) => cart.itens.map((item: any) => getPrintBody(item, printBody)));
     } else {
-        cart.itens.map((item: any) => getPrintBody(item, printBody));
+        if (isTable) {
+            const { commands } = table.opened;
+            commands.map((command: any) => command.carts.map((cart: any) => cart.itens.map((item: any) => getPrintBody(item, printBody))));
+        } else {
+            cart.itens.map((item: any) => getPrintBody(item, printBody));
+        }
+    }
+
+
+    const printIndividualCommands: PosPrintData[] = isTable && table.opened.commands.length > 1 && payload.printType !== 'command' ? [hr] : [];
+
+    if (isTable && table.opened.commands.length > 1 && payload.printType !== 'command') {
+        table.opened.commands.map((command: any) => {
+            const commandName: PosPrintData = {
+                type: 'text',
+                value: `<div style="display: flex; justify-content: space-between;">
+                        <span>${command.name}:</span>
+                        <span>${command.carts.map((cart: any) => cart.total).reduce((acc: number, total: number) => acc + total, 0).toFixed(2)}</span>
+                    </div>`,
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+            }
+            printIndividualCommands.push(commandName);
+        })
     }
 
     const printPayment: PosPrintData[] = [hr];
@@ -158,7 +179,20 @@ export const printTest = async (payload: any) => {
             array.push(cupomName);
         }
 
-        if (isTable) {
+        if (payload.printType && payload.printType === 'command') {
+            const commandTotalPrices: number[] = command.carts.map((cart: any) => cart.total);
+            cartTotal = commandTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
+            const subtotal: PosPrintData = {
+                type: 'text',
+                value: `<div style="display: flex; justify-content: space-between;">
+                    <span>Sub-total:</span>
+                    <span>${cartTotal.toFixed(2)}</span>
+                </div>`,
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+            }
+            array.push(subtotal);
+            valueArray.push(cartTotal);
+        } else if (isTable) {
             const tableTotalPrices: number[] = table.opened.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
             cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
             const subtotal: PosPrintData = {
@@ -185,9 +219,62 @@ export const printTest = async (payload: any) => {
             valueArray.push(cartTotal);
         }
 
-
-        if (isTable) {
+        if (isTable && payload.printType !== 'command') {
             cart.command.fees.map((fee: any) => {
+                if (fee.type === 'percent') {
+                    const percentValue = (fee.value * cartTotal) / 100;
+                    const tax: PosPrintData = {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
+                                <span>${fee.code}:</span>
+                                <span>${percentValue.toFixed(2)}</span>
+                            </div>`,
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+                    }
+                    array.push(tax);
+                    valueArray.push(percentValue);
+                }
+            })
+
+            if (table.opened.commands.length > 1) {
+                const allFixedFees = table.opened.commands.map((command: any) => {
+                    return command.fees.filter((fee: any) => fee.quantity > 0 && fee.type === 'fixed');
+                })
+
+                const totalFees = allFixedFees.flat().reduce((acc: number, fee: any) => acc + fee.quantity, 0);
+
+                cart.command.fees.map((fee: any) => {
+                    if (fee.type === 'fixed') {
+                        const tax: PosPrintData = {
+                            type: 'text',
+                            value: `<div style="display: flex; justify-content: space-between;">
+                                    <span>${fee.code} (${totalFees}x):</span>
+                                    <span>${(fee.value * totalFees).toFixed(2)}</span>
+                                </div>`,
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+                        }
+                        array.push(tax);
+                        valueArray.push(fee.value * totalFees);
+                    }
+                })
+            } else {
+                cart.command.fees.map((fee: any) => {
+                    if (fee.type === 'fixed') {
+                        const tax: PosPrintData = {
+                            type: 'text',
+                            value: `<div style="display: flex; justify-content: space-between;">
+                                    <span>${fee.code} (${fee.quantity}x):</span>
+                                    <span>${fee.value.toFixed(2)}</span>
+                                </div>`,
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
+                        }
+                        array.push(tax);
+                        valueArray.push(fee.value);
+                    }
+                })
+            }
+        } else if (payload.printType === 'command') {
+            command.fees.map((fee: any) => {
                 if (fee.type === 'percent') {
                     const percentValue = (fee.value * cartTotal) / 100;
                     const tax: PosPrintData = {
@@ -206,13 +293,13 @@ export const printTest = async (payload: any) => {
                     const tax: PosPrintData = {
                         type: 'text',
                         value: `<div style="display: flex; justify-content: space-between;">
-                                <span>${fee.code}:</span>
-                                <span>${fee.value.toFixed(2)}</span>
+                                <span>${fee.code} (${fee.quantity}x):</span>
+                                <span>${(fee.value * fee.quantity).toFixed(2)}</span>
                             </div>`,
                         style: { fontWeight: "bold", fontSize: "15px", marginRight: "10px" }
                     }
                     array.push(tax);
-                    valueArray.push(fee.value);
+                    valueArray.push(fee.value * fee.quantity);
                 }
             })
         }
@@ -340,7 +427,7 @@ export const printTest = async (payload: any) => {
             }
         array.push(paidWith);
 
-        if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money")) {
+        if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") || cart.type !== "T") {
             const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
             const moneyPaid: PosPrintData = {
                 type: 'text',
@@ -410,6 +497,7 @@ export const printTest = async (payload: any) => {
     const fullPrint: PosPrintData[] = [
         ...upperPrint,
         ...printBody,
+        ...printIndividualCommands,
         ...printPayment,
         ...printAdress,
         ...printFooter
@@ -419,7 +507,7 @@ export const printTest = async (payload: any) => {
         printerName: 'POS-80C',
         preview: false,
         silent: true,
-        pageSize: '76mm',
+        pageSize: "76mm",
         margin: '0 0 0 0',
         boolean: undefined
     }).catch((error) =>
