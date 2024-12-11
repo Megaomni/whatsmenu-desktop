@@ -78,8 +78,15 @@ ipcMain.on("print", async (_, serializedPayload) => {
     if (printTypeMode === "whatsmenu") {
 
       try {
-        await printTest(payload);
-        // await printTest(payload.cart.type === "T" ? payload.table : payload.cart);
+        const printOptions: Electron.WebContentsPrintOptions = {
+          deviceName: name,
+          silent,
+          margins,
+          copies,
+          scaleFactor,
+        };
+
+        await printTest(payload, printOptions, paperSize, isGeneric);
 
         //     payload.profile.options.print.width =
         //       paperSize !== 58 ? "302px" : "219px";
@@ -101,13 +108,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
       }
     }
 
-    // const printOptions: Electron.WebContentsPrintOptions = {
-    //   deviceName: name,
-    //   silent,
-    //   margins,
-    //   copies,
-    //   scaleFactor,
-    // };
 
     // win.webContents.addListener("did-finish-load", async () => {
     //   console.log(name, typeof paperSize);
