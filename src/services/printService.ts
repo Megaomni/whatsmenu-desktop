@@ -3,15 +3,26 @@ import { DateTime } from "luxon";
 
 export const printTest = async (payload: any, printOptions: Electron.WebContentsPrintOptions, paperSize: number, isGeneric: boolean) => {
     const { cart, profile, table, command } = payload;
+    const { left, right } = printOptions.margins;
+    const marginLeft = left && left > 0 ? left : 0;
+    const marginRight = right && right > 0 ? right : 0;
     console.log({ payload });
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
 
     let maxLength = 0;
     if (isGeneric) {
-        maxLength = 48;
+        if (paperSize <= 58) {
+            maxLength = 32;
+        } else {
+            maxLength = 48;
+        }
     } else {
-        maxLength = 54;
+        if (paperSize <= 58) {
+            maxLength = 38;
+        } else {
+            maxLength = 54;
+        }
     }
 
     const characterPrint = (originalStrings: string[], character: string, position: 'space-between' | 'center' | 'right' | 'left', pageLength: number) => {
@@ -55,11 +66,6 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         return finalString;
     }
 
-    // const hr: PosPrintData = {
-    //     type: 'text',
-    //     value: '------------------------------------------------------',
-    //     style: { fontWeight: "bold", fontSize: "15px" }
-    // }
 
     const hr: PosPrintData = {
         type: 'text',
@@ -93,7 +99,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         const orderDate: PosPrintData = {
             type: 'text',
             value: DateTime.fromSQL(cart.created_at, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm:ss"),
-            style: { fontWeight: "bold", fontSize: "15px" }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         }
 
         if (isGeneric) {
@@ -106,13 +112,13 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             const orderCode: PosPrintData = {
                 type: 'text',
                 value: `Pedido: wm${cart.code}-${cart.type}`,
-                style: { fontWeight: "bold", fontSize: "15px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
             }
 
             const clientName: PosPrintData = {
                 type: 'text',
-                value: `Cliente: ${cart.client.name}`,
-                style: { fontWeight: "bold", fontSize: "15px" }
+                value: `Cliente: ${cart.client ? cart.client.name : 'Venda sem cadastro'}`,
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
             }
             upperPrint.push(orderCode, clientName);
 
@@ -120,17 +126,19 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const packageDate: PosPrintData = {
                     type: 'text',
                     value: DateTime.fromSQL(cart.packageDate, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm"),
-                    style: { fontWeight: "bold", fontSize: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
                 }
                 upperPrint.push(packageDate);
             }
 
-            const clientPhone: PosPrintData = {
-                type: 'text',
-                value: `Tel: ${cart.client?.whatsapp}`,
-                style: { fontWeight: "bold", fontSize: "15px" }
+            if (cart.client) {
+                const clientPhone: PosPrintData = {
+                    type: 'text',
+                    value: `Tel: ${cart.client?.whatsapp}`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                }
+                upperPrint.push(clientPhone);
             }
-            upperPrint.push(clientPhone);
         } else {
             const creationTime = DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }).toFormat("HH:mm");
             const checkoutTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).toFormat("HH:mm");
@@ -139,7 +147,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             const orderCode: PosPrintData = {
                 type: 'text',
                 value: `Mesa: Mesa ${table.name}`,
-                style: { fontWeight: "bold", fontSize: "15px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
             }
             upperPrint.push(orderCode);
 
@@ -147,12 +155,12 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 ? {
                     type: 'text',
                     value: `Comanda: ${command.name}`,
-                    style: { fontWeight: "bold", fontSize: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
                 }
                 : {
                     type: 'text',
                     value: `Comanda: ${table.opened.commands.map((command: any) => command.name)}`,
-                    style: { fontWeight: "bold", fontSize: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
                 }
             upperPrint.push(clientName);
 
@@ -160,7 +168,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 type: 'text',
                 value: `Tempo de permanência:
                 ${creationTime} / ${checkoutTime} - ${Math.round(stayingTime)}min`,
-                style: { fontWeight: "bold", fontSize: "15px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
             }
             upperPrint.push(totalStayingTime);
         }
@@ -174,14 +182,14 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         const mainItem = {
             type: 'text',
             value: `${item.quantity}x | ${item.name} (${item.details.value.toFixed(2)})`,
-            style: { fontWeight: "bold", fontSize: "17px" }
+            style: { fontWeight: "bold", fontSize: "17px", marginLeft: `${marginLeft}px` }
         }
 
         if (item.obs.length > 0) {
             const obs: PosPrintData = {
                 type: 'text',
                 value: `Obs.: ${item.obs}`,
-                style: { fontWeight: "bold", fontSize: "14px" }
+                style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
             }
             array.push(obs);
         }
@@ -191,7 +199,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const complementItem: PosPrintData = {
                     type: 'text',
                     value: `${complement.itens[0].quantity}x - ${complement.itens[0].name}   ${complement.itens[0].value.toFixed(2)}`,
-                    style: { fontWeight: "bold", fontSize: "14px" }
+                    style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
                 }
                 array.push(complementItem);
                 valueArray.push(complement.itens[0].value);
@@ -204,12 +212,12 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             ? {
                 type: 'text',
                 value: characterPrint([`R$${(price * Number(item.quantity)).toFixed(2)}`], '‎', 'right', maxLength),
-                style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: "15px", textAlign: "right" }
+                style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: `${marginRight}px`, textAlign: "right" }
             }
             : {
                 type: 'text',
                 value: `R$${(price * Number(item.quantity)).toFixed(2)}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: "15px", textAlign: "right" }
+                style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: `${marginRight}px`, textAlign: "right", marginLeft: `${marginLeft}px` }
             }
 
         finalArray.push(hr, mainItem, ...array, finalPrice);
@@ -257,7 +265,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         <span>${command.name}:</span>
                         <span>${command.carts.map((cart: any) => cart.total).reduce((acc: number, total: number) => acc + total, 0).toFixed(2)}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
             }
             printIndividualCommands.push(commandName);
         })
@@ -276,7 +284,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const cupomName: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Cupom usado:", `${cart.cupom.code}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 array.push(cupomName);
             }
@@ -287,7 +295,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const subtotal: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Sub-total:", `${cartTotal.toFixed(2)}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
@@ -297,7 +305,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const subtotal: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Sub-total:", `${cartTotal.toFixed(2)}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
@@ -306,7 +314,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const subtotal: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Sub-total:", `${cartTotal.toFixed(2)}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
@@ -319,7 +327,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         const tax: PosPrintData = {
                             type: 'text',
                             value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                         }
                         array.push(tax);
                         valueArray.push(percentValue);
@@ -338,7 +346,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: characterPrint([`${fee.code} (${totalFees}x):`, `${(fee.value * totalFees).toFixed(2)}`], "‎", "space-between", maxLength),
-                                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                             }
                             array.push(tax);
                             valueArray.push(fee.value * totalFees);
@@ -350,7 +358,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: characterPrint([`${fee.code} (${fee.quantity}x):`, `${fee.value.toFixed(2)}`], "‎", "space-between", maxLength),
-                                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                             }
                             array.push(tax);
                             valueArray.push(fee.value);
@@ -364,7 +372,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         const tax: PosPrintData = {
                             type: 'text',
                             value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                         }
                         array.push(tax);
                         valueArray.push(percentValue);
@@ -374,7 +382,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         const tax: PosPrintData = {
                             type: 'text',
                             value: characterPrint([`${fee.code} (${fee.quantity}x):`, `${(fee.value * fee.quantity).toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                         }
                         array.push(tax);
                         valueArray.push(fee.value * fee.quantity);
@@ -386,7 +394,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const taxDelivery: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Taxa de entrega:", `${typeof cart.taxDelivery !== "number" ? "A Consultar" : cart.taxDelivery > 0 ? `${cart.taxDelivery.toFixed(2)}` : "Grátis"}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 array.push(taxDelivery);
 
@@ -402,7 +410,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     const cupomPercent: PosPrintData = {
                         type: 'text',
                         value: characterPrint(["Cupom:", `-${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                     }
                     array.push(cupomPercent);
                     valueArray.push(percentValue * -1);
@@ -412,7 +420,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     const cupomFixed: PosPrintData = {
                         type: 'text',
                         value: characterPrint(["Cupom:", `-${value.toFixed(2)}`], "‎", "space-between", maxLength),
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                     }
                     array.push(cupomFixed);
                     valueArray.push(value * -1);
@@ -442,7 +450,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         "space-between",
                         maxLength
                     ),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 const cashbackValue = cart.formsPayment.length === 1 ?
                     Number((cartTotal * -1).toFixed(2)) :
@@ -461,7 +469,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const addon: PosPrintData = {
                     type: 'text',
                     value: characterPrint([`${taxOrDiscount} ${addonPayment.label}:`, `${addonValue}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 totalValue += addonValue;
                 array.push(addon);
@@ -470,7 +478,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             const total: PosPrintData = {
                 type: 'text',
                 value: characterPrint(["Total:", `${totalValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
             }
             array.push(total);
 
@@ -478,7 +486,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 ? {
                     type: 'text',
                     value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
                 : {
                     type: 'text',
@@ -493,7 +501,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         "space-between",
                         maxLength
                     ),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
             array.push(paidWith);
 
@@ -502,14 +510,14 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 const moneyPaid: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Troco para:", `${typeof moneyPayment.value === "number" && moneyPayment.value !== totalValue ? `${moneyPayment.value.toFixed(2)}` : "Não é necessário"}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
 
                 if (typeof moneyPayment.value === "number" && moneyPayment.value > totalValue) {
                     const change: PosPrintData = {
                         type: 'text',
                         value: characterPrint(["Troco:", `${(moneyPayment.value - totalValue).toFixed(2)}`], "‎", "space-between", maxLength),
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                     }
                     array.push(moneyPaid, change);
                 } else {
@@ -525,7 +533,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             <span>Cupom usado:</span>
                             <span>${cart.cupom.code}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 array.push(cupomName);
             }
@@ -539,7 +547,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         <span>Sub-total:</span>
                         <span>${cartTotal.toFixed(2)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
@@ -552,7 +560,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         <span>Sub-total:</span>
                         <span>${cartTotal.toFixed(2)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
@@ -564,7 +572,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             <span>Sub-total:</span>
                             <span>${cartTotal.toFixed(2)}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
@@ -580,7 +588,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                     <span>${fee.code}:</span>
                                     <span>${percentValue.toFixed(2)}</span>
                                 </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                         }
                         array.push(tax);
                         valueArray.push(percentValue);
@@ -602,7 +610,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                         <span>${fee.code} (${totalFees}x):</span>
                                         <span>${(fee.value * totalFees).toFixed(2)}</span>
                                     </div>`,
-                                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                             }
                             array.push(tax);
                             valueArray.push(fee.value * totalFees);
@@ -617,7 +625,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                         <span>${fee.code} (${fee.quantity}x):</span>
                                         <span>${fee.value.toFixed(2)}</span>
                                     </div>`,
-                                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                             }
                             array.push(tax);
                             valueArray.push(fee.value);
@@ -634,7 +642,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                     <span>${fee.code}:</span>
                                     <span>${percentValue.toFixed(2)}</span>
                                 </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                         }
                         array.push(tax);
                         valueArray.push(percentValue);
@@ -647,7 +655,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                     <span>${fee.code} (${fee.quantity}x):</span>
                                     <span>${(fee.value * fee.quantity).toFixed(2)}</span>
                                 </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                         }
                         array.push(tax);
                         valueArray.push(fee.value * fee.quantity);
@@ -662,7 +670,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         <span>Taxa de entrega:</span>
                         <span>${typeof cart.taxDelivery !== "number" ? "A Consultar" : cart.taxDelivery > 0 ? `${cart.taxDelivery.toFixed(2)}` : "Grátis"}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 array.push(taxDelivery);
 
@@ -681,7 +689,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                 <span>Cupom:</span>
                                 <span>-${percentValue.toFixed(2)}</span>
                             </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                     }
                     array.push(cupomPercent);
                     valueArray.push(percentValue * -1);
@@ -694,7 +702,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                 <span>Cupom:</span>
                                 <span>-${value.toFixed(2)}</span>
                             </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                     }
                     array.push(cupomFixed);
                     valueArray.push(value * -1);
@@ -719,7 +727,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             `-${cartTotal.toFixed(2)}` :
                             `-${cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2)}`}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 const cashbackValue = cart.formsPayment.length === 1 ?
                     Number((cartTotal * -1).toFixed(2)) :
@@ -741,7 +749,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             <span>${taxOrDiscount} ${addonPayment.label}:</span>
                             <span>${addonValue}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 totalValue += addonValue;
                 array.push(addon);
@@ -753,7 +761,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         <span>Total:</span>
                         <span>${totalValue.toFixed(2)}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
             }
             array.push(total);
 
@@ -764,7 +772,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         <span>Pagamento em:</span>
                         <span>${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
                 : {
                     type: 'text',
@@ -774,7 +782,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
                             : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
             array.push(paidWith);
 
@@ -786,7 +794,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             <span>Troco para:</span>
                             <span>${typeof moneyPayment.value === "number" && moneyPayment.value !== totalValue ? `${moneyPayment.value.toFixed(2)}` : "Não é necessário"}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
 
                 if (typeof moneyPayment.value === "number" && moneyPayment.value > totalValue) {
@@ -796,7 +804,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                 <span>Troco:</span>
                                 <span>${(moneyPayment.value - totalValue).toFixed(2)}</span>
                             </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                     }
                     array.push(moneyPaid, change);
                 } else {
@@ -813,7 +821,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                 <span>Cupom usado:</span>
         //                 <span>${cart.cupom.code}</span>
         //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     array.push(cupomName);
         // }
@@ -827,7 +835,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //             <span>Sub-total:</span>
         //             <span>${cartTotal.toFixed(2)}</span>
         //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     array.push(subtotal);
         //     valueArray.push(cartTotal);
@@ -840,7 +848,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //             <span>Sub-total:</span>
         //             <span>${cartTotal.toFixed(2)}</span>
         //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     array.push(subtotal);
         //     valueArray.push(cartTotal);
@@ -852,7 +860,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                 <span>Sub-total:</span>
         //                 <span>${cartTotal.toFixed(2)}</span>
         //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     array.push(subtotal);
         //     valueArray.push(cartTotal);
@@ -868,7 +876,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                         <span>${fee.code}:</span>
         //                         <span>${percentValue.toFixed(2)}</span>
         //                     </div>`,
-        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //             }
         //             array.push(tax);
         //             valueArray.push(percentValue);
@@ -890,7 +898,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                             <span>${fee.code} (${totalFees}x):</span>
         //                             <span>${(fee.value * totalFees).toFixed(2)}</span>
         //                         </div>`,
-        //                     style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //                 }
         //                 array.push(tax);
         //                 valueArray.push(fee.value * totalFees);
@@ -905,7 +913,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                             <span>${fee.code} (${fee.quantity}x):</span>
         //                             <span>${fee.value.toFixed(2)}</span>
         //                         </div>`,
-        //                     style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //                 }
         //                 array.push(tax);
         //                 valueArray.push(fee.value);
@@ -922,7 +930,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                         <span>${fee.code}:</span>
         //                         <span>${percentValue.toFixed(2)}</span>
         //                     </div>`,
-        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //             }
         //             array.push(tax);
         //             valueArray.push(percentValue);
@@ -935,7 +943,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                         <span>${fee.code} (${fee.quantity}x):</span>
         //                         <span>${(fee.value * fee.quantity).toFixed(2)}</span>
         //                     </div>`,
-        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //             }
         //             array.push(tax);
         //             valueArray.push(fee.value * fee.quantity);
@@ -950,7 +958,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //             <span>Taxa de entrega:</span>
         //             <span>${typeof cart.taxDelivery !== "number" ? "A Consultar" : cart.taxDelivery > 0 ? `${cart.taxDelivery.toFixed(2)}` : "Grátis"}</span>
         //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     array.push(taxDelivery);
 
@@ -969,7 +977,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                     <span>Cupom:</span>
         //                     <span>-${percentValue.toFixed(2)}</span>
         //                 </div>`,
-        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //         }
         //         array.push(cupomPercent);
         //         valueArray.push(percentValue * -1);
@@ -982,7 +990,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                     <span>Cupom:</span>
         //                     <span>-${value.toFixed(2)}</span>
         //                 </div>`,
-        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //         }
         //         array.push(cupomFixed);
         //         valueArray.push(value * -1);
@@ -1007,7 +1015,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                 `-${cartTotal.toFixed(2)}` :
         //                 `-${cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2)}`}</span>
         //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     const cashbackValue = cart.formsPayment.length === 1 ?
         //         Number((cartTotal * -1).toFixed(2)) :
@@ -1029,7 +1037,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                 <span>${taxOrDiscount} ${addonPayment.label}:</span>
         //                 <span>${addonValue}</span>
         //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     totalValue += addonValue;
         //     array.push(addon);
@@ -1041,7 +1049,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //             <span>Total:</span>
         //             <span>${totalValue.toFixed(2)}</span>
         //         </div>`,
-        //     style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         // }
         // array.push(total);
 
@@ -1052,7 +1060,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //             <span>Pagamento em:</span>
         //             <span>${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
         //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         //     : {
         //         type: 'text',
@@ -1062,7 +1070,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                 ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
         //                 : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
         //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
         // array.push(paidWith);
 
@@ -1074,7 +1082,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                 <span>Troco para:</span>
         //                 <span>${typeof moneyPayment.value === "number" && moneyPayment.value !== totalValue ? `${moneyPayment.value.toFixed(2)}` : "Não é necessário"}</span>
         //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //     }
 
         //     if (typeof moneyPayment.value === "number" && moneyPayment.value > totalValue) {
@@ -1084,7 +1092,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         //                     <span>Troco:</span>
         //                     <span>${(moneyPayment.value - totalValue).toFixed(2)}</span>
         //                 </div>`,
-        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: "15px" }
+        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
         //         }
         //         array.push(moneyPaid, change);
         //     } else {
@@ -1100,17 +1108,17 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         {
             type: 'text',
             value: `${cart.address.street},`,
-            style: { fontWeight: "bold", fontSize: "15px" }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         },
         {
             type: 'text',
             value: `${cart.address.number} ${cart.address.complement}`,
-            style: { fontWeight: "bold", fontSize: "15px" }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         },
         {
             type: 'text',
             value: `${cart.address.neighborhood} - ${cart.address.city}`,
-            style: { fontWeight: "bold", fontSize: "15px" }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         }
     ] : [];
 
@@ -1120,7 +1128,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             {
                 type: 'text',
                 value: characterPrint([`**${isTable ? "Pedido Mesa" : isDelivery ? "Delivery" : "Vou retirar no local"}**`], '‎', 'center', maxLength),
-                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "10px" }
+                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "0px" }
             },
             {
                 type: 'text',
@@ -1139,7 +1147,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             {
                 type: 'text',
                 value: `**${isTable ? "Pedido Mesa" : isDelivery ? "Delivery" : "Vou retirar no local"}**`,
-                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "10px" }
+                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "0px" }
             },
             {
                 type: 'text',
