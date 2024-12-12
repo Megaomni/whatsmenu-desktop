@@ -14,6 +14,42 @@ import { mainWindow } from ".";
 
 const isMac = process.platform === "darwin";
 
+const marginLeftDialog = async (printerSelected: Printer) => {
+  const marginLeft = await prompt({
+    title: "Margem esquerda",
+    label: "Margem em pixels",
+    inputAttrs: { type: "number" },
+    value: printerSelected.margins.left ? printerSelected.margins.left.toString() : "0",
+    height: 200,
+    buttonLabels: {
+      ok: "OK",
+      cancel: "Cancelar",
+    },
+  });
+  updatePrinter({
+    id: printerSelected.id,
+    margins: { ...printerSelected.margins, left: parseInt(marginLeft) },
+  });
+}
+
+const marginRightDialog = async (printerSelected: Printer) => {
+  const marginRight = await prompt({
+    title: "Margem direita",
+    label: "Margem em pixels",
+    inputAttrs: { type: "number" },
+    value: printerSelected.margins.right ? printerSelected.margins.right.toString() : "0",
+    height: 200,
+    buttonLabels: {
+      ok: "OK",
+      cancel: "Cancelar",
+    },
+  });
+  updatePrinter({
+    id: printerSelected.id,
+    margins: { ...printerSelected.margins, right: parseInt(marginRight) },
+  });
+}
+
 const copiesDialog = async (printerSelected: Printer) => {
   const copies = await prompt({
     title: "Quantidade de Cópias",
@@ -72,21 +108,21 @@ const template = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-        {
-          label: app.name,
-          submenu: [
-            { role: "about" },
-            { type: "separator" },
-            { role: "services" },
-            { type: "separator" },
-            { role: "hide" },
-            { role: "hideOthers" },
-            { role: "unhide" },
-            { type: "separator" },
-            { role: "quit" },
-          ],
-        },
-      ]
+      {
+        label: app.name,
+        submenu: [
+          { role: "about" },
+          { type: "separator" },
+          { role: "services" },
+          { type: "separator" },
+          { role: "hide" },
+          { role: "hideOthers" },
+          { role: "unhide" },
+          { type: "separator" },
+          { role: "quit" },
+        ],
+      },
+    ]
     : []),
   // { role: 'fileMenu' }
   // (isMac ? {
@@ -187,11 +223,10 @@ const updateMenu = async () => {
           click: () => updatePrinter({ id: printer.id, paperSize: 80 }),
         },
         {
-          label: `Customizado ${
-            printer.paperSize !== 80 && printer.paperSize !== 58
-              ? " - " + printer.paperSize + "mm"
-              : ""
-          }`,
+          label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
+            ? " - " + printer.paperSize + "mm"
+            : ""
+            }`,
           type: "radio",
           checked: printer.paperSize !== 80 && printer.paperSize !== 58,
           click: () => paperSizeDialog(printer),
@@ -224,6 +259,14 @@ const updateMenu = async () => {
                 left: 15,
               },
             }),
+        },
+        {
+          label: `Margem Esquerda`,
+          click: () => marginLeftDialog(printer),
+        },
+        {
+          label: `Margem Direita`,
+          click: () => marginRightDialog(printer),
         },
         { type: "separator" },
         {
