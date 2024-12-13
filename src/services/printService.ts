@@ -6,7 +6,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
     const { left, right } = printOptions.margins;
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
-    console.log({ payload });
+    console.log("XXXXXXXXXXXXXX", payload);
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
 
@@ -64,6 +64,14 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 break;
         }
         return finalString;
+    }
+
+    const lineBreaker = (string: string, maxLength: number) => {
+        let newString = '';
+        for (let i = 0; i < string.length; i += maxLength) {
+            newString += string.slice(i, i + maxLength) + " ";
+        }
+        return newString;
     }
 
 
@@ -139,7 +147,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 }
                 upperPrint.push(clientPhone);
             }
-        } else {
+        } else if (table.opened) {
             const creationTime = DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }).toFormat("HH:mm");
             const checkoutTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).toFormat("HH:mm");
             const stayingTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).diff(DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }), ['minutes']).minutes;
@@ -159,7 +167,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 }
                 : {
                     type: 'text',
-                    value: `Comanda: ${table.opened.commands.map((command: any) => command.name)}`,
+                    value: `Comanda: ${table.opened?.commands.map((command: any) => command.name)}`,
                     style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
                 }
             upperPrint.push(clientName);
@@ -171,38 +179,77 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
             }
             upperPrint.push(totalStayingTime);
+        } else {
+            const orderCode: PosPrintData = {
+                type: 'text',
+                value: `Mesa: Mesa ${table.name}`,
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            }
+            upperPrint.push(orderCode);
+
+            const clientName: PosPrintData = {
+                type: 'text',
+                value: `Comanda: ${cart.command.name}`,
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            }
+            upperPrint.push(clientName);
+
+            const waiter: PosPrintData = {
+                type: 'text',
+                value: `Garcom: ${cart.bartender.name}`,
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            }
+            upperPrint.push(waiter);
         }
     }
     getUpperPrint();
 
     const getPrintBody = (item: any, finalArray: any[]) => {
+        let parsedItem
+        Array.isArray(item) ? parsedItem = item[0] : parsedItem = item;
         const array: PosPrintData[] = [];
-        const valueArray: number[] = [item.details.value];
+        const valueArray: number[] = [parsedItem.details.value];
 
         const mainItem = {
             type: 'text',
-            value: `${item.quantity}x | ${item.name} (${item.details.value.toFixed(2)})`,
+            value: `${parsedItem.quantity}x | ${parsedItem.name} (${parsedItem.details.value.toFixed(2)})`,
             style: { fontWeight: "bold", fontSize: "17px", marginLeft: `${marginLeft}px` }
         }
 
-        if (item.obs.length > 0) {
+        if (parsedItem.obs.length > 0) {
+            const fullObs = `Obs.: ${parsedItem.obs}`;
             const obs: PosPrintData = {
                 type: 'text',
-                value: `Obs.: ${item.obs}`,
+                value: parsedItem.obs.includes(" ") ? fullObs : lineBreaker(fullObs, maxLength - 15),
                 style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
             }
             array.push(obs);
         }
 
-        if (item.details.complements.length > 0) {
-            item.details.complements.map((complement: any) => {
-                const complementItem: PosPrintData = {
-                    type: 'text',
-                    value: `${complement.itens[0].quantity}x - ${complement.itens[0].name}   ${complement.itens[0].value.toFixed(2)}`,
-                    style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
+        if (parsedItem.details.complements.length > 0) {
+            parsedItem.details.complements.map((complement: any) => {
+                if (complement.itens.length > 1) {
+                    complement.itens.map((parsedItem: any) => {
+                        const complementsValue = parsedItem.quantity * parsedItem.value;
+                        const complementItem: PosPrintData = {
+                            type: 'text',
+                            value: `${parsedItem.quantity}x - ${parsedItem.name} ${parsedItem.value > 0 ? complementsValue.toFixed(2) : ''}`,
+                            style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
+                        }
+                        array.push(complementItem);
+                        valueArray.push(parsedItem.value);
+                    })
+                } else {
+                    const complementsValue = complement.itens[0].quantity * complement.itens[0].value;
+                    const complementItem: PosPrintData = {
+                        type: 'text',
+                        value: `${complement.itens[0].quantity}x - ${complement.itens[0].name} ${complement.itens[0].value > 0 ? complementsValue.toFixed(2) : ''}`,
+                        style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
+                    }
+                    array.push(complementItem);
+                    valueArray.push(complement.itens[0].value);
                 }
-                array.push(complementItem);
-                valueArray.push(complement.itens[0].value);
+
             });
         }
 
@@ -211,12 +258,12 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         const finalPrice = isGeneric
             ? {
                 type: 'text',
-                value: characterPrint([`R$${(price * Number(item.quantity)).toFixed(2)}`], '‎', 'right', maxLength),
+                value: characterPrint([`R$${(price * Number(parsedItem.quantity)).toFixed(2)}`], '‎', 'right', maxLength),
                 style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: `${marginRight}px`, textAlign: "right" }
             }
             : {
                 type: 'text',
-                value: `R$${(price * Number(item.quantity)).toFixed(2)}`,
+                value: `R$${(price * Number(parsedItem.quantity)).toFixed(2)}`,
                 style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: `${marginRight}px`, textAlign: "right", marginLeft: `${marginLeft}px` }
             }
 
@@ -242,7 +289,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         const groupedItens = groupEqualItems(allItens);
         groupedItens.map((item: any) => getPrintBody(item, printBody));
     } else {
-        if (isTable) {
+        if (isTable && table.opened) {
             const { commands } = table.opened;
             const allItens = commands.map((command: any) => command.carts.map((cart: any) => cart.itens.map((item: any) => item)));
             const groupedItens = groupEqualItems(allItens.flat(2));
@@ -255,10 +302,10 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
     }
 
 
-    const printIndividualCommands: PosPrintData[] = isTable && table.opened.commands.length > 1 && payload.printType !== 'command' ? [hr] : [];
+    const printIndividualCommands: PosPrintData[] = isTable && table.opened?.commands.length > 1 && payload.printType !== 'command' ? [hr] : [];
 
-    if (isTable && table.opened.commands.length > 1 && payload.printType !== 'command') {
-        table.opened.commands.map((command: any) => {
+    if (table.opened && isTable && payload.printType !== 'command' && table.opened?.commands.length > 1) {
+        table.opened?.commands.map((command: any) => {
             const commandName: PosPrintData = {
                 type: 'text',
                 value: `<div style="display: flex; justify-content: space-between;">
@@ -272,6 +319,16 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
     }
 
     const printPayment: PosPrintData[] = [hr];
+
+    const orderObs: PosPrintData[] = isDelivery && cart.obs
+        ? [
+            hr,
+            {
+                type: 'text',
+                value: cart.obs.includes(" ") ? `Obs.: ${cart.obs}` : lineBreaker(`Obs.: ${cart.obs}`, maxLength - 15),
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+            }]
+        : [];
 
     let cartTotal = 0
 
@@ -289,6 +346,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 array.push(cupomName);
             }
 
+
             if (payload.printType && payload.printType === 'command') {
                 const commandTotalPrices: number[] = command.carts.map((cart: any) => cart.total);
                 cartTotal = commandTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
@@ -299,8 +357,18 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
-            } else if (isTable) {
-                const tableTotalPrices: number[] = table.opened.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
+            } else if (isTable && table.opened) {
+                const tableTotalPrices: number[] = table.opened?.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
+                cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
+                const subtotal: PosPrintData = {
+                    type: 'text',
+                    value: characterPrint(["Sub-total:", `${cartTotal.toFixed(2)}`], "‎", "space-between", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+                array.push(subtotal);
+                valueArray.push(cartTotal);
+            } else if (isTable && !table.opened) {
+                const tableTotalPrices: number[] = cart.itens.map((item: any) => item.details.value);
                 cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
                 const subtotal: PosPrintData = {
                     type: 'text',
@@ -320,7 +388,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 valueArray.push(cartTotal);
             }
 
-            if (isTable && payload.printType !== 'command') {
+            if (table.opened && isTable && payload.printType !== 'command') {
                 cart.command.fees.map((fee: any) => {
                     if (fee.type === 'percent') {
                         const percentValue = (fee.value * cartTotal) / 100;
@@ -334,8 +402,8 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     }
                 })
 
-                if (table.opened.commands.length > 1) {
-                    const allFixedFees = table.opened.commands.map((command: any) => {
+                if (table.opened && table.opened.commands.length > 1) {
+                    const allFixedFees = table.opened?.commands.map((command: any) => {
                         return command.fees.filter((fee: any) => fee.quantity > 0 && fee.type === 'fixed');
                     })
 
@@ -462,16 +530,18 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
 
             let totalValue = Number(valueArray.reduce((acc, value) => acc + value, 0).toFixed(2));
 
-            if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status)) {
+            if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status === true)) {
                 const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
-                const taxOrDiscount = addonPayment.addon.type === "fee" ? "Taxa" : "Desconto";
-                const addonValue = Number((addonPayment.value - totalValue).toFixed(2));
+                const { type, value, valueType } = addonPayment.addon;
+                const taxOrDiscount = type === "fee" ? "Taxa" : "Desconto";
+                const addonValue = valueType === "fixed" ? value : (value / 100) * cartTotal;
+                const convertedValue = taxOrDiscount === "Taxa" ? addonValue : addonValue * -1;
                 const addon: PosPrintData = {
                     type: 'text',
-                    value: characterPrint([`${taxOrDiscount} ${addonPayment.label}:`, `${addonValue}`], "‎", "space-between", maxLength),
+                    value: characterPrint([`${taxOrDiscount} ${addonPayment.label}:`, `${convertedValue.toFixed(2)}`], "‎", "space-between", maxLength),
                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
-                totalValue += addonValue;
+                totalValue += convertedValue;
                 array.push(addon);
             }
 
@@ -482,41 +552,43 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             }
             array.push(total);
 
-            const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-                ? {
-                    type: 'text',
-                    value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-                }
-                : {
-                    type: 'text',
-                    value: characterPrint(
-                        [
-                            "Pagamento em:",
-                            `${isTable
-                                ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
-                                : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`
-                        ],
-                        "‎",
-                        "space-between",
-                        maxLength
-                    ),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-                }
-            array.push(paidWith);
+            if (table.opened) {
+                const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+                    ? {
+                        type: 'text',
+                        value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                    }
+                    : {
+                        type: 'text',
+                        value: characterPrint(
+                            [
+                                "Pagamento em:",
+                                `${isTable
+                                    ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
+                                    : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`
+                            ],
+                            "‎",
+                            "space-between",
+                            maxLength
+                        ),
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                    }
+                array.push(paidWith);
+            }
 
-            if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") || cart.type !== "T") {
+            if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money") && cart.type !== "T") {
                 const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
                 const moneyPaid: PosPrintData = {
                     type: 'text',
-                    value: characterPrint(["Troco para:", `${typeof moneyPayment.value === "number" && moneyPayment.value !== totalValue ? `${moneyPayment.value.toFixed(2)}` : "Não é necessário"}`], "‎", "space-between", maxLength),
+                    value: characterPrint(["Troco para:", `${Number(moneyPayment.change) !== totalValue ? `${Number(moneyPayment.change).toFixed(2)}` : "Não é necessário"}`], "‎", "space-between", maxLength),
                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
 
-                if (typeof moneyPayment.value === "number" && moneyPayment.value > totalValue) {
+                if (Number(moneyPayment.change) > totalValue) {
                     const change: PosPrintData = {
                         type: 'text',
-                        value: characterPrint(["Troco:", `${(moneyPayment.value - totalValue).toFixed(2)}`], "‎", "space-between", maxLength),
+                        value: characterPrint(["Troco:", `${(Number(moneyPayment.change) - totalValue).toFixed(2)}`], "‎", "space-between", maxLength),
                         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                     }
                     array.push(moneyPaid, change);
@@ -538,6 +610,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 array.push(cupomName);
             }
 
+
             if (payload.printType && payload.printType === 'command') {
                 const commandTotalPrices: number[] = command.carts.map((cart: any) => cart.total);
                 cartTotal = commandTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
@@ -551,8 +624,21 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 }
                 array.push(subtotal);
                 valueArray.push(cartTotal);
-            } else if (isTable) {
-                const tableTotalPrices: number[] = table.opened.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
+            } else if (isTable && table.opened) {
+                const tableTotalPrices: number[] = table.opened?.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
+                cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
+                const subtotal: PosPrintData = {
+                    type: 'text',
+                    value: `<div style="display: flex; justify-content: space-between;">
+                        <span>Sub-total:</span>
+                        <span>${cartTotal.toFixed(2)}</span>
+                    </div>`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+                array.push(subtotal);
+                valueArray.push(cartTotal);
+            } else if (isTable && !table.opened) {
+                const tableTotalPrices: number[] = cart.itens.map((item: any) => item.details.value);
                 cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
                 const subtotal: PosPrintData = {
                     type: 'text',
@@ -578,31 +664,62 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 valueArray.push(cartTotal);
             }
 
-            if (isTable && payload.printType !== 'command') {
-                cart.command.fees.map((fee: any) => {
-                    if (fee.type === 'percent') {
-                        const percentValue = (fee.value * cartTotal) / 100;
-                        const tax: PosPrintData = {
-                            type: 'text',
-                            value: `<div style="display: flex; justify-content: space-between;">
+            if (table.opened && isTable && payload.printType !== 'command') {
+                console.log("XXXXXXXXXXXXXXXXXXXXX", table.opened);
+
+                cart.comand
+                    ? cart.command.fees.map((fee: any) => {
+                        if (fee.type === 'percent') {
+                            const percentValue = (fee.value * cartTotal) / 100;
+                            const tax: PosPrintData = {
+                                type: 'text',
+                                value: `<div style="display: flex; justify-content: space-between;">
                                     <span>${fee.code}:</span>
                                     <span>${percentValue.toFixed(2)}</span>
                                 </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            }
+                            array.push(tax);
+                            valueArray.push(percentValue);
                         }
-                        array.push(tax);
-                        valueArray.push(percentValue);
-                    }
-                })
+                    })
+                    : table.opened.commands[0].fees.map((fee: any) => {
+                        if (fee.type === 'percent') {
+                            const percentValue = (fee.value * cartTotal) / 100;
+                            const tax: PosPrintData = {
+                                type: 'text',
+                                value: `<div style="display: flex; justify-content: space-between;">
+                                    <span>${fee.code}:</span>
+                                    <span>${percentValue.toFixed(2)}</span>
+                                </div>`,
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            }
+                            array.push(tax);
+                            valueArray.push(percentValue);
+                        }
+                    })
 
-                if (table.opened.commands.length > 1) {
+                if (table.opened && table.opened.commands.length > 1) {
                     const allFixedFees = table.opened.commands.map((command: any) => {
                         return command.fees.filter((fee: any) => fee.quantity > 0 && fee.type === 'fixed');
                     })
 
                     const totalFees = allFixedFees.flat().reduce((acc: number, fee: any) => acc + fee.quantity, 0);
 
-                    cart.command.fees.map((fee: any) => {
+                    cart.command ? cart.command.fees.map((fee: any) => {
+                        if (fee.type === 'fixed') {
+                            const tax: PosPrintData = {
+                                type: 'text',
+                                value: `<div style="display: flex; justify-content: space-between;">
+                                        <span>${fee.code} (${totalFees}x):</span>
+                                        <span>${(fee.value * totalFees).toFixed(2)}</span>
+                                    </div>`,
+                                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            }
+                            array.push(tax);
+                            valueArray.push(fee.value * totalFees);
+                        }
+                    }) : table.opened.commands[0].fees.map((fee: any) => {
                         if (fee.type === 'fixed') {
                             const tax: PosPrintData = {
                                 type: 'text',
@@ -739,19 +856,22 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
 
             let totalValue = Number(valueArray.reduce((acc, value) => acc + value, 0).toFixed(2));
 
-            if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status)) {
+
+            if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true)) {
                 const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
-                const taxOrDiscount = addonPayment.addon.type === "fee" ? "Taxa" : "Desconto";
-                const addonValue = Number((addonPayment.value - totalValue).toFixed(2));
+                const { type, value, valueType } = addonPayment.addon;
+                const taxOrDiscount = type === "fee" ? "Taxa" : "Desconto";
+                const addonValue = valueType === "fixed" ? value : (value / 100) * cartTotal;
+                const convertedValue = taxOrDiscount === "Taxa" ? addonValue : addonValue * -1;
                 const addon: PosPrintData = {
                     type: 'text',
                     value: `<div style="display: flex; justify-content: space-between;">
                             <span>${taxOrDiscount} ${addonPayment.label}:</span>
-                            <span>${addonValue}</span>
+                            <span>${convertedValue.toFixed(2)}</span>
                         </div>`,
                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
-                totalValue += addonValue;
+                totalValue += convertedValue;
                 array.push(addon);
             }
 
@@ -765,44 +885,47 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             }
             array.push(total);
 
-            const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-                ? {
-                    type: 'text',
-                    value: `<div style="display: flex; justify-content: space-between;">
+            if (table.opened) {
+                const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+                    ? {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
                         <span>Pagamento em:</span>
                         <span>${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                }
-                : {
-                    type: 'text',
-                    value: `<div style="display: flex; justify-content: space-between;">
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    }
+                    : {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
                         <span>Pagamento em:</span>
                         <span>${isTable
-                            ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
-                            : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
+                                ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
+                                : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                }
-            array.push(paidWith);
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    }
+                array.push(paidWith);
+            }
 
-            if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") || cart.type !== "T") {
+
+            if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money").change && cart.type !== "T") {
                 const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
                 const moneyPaid: PosPrintData = {
                     type: 'text',
                     value: `<div style="display: flex; justify-content: space-between;">
                             <span>Troco para:</span>
-                            <span>${typeof moneyPayment.value === "number" && moneyPayment.value !== totalValue ? `${moneyPayment.value.toFixed(2)}` : "Não é necessário"}</span>
+                            <span>${Number(moneyPayment.change) !== totalValue ? `${Number(moneyPayment.change).toFixed(2)}` : "Não é necessário"}</span>
                         </div>`,
                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                 }
 
-                if (typeof moneyPayment.value === "number" && moneyPayment.value > totalValue) {
+                if (Number(moneyPayment.change) > totalValue) {
                     const change: PosPrintData = {
                         type: 'text',
                         value: `<div style="display: flex; justify-content: space-between;">
                                 <span>Troco:</span>
-                                <span>${(moneyPayment.value - totalValue).toFixed(2)}</span>
+                                <span>${(Number(moneyPayment.change) - totalValue).toFixed(2)}</span>
                             </div>`,
                         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                     }
@@ -813,293 +936,6 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             }
             printPayment.push(...array);
         }
-
-        // if (cart.cupom) {
-        //     const cupomName: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //                 <span>Cupom usado:</span>
-        //                 <span>${cart.cupom.code}</span>
-        //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     array.push(cupomName);
-        // }
-
-        // if (payload.printType && payload.printType === 'command') {
-        //     const commandTotalPrices: number[] = command.carts.map((cart: any) => cart.total);
-        //     cartTotal = commandTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
-        //     const subtotal: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //             <span>Sub-total:</span>
-        //             <span>${cartTotal.toFixed(2)}</span>
-        //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     array.push(subtotal);
-        //     valueArray.push(cartTotal);
-        // } else if (isTable) {
-        //     const tableTotalPrices: number[] = table.opened.commands.map((command: any) => command.carts.map((cart: any) => cart.total)).flat();
-        //     cartTotal = tableTotalPrices.reduce((acc: number, value: number) => acc + value, 0);
-        //     const subtotal: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //             <span>Sub-total:</span>
-        //             <span>${cartTotal.toFixed(2)}</span>
-        //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     array.push(subtotal);
-        //     valueArray.push(cartTotal);
-        // } else {
-        //     cartTotal = cart.total;
-        //     const subtotal: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //                 <span>Sub-total:</span>
-        //                 <span>${cartTotal.toFixed(2)}</span>
-        //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     array.push(subtotal);
-        //     valueArray.push(cartTotal);
-        // }
-
-        // if (isTable && payload.printType !== 'command') {
-        //     cart.command.fees.map((fee: any) => {
-        //         if (fee.type === 'percent') {
-        //             const percentValue = (fee.value * cartTotal) / 100;
-        //             const tax: PosPrintData = {
-        //                 type: 'text',
-        //                 value: `<div style="display: flex; justify-content: space-between;">
-        //                         <span>${fee.code}:</span>
-        //                         <span>${percentValue.toFixed(2)}</span>
-        //                     </div>`,
-        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //             }
-        //             array.push(tax);
-        //             valueArray.push(percentValue);
-        //         }
-        //     })
-
-        //     if (table.opened.commands.length > 1) {
-        //         const allFixedFees = table.opened.commands.map((command: any) => {
-        //             return command.fees.filter((fee: any) => fee.quantity > 0 && fee.type === 'fixed');
-        //         })
-
-        //         const totalFees = allFixedFees.flat().reduce((acc: number, fee: any) => acc + fee.quantity, 0);
-
-        //         cart.command.fees.map((fee: any) => {
-        //             if (fee.type === 'fixed') {
-        //                 const tax: PosPrintData = {
-        //                     type: 'text',
-        //                     value: `<div style="display: flex; justify-content: space-between;">
-        //                             <span>${fee.code} (${totalFees}x):</span>
-        //                             <span>${(fee.value * totalFees).toFixed(2)}</span>
-        //                         </div>`,
-        //                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //                 }
-        //                 array.push(tax);
-        //                 valueArray.push(fee.value * totalFees);
-        //             }
-        //         })
-        //     } else {
-        //         cart.command.fees.map((fee: any) => {
-        //             if (fee.type === 'fixed') {
-        //                 const tax: PosPrintData = {
-        //                     type: 'text',
-        //                     value: `<div style="display: flex; justify-content: space-between;">
-        //                             <span>${fee.code} (${fee.quantity}x):</span>
-        //                             <span>${fee.value.toFixed(2)}</span>
-        //                         </div>`,
-        //                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //                 }
-        //                 array.push(tax);
-        //                 valueArray.push(fee.value);
-        //             }
-        //         })
-        //     }
-        // } else if (payload.printType === 'command') {
-        //     command.fees.map((fee: any) => {
-        //         if (fee.type === 'percent') {
-        //             const percentValue = (fee.value * cartTotal) / 100;
-        //             const tax: PosPrintData = {
-        //                 type: 'text',
-        //                 value: `<div style="display: flex; justify-content: space-between;">
-        //                         <span>${fee.code}:</span>
-        //                         <span>${percentValue.toFixed(2)}</span>
-        //                     </div>`,
-        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //             }
-        //             array.push(tax);
-        //             valueArray.push(percentValue);
-        //         }
-
-        //         if (fee.type === 'fixed') {
-        //             const tax: PosPrintData = {
-        //                 type: 'text',
-        //                 value: `<div style="display: flex; justify-content: space-between;">
-        //                         <span>${fee.code} (${fee.quantity}x):</span>
-        //                         <span>${(fee.value * fee.quantity).toFixed(2)}</span>
-        //                     </div>`,
-        //                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //             }
-        //             array.push(tax);
-        //             valueArray.push(fee.value * fee.quantity);
-        //         }
-        //     })
-        // }
-
-        // if (isDelivery) {
-        //     const taxDelivery: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //             <span>Taxa de entrega:</span>
-        //             <span>${typeof cart.taxDelivery !== "number" ? "A Consultar" : cart.taxDelivery > 0 ? `${cart.taxDelivery.toFixed(2)}` : "Grátis"}</span>
-        //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     array.push(taxDelivery);
-
-        //     if (typeof cart.taxDelivery === "number" && cart.taxDelivery > 0) {
-        //         valueArray.push(cart.taxDelivery);
-        //     }
-        // }
-
-        // if (cart.cupom) {
-        //     const { type, value } = cart.cupom;
-        //     if (type === "percent") {
-        //         const percentValue = (value * cartTotal) / 100;
-        //         const cupomPercent: PosPrintData = {
-        //             type: 'text',
-        //             value: `<div style="display: flex; justify-content: space-between;">
-        //                     <span>Cupom:</span>
-        //                     <span>-${percentValue.toFixed(2)}</span>
-        //                 </div>`,
-        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //         }
-        //         array.push(cupomPercent);
-        //         valueArray.push(percentValue * -1);
-        //     }
-
-        //     if (type === "value") {
-        //         const cupomFixed: PosPrintData = {
-        //             type: 'text',
-        //             value: `<div style="display: flex; justify-content: space-between;">
-        //                     <span>Cupom:</span>
-        //                     <span>-${value.toFixed(2)}</span>
-        //                 </div>`,
-        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //         }
-        //         array.push(cupomFixed);
-        //         valueArray.push(value * -1);
-        //     }
-
-        //     if (type === "freight") {
-        //         const cupomFreight: PosPrintData = {
-        //             type: 'text',
-        //             value: "Cupom de frete grátis!",
-        //             style: { fontWeight: "bold", fontSize: "15px" }
-        //         }
-        //         array.push(cupomFreight);
-        //     }
-        // }
-
-        // if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "cashback")) {
-        //     const cashback: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //                 <span>Cashback:</span>
-        //                 <span>${cart.formsPayment.length === 1 ?
-        //                 `-${cartTotal.toFixed(2)}` :
-        //                 `-${cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2)}`}</span>
-        //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     const cashbackValue = cart.formsPayment.length === 1 ?
-        //         Number((cartTotal * -1).toFixed(2)) :
-        //         cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2) * -1;
-
-        //     array.push(cashback);
-        //     valueArray.push(cashbackValue);
-        // }
-
-        // let totalValue = Number(valueArray.reduce((acc, value) => acc + value, 0).toFixed(2));
-
-        // if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status)) {
-        //     const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
-        //     const taxOrDiscount = addonPayment.addon.type === "fee" ? "Taxa" : "Desconto";
-        //     const addonValue = Number((addonPayment.value - totalValue).toFixed(2));
-        //     const addon: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //                 <span>${taxOrDiscount} ${addonPayment.label}:</span>
-        //                 <span>${addonValue}</span>
-        //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     totalValue += addonValue;
-        //     array.push(addon);
-        // }
-
-        // const total: PosPrintData = {
-        //     type: 'text',
-        //     value: `<div style="display: flex; justify-content: space-between;">
-        //             <span>Total:</span>
-        //             <span>${totalValue.toFixed(2)}</span>
-        //         </div>`,
-        //     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        // }
-        // array.push(total);
-
-        // const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-        //     ? {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //             <span>Pagamento em:</span>
-        //             <span>${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
-        //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        //     : {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //             <span>Pagamento em:</span>
-        //             <span>${isTable
-        //                 ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
-        //                 : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
-        //         </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-        // array.push(paidWith);
-
-        // if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") || cart.type !== "T") {
-        //     const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
-        //     const moneyPaid: PosPrintData = {
-        //         type: 'text',
-        //         value: `<div style="display: flex; justify-content: space-between;">
-        //                 <span>Troco para:</span>
-        //                 <span>${typeof moneyPayment.value === "number" && moneyPayment.value !== totalValue ? `${moneyPayment.value.toFixed(2)}` : "Não é necessário"}</span>
-        //             </div>`,
-        //         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //     }
-
-        //     if (typeof moneyPayment.value === "number" && moneyPayment.value > totalValue) {
-        //         const change: PosPrintData = {
-        //             type: 'text',
-        //             value: `<div style="display: flex; justify-content: space-between;">
-        //                     <span>Troco:</span>
-        //                     <span>${(moneyPayment.value - totalValue).toFixed(2)}</span>
-        //                 </div>`,
-        //             style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-        //         }
-        //         array.push(moneyPaid, change);
-        //     } else {
-        //         array.push(moneyPaid);
-        //     }
-        // }
-        // printPayment.push(...array);
     }
     getPayments();
 
@@ -1112,7 +948,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         },
         {
             type: 'text',
-            value: `${cart.address.number} ${cart.address.complement}`,
+            value: `${cart.address.number} ${cart.address.complement ?? ""}`,
             style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         },
         {
@@ -1165,6 +1001,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         ...upperPrint,
         ...printBody,
         ...printIndividualCommands,
+        ...orderObs,
         ...printPayment,
         ...printAdress,
         ...printFooter,
