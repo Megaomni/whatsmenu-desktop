@@ -292,8 +292,13 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
         if (isTable && table.opened) {
             const { commands } = table.opened;
             const allItens = commands.map((command: any) => command.carts.map((cart: any) => cart.itens.map((item: any) => item)));
-            const groupedItens = groupEqualItems(allItens.flat(2));
-            groupedItens.map((item: any) => getPrintBody(item, printBody));
+            if (allItens.flat(2).length === 0) {
+                const groupedItens = groupEqualItems(cart.itens);
+                groupedItens.map((item: any) => getPrintBody(item, printBody));
+            } else {
+                const groupedItens = groupEqualItems(allItens.flat(2));
+                groupedItens.map((item: any) => getPrintBody(item, printBody));
+            }
         } else {
             const allItens = cart.itens.map((item: any) => item);
             const groupedItens = groupEqualItems(allItens);
@@ -302,9 +307,9 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
     }
 
 
-    const printIndividualCommands: PosPrintData[] = isTable && table.opened?.commands.length > 1 && payload.printType !== 'command' ? [hr] : [];
+    const printIndividualCommands: PosPrintData[] = isTable && table.opened?.commands.length > 1 && table.opened?.formsPayment.length > 0 && payload.printType !== 'command' ? [hr] : [];
 
-    if (table.opened && isTable && payload.printType !== 'command' && table.opened?.commands.length > 1) {
+    if (isTable && table.opened?.commands.length > 1 && table.opened?.formsPayment.length > 0 && payload.printType !== 'command') {
         table.opened?.commands.map((command: any) => {
             const commandName: PosPrintData = {
                 type: 'text',
@@ -388,7 +393,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 valueArray.push(cartTotal);
             }
 
-            if (table.opened && isTable && payload.printType !== 'command') {
+            if (isTable && table.opened && payload.printType !== 'command') {
                 cart.command.fees.map((fee: any) => {
                     if (fee.type === 'percent') {
                         const percentValue = (fee.value * cartTotal) / 100;
@@ -410,7 +415,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     const totalFees = allFixedFees.flat().reduce((acc: number, fee: any) => acc + fee.quantity, 0);
 
                     cart.command.fees.map((fee: any) => {
-                        if (fee.type === 'fixed') {
+                        if (fee.type === 'fixed' && totalFees > 0) {
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: characterPrint([`${fee.code} (${totalFees}x):`, `${(fee.value * totalFees).toFixed(2)}`], "‎", "space-between", maxLength),
@@ -422,7 +427,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     })
                 } else {
                     cart.command.fees.map((fee: any) => {
-                        if (fee.type === 'fixed') {
+                        if (fee.type === 'fixed' && fee.quantity > 0) {
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: characterPrint([`${fee.code} (${fee.quantity}x):`, `${fee.value.toFixed(2)}`], "‎", "space-between", maxLength),
@@ -446,7 +451,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         valueArray.push(percentValue);
                     }
 
-                    if (fee.type === 'fixed') {
+                    if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
                             value: characterPrint([`${fee.code} (${fee.quantity}x):`, `${(fee.value * fee.quantity).toFixed(2)}`], "‎", "space-between", maxLength),
@@ -530,7 +535,10 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
 
             let totalValue = Number(valueArray.reduce((acc, value) => acc + value, 0).toFixed(2));
 
-            if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status === true)) {
+            if (
+                (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status === true))
+                || (payload.printType && payload.printType === "command" && command.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true))
+            ) {
                 const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
                 const { type, value, valueType } = addonPayment.addon;
                 const taxOrDiscount = type === "fee" ? "Taxa" : "Desconto";
@@ -552,30 +560,28 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             }
             array.push(total);
 
-            if (table.opened) {
-                const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-                    ? {
-                        type: 'text',
-                        value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-                    }
-                    : {
-                        type: 'text',
-                        value: characterPrint(
-                            [
-                                "Pagamento em:",
-                                `${isTable
-                                    ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
-                                    : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`
-                            ],
-                            "‎",
-                            "space-between",
-                            maxLength
-                        ),
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-                    }
-                array.push(paidWith);
-            }
+            const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+                ? {
+                    type: 'text',
+                    value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+                : {
+                    type: 'text',
+                    value: characterPrint(
+                        [
+                            "Pagamento em:",
+                            `${isTable && table.opened
+                                ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
+                                : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}`
+                        ],
+                        "‎",
+                        "space-between",
+                        maxLength
+                    ),
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+            array.push(paidWith);
 
             if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money") && cart.type !== "T") {
                 const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
@@ -664,9 +670,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 valueArray.push(cartTotal);
             }
 
-            if (table.opened && isTable && payload.printType !== 'command') {
-                console.log("XXXXXXXXXXXXXXXXXXXXX", table.opened);
-
+            if (isTable && table.opened && payload.printType !== 'command') {
                 cart.comand
                     ? cart.command.fees.map((fee: any) => {
                         if (fee.type === 'percent') {
@@ -707,7 +711,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     const totalFees = allFixedFees.flat().reduce((acc: number, fee: any) => acc + fee.quantity, 0);
 
                     cart.command ? cart.command.fees.map((fee: any) => {
-                        if (fee.type === 'fixed') {
+                        if (fee.type === 'fixed' && totalFees > 0) {
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: `<div style="display: flex; justify-content: space-between;">
@@ -720,7 +724,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                             valueArray.push(fee.value * totalFees);
                         }
                     }) : table.opened.commands[0].fees.map((fee: any) => {
-                        if (fee.type === 'fixed') {
+                        if (fee.type === 'fixed' && totalFees > 0) {
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: `<div style="display: flex; justify-content: space-between;">
@@ -735,7 +739,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                     })
                 } else {
                     cart.command.fees.map((fee: any) => {
-                        if (fee.type === 'fixed') {
+                        if (fee.type === 'fixed' && fee.quantity > 0) {
                             const tax: PosPrintData = {
                                 type: 'text',
                                 value: `<div style="display: flex; justify-content: space-between;">
@@ -765,7 +769,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         valueArray.push(percentValue);
                     }
 
-                    if (fee.type === 'fixed') {
+                    if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
                             value: `<div style="display: flex; justify-content: space-between;">
@@ -857,7 +861,10 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             let totalValue = Number(valueArray.reduce((acc, value) => acc + value, 0).toFixed(2));
 
 
-            if (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true)) {
+            if (
+                (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true))
+                || (payload.printType && payload.printType === "command" && command.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true))
+            ) {
                 const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
                 const { type, value, valueType } = addonPayment.addon;
                 const taxOrDiscount = type === "fee" ? "Taxa" : "Desconto";
@@ -885,28 +892,27 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
             }
             array.push(total);
 
-            if (table.opened) {
-                const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-                    ? {
-                        type: 'text',
-                        value: `<div style="display: flex; justify-content: space-between;">
+            const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+                ? {
+                    type: 'text',
+                    value: `<div style="display: flex; justify-content: space-between;">
                         <span>Pagamento em:</span>
                         <span>${command.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                     </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                    }
-                    : {
-                        type: 'text',
-                        value: `<div style="display: flex; justify-content: space-between;">
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+                : {
+                    type: 'text',
+                    value: `<div style="display: flex; justify-content: space-between;">
                         <span>Pagamento em:</span>
-                        <span>${isTable
-                                ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
-                                : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
+                        <span>${isTable && table.opened
+                            ? table.opened.formsPayment.map((formPayment: any) => `${formPayment.label}`)
+                            : cart.formsPayment.map((formPayment: any) => `${formPayment.label}`)}</span>
                     </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                    }
-                array.push(paidWith);
-            }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+            array.push(paidWith);
+
 
 
             if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money").change && cart.type !== "T") {
