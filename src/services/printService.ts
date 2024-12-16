@@ -6,7 +6,6 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
     const { left, right } = printOptions.margins;
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
-    console.log("XXXXXXXXXXXXXX", payload);
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
 
@@ -233,21 +232,21 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         const complementsValue = parsedItem.quantity * parsedItem.value;
                         const complementItem: PosPrintData = {
                             type: 'text',
-                            value: `${parsedItem.quantity}x - ${parsedItem.name} ${parsedItem.value > 0 ? complementsValue.toFixed(2) : ''}`,
+                            value: `${parsedItem.quantity}x - ${parsedItem.name} ${parsedItem.value > 0 ? `(${complementsValue.toFixed(2)})` : ''}`,
                             style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
                         }
                         array.push(complementItem);
-                        valueArray.push(parsedItem.value);
+                        valueArray.push(complementsValue);
                     })
                 } else {
                     const complementsValue = complement.itens[0].quantity * complement.itens[0].value;
                     const complementItem: PosPrintData = {
                         type: 'text',
-                        value: `${complement.itens[0].quantity}x - ${complement.itens[0].name} ${complement.itens[0].value > 0 ? complementsValue.toFixed(2) : ''}`,
+                        value: `${complement.itens[0].quantity}x - ${complement.itens[0].name} ${complement.itens[0].value > 0 ? `(${complementsValue.toFixed(2)})` : ''}`,
                         style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
                     }
                     array.push(complementItem);
-                    valueArray.push(complement.itens[0].value);
+                    valueArray.push(complementsValue);
                 }
 
             });
@@ -273,7 +272,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
     const groupEqualItems = (itens: any[]) => {
         const newArray: any[] = [];
         itens.forEach((item: any) => {
-            if (!newArray.find((newItem: any) => newItem.name === item.name) || item.obs.length > 0 || item.details.complements.length > 0) {
+            if (!newArray.find((newItem: any) => newItem.name === item.name) || Boolean(item.obs) === true || item.details.complements.length > 0) {
                 newArray.push(item);
             } else {
                 newArray.find((newItem: any) => newItem.name === item.name).quantity += item.quantity;
@@ -286,7 +285,7 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
 
     if (payload.printType && payload.printType === 'command') {
         const allItens = command.carts.map((cart: any) => cart.itens.map((item: any) => item));
-        const groupedItens = groupEqualItems(allItens);
+        const groupedItens = groupEqualItems(allItens.flat());
         groupedItens.map((item: any) => getPrintBody(item, printBody));
     } else {
         if (isTable && table.opened) {
@@ -539,7 +538,8 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon.status === true))
                 || (payload.printType && payload.printType === "command" && command.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true))
             ) {
-                const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
+                let addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
+                !addonPayment && (addonPayment = command.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status));
                 const { type, value, valueType } = addonPayment.addon;
                 const taxOrDiscount = type === "fee" ? "Taxa" : "Desconto";
                 const addonValue = valueType === "fixed" ? value : (value / 100) * cartTotal;
@@ -865,7 +865,8 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                 (cart.formsPayment.some((form: { addon: any }) => form.addon) && cart.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true))
                 || (payload.printType && payload.printType === "command" && command.formsPayment.some((form: { addon: { status: boolean; }; }) => form.addon?.status === true))
             ) {
-                const addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
+                let addonPayment = cart.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status);
+                !addonPayment && (addonPayment = command.formsPayment.find((form: { addon: { status: boolean; }; }) => form.addon.status));
                 const { type, value, valueType } = addonPayment.addon;
                 const taxOrDiscount = type === "fee" ? "Taxa" : "Desconto";
                 const addonValue = valueType === "fixed" ? value : (value / 100) * cartTotal;
