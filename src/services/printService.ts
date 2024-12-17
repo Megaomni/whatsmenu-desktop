@@ -429,11 +429,11 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                         if (fee.type === 'fixed' && fee.quantity > 0) {
                             const tax: PosPrintData = {
                                 type: 'text',
-                                value: characterPrint([`${fee.code} (${fee.quantity}x):`, `${fee.value.toFixed(2)}`], "‎", "space-between", maxLength),
+                                value: characterPrint([`${fee.code} (${fee.quantity}x):`, `${(fee.value * fee.quantity).toFixed(2)}`], "‎", "space-between", maxLength),
                                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                             }
                             array.push(tax);
-                            valueArray.push(fee.value);
+                            valueArray.push(fee.value * fee.quantity);
                         }
                     })
                 }
@@ -744,12 +744,12 @@ export const printTest = async (payload: any, printOptions: Electron.WebContents
                                 type: 'text',
                                 value: `<div style="display: flex; justify-content: space-between;">
                                         <span>${fee.code} (${fee.quantity}x):</span>
-                                        <span>${fee.value.toFixed(2)}</span>
+                                        <span>${(fee.value * fee.quantity).toFixed(2)}</span>
                                     </div>`,
                                 style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                             }
                             array.push(tax);
-                            valueArray.push(fee.value);
+                            valueArray.push(fee.value * fee.quantity);
                         }
                     })
                 }
