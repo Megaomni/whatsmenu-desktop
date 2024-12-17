@@ -44,7 +44,7 @@ export const create_dashboard_tab = () => {
 
       store.onDidAnyChange((newValue) => {
         const newProfile = newValue.configs.profile;
-        if (newValue.configs.profile.options.integrations.ifood) {
+        if (newValue.configs.profile.options?.integrations?.ifood) {
           getMerchantApi({ profile: newProfile });
           merchant = getMerchant();
           if (open && merchant && newProfile.options.integrations.ifood.merchantId) {
