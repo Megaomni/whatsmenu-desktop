@@ -184,3 +184,35 @@ interface ProfileOptions {
   };
   inventoryControl: boolean;
 }
+
+export interface ProfileFormPayment {
+  payment: string
+  status?: boolean
+  flags?: { code: string; image: string; name: string }[]
+  newFlag?: string
+  label: string
+  key?: { type: string; value: string }
+  addon: AddonType
+}
+
+export interface AddonType {
+  status: boolean
+  type: 'fee' | 'discount' | string
+  valueType: 'fixed' | 'percentage' | string
+  value: number
+}
+
+export interface ProfileFee {
+  id?: number | null
+  code: string | null
+  profileId?: number | null
+  type: 'percent' | 'fixed' | null
+  value: number
+  quantity?: number
+  oldQuantity?: number
+  status: boolean | null
+  automatic: boolean
+  deleted_at?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
