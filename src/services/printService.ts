@@ -8,19 +8,85 @@ import { CommandType } from "../@types/command";
 type PrintPayloadType = {
     cart: CartType;
     profile: ProfileType;
-    table: TableType;
-    command: CommandType;
-    printType: 'table' | 'command';
+    table?: TableType;
+    command?: CommandType;
+    printType?: 'table' | 'command';
+}
+
+const generateNFCe = (cart: CartType, isGeneric: boolean, hr: PosPrintData, marginLeft: number, marginRight: number): PosPrintData[] => {
+    if (!cart.controls.grovenfe) return
+    const { fiscal_note } = cart.controls.grovenfe;
+    const finalArray = [hr];
+
+    const accessKey: PosPrintData = {
+        type: 'text',
+        value: "Consulte pela Chave de Acesso em:",
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+    }
+
+    const keyUrl: PosPrintData = {
+        type: 'text',
+        value: `${fiscal_note.aditional_info.url_consulta_nf}`,
+        style: { fontWeight: "bold", fontSize: "10px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
+    }
+
+    const key: PosPrintData = {
+        type: 'text',
+        value: "Chave de acesso:",
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+    }
+
+    const keyValue: PosPrintData = {
+        type: 'text',
+        value: `${fiscal_note.aditional_info.chave_nfe.replace(/\D/g, "")}`,
+        style: { fontWeight: "bold", fontSize: "10px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
+    }
+
+    const protocolLabel: PosPrintData = {
+        type: 'text',
+        value: "Protocolo:",
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+    }
+
+    const protocol: PosPrintData = {
+        type: 'text',
+        value: `${fiscal_note.aditional_info.protocolo}`,
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+    }
+
+    const protocolDate: PosPrintData = {
+        type: 'text',
+        value: `${DateTime.fromISO(fiscal_note.created_at).toFormat("dd/MM/yyyy HH:mm:ss")}`,
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
+    }
+
+    const qrLabel: PosPrintData = {
+        type: 'text',
+        value: "Consulta via leitor de QR Code:",
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+    }
+
+    const qrCode: PosPrintData = {
+        type: 'qrCode',
+        position: 'center',
+        value: `${fiscal_note.aditional_info.url_consulta_nf}`,
+        style: { textAlign: 'center', marginBottom: "5px", marginRight: `${marginRight}px` }
+    }
+
+    finalArray.push(accessKey, keyUrl, key, keyValue, protocolLabel, protocol, protocolDate, qrLabel, qrCode);
+    return finalArray;
 }
 
 export const printTest = async (payload: PrintPayloadType, printOptions: Electron.WebContentsPrintOptions, paperSize: number, isGeneric: boolean) => {
     const { cart, profile, table, command } = payload;
-    console.log(payload);
+    console.log("XXXXXXXXX", payload);
     const { left, right } = printOptions.margins;
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
+    const isIfood = cart.origin === 'ifood';
+    const isNFCe = cart.controls.grovenfe;
 
     let maxLength = 0;
     if (isGeneric) {
@@ -159,6 +225,15 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
                 }
                 upperPrint.push(clientPhone);
             }
+
+            if (isIfood) {
+                const ifoodCode: PosPrintData = {
+                    type: 'text',
+                    value: `Codigo localizador: ${cart.client?.codeLocalizer}`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                }
+                upperPrint.push(ifoodCode);
+            }
         } else if (table.opened) {
             const creationTime = DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }).toFormat("HH:mm");
             const checkoutTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).toFormat("HH:mm");
@@ -212,6 +287,15 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
                 style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
             }
             upperPrint.push(waiter);
+        }
+
+        if (cart.secretNumber) {
+            const secretNumber: PosPrintData = {
+                type: 'text',
+                value: `CNPJ: ${cart.secretNumber}`,
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            }
+            upperPrint.push(secretNumber);
         }
     }
     getUpperPrint();
@@ -488,6 +572,16 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
                 }
             }
 
+            if (isIfood && cart.taxIfood && cart.taxIfood > 0) {
+                const taxIfood: PosPrintData = {
+                    type: 'text',
+                    value: characterPrint(["Taxa Servico Ifood:", `${cart.taxIfood.toFixed(2)}`], "‎", "space-between", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+                array.push(taxIfood);
+                valueArray.push(cart.taxIfood);
+            }
+
             if (cart.cupom) {
                 const { type, value } = cart.cupom;
                 if (type === "percent") {
@@ -573,46 +667,71 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
             }
             array.push(total);
 
-            const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-                ? {
+            if (isIfood) {
+                const iFood: PosPrintData = {
                     type: 'text',
-                    value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                    value: characterPrint(["PEDIDO IFOOD"], "‎", "center", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px" }
                 }
-                : {
-                    type: 'text',
-                    value: characterPrint(
-                        [
-                            "Pagamento em:",
-                            `${isTable && table.opened
-                                ? table.opened.formsPayment.map((formPayment) => `${formPayment.label}`)
-                                : cart.formsPayment.map((formPayment) => `${formPayment.label}`)}`
-                        ],
-                        "‎",
-                        "space-between",
-                        maxLength
-                    ),
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-                }
-            array.push(paidWith);
 
-            if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money") && cart.type !== "T") {
-                const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
-                const moneyPaid: PosPrintData = {
+                const pickupCode: PosPrintData = {
                     type: 'text',
-                    value: characterPrint(["Troco para:", `${Number(moneyPayment.change) !== totalValue ? `${Number(moneyPayment.change).toFixed(2)}` : "Não é necessário"}`], "‎", "space-between", maxLength),
+                    value: characterPrint(["Código de coleta:", `${cart.controls.pickupCode}`], "‎", "space-between", maxLength),
                     style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                 }
 
-                if (Number(moneyPayment.change) > totalValue) {
-                    const change: PosPrintData = {
+                array.push(iFood, pickupCode);
+            }
+
+            if (cart.statusPayment === "paid") {
+                const paid: PosPrintData = {
+                    type: 'text',
+                    value: characterPrint(["PAGO ONLINE"], "‎", "center", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px" }
+                }
+                array.push(paid);
+            } else {
+                const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+                    ? {
                         type: 'text',
-                        value: characterPrint(["Troco:", `${(Number(moneyPayment.change) - totalValue).toFixed(2)}`], "‎", "space-between", maxLength),
+                        value: characterPrint(["Pagamento em:", `${command.formsPayment.map((formPayment) => `${formPayment.label}`)}`], "‎", "space-between", maxLength),
                         style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                     }
-                    array.push(moneyPaid, change);
-                } else {
-                    array.push(moneyPaid);
+                    : {
+                        type: 'text',
+                        value: characterPrint(
+                            [
+                                "Pagamento em:",
+                                `${isTable && table.opened
+                                    ? table.opened.formsPayment.map((formPayment) => `${formPayment.label}`)
+                                    : cart.formsPayment.map((formPayment) => `${formPayment.label}`)}`
+                            ],
+                            "‎",
+                            "space-between",
+                            maxLength
+                        ),
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                    }
+                array.push(paidWith);
+
+                if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money") && cart.type !== "T") {
+                    const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
+                    const moneyPaid: PosPrintData = {
+                        type: 'text',
+                        value: characterPrint(["Troco para:", `${Number(moneyPayment.change) !== totalValue ? `${Number(moneyPayment.change).toFixed(2)}` : "Não é necessário"}`], "‎", "space-between", maxLength),
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                    }
+
+                    if (Number(moneyPayment.change) > totalValue) {
+                        const change: PosPrintData = {
+                            type: 'text',
+                            value: characterPrint(["Troco:", `${(Number(moneyPayment.change) - totalValue).toFixed(2)}`], "‎", "space-between", maxLength),
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                        }
+                        array.push(moneyPaid, change);
+                    } else {
+                        array.push(moneyPaid);
+                    }
                 }
             }
             printPayment.push(...array);
@@ -813,6 +932,19 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
                 }
             }
 
+            if (isIfood && cart.taxIfood && cart.taxIfood > 0) {
+                const taxIfood: PosPrintData = {
+                    type: 'text',
+                    value: `<div style="display: flex; justify-content: space-between;">
+                            <span>Taxa Servico Ifood:</span>
+                            <span>${cart.taxIfood.toFixed(2)}</span>
+                        </div>`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+                array.push(taxIfood);
+                valueArray.push(cart.taxIfood);
+            }
+
             if (cart.cupom) {
                 const { type, value } = cart.cupom;
                 if (type === "percent") {
@@ -906,52 +1038,78 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
             }
             array.push(total);
 
-            const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
-                ? {
+            if (isIfood) {
+                const iFood: PosPrintData = {
+                    type: 'text',
+                    value: "PEDIDO IFOOD",
+                    style: { fontWeight: "bold", textAlign: "center", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+
+                const pickupCode: PosPrintData = {
                     type: 'text',
                     value: `<div style="display: flex; justify-content: space-between;">
+                        <span>Código de coleta:</span>
+                        <span>${cart.controls.pickupCode}</span>
+                    </div>`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+
+                array.push(iFood, pickupCode);
+            }
+
+            if (cart.statusPayment === 'paid') {
+                const paid: PosPrintData = {
+                    type: 'text',
+                    value: "PAGO ONLINE",
+                    style: { fontWeight: "bold", textAlign: "center", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+                array.push(paid);
+            } else {
+                const paidWith: PosPrintData = payload.printType && payload.printType === 'command'
+                    ? {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
                         <span>Pagamento em:</span>
                         <span>${command.formsPayment.map((formPayment) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                }
-                : {
-                    type: 'text',
-                    value: `<div style="display: flex; justify-content: space-between;">
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    }
+                    : {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
                         <span>Pagamento em:</span>
                         <span>${isTable && table.opened
-                            ? table.opened.formsPayment.map((formPayment) => `${formPayment.label}`)
-                            : cart.formsPayment.map((formPayment) => `${formPayment.label}`)}</span>
+                                ? table.opened.formsPayment.map((formPayment) => `${formPayment.label}`)
+                                : cart.formsPayment.map((formPayment) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                }
-            array.push(paidWith);
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    }
+                array.push(paidWith);
 
-
-
-            if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money").change && cart.type !== "T") {
-                const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
-                const moneyPaid: PosPrintData = {
-                    type: 'text',
-                    value: `<div style="display: flex; justify-content: space-between;">
+                if (cart.formsPayment.some((form: { payment: string; }) => form.payment === "money") && cart.formsPayment.find((form: { payment: string; }) => form.payment === "money").change && cart.type !== "T") {
+                    const moneyPayment = cart.formsPayment.find((form: { payment: string; }) => form.payment === "money");
+                    const moneyPaid: PosPrintData = {
+                        type: 'text',
+                        value: `<div style="display: flex; justify-content: space-between;">
                             <span>Troco para:</span>
                             <span>${Number(moneyPayment.change) !== totalValue ? `${Number(moneyPayment.change).toFixed(2)}` : "Não é necessário"}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    }
 
-                if (Number(moneyPayment.change) > totalValue) {
-                    const change: PosPrintData = {
-                        type: 'text',
-                        value: `<div style="display: flex; justify-content: space-between;">
+                    if (Number(moneyPayment.change) > totalValue) {
+                        const change: PosPrintData = {
+                            type: 'text',
+                            value: `<div style="display: flex; justify-content: space-between;">
                                 <span>Troco:</span>
                                 <span>${(Number(moneyPayment.change) - totalValue).toFixed(2)}</span>
                             </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                        }
+                        array.push(moneyPaid, change);
+                    } else {
+                        array.push(moneyPaid);
                     }
-                    array.push(moneyPaid, change);
-                } else {
-                    array.push(moneyPaid);
                 }
             }
             printPayment.push(...array);
@@ -975,8 +1133,15 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
             type: 'text',
             value: `${cart.address.neighborhood} - ${cart.address.city}`,
             style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+        },
+        {
+            type: 'text',
+            value: `${cart.address.reference ?? ""}`,
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         }
     ] : [];
+
+    const printNFCe: PosPrintData[] = generateNFCe(cart, isGeneric, hr, marginLeft, marginRight);
 
     const printFooter: PosPrintData[] = isGeneric
         ? [
@@ -1024,6 +1189,7 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
         ...orderObs,
         ...printPayment,
         ...printAdress,
+        ...printNFCe,
         ...printFooter,
     ];
 
