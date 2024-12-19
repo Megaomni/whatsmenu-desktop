@@ -1,5 +1,4 @@
 import { PosPrintData, PosPrinter } from "electron-pos-printer";
-import qrcode from "qrcode-terminal";
 import { DateTime } from "luxon";
 import { CartItemType, CartType } from "../@types/cart";
 import { AddonType, ProfileType } from "../@types/profile";
