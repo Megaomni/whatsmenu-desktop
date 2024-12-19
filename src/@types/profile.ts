@@ -86,7 +86,23 @@ interface ProfileOptions {
     cashierManagement: boolean;
   };
   integrations: {
-    ifood: string;
+    ifood?: {
+      created_at?: string
+      merchantId?: string
+      autoOrder?: boolean
+    }
+    grovenfe?: {
+      company_id: number
+      plan: any
+      config: {
+        fiscal_notes: {
+          day_limiter: null | number
+          forms_payments: Array<{ type: string }>
+        }
+      }
+      delivery_ncm_code?: string
+      created_at: string
+    }
   };
   asaas?: {
     id: string;
