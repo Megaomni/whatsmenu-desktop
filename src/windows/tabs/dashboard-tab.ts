@@ -18,7 +18,7 @@ export const create_dashboard_tab = () => {
   let pollingInterval: NodeJS.Timeout | null = null;
 
   tab.webContents.on("did-finish-load", () => {
-    const profile = getProfile();
+    const profile = getProfile()
     let merchant: MerchantType;
     let open = false;
     if (profile) {
@@ -43,15 +43,16 @@ export const create_dashboard_tab = () => {
       }
 
       store.onDidAnyChange((newValue) => {
-        if (newValue.configs.profile.options.integrations) {
-          getMerchantApi({ profile });
+        const newProfile = newValue.configs.profile;
+        if (newValue.configs.profile.options?.integrations?.ifood) {
+          getMerchantApi({ profile: newProfile });
           merchant = getMerchant();
-          if (open && merchant) {
+          if (open && merchant && newProfile.options.integrations.ifood.merchantId) {
             if (pollingInterval) {
               clearInterval(pollingInterval);
             }
             pollingInterval = setInterval(
-              () => polling({ merchant, profile }),
+              () => polling({ merchant, profile: newProfile }),
               30 * 1000,
             );
           }
