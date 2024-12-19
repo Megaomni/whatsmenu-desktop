@@ -1,4 +1,5 @@
 import { PosPrintData, PosPrinter } from "electron-pos-printer";
+import qrcode from "qrcode-terminal";
 import { DateTime } from "luxon";
 import { CartItemType, CartType } from "../@types/cart";
 import { AddonType, ProfileType } from "../@types/profile";
@@ -13,7 +14,7 @@ type PrintPayloadType = {
     printType?: 'table' | 'command';
 }
 
-const generateNFCe = (cart: CartType, isGeneric: boolean, hr: PosPrintData, marginLeft: number, marginRight: number): PosPrintData[] => {
+const generateNFCe = async (cart: CartType, isGeneric: boolean, hr: PosPrintData, marginLeft: number, marginRight: number): Promise<PosPrintData[]> => {
     if (!cart.controls.grovenfe) return
     const { fiscal_note } = cart.controls.grovenfe;
     const finalArray = [hr];
@@ -60,20 +61,38 @@ const generateNFCe = (cart: CartType, isGeneric: boolean, hr: PosPrintData, marg
         style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
     }
 
-    const qrLabel: PosPrintData = {
-        type: 'text',
-        value: "Consulta via leitor de QR Code:",
-        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+    finalArray.push(accessKey, keyUrl, key, keyValue, protocolLabel, protocol, protocolDate);
+
+    if (isGeneric) {
+        const qrLabel: PosPrintData = {
+            type: 'text',
+            value: "Consulta via link:",
+            style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+        }
+
+        const printData: PosPrintData = {
+            type: 'text',
+            value: fiscal_note.aditional_info.qrcode_url,
+            style: { fontWeight: 'bold', fontSize: '14px' }
+        };
+
+        finalArray.push(qrLabel, printData);
+    } else {
+        const qrLabel: PosPrintData = {
+            type: 'text',
+            value: "Consulta via leitor de QR Code:",
+            style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+        }
+
+        const qrCode: PosPrintData = {
+            type: 'qrCode',
+            position: 'center',
+            value: fiscal_note.aditional_info.qrcode_url,
+            style: { textAlign: 'center', marginBottom: "5px", marginRight: `${marginRight}px` }
+        }
+        finalArray.push(qrLabel, qrCode);
     }
 
-    const qrCode: PosPrintData = {
-        type: 'qrCode',
-        position: 'center',
-        value: `${fiscal_note.aditional_info.url_consulta_nf}`,
-        style: { textAlign: 'center', marginBottom: "5px", marginRight: `${marginRight}px` }
-    }
-
-    finalArray.push(accessKey, keyUrl, key, keyValue, protocolLabel, protocol, protocolDate, qrLabel, qrCode);
     return finalArray;
 }
 
@@ -1141,7 +1160,7 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
         }
     ] : [];
 
-    const printNFCe: PosPrintData[] = generateNFCe(cart, isGeneric, hr, marginLeft, marginRight);
+    const printNFCe: PosPrintData[] = isNFCe ? await generateNFCe(cart, isGeneric, hr, marginLeft, marginRight) : [];
 
     const printFooter: PosPrintData[] = isGeneric
         ? [
