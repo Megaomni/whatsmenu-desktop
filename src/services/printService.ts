@@ -97,7 +97,7 @@ const generateNFCe = async (cart: CartType, isGeneric: boolean, hr: PosPrintData
 
 export const printTest = async (payload: PrintPayloadType, printOptions: Electron.WebContentsPrintOptions, paperSize: number, isGeneric: boolean) => {
     const { cart, profile, table, command } = payload;
-    console.log("XXXXXXXXX", payload);
+    console.log("XXXXXXXXX", cart.itens[0].details.complements);
     const { left, right } = printOptions.margins;
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
@@ -343,22 +343,36 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
         if (parsedItem.details.complements.length > 0) {
             parsedItem.details.complements.map((complement) => {
                 if (complement.itens.length > 1) {
+                    const complementCategory: PosPrintData = {
+                        type: 'text',
+                        value: `${complement.name}`,
+                        style: { fontWeight: "bold", fontSize: "16px", marginLeft: `${marginLeft + 6}px`, marginTop: "3px" }
+                    }
+                    array.push(complementCategory);
+
                     complement.itens.map((parsedItem) => {
                         const complementsValue = parsedItem.quantity * parsedItem.value;
                         const complementItem: PosPrintData = {
                             type: 'text',
                             value: `${parsedItem.quantity}x - ${parsedItem.name} ${parsedItem.value > 0 ? `(${complementsValue.toFixed(2)})` : ''}`,
-                            style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft + 12}px` }
                         }
                         array.push(complementItem);
                         valueArray.push(complementsValue);
                     })
                 } else {
+                    const complementCategory: PosPrintData = {
+                        type: 'text',
+                        value: `${complement.name}`,
+                        style: { fontWeight: "bold", fontSize: "16px", marginLeft: `${marginLeft + 6}px`, marginTop: "3px" }
+                    }
+                    array.push(complementCategory);
+
                     const complementsValue = complement.itens[0].quantity * complement.itens[0].value;
                     const complementItem: PosPrintData = {
                         type: 'text',
                         value: `${complement.itens[0].quantity}x - ${complement.itens[0].name} ${complement.itens[0].value > 0 ? `(${complementsValue.toFixed(2)})` : ''}`,
-                        style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
+                        style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft + 12}px` }
                     }
                     array.push(complementItem);
                     valueArray.push(complementsValue);
