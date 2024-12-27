@@ -226,10 +226,19 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
             }
             upperPrint.push(orderCode, clientName);
 
-            if (cart.type === 'P') {
+            if (cart.type === 'P' && isIfood) {
                 const packageDate: PosPrintData = {
                     type: 'text',
-                    value: DateTime.fromSQL(cart.packageDate, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm"),
+                    value: `Data de entrega: ${DateTime.fromISO(cart.packageDate, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm")}`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                }
+                upperPrint.push(packageDate);
+            }
+
+            if (cart.type === 'P' && !isIfood) {
+                const packageDate: PosPrintData = {
+                    type: 'text',
+                    value: `Data de entrega: ${DateTime.fromSQL(cart.packageDate, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm")}`,
                     style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
                 }
                 upperPrint.push(packageDate);
@@ -469,8 +478,50 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
         const array: PosPrintData[] = [];
         const valueArray: number[] = [];
 
+        const sponsorCupomIfood = ({ cart }: { cart: CartType }) => {
+            if (cart.ifoodAditionalInfo?.metadata.benefits) {
+              return cart.ifoodAditionalInfo?.metadata.benefits[0].sponsorshipValues
+                .filter((sponsorValue) => sponsorValue.value > 0)
+                .map((sponsorName) => {
+                  switch (sponsorName.description) {
+                    case 'Incentivo da Loja':
+                      return 'LOJA'
+                    case 'Incentivo do iFood':
+                      return 'IFOOD'
+                    case 'Incentivo da Industria':
+                      return 'Industria'
+                    case 'Incentivo da Rede':
+                      return 'Rede'
+                    default:
+                      return ''
+                  }
+                })
+            }
+          }
+
+          const valuesSponsorCupomIfood = ({ cart }: { cart: CartType }) => {
+            if (cart.ifoodAditionalInfo?.metadata.benefits) {
+              return cart.ifoodAditionalInfo?.metadata.benefits[0].sponsorshipValues
+                .filter((sponsorValue) => sponsorValue.value > 0)
+                .map((sponsorName) => {
+                  switch (sponsorName.description) {
+                    case 'Incentivo da Loja':
+                      return sponsorName.value
+                    case 'Incentivo do iFood':
+                      return sponsorName.value
+                    case 'Incentivo da Industria':
+                      return sponsorName.value
+                    case 'Incentivo da Rede':
+                      return sponsorName.value
+                    default:
+                      return 0
+                  }
+                })
+            }
+          }
+
         if (isGeneric) {
-            if (cart.cupom) {
+            if (cart.cupom && !isIfood) {
                 const cupomName: PosPrintData = {
                     type: 'text',
                     value: characterPrint(["Cupom usado:", `${cart.cupom.code}`], "‎", "space-between", maxLength),
@@ -479,6 +530,23 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
                 array.push(cupomName);
             }
 
+            if (cart.cupom && isIfood) {
+                const cupomName: PosPrintData = {
+                    type: 'text',
+                    value: characterPrint(["Cupom dado:", `${sponsorCupomIfood({cart})}`], "‎", "space-between", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+                array.push(cupomName);
+            }
+
+            if (isIfood) {
+                const cupomName: PosPrintData = {
+                    type: 'text',
+                    value: characterPrint(["Valores de Cada cupom:", `${valuesSponsorCupomIfood({cart})}`], "‎", "space-between", maxLength),
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                }
+                array.push(cupomName);
+            }
 
             if (payload.printType && payload.printType === 'command') {
                 const commandTotalPrices: number[] = command.carts.map((cart) => cart.total);
@@ -768,7 +836,7 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
             }
             printPayment.push(...array);
         } else {
-            if (cart.cupom) {
+            if (cart.cupom && !isIfood) {
                 const cupomName: PosPrintData = {
                     type: 'text',
                     value: `<div style="display: flex; justify-content: space-between;">
@@ -780,6 +848,29 @@ export const printTest = async (payload: PrintPayloadType, printOptions: Electro
                 array.push(cupomName);
             }
 
+            if (cart.cupom && isIfood) {
+                const cupomName: PosPrintData = {
+                    type: 'text',
+                    value: `<div style="display: flex; justify-content: space-between;">
+                            <span>Cupom Dado:</span>
+                            <span>${sponsorCupomIfood({ cart })}</span>
+                        </div>`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+                array.push(cupomName);
+            }
+
+            if ( isIfood) {
+                const cupomName: PosPrintData = {
+                    type: 'text',
+                    value: `<div style="display: flex; justify-content: space-between;">
+                            <span>Valores de cada cupom:</span>
+                            <span>${valuesSponsorCupomIfood({ cart })}</span>
+                        </div>`,
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                }
+                array.push(cupomName);
+            }
 
             if (payload.printType && payload.printType === 'command') {
                 const commandTotalPrices: number[] = command.carts.map((cart) => cart.total);
