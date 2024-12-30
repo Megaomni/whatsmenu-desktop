@@ -16,7 +16,7 @@ import { DateTime } from "luxon";
 import { VoucherType } from "../@types/voucher";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { vouchersToNotifyQueue } from "../lib/queue";
-import { printTest } from "../services/printService";
+import { printService } from "../services/printService";
 
 ipcMain.on(
   "send-message",
@@ -86,7 +86,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
           scaleFactor,
         };
 
-        await printTest(payload, printOptions, paperSize, isGeneric);
+        await printService(payload, printOptions, paperSize, isGeneric);
 
         //     payload.profile.options.print.width =
         //       paperSize !== 58 ? "302px" : "219px";
