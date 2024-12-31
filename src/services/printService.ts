@@ -4,7 +4,6 @@ import { CartItemType, CartType } from "../@types/cart";
 import { AddonType, ProfileType } from "../@types/profile";
 import { TableType } from "../@types/table";
 import { CommandType } from "../@types/command";
-import { generate } from "qrcode-terminal";
 
 type PrintPayloadType = {
     cart: CartType;
@@ -475,18 +474,31 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
         }
 
         if (isTable && table.opened && payload.printType !== 'command') {
-            cart.command.fees.map((fee) => {
-                if (fee.type === 'percent') {
-                    const percentValue = (fee.value * cartTotal) / 100;
-                    const tax: PosPrintData = {
-                        type: 'text',
-                        value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+            cart.command
+                ? cart.command.fees.map((fee) => {
+                    if (fee.type === 'percent') {
+                        const percentValue = (fee.value * cartTotal) / 100;
+                        const tax: PosPrintData = {
+                            type: 'text',
+                            value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                        }
+                        array.push(tax);
+                        valueArray.push(percentValue);
                     }
-                    array.push(tax);
-                    valueArray.push(percentValue);
-                }
-            })
+                })
+                : table.opened.commands[0].fees.map((fee) => {
+                    if (fee.type === 'percent') {
+                        const percentValue = (fee.value * cartTotal) / 100;
+                        const tax: PosPrintData = {
+                            type: 'text',
+                            value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                        }
+                        array.push(tax);
+                        valueArray.push(percentValue);
+                    }
+                })
 
             if (table.opened && table.opened.commands.length > 1) {
                 const allFixedFees = table.opened?.commands.map((command) => {
@@ -495,19 +507,19 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
                 const totalFees = allFixedFees.flat().reduce((acc: number, fee) => acc + fee.quantity, 0);
 
-                cart.command.fees.map((fee) => {
+                table.opened.commands[0].fees.map((fee) => {
                     if (fee.type === 'fixed' && totalFees > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
                             value: characterPrint([`${fee.code} (${totalFees}x):`, `${(fee.value * totalFees).toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
                         }
                         array.push(tax);
                         valueArray.push(fee.value * totalFees);
                     }
                 })
             } else {
-                cart.command.fees.map((fee) => {
+                table.opened.commands[0].fees.map((fee) => {
                     if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -849,20 +861,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
                 const totalFees = allFixedFees.flat().reduce((acc: number, fee) => acc + fee.quantity, 0);
 
-                cart.command ? cart.command.fees.map((fee) => {
-                    if (fee.type === 'fixed' && totalFees > 0) {
-                        const tax: PosPrintData = {
-                            type: 'text',
-                            value: `<div style="display: flex; justify-content: space-between;">
-                                        <span>${fee.code} (${totalFees}x):</span>
-                                        <span>${(fee.value * totalFees).toFixed(2)}</span>
-                                    </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                        }
-                        array.push(tax);
-                        valueArray.push(fee.value * totalFees);
-                    }
-                }) : table.opened.commands[0].fees.map((fee) => {
+                table.opened.commands[0].fees.map((fee) => {
                     if (fee.type === 'fixed' && totalFees > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -877,7 +876,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                     }
                 })
             } else {
-                cart.command.fees.map((fee) => {
+                table.opened.commands[0].fees.map((fee) => {
                     if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -1277,6 +1276,10 @@ const generateFooter = (isTable: boolean, isDelivery: boolean, isGeneric: boolea
 export const printService = async (payload: PrintPayloadType, printOptions: Electron.WebContentsPrintOptions, paperSize: number, isGeneric: boolean) => {
     const { cart, table } = payload;
     const { left, right } = printOptions.margins;
+    console.log("table", table?.opened?.commands[0]?.fees);
+    console.log("cart", cart.command?.fees);
+
+
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
