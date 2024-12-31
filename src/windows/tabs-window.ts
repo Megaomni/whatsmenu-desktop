@@ -48,8 +48,16 @@ export const tabsWindow = {
     });
 
     ipcMain.on("setActiveTab", (_, tabIndex) => {
+      const profile = store.get("configs.profile") as ProfileType;
       window.tabs.forEach((tab) => {
         tab.setVisible(tab.id === tabIndex);
+        if (tabIndex === "pdv") {
+          tab.render(profile?.slug, "/pdv");
+        }
+
+        if (tabIndex === "menu") {
+          tab.render(profile?.slug, "");
+        }
       });
     });
 
