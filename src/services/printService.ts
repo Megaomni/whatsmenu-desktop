@@ -141,7 +141,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             }
             upperPrint.push(ifoodCode);
         }
-    } else if (table.opened) {
+    } else if (table?.opened) {
         const creationTime = DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }).toFormat("HH:mm");
         const checkoutTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).toFormat("HH:mm");
         const stayingTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).diff(DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }), ['minutes']).minutes;
@@ -176,7 +176,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
     } else {
         const orderCode: PosPrintData = {
             type: 'text',
-            value: `Mesa: Mesa ${table.name}`,
+            value: `Mesa: Mesa ${table?.name ?? cart.command.opened.table.name}`,
             style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         }
         upperPrint.push(orderCode);
@@ -309,7 +309,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
         const groupedItens = groupEqualItems(allItens.flat());
         groupedItens.map((item) => getPrintBody(item, printBody));
     } else {
-        if (isTable && table.opened) {
+        if (isTable && table?.opened) {
             const { commands } = table.opened;
             const allItens = commands.map((command) => command.carts.map((cart) => cart.itens.map((item) => item)));
             if (allItens.flat(2).length === 0) {
@@ -1276,10 +1276,7 @@ const generateFooter = (isTable: boolean, isDelivery: boolean, isGeneric: boolea
 export const printService = async (payload: PrintPayloadType, printOptions: Electron.WebContentsPrintOptions, paperSize: number, isGeneric: boolean) => {
     const { cart, table } = payload;
     const { left, right } = printOptions.margins;
-    console.log("table", table?.opened?.commands[0]?.fees);
-    console.log("cart", cart.command?.fees);
-
-
+    console.log("table", cart.command.opened.table.name);
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
@@ -1318,7 +1315,7 @@ export const printService = async (payload: PrintPayloadType, printOptions: Elec
 
     const itensPrint: PosPrintData[] = generateItens(payload, isGeneric, isTable, hr, marginLeft, marginRight, maxLength);
 
-    const printIndividualCommands: PosPrintData[] = isTable && table.opened?.commands.length > 1 && table.opened?.formsPayment.length > 0 && payload.printType !== 'command'
+    const printIndividualCommands: PosPrintData[] = isTable && table?.opened?.commands.length > 1 && table?.opened?.formsPayment.length > 0 && payload.printType !== 'command'
         ? generateIndCommands(table, marginLeft, marginRight, hr)
         : [];
 
