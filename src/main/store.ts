@@ -13,6 +13,7 @@ import { ClientType } from "../@types/client";
 export interface Store {
   configs: {
     printing: {
+      locations: string[];
       printers: Printer[];
     };
     whatsapp: {
@@ -42,6 +43,7 @@ export const store = new ElectronStore<Store>({
   defaults: {
     configs: {
       printing: {
+        locations: ["Caixa", "Cozinha"],
         printers: [],
       },
       whatsapp: {
@@ -54,6 +56,28 @@ export const store = new ElectronStore<Store>({
     },
   },
 });
+
+const setDefaultLocations = () => {
+  store.set("configs.printing.locations", ["Caixa", "Cozinha"]);
+}
+
+export const setPrinterLocation = (location: string) => {
+  const locations = getPrinterLocations();
+  store.set("configs.printing.locations", [...locations, location]);
+}
+
+export const getPrinterLocations = () => {
+  const locations = store.get<"configs.printing.locations", string[]>(
+    "configs.printing.locations",
+  );
+  if (!locations) {
+    setDefaultLocations();
+    return store.get<"configs.printing.locations", string[]>(
+      "configs.printing.locations",
+    )
+  }
+  return locations;
+}
 
 export const getPrinters = () =>
   store.get<"configs.printing.printers", Printer[]>(

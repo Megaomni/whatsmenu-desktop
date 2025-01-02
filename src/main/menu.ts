@@ -4,7 +4,9 @@ import { Printer } from "./../@types/store";
 import {
   addPrinter,
   deletePrinter,
+  getPrinterLocations,
   getPrinters,
+  setPrinterLocation,
   store,
   updatePrinter,
 } from "./store";
@@ -13,6 +15,21 @@ import { randomUUID } from "node:crypto";
 import { mainWindow } from ".";
 
 const isMac = process.platform === "darwin";
+
+const locationDialog = async () => {
+  const location = await prompt({
+    title: "Localização da impressora",
+    label: "Localização",
+    inputAttrs: { type: "text" },
+    value: "",
+    height: 200,
+    buttonLabels: {
+      ok: "OK",
+      cancel: "Cancelar",
+    },
+  });
+  if (location) setPrinterLocation(location);
+}
 
 const marginLeftDialog = async (printerSelected: Printer) => {
   const marginLeft = await prompt({
@@ -211,6 +228,24 @@ const updateMenu = async () => {
         },
         { type: "separator" },
         {
+          label: "Locação da Impressora",
+          submenu: [
+            ...getPrinterLocations().map((location) => ({
+              label: location,
+              type: "radio",
+              checked: printer.options["printer-location"] === location,
+              click: () =>
+                updatePrinter({ id: printer.id, options: { "printer-location": location, "printer-make-and-model": printer.options["printer-make-and-model"], system_driverinfo: printer.options.system_driverinfo } }),
+            })),
+            { type: "separator" },
+            {
+              label: "+ Adicionar locação",
+              click: () => locationDialog(),
+            },
+          ]
+        },
+        { type: "separator" },
+        {
           label: "58mm",
           type: "radio",
           checked: printer.paperSize === 58,
@@ -222,15 +257,15 @@ const updateMenu = async () => {
           checked: printer.paperSize === 80,
           click: () => updatePrinter({ id: printer.id, paperSize: 80 }),
         },
-        {
-          label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
-            ? " - " + printer.paperSize + "mm"
-            : ""
-            }`,
-          type: "radio",
-          checked: printer.paperSize !== 80 && printer.paperSize !== 58,
-          click: () => paperSizeDialog(printer),
-        },
+        // {
+        //   label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
+        //     ? " - " + printer.paperSize + "mm"
+        //     : ""
+        //     }`,
+        //   type: "radio",
+        //   checked: printer.paperSize !== 80 && printer.paperSize !== 58,
+        //   click: () => paperSizeDialog(printer),
+        // },
         { type: "separator" },
         {
           label: `Cópias - ${printer.copies}`,
@@ -244,22 +279,22 @@ const updateMenu = async () => {
           click: () =>
             updatePrinter({ id: printer.id, margins: { marginType: "none" } }),
         },
-        {
-          label: `Margem Mínima`,
-          type: "radio",
-          checked: printer.margins?.marginType === "custom",
-          click: () =>
-            updatePrinter({
-              id: printer.id,
-              margins: {
-                marginType: "custom",
-                top: 0,
-                right: 0,
-                bottom: 1,
-                left: 15,
-              },
-            }),
-        },
+        // {
+        //   label: `Margem Mínima`,
+        //   type: "radio",
+        //   checked: printer.margins?.marginType === "custom",
+        //   click: () =>
+        //     updatePrinter({
+        //       id: printer.id,
+        //       margins: {
+        //         marginType: "custom",
+        //         top: 0,
+        //         right: 0,
+        //         bottom: 1,
+        //         left: 15,
+        //       },
+        //     }),
+        // },
         {
           label: `Margem Esquerda`,
           click: () => marginLeftDialog(printer),
