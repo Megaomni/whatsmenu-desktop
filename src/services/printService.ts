@@ -4,7 +4,6 @@ import { CartItemType, CartType } from "../@types/cart";
 import { AddonType, ProfileType } from "../@types/profile";
 import { TableType } from "../@types/table";
 import { CommandType } from "../@types/command";
-import { generate } from "qrcode-terminal";
 
 type PrintPayloadType = {
     cart: CartType;
@@ -1282,7 +1281,7 @@ export const printService = async (payload: PrintPayloadType, printOptions: Elec
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
     const isIfood = cart.origin === 'ifood';
-    const isNFCe = cart.controls.grovenfe;
+    const isNFCe = cart.controls.grovenfe?.fiscal_note?.url_consulta_nf;
 
     let maxLength = 0;
     if (isGeneric) {
