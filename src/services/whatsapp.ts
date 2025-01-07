@@ -22,7 +22,6 @@ export class WhatsApp {
     client?: ClientType;
   }> = [];
 
-
   async sendQueuedmessages() {
     setTimeout(async () => {
       for (const messageQueued of this.messagesQueue) {
