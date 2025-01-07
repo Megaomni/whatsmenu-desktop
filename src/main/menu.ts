@@ -14,6 +14,42 @@ import { mainWindow } from ".";
 
 const isMac = process.platform === "darwin";
 
+const marginLeftDialog = async (printerSelected: Printer) => {
+  const marginLeft = await prompt({
+    title: "Margem esquerda",
+    label: "Margem em pixels",
+    inputAttrs: { type: "number" },
+    value: printerSelected.margins.left ? printerSelected.margins.left.toString() : "0",
+    height: 200,
+    buttonLabels: {
+      ok: "OK",
+      cancel: "Cancelar",
+    },
+  });
+  updatePrinter({
+    id: printerSelected.id,
+    margins: { ...printerSelected.margins, left: parseInt(marginLeft) },
+  });
+}
+
+const marginRightDialog = async (printerSelected: Printer) => {
+  const marginRight = await prompt({
+    title: "Margem direita",
+    label: "Margem em pixels",
+    inputAttrs: { type: "number" },
+    value: printerSelected.margins.right ? printerSelected.margins.right.toString() : "0",
+    height: 200,
+    buttonLabels: {
+      ok: "OK",
+      cancel: "Cancelar",
+    },
+  });
+  updatePrinter({
+    id: printerSelected.id,
+    margins: { ...printerSelected.margins, right: parseInt(marginRight) },
+  });
+}
+
 const copiesDialog = async (printerSelected: Printer) => {
   const copies = await prompt({
     title: "Quantidade de Cópias",
@@ -50,43 +86,43 @@ const scaleFactorDialog = async (printerSelected: Printer) => {
   });
 };
 
-const paperSizeDialog = async (printerSelected: Printer) => {
-  const paperSize = await prompt({
-    title: "Largura do papel",
-    label: "Valor e milimetros (mm)",
-    inputAttrs: { type: "number" },
-    value: printerSelected ? printerSelected.paperSize.toString() : "58",
-    height: 200,
-    buttonLabels: {
-      ok: "OK",
-      cancel: "Cancelar",
-    },
-  });
-  updatePrinter({
-    id: printerSelected.id,
-    paperSize: parseInt(paperSize) ?? printerSelected.paperSize,
-  });
-};
+// const paperSizeDialog = async (printerSelected: Printer) => {
+//   const paperSize = await prompt({
+//     title: "Largura do papel",
+//     label: "Valor e milimetros (mm)",
+//     inputAttrs: { type: "number" },
+//     value: printerSelected ? printerSelected.paperSize.toString() : "58",
+//     height: 200,
+//     buttonLabels: {
+//       ok: "OK",
+//       cancel: "Cancelar",
+//     },
+//   });
+//   updatePrinter({
+//     id: printerSelected.id,
+//     paperSize: parseInt(paperSize) ?? printerSelected.paperSize,
+//   });
+// };
 
 const template = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-        {
-          label: app.name,
-          submenu: [
-            { role: "about" },
-            { type: "separator" },
-            { role: "services" },
-            { type: "separator" },
-            { role: "hide" },
-            { role: "hideOthers" },
-            { role: "unhide" },
-            { type: "separator" },
-            { role: "quit" },
-          ],
-        },
-      ]
+      {
+        label: app.name,
+        submenu: [
+          { role: "about" },
+          { type: "separator" },
+          { role: "services" },
+          { type: "separator" },
+          { role: "hide" },
+          { role: "hideOthers" },
+          { role: "unhide" },
+          { type: "separator" },
+          { role: "quit" },
+        ],
+      },
+    ]
     : []),
   // { role: 'fileMenu' }
   // (isMac ? {
@@ -186,16 +222,15 @@ const updateMenu = async () => {
           checked: printer.paperSize === 80,
           click: () => updatePrinter({ id: printer.id, paperSize: 80 }),
         },
-        {
-          label: `Customizado ${
-            printer.paperSize !== 80 && printer.paperSize !== 58
-              ? " - " + printer.paperSize + "mm"
-              : ""
-          }`,
-          type: "radio",
-          checked: printer.paperSize !== 80 && printer.paperSize !== 58,
-          click: () => paperSizeDialog(printer),
-        },
+        // {
+        //   label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
+        //     ? " - " + printer.paperSize + "mm"
+        //     : ""
+        //     }`,
+        //   type: "radio",
+        //   checked: printer.paperSize !== 80 && printer.paperSize !== 58,
+        //   click: () => paperSizeDialog(printer),
+        // },
         { type: "separator" },
         {
           label: `Cópias - ${printer.copies}`,
@@ -213,17 +248,39 @@ const updateMenu = async () => {
           label: `Margem Mínima`,
           type: "radio",
           checked: printer.margins?.marginType === "custom",
-          click: () =>
-            updatePrinter({
-              id: printer.id,
-              margins: {
-                marginType: "custom",
-                top: 0,
-                right: 0,
-                bottom: 1,
-                left: 15,
-              },
-            }),
+          click: () => {
+            if (printer.paperSize === 58) {
+              updatePrinter({
+                id: printer.id,
+                margins: {
+                  marginType: "custom",
+                  top: 0,
+                  right: 15,
+                  bottom: 1,
+                  left: 10,
+                },
+              });
+            } else {
+              updatePrinter({
+                id: printer.id,
+                margins: {
+                  marginType: "custom",
+                  top: 0,
+                  right: 25,
+                  bottom: 1,
+                  left: 0,
+                },
+              });
+            }
+          }
+        },
+        {
+          label: `Margem Esquerda`,
+          click: () => marginLeftDialog(printer),
+        },
+        {
+          label: `Margem Direita`,
+          click: () => marginRightDialog(printer),
         },
         { type: "separator" },
         {
