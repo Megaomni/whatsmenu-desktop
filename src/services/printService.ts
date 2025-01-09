@@ -1282,7 +1282,6 @@ export const printService = async (payload: PrintPayloadType, printOptions: Elec
     const isTable = cart.type === 'T';
     const isIfood = cart.origin === 'ifood';
     const isNFCe = cart.controls.grovenfe?.fiscal_note?.url_consulta_nf;
-    console.log('payload', payload)
     let maxLength = 0;
     if (isGeneric) {
         if (paperSize <= 58) {
