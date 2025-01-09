@@ -58,7 +58,6 @@ export class WhatsApp {
       const profile = getProfile();
       const vouchersFromAllUsers = getVoucherToNotifyList();
       const language = profile.options.locale.language;
-
       let list: VoucherNotification[] = [];
       switch (messageType) {
         case "afterPurchase":
@@ -96,12 +95,12 @@ export class WhatsApp {
       }
 
       for await (const user of list) {
+        await new Promise<void>((resolve) => setTimeout(resolve, 100))
         const { ddi } = formatDDIBotMessage({ language });
         const [{ jid }] = await whatsAppService.checkNumber(`${ddi}${user.whatsapp}`);
         const voucher = user.vouchers.find((v) => v[`${messageType}Date`] <= DateTime.local().toISO());
         const voucherFactor = user.voucherTwoFactor.find((v) => v.id === voucher?.id);
         let messageSent = false;
-
         if (
           voucher[`${messageType}Date`] === null ||
           voucherFactor[`${messageType}Date`] === true ||
@@ -162,7 +161,7 @@ export class WhatsApp {
       } finally {
         isProcessing = false;
       }
-    }, 1000 * 60);
+    }, 1000 * 15);
     return;
   }
 }
