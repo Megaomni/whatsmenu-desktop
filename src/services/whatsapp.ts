@@ -161,7 +161,7 @@ export class WhatsApp {
       } finally {
         isProcessing = false;
       }
-    }, 1000 * 15);
+    }, 1000 * 60);
     return;
   }
 }
