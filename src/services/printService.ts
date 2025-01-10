@@ -190,7 +190,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
 
         const waiter: PosPrintData = {
             type: 'text',
-            value: `Garcom: ${cart.bartender.name}`,
+            value: `Garcom: ${cart.bartender?.name}`,
             style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
         }
         upperPrint.push(waiter);
@@ -1282,7 +1282,6 @@ export const printService = async (payload: PrintPayloadType, printOptions: Elec
     const isTable = cart.type === 'T';
     const isIfood = cart.origin === 'ifood';
     const isNFCe = cart.controls.grovenfe?.fiscal_note?.url_consulta_nf;
-
     let maxLength = 0;
     if (isGeneric) {
         if (paperSize <= 58) {
