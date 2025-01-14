@@ -14,6 +14,7 @@ export interface Store {
   configs: {
     printing: {
       printers: Printer[];
+      legacyPrint: boolean;
     };
     whatsapp: {
       showHiddenWhatsApp: boolean;
@@ -43,6 +44,7 @@ export const store = new ElectronStore<Store>({
     configs: {
       printing: {
         printers: [],
+        legacyPrint: false,
       },
       whatsapp: {
         showHiddenWhatsApp: false,
@@ -54,6 +56,22 @@ export const store = new ElectronStore<Store>({
     },
   },
 });
+
+export const getLegacyPrint = () => {
+  let legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
+    "configs.printing.legacyPrint",
+  );
+  if (legacyPrint === undefined) {
+    store.set("configs.printing.legacyPrint", false);
+    legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
+      "configs.printing.legacyPrint",
+    );
+  }
+  return legacyPrint;
+}
+
+export const toggleLegacyPrint = () =>
+  store.set("configs.printing.legacyPrint", !getLegacyPrint());
 
 export const getPrinters = () =>
   store.get<"configs.printing.printers", Printer[]>(
