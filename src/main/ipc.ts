@@ -1,8 +1,13 @@
+import axios from "axios";
 import { BrowserWindow, app, ipcMain, shell } from "electron";
+import { DateTime } from "luxon";
+import path from "node:path";
 import { whatsAppService } from ".";
 import { ClientType } from "../@types/client";
-import axios from "axios";
-import path from "node:path";
+import { Printer } from "../@types/store";
+import { VoucherType } from "../@types/voucher";
+import { whatsmenu_api_v3 } from "../lib/axios";
+import { printService } from "../services/printService";
 import {
   deleteVoucherToNotify,
   getLegacyPrint,
@@ -12,13 +17,6 @@ import {
   store,
   storeNewUserToNotify,
 } from "./store";
-import { Printer } from "../@types/store";
-import { DateTime } from "luxon";
-import { VoucherType } from "../@types/voucher";
-import { whatsmenu_api_v3 } from "../lib/axios";
-import { vouchersToNotifyQueue } from "../lib/queue";
-import { printService } from "../services/printService";
-import { get } from "node:http";
 
 ipcMain.on(
   "send-message",
@@ -146,63 +144,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
         );
       }
     }
-
-    //   win.webContents.executeJavaScript(`
-    //       const printBody = document.body
-    //       if (${isGeneric}) {
-    //         let link = document.getElementById('bootstrap-link')
-    //         link.parentNode.removeChild(link)
-    //       } else {
-    //         printBody.style.height = '1400px' 
-    //       }
-    //       printBody.innerHTML = ${JSON.stringify(payload.html)}
-    //     `);
-
-    //   const printOptions: Electron.WebContentsPrintOptions = {
-    //     deviceName: name,
-    //     silent,
-    //     margins,
-    //     copies,
-    //     scaleFactor,
-    //   };
-    //   win.webContents.addListener("did-finish-load", async () => {
-    //     console.log(name, typeof paperSize);
-
-    //     const height = Math.ceil(
-    //       (await win.webContents.executeJavaScript(
-    //         "document.body.offsetHeight"
-    //       )) * 264.5833
-    //     );
-    //     setTimeout(() => {
-    //       win.webContents.print(
-    //         {
-    //           ...printOptions,
-    //           pageSize: {
-    //             height: height < 4800000 ? height : 4800000,
-    //             width: paperSize * 1000,
-    //           },
-    //         },
-    //         (success, failureReason) => {
-    //           console.log("Print Initiated in Main...");
-    //           if (!success) console.error(failureReason);
-    //         }
-    //       );
-    //     }, 2000);
-    //   });
-
-    //   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    //     win.webContents.loadURL(
-    //       `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
-    //     );
-    //   } else {
-    //     win.webContents.loadFile(
-    //       path.join(
-    //         __dirname,
-    //         `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-    //       )
-    //     );
-    //   }
-    // }
     if (!legacy && printTypeMode === "whatsmenu") {
       try {
         const printOptions: Electron.WebContentsPrintOptions = {
