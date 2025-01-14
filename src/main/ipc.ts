@@ -5,6 +5,7 @@ import axios from "axios";
 import path from "node:path";
 import {
   deleteVoucherToNotify,
+  getLegacyPrint,
   getMerchant,
   getProfile,
   setCacheContactByWhatsapp,
@@ -17,6 +18,7 @@ import { VoucherType } from "../@types/voucher";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { vouchersToNotifyQueue } from "../lib/queue";
 import { printService } from "../services/printService";
+import { get } from "node:http";
 
 ipcMain.on(
   "send-message",
@@ -52,6 +54,7 @@ ipcMain.on("executablePath", (_, executablePath) => {
 
 ipcMain.on("print", async (_, serializedPayload) => {
   const printers = store.get("configs.printing.printers") as Printer[];
+  const legacy = getLegacyPrint();
   for (const printer of printers) {
     const isGeneric = printer.options.system_driverinfo
       .toLowerCase()
@@ -63,65 +66,144 @@ ipcMain.on("print", async (_, serializedPayload) => {
     const { printTypeMode = "whatsmenu", ...payload } =
       JSON.parse(serializedPayload);
 
-    if (printTypeMode === "html") {
-      win.webContents.executeJavaScript(`
-          const printBody = document.body
-          if (${isGeneric}) {
+    if (legacy || printTypeMode === "html") {
+      if (printTypeMode === "html") {
+        win.webContents.executeJavaScript(`
+            const printBody = document.body
+            if (${isGeneric}) {
+              let link = document.getElementById('bootstrap-link')
+              link.parentNode.removeChild(link)
+            } else {
+              printBody.style.height = '1400px' 
+            }
+            printBody.innerHTML = ${JSON.stringify(payload.html)}
+          `);
+      }
+      if (printTypeMode === "whatsmenu") {
+        try {
+          payload.profile.options.print.width =
+            paperSize !== 58 ? "302px" : "219px";
+          payload.profile.options.print.textOnly = isGeneric;
+          const { data } = await axios.post(
+            "https://ifood.whatsmenu.com.br/api/printLayout",
+            { ...payload, html: true, electron: true }
+          );
+          win.webContents.executeJavaScript(`
+            const printBody = document.body
             let link = document.getElementById('bootstrap-link')
             link.parentNode.removeChild(link)
-          } else {
-            printBody.style.height = '1400px' 
-          }
-          printBody.innerHTML = ${JSON.stringify(payload.html)}
-        `);
-
-        const printOptions: Electron.WebContentsPrintOptions = {
-          deviceName: name,
-          silent,
-          margins,
-          copies,
-          scaleFactor,
-        };
-        win.webContents.addListener("did-finish-load", async () => {
-          console.log(name, typeof paperSize);
-    
-          const height = Math.ceil(
-            (await win.webContents.executeJavaScript(
-              "document.body.offsetHeight"
-            )) * 264.5833
-          );
-          setTimeout(() => {
-            win.webContents.print(
-              {
-                ...printOptions,
-                pageSize: {
-                  height: height < 4800000 ? height : 4800000,
-                  width: paperSize * 1000,
-                },
-              },
-              (success, failureReason) => {
-                console.log("Print Initiated in Main...");
-                if (!success) console.error(failureReason);
-              }
-            );
-          }, 2000);
-        });
-    
-        if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-          win.webContents.loadURL(
-            `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
-          );
-        } else {
-          win.webContents.loadFile(
-            path.join(
-              __dirname,
-              `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-            )
-          );
+            printBody.innerHTML = ${JSON.stringify(
+            data.reactComponentString[paperSize < 65 ? 58 : 80]
+          )}
+          `);
+        } catch (error) {
+          console.error(error);
         }
-    }
-    if (printTypeMode === "whatsmenu") {
+      }
 
+      const printOptions: Electron.WebContentsPrintOptions = {
+        deviceName: name,
+        silent,
+        margins,
+        copies,
+        scaleFactor,
+      };
+      win.webContents.addListener("did-finish-load", async () => {
+        console.log(name, typeof paperSize);
+
+        const height = Math.ceil(
+          (await win.webContents.executeJavaScript(
+            "document.body.offsetHeight"
+          )) * 264.5833
+        );
+        setTimeout(() => {
+          win.webContents.print(
+            {
+              ...printOptions,
+              pageSize: {
+                height: height < 4800000 ? height : 4800000,
+                width: paperSize * 1000,
+              },
+            },
+            (success, failureReason) => {
+              console.log("Print Initiated in Main...");
+              if (!success) console.error(failureReason);
+            }
+          );
+        }, 2000);
+      });
+
+      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+        win.webContents.loadURL(
+          `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+        );
+      } else {
+        win.webContents.loadFile(
+          path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+          )
+        );
+      }
+    }
+
+    //   win.webContents.executeJavaScript(`
+    //       const printBody = document.body
+    //       if (${isGeneric}) {
+    //         let link = document.getElementById('bootstrap-link')
+    //         link.parentNode.removeChild(link)
+    //       } else {
+    //         printBody.style.height = '1400px' 
+    //       }
+    //       printBody.innerHTML = ${JSON.stringify(payload.html)}
+    //     `);
+
+    //   const printOptions: Electron.WebContentsPrintOptions = {
+    //     deviceName: name,
+    //     silent,
+    //     margins,
+    //     copies,
+    //     scaleFactor,
+    //   };
+    //   win.webContents.addListener("did-finish-load", async () => {
+    //     console.log(name, typeof paperSize);
+
+    //     const height = Math.ceil(
+    //       (await win.webContents.executeJavaScript(
+    //         "document.body.offsetHeight"
+    //       )) * 264.5833
+    //     );
+    //     setTimeout(() => {
+    //       win.webContents.print(
+    //         {
+    //           ...printOptions,
+    //           pageSize: {
+    //             height: height < 4800000 ? height : 4800000,
+    //             width: paperSize * 1000,
+    //           },
+    //         },
+    //         (success, failureReason) => {
+    //           console.log("Print Initiated in Main...");
+    //           if (!success) console.error(failureReason);
+    //         }
+    //       );
+    //     }, 2000);
+    //   });
+
+    //   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    //     win.webContents.loadURL(
+    //       `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+    //     );
+    //   } else {
+    //     win.webContents.loadFile(
+    //       path.join(
+    //         __dirname,
+    //         `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+    //       )
+    //     );
+    //   }
+    // }
+    if (!legacy && printTypeMode === "whatsmenu") {
       try {
         const printOptions: Electron.WebContentsPrintOptions = {
           deviceName: name,
@@ -130,7 +212,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
           copies,
           scaleFactor,
         };
-        
+
         await printService(payload, printOptions, paperSize, isGeneric);
 
       } catch (error) {

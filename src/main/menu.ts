@@ -4,8 +4,10 @@ import { Printer } from "./../@types/store";
 import {
   addPrinter,
   deletePrinter,
+  getLegacyPrint,
   getPrinters,
   store,
+  toggleLegacyPrint,
   updatePrinter,
 } from "./store";
 
@@ -86,23 +88,23 @@ const scaleFactorDialog = async (printerSelected: Printer) => {
   });
 };
 
-// const paperSizeDialog = async (printerSelected: Printer) => {
-//   const paperSize = await prompt({
-//     title: "Largura do papel",
-//     label: "Valor e milimetros (mm)",
-//     inputAttrs: { type: "number" },
-//     value: printerSelected ? printerSelected.paperSize.toString() : "58",
-//     height: 200,
-//     buttonLabels: {
-//       ok: "OK",
-//       cancel: "Cancelar",
-//     },
-//   });
-//   updatePrinter({
-//     id: printerSelected.id,
-//     paperSize: parseInt(paperSize) ?? printerSelected.paperSize,
-//   });
-// };
+const paperSizeDialog = async (printerSelected: Printer) => {
+  const paperSize = await prompt({
+    title: "Largura do papel",
+    label: "Valor e milimetros (mm)",
+    inputAttrs: { type: "number" },
+    value: printerSelected ? printerSelected.paperSize.toString() : "58",
+    height: 200,
+    buttonLabels: {
+      ok: "OK",
+      cancel: "Cancelar",
+    },
+  });
+  updatePrinter({
+    id: printerSelected.id,
+    paperSize: parseInt(paperSize) ?? printerSelected.paperSize,
+  });
+};
 
 const template = [
   // { role: 'appMenu' }
@@ -195,6 +197,7 @@ const template = [
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[]);
 
 const updateMenu = async () => {
+  const isLegacy = getLegacyPrint();
   const clientPrinters = getPrinters();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
@@ -217,20 +220,22 @@ const updateMenu = async () => {
           click: () => updatePrinter({ id: printer.id, paperSize: 58 }),
         },
         {
+          id: "1",
           label: "80mm",
           type: "radio",
           checked: printer.paperSize === 80,
           click: () => updatePrinter({ id: printer.id, paperSize: 80 }),
         },
-        // {
-        //   label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
-        //     ? " - " + printer.paperSize + "mm"
-        //     : ""
-        //     }`,
-        //   type: "radio",
-        //   checked: printer.paperSize !== 80 && printer.paperSize !== 58,
-        //   click: () => paperSizeDialog(printer),
-        // },
+        {
+          label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
+            ? " - " + printer.paperSize + "mm"
+            : ""
+            }`,
+          type: "radio",
+          enabled: isLegacy,
+          checked: printer.paperSize !== 80 && printer.paperSize !== 58,
+          click: () => paperSizeDialog(printer),
+        },
         { type: "separator" },
         {
           label: `Cópias - ${printer.copies}`,
@@ -249,42 +254,58 @@ const updateMenu = async () => {
           type: "radio",
           checked: printer.margins?.marginType === "custom",
           click: () => {
-            if (printer.paperSize === 58) {
+            if (isLegacy) {
               updatePrinter({
                 id: printer.id,
                 margins: {
                   marginType: "custom",
                   top: 0,
-                  right: 15,
+                  right: 0,
                   bottom: 1,
-                  left: 10,
+                  left: 15,
                 },
-              });
+              })
             } else {
-              updatePrinter({
-                id: printer.id,
-                margins: {
-                  marginType: "custom",
-                  top: 0,
-                  right: 25,
-                  bottom: 1,
-                  left: 0,
-                },
-              });
+              if (printer.paperSize === 58) {
+                updatePrinter({
+                  id: printer.id,
+                  margins: {
+                    marginType: "custom",
+                    top: 0,
+                    right: 15,
+                    bottom: 1,
+                    left: 10,
+                  },
+                });
+              } else {
+                updatePrinter({
+                  id: printer.id,
+                  margins: {
+                    marginType: "custom",
+                    top: 0,
+                    right: 25,
+                    bottom: 1,
+                    left: 0,
+                  },
+                });
+              }
             }
           }
         },
         {
           label: `Margem Esquerda`,
+          enabled: !isLegacy,
           click: () => marginLeftDialog(printer),
         },
         {
           label: `Margem Direita`,
+          enabled: !isLegacy,
           click: () => marginRightDialog(printer),
         },
         { type: "separator" },
         {
           label: `Escala - ${printer.scaleFactor}%`,
+          enabled: isLegacy,
           click: () => scaleFactorDialog(printer),
         },
         { type: "separator" },
@@ -355,6 +376,15 @@ const updateMenu = async () => {
         await copiesDialog(newPrinter);
       },
     },
+    { type: "separator" },
+    {
+      label: "Impressão Legado (Antiga)",
+      type: "checkbox",
+      checked: isLegacy,
+      click: () => {
+        toggleLegacyPrint();
+      }
+    }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));
 };
