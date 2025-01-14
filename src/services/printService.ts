@@ -474,7 +474,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
         }
 
         if (isTable && table.opened && payload.printType !== 'command') {
-            cart.command.fees.map((fee) => {
+            cart.command?.fees.map((fee) => {
                 if (fee.type === 'percent') {
                     const percentValue = (fee.value * cartTotal) / 100;
                     const tax: PosPrintData = {
@@ -494,7 +494,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
                 const totalFees = allFixedFees.flat().reduce((acc: number, fee) => acc + fee.quantity, 0);
 
-                cart.command.fees.map((fee) => {
+                cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && totalFees > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -506,7 +506,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                     }
                 })
             } else {
-                cart.command.fees.map((fee) => {
+                cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -810,7 +810,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
         if (isTable && table.opened && payload.printType !== 'command') {
             cart.command
-                ? cart.command.fees.map((fee) => {
+                ? cart.command?.fees.map((fee) => {
                     if (fee.type === 'percent') {
                         const percentValue = (fee.value * cartTotal) / 100;
                         const tax: PosPrintData = {
@@ -848,7 +848,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
                 const totalFees = allFixedFees.flat().reduce((acc: number, fee) => acc + fee.quantity, 0);
 
-                cart.command ? cart.command.fees.map((fee) => {
+                cart.command ? cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && totalFees > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -876,7 +876,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                     }
                 })
             } else {
-                cart.command.fees.map((fee) => {
+                cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -892,7 +892,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                 })
             }
         } else if (payload.printType === 'command') {
-            command.fees.map((fee) => {
+            command?.fees.map((fee) => {
                 if (fee.type === 'percent') {
                     const percentValue = (fee.value * cartTotal) / 100;
                     const tax: PosPrintData = {
