@@ -13,9 +13,11 @@ import { ClientType } from "../@types/client";
 export interface Store {
   configs: {
     printing: {
-      locations: string[];
+      locations: PrinterLocation[];
+      useMultiplePrinters: boolean;
       printers: Printer[];
     };
+    productCategories: { id: number; name: string; }[];
     whatsapp: {
       showHiddenWhatsApp: boolean;
     };
@@ -25,6 +27,12 @@ export interface Store {
     voucherToNotify: VoucherNotification[];
     merchant: MerchantType | null;
   };
+}
+
+export interface PrinterLocation {
+  type: "checkout" | "production";
+  name: string;
+  categories: string[];
 }
 
 export const store = new ElectronStore<Store>({
@@ -39,13 +47,43 @@ export const store = new ElectronStore<Store>({
     "0.4.5": (store) => {
       store.set("configs.merchant", null);
     },
+    "1.5.7": (store) => {
+      store.set("configs.printing.locations", [
+        {
+          type: "checkout",
+          name: "Caixa",
+          categories: []
+        },
+        {
+          type: "production",
+          name: "Cozinha",
+          categories: []
+        }
+      ])
+    },
+    "1.5.8": (store) => {
+      store.set("configs.printing.useMultiplePrinters", false)
+    }
   },
   defaults: {
     configs: {
       printing: {
-        locations: ["Caixa", "Cozinha"],
+        locations: [
+          {
+            type: "checkout",
+            name: "Caixa",
+            categories: []
+          },
+          {
+            type: "production",
+            name: "Cozinha",
+            categories: []
+          }
+        ],
+        useMultiplePrinters: false,
         printers: [],
       },
+      productCategories: [],
       whatsapp: {
         showHiddenWhatsApp: false,
       },
@@ -57,25 +95,43 @@ export const store = new ElectronStore<Store>({
   },
 });
 
-const setDefaultLocations = () => {
-  store.set("configs.printing.locations", ["Caixa", "Cozinha"]);
+export const setCategories = async () => {
+  try {
+    const profile = getProfile();
+    const { data } = await whatsmenu_api_v3.get(`/categories/${profile?.id}`);
+    console.log("XXXXXXXX", data.categories);
+
+    store.set("configs.productCategories", [data.categories]);
+  } catch (error) {
+    console.error(error);
+  }
 }
+
+export const getCategories = () => {
+  return store.get<"configs.productCategories", { id: number; name: string }[]>(
+    "configs.productCategories"
+  );
+}
+
+export const toggleMultiplePrinters = () => {
+  const isMultiplePrinters = getIsMultiplePrinters();
+  store.set("configs.printing.useMultiplePrinters", !isMultiplePrinters)
+}
+
+export const getIsMultiplePrinters = () =>
+  store.get<"configs.printing.useMultiplePrinters", boolean>(
+    "configs.printing.useMultiplePrinters"
+  )
 
 export const setPrinterLocation = (location: string) => {
   const locations = getPrinterLocations();
-  store.set("configs.printing.locations", [...locations, location]);
+  store.set("configs.printing.locations", [...locations, { type: "production", name: location, categories: [] }]);
 }
 
 export const getPrinterLocations = () => {
-  const locations = store.get<"configs.printing.locations", string[]>(
+  const locations = store.get<"configs.printing.locations", PrinterLocation[]>(
     "configs.printing.locations",
   );
-  if (!locations) {
-    setDefaultLocations();
-    return store.get<"configs.printing.locations", string[]>(
-      "configs.printing.locations",
-    )
-  }
   return locations;
 }
 

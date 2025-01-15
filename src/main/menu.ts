@@ -4,10 +4,12 @@ import { Printer } from "./../@types/store";
 import {
   addPrinter,
   deletePrinter,
+  getIsMultiplePrinters,
   getPrinterLocations,
   getPrinters,
   setPrinterLocation,
   store,
+  toggleMultiplePrinters,
   updatePrinter,
 } from "./store";
 
@@ -213,6 +215,7 @@ export const whatsmenu_menu = Menu.buildFromTemplate(template as any[]);
 
 const updateMenu = async () => {
   const clientPrinters = getPrinters();
+  const isMultiplePrinters = getIsMultiplePrinters();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   template.at(0).submenu.at(0).submenu = [
@@ -228,14 +231,35 @@ const updateMenu = async () => {
         },
         { type: "separator" },
         {
-          label: "Locação da Impressora",
+          label: "Localização da Impressora",
+          enabled: isMultiplePrinters,
           submenu: [
             ...getPrinterLocations().map((location) => ({
-              label: location,
-              type: "radio",
-              checked: printer.options["printer-location"] === location,
-              click: () =>
-                updatePrinter({ id: printer.id, options: { "printer-location": location, "printer-make-and-model": printer.options["printer-make-and-model"], system_driverinfo: printer.options.system_driverinfo } }),
+              label: location.name,
+              type: "checkbox",
+              checked: printer.options["printer-location"].includes(location.name),
+              click: (menuItem: { checked: boolean; }) => {
+                const currentLocations = [...printer.options["printer-location"]];
+
+                if (menuItem.checked) {
+                  // Adiciona a localização ao array
+                  currentLocations.push(location.name);
+                } else {
+                  // Remove a localização do array
+                  const index = currentLocations.indexOf(location.name);
+                  if (index > -1) {
+                    currentLocations.splice(index, 1);
+                  }
+                }
+
+                updatePrinter({
+                  id: printer.id,
+                  options: {
+                    ...printer.options,
+                    "printer-location": currentLocations,
+                  },
+                });
+              },
             })),
             { type: "separator" },
             {
@@ -375,6 +399,18 @@ const updateMenu = async () => {
 
         await copiesDialog(newPrinter);
       },
+    },
+    { type: "separator" },
+    {
+      label: "Usar várias impressoras",
+      type: "checkbox",
+      checked: isMultiplePrinters,
+      click: () =>
+        toggleMultiplePrinters(),
+    },
+    {
+      label: "Configurar várias impressoras",
+      enabled: isMultiplePrinters,
     },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));
