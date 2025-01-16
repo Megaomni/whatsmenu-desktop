@@ -20,6 +20,7 @@ export default defineConfig((env) => {
           tab_window: path.join(__dirname, "src/views/tabs.html"),
           bot_window: path.join(__dirname, "src/views/bot.html"),
           print_window: path.join(__dirname, "src/views/print.html"),
+          print_config: path.join(__dirname, "src/views/print-config.html"),
         },
       },
     },

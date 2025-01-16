@@ -15,6 +15,8 @@ import {
 
 import { randomUUID } from "node:crypto";
 import { mainWindow } from ".";
+import { printModal } from "./print";
+import { botWindow } from "../windows/bot-window";
 
 const isMac = process.platform === "darwin";
 
@@ -242,10 +244,8 @@ const updateMenu = async () => {
                 const currentLocations = [...printer.options["printer-location"]];
 
                 if (menuItem.checked) {
-                  // Adiciona a localização ao array
                   currentLocations.push(location.name);
                 } else {
-                  // Remove a localização do array
                   const index = currentLocations.indexOf(location.name);
                   if (index > -1) {
                     currentLocations.splice(index, 1);
@@ -402,15 +402,16 @@ const updateMenu = async () => {
     },
     { type: "separator" },
     {
-      label: "Usar várias impressoras",
+      label: "Usar ambientes de impressão",
       type: "checkbox",
       checked: isMultiplePrinters,
       click: () =>
         toggleMultiplePrinters(),
     },
     {
-      label: "Configurar várias impressoras",
+      label: "Configurar ambientes",
       enabled: isMultiplePrinters,
+      click: () => printModal(),
     },
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));

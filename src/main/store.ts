@@ -99,18 +99,20 @@ export const setCategories = async () => {
   try {
     const profile = getProfile();
     const { data } = await whatsmenu_api_v3.get(`/categories/${profile?.id}`);
-    console.log("XXXXXXXX", data.categories);
 
-    store.set("configs.productCategories", [data.categories]);
+    store.set("configs.productCategories", data);
   } catch (error) {
     console.error(error);
   }
 }
 
 export const getCategories = () => {
-  return store.get<"configs.productCategories", { id: number; name: string }[]>(
+  const categories = store.get<"configs.productCategories", { id: number; name: string }[]>(
     "configs.productCategories"
   );
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", categories);
+
+  return categories;
 }
 
 export const toggleMultiplePrinters = () => {
