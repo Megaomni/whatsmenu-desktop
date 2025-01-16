@@ -5,6 +5,7 @@ import axios from "axios";
 import path from "node:path";
 import {
   deleteVoucherToNotify,
+  getCategories,
   getMerchant,
   getProfile,
   setCacheContactByWhatsapp,
@@ -163,6 +164,11 @@ ipcMain.on("storeMerchant", (_, merchant) => {
   store.set("configs.merchant", merchant);
 });
 
+ipcMain.on("getMerchant", (event) => {
+  const merchant = getMerchant();
+  event.reply("onMerchantChange", merchant);
+});
+
 ipcMain.on("getProfile", (event) => {
   const profile = getProfile();
   event.reply("onProfileChange", profile);
@@ -177,11 +183,6 @@ export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
     return data.vouchers as VoucherType[];
   }
 }
-
-ipcMain.on("getMerchant", (event) => {
-  const merchant = getMerchant();
-  event.reply("onMerchantChange", merchant);
-});
 
 ipcMain.on("onCart", async (_, cart: { id: number; client?: ClientType }) => {
   if (cart.client) {
