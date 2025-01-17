@@ -9,6 +9,7 @@ import { MerchantType } from "../@types/merchant";
 import { VoucherType } from "../@types/voucher";
 import { getVouchersFromDB } from "./ipc";
 import { ClientType } from "../@types/client";
+import { PrintEnvironmentConfig } from "../react/types_print-environment";
 
 export interface Store {
   configs: {
@@ -30,7 +31,7 @@ export interface Store {
 }
 
 export interface PrinterLocation {
-  type: "checkout" | "production";
+  type: "fiscal" | "production";
   name: string;
   categories: string[];
 }
@@ -50,7 +51,7 @@ export const store = new ElectronStore<Store>({
     "1.5.7": (store) => {
       store.set("configs.printing.locations", [
         {
-          type: "checkout",
+          type: "fiscal",
           name: "Caixa",
           categories: []
         },
@@ -70,7 +71,7 @@ export const store = new ElectronStore<Store>({
       printing: {
         locations: [
           {
-            type: "checkout",
+            type: "fiscal",
             name: "Caixa",
             categories: []
           },
@@ -110,8 +111,6 @@ export const getCategories = () => {
   const categories = store.get<"configs.productCategories", { id: number; name: string }[]>(
     "configs.productCategories"
   );
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", categories);
-
   return categories;
 }
 
@@ -125,9 +124,11 @@ export const getIsMultiplePrinters = () =>
     "configs.printing.useMultiplePrinters"
   )
 
-export const setPrinterLocation = (location: string) => {
+export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
+  const { type, name } = location;
+  const categories = !location.categories || type === "fiscal" ? [] : location.categories;
   const locations = getPrinterLocations();
-  store.set("configs.printing.locations", [...locations, { type: "production", name: location, categories: [] }]);
+  store.set("configs.printing.locations", [...locations, { type, name, categories }]);
 }
 
 export const getPrinterLocations = () => {

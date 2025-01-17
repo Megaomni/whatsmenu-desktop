@@ -9,6 +9,7 @@ import {
   getMerchant,
   getProfile,
   setCacheContactByWhatsapp,
+  setPrinterLocation,
   store,
   storeNewUserToNotify,
 } from "./store";
@@ -18,6 +19,7 @@ import { VoucherType } from "../@types/voucher";
 import { whatsmenu_api_v3 } from "../lib/axios";
 import { vouchersToNotifyQueue } from "../lib/queue";
 import { printService } from "../services/printService";
+import { PrintEnvironmentConfig } from "../react/types_print-environment";
 
 ipcMain.on(
   "send-message",
@@ -174,6 +176,11 @@ ipcMain.on("getProfile", (event) => {
   event.reply("onProfileChange", profile);
 });
 
+ipcMain.on("getCategories", (event) => {
+  const categories = getCategories();
+  event.reply("onCategoriesChange", categories);
+});
+
 export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const profile = getProfile();
   const { data } = await whatsmenu_api_v3.get(
@@ -191,6 +198,10 @@ ipcMain.on("onCart", async (_, cart: { id: number; client?: ClientType }) => {
       messageType: "welcome",
     });
   }
+});
+
+ipcMain.on("onSubmitPrint", async (_, location: PrintEnvironmentConfig) => {
+  setPrinterLocation(location);
 });
 
 ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
