@@ -221,7 +221,7 @@ const updateMenu = async () => {
         },
         { type: "separator" },
         {
-          label: "Localização da Impressora",
+          label: "Ambientes da Impressora",
           enabled: isMultiplePrinters,
           submenu: [
             ...getPrinterLocations().map((location) => ({

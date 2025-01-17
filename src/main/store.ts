@@ -32,6 +32,7 @@ export interface Store {
 }
 
 export interface PrinterLocation {
+  id: number;
   type: "fiscal" | "production";
   name: string;
   categories: string[];
@@ -72,11 +73,13 @@ export const store = new ElectronStore<Store>({
       printing: {
         locations: [
           {
+            id: 1,
             type: "fiscal",
             name: "Caixa",
             categories: []
           },
           {
+            id: 2,
             type: "production",
             name: "Cozinha",
             categories: []
@@ -130,7 +133,27 @@ export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
   const { type, name } = location;
   const categories = !location.categories || type === "fiscal" ? [] : location.categories;
   const locations = getPrinterLocations();
-  store.set("configs.printing.locations", [...locations, { type, name, categories }]);
+  store.set("configs.printing.locations", [...locations, { id: locations[locations.length - 1].id + 1, type, name, categories }]);
+}
+
+export const removePrinterLocation = (id: number) => {
+  const locations = getPrinterLocations();
+  if (id === 1 || id === 2) return;
+  const listWithoutLocation = locations.filter((location) => location.id !== id);
+  store.set("configs.printing.locations", listWithoutLocation);
+}
+
+export const updatePrinterLocation = (location: PrintEnvironmentConfig) => {
+  const { id, type, name } = location;
+  const categories = !location.categories || type === "fiscal" ? [] : location.categories;
+  const locations = getPrinterLocations();
+  const locationsUpdated = locations.map((location) => {
+    if (location.id === id) {
+      return { ...location, type, name, categories };
+    }
+    return location;
+  });
+  store.set("configs.printing.locations", locationsUpdated);
 }
 
 export const getPrinterLocations = () => {

@@ -51,10 +51,17 @@ export const DesktopApi = {
   onCategoriesChange: (
     callback: (event: Electron.IpcRendererEvent, categories: ProductCategory[]) => void,
   ) => ipcRenderer.on("onCategoriesChange", callback),
+  onPrinterLocationsChange: (
+    callback: (event: Electron.IpcRendererEvent, locations: PrintEnvironmentConfig[]) => void,
+  ) => ipcRenderer.on("onPrinterLocationsChange", callback),
   onCart: (cart: { id: number; client?: ClientType }) =>
     ipcRenderer.send("onCart", cart),
   onSubmitPrint: (location: PrintEnvironmentConfig) =>
     ipcRenderer.send("onSubmitPrint", location),
+  onRemovePrint: (id: number) =>
+    ipcRenderer.send("onRemovePrint", id),
+  onUpdatePrint: (location: PrintEnvironmentConfig) =>
+    ipcRenderer.send("onUpdatePrint", location),
   onVoucher: (voucher: VoucherType) => ipcRenderer.send("onVoucher", voucher),
   removeVoucher: (voucher: VoucherType) =>
     ipcRenderer.send("removeVoucher", voucher),
@@ -66,6 +73,7 @@ export const DesktopApi = {
   getProfile: () => ipcRenderer.send("getProfile"),
   getMerchant: () => ipcRenderer.send("getMerchant"),
   getCategories: () => ipcRenderer.send("getCategories"),
+  getPrinterLocations: () => ipcRenderer.send("getPrinterLocations"),
   /**
    * Abre um link no navegador padrão.
    *
