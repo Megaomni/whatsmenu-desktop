@@ -20,21 +20,6 @@ import { botWindow } from "../windows/bot-window";
 
 const isMac = process.platform === "darwin";
 
-const locationDialog = async () => {
-  const location = await prompt({
-    title: "Localização da impressora",
-    label: "Localização",
-    inputAttrs: { type: "text" },
-    value: "",
-    height: 200,
-    buttonLabels: {
-      ok: "OK",
-      cancel: "Cancelar",
-    },
-  });
-  if (location) setPrinterLocation(location);
-}
-
 const marginLeftDialog = async (printerSelected: Printer) => {
   const marginLeft = await prompt({
     title: "Margem esquerda",
@@ -261,11 +246,6 @@ const updateMenu = async () => {
                 });
               },
             })),
-            { type: "separator" },
-            {
-              label: "+ Adicionar locação",
-              click: () => locationDialog(),
-            },
           ]
         },
         { type: "separator" },

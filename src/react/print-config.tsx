@@ -14,53 +14,36 @@ import { createRoot } from 'react-dom/client'
 
 const root = createRoot(document.body);
 
-// Mock data for product categories
-// const productCategories: ProductCategory[] =
-//   [
-//     {
-//       "id": 18,
-//       "name": "Sanduíches"
-//     },
-//     {
-//       "id": 22,
-//       "name": "Bebidas"
-//     },
-//     {
-//       "id": 23,
-//       "name": "Sobremesas"
-//     },
-//     {
-//       "id": 67431,
-//       "name": "Fritas e Saladas"
-//     }
-//   ]
-
 const formSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   type: z.enum(['fiscal', 'production'] as const),
-  productCategories: z.array(z.string()).optional(),
+  categories: z.array(z.string()).optional(),
 })
 
 const PrintEnvironmentForm = () => {
   const [selectedType, setSelectedType] = useState<PrintEnvironmentType>('fiscal')
   const [productCategories, setProductCategories] = useState<ProductCategory[]>([])
 
-  // useEffect(() => {
-  //   setProductCategories(window.DesktopApi.getCategories());
-  // }, [])
+  useEffect(() => {
+      window.DesktopApi.onCategoriesChange((_, categories) => {
+        setProductCategories(categories);
+      });
+
+      window.DesktopApi.getCategories();
+    }, []);
 
   const form = useForm<PrintEnvironmentConfig>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       type: 'fiscal',
-      productCategories: [],
+      categories: [],
     },
   })
 
   const onSubmit = (data: PrintEnvironmentConfig) => {
     console.log('Dados do formulário:', data)
-    // Aqui você pode adicionar a lógica para enviar os dados para o servidor
+    window.DesktopApi.onSubmitPrint(data);
   }
 
   return (
@@ -78,7 +61,10 @@ const PrintEnvironmentForm = () => {
                 <FormItem>
                   <FormLabel>Nome do Ambiente</FormLabel>
                   <FormControl>
-                    <Input placeholder="Digite o nome do ambiente" {...field} />
+                    <Input
+                      placeholder="Digite o nome do ambiente"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -126,7 +112,7 @@ const PrintEnvironmentForm = () => {
             {selectedType === 'production' && (
               <FormField
                 control={form.control}
-                name="productCategories"
+                name="categories"
                 render={() => (
                   <FormItem>
                     <FormLabel>Categorias de Produtos</FormLabel>
@@ -138,7 +124,7 @@ const PrintEnvironmentForm = () => {
                         <FormField
                           key={category.id.toString()}
                           control={form.control}
-                          name="productCategories"
+                          name="categories"
                           render={({ field }) => {
                             return (
                               <FormItem
@@ -147,13 +133,13 @@ const PrintEnvironmentForm = () => {
                               >
                                 <FormControl>
                                   <Checkbox
-                                    checked={field.value?.includes(category.id.toString())}
+                                    checked={field.value?.includes(category.name)}
                                     onCheckedChange={(checked) => {
                                       return checked
-                                        ? field.onChange([...field.value || [], category.id.toString()])
+                                        ? field.onChange([...field.value || [], category.name])
                                         : field.onChange(
                                             field.value?.filter(
-                                              (value) => value !== category.id.toString()
+                                              (value) => value !== category.name
                                             )
                                           )
                                     }}
