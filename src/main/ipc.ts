@@ -13,13 +13,15 @@ import {
   getCategories,
   getLegacyPrint,
   getMerchant,
+  getPrinterLocations,
   getProfile,
+  removePrinterLocation,
   setCacheContactByWhatsapp,
   setPrinterLocation,
   store,
   storeNewUserToNotify,
+  updatePrinterLocation,
 } from "./store";
-import { vouchersToNotifyQueue } from "../lib/queue";
 import { PrintEnvironmentConfig } from "../react/types_print-environment";
 
 ipcMain.on(
@@ -196,6 +198,11 @@ ipcMain.on("getCategories", (event) => {
   event.reply("onCategoriesChange", categories);
 });
 
+ipcMain.on("getPrinterLocations", (event) => {
+  const printerLocations = getPrinterLocations();
+  event.reply("onPrinterLocationsChange", printerLocations);
+});
+
 export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
   const profile = getProfile();
   const { data } = await whatsmenu_api_v3.get(
@@ -217,6 +224,14 @@ ipcMain.on("onCart", async (_, cart: { id: number; client?: ClientType }) => {
 
 ipcMain.on("onSubmitPrint", async (_, location: PrintEnvironmentConfig) => {
   setPrinterLocation(location);
+});
+
+ipcMain.on("onRemovePrint", async (_, id: number) => {
+  removePrinterLocation(id);
+});
+
+ipcMain.on("onUpdatePrint", async (_, location: PrintEnvironmentConfig) => {
+  updatePrinterLocation(location);
 });
 
 ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {

@@ -1,8 +1,9 @@
 export type PrintEnvironmentType = 'fiscal' | 'production';
 
 export interface PrintEnvironmentConfig {
-  name: string;
+  id: number;
   type: PrintEnvironmentType;
+  name: string;
   categories?: string[];
 }
 
