@@ -6,10 +6,12 @@ import {
   deletePrinter,
   getIsMultiplePrinters,
   getPrinterLocations,
+  getLegacyPrint,
   getPrinters,
   setPrinterLocation,
   store,
   toggleMultiplePrinters,
+  toggleLegacyPrint,
   updatePrinter,
 } from "./store";
 
@@ -201,6 +203,7 @@ const template = [
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[]);
 
 const updateMenu = async () => {
+  const isLegacy = getLegacyPrint();
   const clientPrinters = getPrinters();
   const isMultiplePrinters = getIsMultiplePrinters();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -256,20 +259,22 @@ const updateMenu = async () => {
           click: () => updatePrinter({ id: printer.id, paperSize: 58 }),
         },
         {
+          id: "1",
           label: "80mm",
           type: "radio",
           checked: printer.paperSize === 80,
           click: () => updatePrinter({ id: printer.id, paperSize: 80 }),
         },
-        // {
-        //   label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
-        //     ? " - " + printer.paperSize + "mm"
-        //     : ""
-        //     }`,
-        //   type: "radio",
-        //   checked: printer.paperSize !== 80 && printer.paperSize !== 58,
-        //   click: () => paperSizeDialog(printer),
-        // },
+        {
+          label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
+            ? " - " + printer.paperSize + "mm"
+            : ""
+            }`,
+          type: "radio",
+          enabled: isLegacy,
+          checked: printer.paperSize !== 80 && printer.paperSize !== 58,
+          click: () => paperSizeDialog(printer),
+        },
         { type: "separator" },
         {
           label: `Cópias - ${printer.copies}`,
@@ -283,33 +288,63 @@ const updateMenu = async () => {
           click: () =>
             updatePrinter({ id: printer.id, margins: { marginType: "none" } }),
         },
-        // {
-        //   label: `Margem Mínima`,
-        //   type: "radio",
-        //   checked: printer.margins?.marginType === "custom",
-        //   click: () =>
-        //     updatePrinter({
-        //       id: printer.id,
-        //       margins: {
-        //         marginType: "custom",
-        //         top: 0,
-        //         right: 0,
-        //         bottom: 1,
-        //         left: 15,
-        //       },
-        //     }),
-        // },
+        {
+          label: `Margem Mínima`,
+          type: "radio",
+          checked: printer.margins?.marginType === "custom",
+          click: () => {
+            if (isLegacy) {
+              updatePrinter({
+                id: printer.id,
+                margins: {
+                  marginType: "custom",
+                  top: 0,
+                  right: 0,
+                  bottom: 1,
+                  left: 15,
+                },
+              })
+            } else {
+              if (printer.paperSize === 58) {
+                updatePrinter({
+                  id: printer.id,
+                  margins: {
+                    marginType: "custom",
+                    top: 0,
+                    right: 15,
+                    bottom: 1,
+                    left: 10,
+                  },
+                });
+              } else {
+                updatePrinter({
+                  id: printer.id,
+                  margins: {
+                    marginType: "custom",
+                    top: 0,
+                    right: 25,
+                    bottom: 1,
+                    left: 0,
+                  },
+                });
+              }
+            }
+          }
+        },
         {
           label: `Margem Esquerda`,
+          enabled: !isLegacy,
           click: () => marginLeftDialog(printer),
         },
         {
           label: `Margem Direita`,
+          enabled: !isLegacy,
           click: () => marginRightDialog(printer),
         },
         { type: "separator" },
         {
           label: `Escala - ${printer.scaleFactor}%`,
+          enabled: isLegacy,
           click: () => scaleFactorDialog(printer),
         },
         { type: "separator" },
@@ -393,6 +428,15 @@ const updateMenu = async () => {
       enabled: isMultiplePrinters,
       click: () => printModal(),
     },
+    { type: "separator" },
+    {
+      label: "Impressão Legado (Antiga)",
+      type: "checkbox",
+      checked: isLegacy,
+      click: () => {
+        toggleLegacyPrint();
+      }
+    }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));
 };

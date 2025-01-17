@@ -17,6 +17,7 @@ export interface Store {
       locations: PrinterLocation[];
       useMultiplePrinters: boolean;
       printers: Printer[];
+      legacyPrint: boolean;
     };
     productCategories: { id: number; name: string; }[];
     whatsapp: {
@@ -83,6 +84,7 @@ export const store = new ElectronStore<Store>({
         ],
         useMultiplePrinters: false,
         printers: [],
+        legacyPrint: false,
       },
       productCategories: [],
       whatsapp: {
@@ -137,6 +139,21 @@ export const getPrinterLocations = () => {
   );
   return locations;
 }
+export const getLegacyPrint = () => {
+  let legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
+    "configs.printing.legacyPrint",
+  );
+  if (legacyPrint === undefined) {
+    store.set("configs.printing.legacyPrint", false);
+    legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
+      "configs.printing.legacyPrint",
+    );
+  }
+  return legacyPrint;
+}
+
+export const toggleLegacyPrint = () =>
+  store.set("configs.printing.legacyPrint", !getLegacyPrint());
 
 export const getPrinters = () =>
   store.get<"configs.printing.printers", Printer[]>(
