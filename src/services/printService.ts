@@ -77,13 +77,13 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             type: 'text',
             position: 'center',
             value: profile.name,
-            style: { fontWeight: "700", textAlign: 'center', fontSize: "24px", marginBottom: "15px" }
+            style: { fontWeight: "700", textAlign: 'center', fontSize: "24px", marginBottom: "15px", fontFamily: "monospace" }
         }
 
     const orderDate: PosPrintData = {
         type: 'text',
         value: DateTime.fromSQL(cart.created_at, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm:ss"),
-        style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+        style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
     }
 
     if (isGeneric) {
@@ -96,13 +96,13 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
         const orderCode: PosPrintData = {
             type: 'text',
             value: `Pedido: wm${cart.code}-${cart.type}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
 
         const clientName: PosPrintData = {
             type: 'text',
             value: `Cliente: ${cart.client ? cart.client.name : 'Venda sem cadastro'}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(orderCode, clientName);
 
@@ -110,7 +110,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             const packageDate: PosPrintData = {
                 type: 'text',
                 value: `Data de entrega: ${DateTime.fromISO(cart.packageDate, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm")}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             upperPrint.push(packageDate);
         }
@@ -119,7 +119,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             const packageDate: PosPrintData = {
                 type: 'text',
                 value: `Data de entrega: ${DateTime.fromSQL(cart.packageDate, { zone: profile.timeZone }).toFormat("dd/MM/yyyy HH:mm")}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             upperPrint.push(packageDate);
         }
@@ -128,7 +128,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             const clientPhone: PosPrintData = {
                 type: 'text',
                 value: `Tel: ${cart.client?.whatsapp}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             upperPrint.push(clientPhone);
         }
@@ -137,7 +137,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             const ifoodCode: PosPrintData = {
                 type: 'text',
                 value: `Codigo localizador: ${cart.client?.codeLocalizer}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             upperPrint.push(ifoodCode);
         }
@@ -149,7 +149,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
         const orderCode: PosPrintData = {
             type: 'text',
             value: `Mesa: Mesa ${table.name}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(orderCode);
 
@@ -157,12 +157,12 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             ? {
                 type: 'text',
                 value: `Comanda: ${command.name}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             : {
                 type: 'text',
                 value: `Comanda: ${table.opened?.commands.map((command) => command.name)}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
         upperPrint.push(clientName);
 
@@ -170,28 +170,28 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             type: 'text',
             value: `Tempo de permanência:
                 ${creationTime} / ${checkoutTime} - ${Math.round(stayingTime)}min`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(totalStayingTime);
     } else {
         const orderCode: PosPrintData = {
             type: 'text',
-            value: `Mesa: Mesa ${table?.name ?? cart.command.opened.table.name}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            value: `Mesa: Mesa ${table.name}`,
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(orderCode);
 
         const clientName: PosPrintData = {
             type: 'text',
             value: `Comanda: ${cart.command.name}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(clientName);
 
         const waiter: PosPrintData = {
             type: 'text',
-            value: `Garcom: ${cart.bartender.name}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            value: `Garcom: ${cart.bartender?.name}`,
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(waiter);
     }
@@ -200,7 +200,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
         const secretNumber: PosPrintData = {
             type: 'text',
             value: `CNPJ: ${cart.secretNumber}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         upperPrint.push(secretNumber);
     }
@@ -219,7 +219,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
         const mainItem: PosPrintData = {
             type: 'text',
             value: `${parsedItem.quantity}x | ${parsedItem.name} (${parsedItem.details.value.toFixed(2)})`,
-            style: { fontWeight: "bold", fontSize: "17px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "17px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
 
         if (parsedItem.obs.length > 0) {
@@ -227,7 +227,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             const obs: PosPrintData = {
                 type: 'text',
                 value: parsedItem.obs.includes(" ") ? fullObs : lineBreaker(fullObs, maxLength - 15),
-                style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(obs);
         }
@@ -238,7 +238,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
                     const complementCategory: PosPrintData = {
                         type: 'text',
                         value: `${complement.name}`,
-                        style: { fontWeight: "bold", fontSize: "16px", marginLeft: `${marginLeft + 6}px`, marginTop: "3px" }
+                        style: { fontWeight: "bold", fontSize: "16px", marginLeft: `${marginLeft + 6}px`, marginTop: "3px", fontFamily: "monospace" }
                     }
                     array.push(complementCategory);
 
@@ -247,7 +247,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
                         const complementItem: PosPrintData = {
                             type: 'text',
                             value: `${parsedItem.quantity}x - ${parsedItem.name} ${parsedItem.value > 0 ? `(${complementsValue.toFixed(2)})` : ''}`,
-                            style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft + 12}px` }
+                            style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft + 12}px`, fontFamily: "monospace" }
                         }
                         array.push(complementItem);
                         valueArray.push(complementsValue);
@@ -256,7 +256,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
                     const complementCategory: PosPrintData = {
                         type: 'text',
                         value: `${complement.name}`,
-                        style: { fontWeight: "bold", fontSize: "16px", marginLeft: `${marginLeft + 6}px`, marginTop: "3px" }
+                        style: { fontWeight: "bold", fontSize: "16px", marginLeft: `${marginLeft + 6}px`, marginTop: "3px", fontFamily: "monospace" }
                     }
                     array.push(complementCategory);
 
@@ -264,7 +264,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
                     const complementItem: PosPrintData = {
                         type: 'text',
                         value: `${complement.itens[0].quantity}x - ${complement.itens[0].name} ${complement.itens[0].value > 0 ? `(${complementsValue.toFixed(2)})` : ''}`,
-                        style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft + 12}px` }
+                        style: { fontWeight: "bold", fontSize: "14px", marginLeft: `${marginLeft + 12}px`, fontFamily: "monospace" }
                     }
                     array.push(complementItem);
                     valueArray.push(complementsValue);
@@ -284,7 +284,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             : {
                 type: 'text',
                 value: `R$${(price * Number(parsedItem.quantity)).toFixed(2)}`,
-                style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: `${marginRight}px`, textAlign: "right", marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginBottom: "10px", marginRight: `${marginRight}px`, textAlign: "right", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
 
         finalArray.push(hr, mainItem, ...array, finalPrice);
@@ -338,7 +338,7 @@ const generateIndCommands = (table: TableType, marginLeft: number, marginRight: 
                     <span>${command.name}:</span>
                     <span>${command.carts.map((cart) => cart.total).reduce((acc: number, total: number) => acc + total, 0).toFixed(2)}</span>
                 </div>`,
-            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         finalArray.push(commandName);
     })
@@ -352,7 +352,7 @@ const generateObs = (cart: CartType, marginLeft: number, marginRight: number, ma
         {
             type: 'text',
             value: cart.obs.includes(" ") ? `Obs.: ${cart.obs}` : lineBreaker(`Obs.: ${cart.obs}`, maxLength - 15),
-            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
     ]
 }
@@ -474,31 +474,18 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
         }
 
         if (isTable && table.opened && payload.printType !== 'command') {
-            cart.command
-                ? cart.command.fees.map((fee) => {
-                    if (fee.type === 'percent') {
-                        const percentValue = (fee.value * cartTotal) / 100;
-                        const tax: PosPrintData = {
-                            type: 'text',
-                            value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
-                        }
-                        array.push(tax);
-                        valueArray.push(percentValue);
+            cart.command?.fees.map((fee) => {
+                if (fee.type === 'percent') {
+                    const percentValue = (fee.value * cartTotal) / 100;
+                    const tax: PosPrintData = {
+                        type: 'text',
+                        value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                     }
-                })
-                : table.opened.commands[0].fees.map((fee) => {
-                    if (fee.type === 'percent') {
-                        const percentValue = (fee.value * cartTotal) / 100;
-                        const tax: PosPrintData = {
-                            type: 'text',
-                            value: characterPrint([`${fee.code}:`, `${percentValue.toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
-                        }
-                        array.push(tax);
-                        valueArray.push(percentValue);
-                    }
-                })
+                    array.push(tax);
+                    valueArray.push(percentValue);
+                }
+            })
 
             if (table.opened && table.opened.commands.length > 1) {
                 const allFixedFees = table.opened?.commands.map((command) => {
@@ -507,19 +494,19 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
                 const totalFees = allFixedFees.flat().reduce((acc: number, fee) => acc + fee.quantity, 0);
 
-                table.opened.commands[0].fees.map((fee) => {
+                cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && totalFees > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
                             value: characterPrint([`${fee.code} (${totalFees}x):`, `${(fee.value * totalFees).toFixed(2)}`], "‎", "space-between", maxLength),
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
                         }
                         array.push(tax);
                         valueArray.push(fee.value * totalFees);
                     }
                 })
             } else {
-                table.opened.commands[0].fees.map((fee) => {
+                cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -739,7 +726,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>Cupom usado:</span>
                             <span>${cart.cupom.code}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(cupomName);
         }
@@ -751,7 +738,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>Cupom Dado:</span>
                             <span>${sponsorCupomIfood({ cart })}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(cupomName);
         }
@@ -763,7 +750,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>Valores de cada cupom:</span>
                             <span>${valuesSponsorCupomIfood({ cart })}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(cupomName);
         }
@@ -777,7 +764,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Sub-total:</span>
                         <span>${cartTotal.toFixed(2)}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(subtotal);
             valueArray.push(cartTotal);
@@ -790,7 +777,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Sub-total:</span>
                         <span>${cartTotal.toFixed(2)}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(subtotal);
             valueArray.push(cartTotal);
@@ -803,7 +790,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Sub-total:</span>
                         <span>${cartTotal.toFixed(2)}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(subtotal);
             valueArray.push(cartTotal);
@@ -815,7 +802,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>Sub-total:</span>
                             <span>${cartTotal.toFixed(2)}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(subtotal);
             valueArray.push(cartTotal);
@@ -823,7 +810,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
         if (isTable && table.opened && payload.printType !== 'command') {
             cart.command
-                ? cart.command.fees.map((fee) => {
+                ? cart.command?.fees.map((fee) => {
                     if (fee.type === 'percent') {
                         const percentValue = (fee.value * cartTotal) / 100;
                         const tax: PosPrintData = {
@@ -832,7 +819,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                     <span>${fee.code}:</span>
                                     <span>${percentValue.toFixed(2)}</span>
                                 </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                         }
                         array.push(tax);
                         valueArray.push(percentValue);
@@ -847,7 +834,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                     <span>${fee.code}:</span>
                                     <span>${percentValue.toFixed(2)}</span>
                                 </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                         }
                         array.push(tax);
                         valueArray.push(percentValue);
@@ -861,7 +848,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
 
                 const totalFees = allFixedFees.flat().reduce((acc: number, fee) => acc + fee.quantity, 0);
 
-                table.opened.commands[0].fees.map((fee) => {
+                cart.command ? cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && totalFees > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -869,14 +856,27 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                         <span>${fee.code} (${totalFees}x):</span>
                                         <span>${(fee.value * totalFees).toFixed(2)}</span>
                                     </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
+                        }
+                        array.push(tax);
+                        valueArray.push(fee.value * totalFees);
+                    }
+                }) : table.opened.commands[0].fees.map((fee) => {
+                    if (fee.type === 'fixed' && totalFees > 0) {
+                        const tax: PosPrintData = {
+                            type: 'text',
+                            value: `<div style="display: flex; justify-content: space-between;">
+                                        <span>${fee.code} (${totalFees}x):</span>
+                                        <span>${(fee.value * totalFees).toFixed(2)}</span>
+                                    </div>`,
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                         }
                         array.push(tax);
                         valueArray.push(fee.value * totalFees);
                     }
                 })
             } else {
-                table.opened.commands[0].fees.map((fee) => {
+                cart.command?.fees.map((fee) => {
                     if (fee.type === 'fixed' && fee.quantity > 0) {
                         const tax: PosPrintData = {
                             type: 'text',
@@ -884,7 +884,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                         <span>${fee.code} (${fee.quantity}x):</span>
                                         <span>${(fee.value * fee.quantity).toFixed(2)}</span>
                                     </div>`,
-                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                         }
                         array.push(tax);
                         valueArray.push(fee.value * fee.quantity);
@@ -892,7 +892,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                 })
             }
         } else if (payload.printType === 'command') {
-            command.fees.map((fee) => {
+            command?.fees.map((fee) => {
                 if (fee.type === 'percent') {
                     const percentValue = (fee.value * cartTotal) / 100;
                     const tax: PosPrintData = {
@@ -901,7 +901,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                     <span>${fee.code}:</span>
                                     <span>${percentValue.toFixed(2)}</span>
                                 </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                     }
                     array.push(tax);
                     valueArray.push(percentValue);
@@ -914,7 +914,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                     <span>${fee.code} (${fee.quantity}x):</span>
                                     <span>${(fee.value * fee.quantity).toFixed(2)}</span>
                                 </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                     }
                     array.push(tax);
                     valueArray.push(fee.value * fee.quantity);
@@ -929,7 +929,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Taxa de entrega:</span>
                         <span>${typeof cart.taxDelivery !== "number" ? "A Consultar" : cart.taxDelivery > 0 ? `${cart.taxDelivery.toFixed(2)}` : "Grátis"}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(taxDelivery);
 
@@ -945,7 +945,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>Taxa Servico Ifood:</span>
                             <span>${cart.taxIfood.toFixed(2)}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             array.push(taxIfood);
             valueArray.push(cart.taxIfood);
@@ -961,7 +961,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                 <span>Cupom:</span>
                                 <span>-${percentValue.toFixed(2)}</span>
                             </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                 }
                 array.push(cupomPercent);
                 valueArray.push(percentValue * -1);
@@ -974,7 +974,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                 <span>Cupom:</span>
                                 <span>-${Number(value).toFixed(2)}</span>
                             </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                 }
                 array.push(cupomFixed);
                 valueArray.push(Number(value) * -1);
@@ -984,7 +984,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                 const cupomFreight: PosPrintData = {
                     type: 'text',
                     value: "Cupom de frete grátis!",
-                    style: { fontWeight: "bold", fontSize: "15px" }
+                    style: { fontWeight: "bold", fontSize: "15px", fontFamily: "monospace" }
                 }
                 array.push(cupomFreight);
             }
@@ -999,7 +999,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         `-${cartTotal.toFixed(2)}` :
                         `-${cart.formsPayment.find((form: { payment: string; }) => form.payment === "cashback").value.toFixed(2)}`}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             const cashbackValue = cart.formsPayment.length === 1 ?
                 Number((cartTotal * -1).toFixed(2)) :
@@ -1028,7 +1028,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>${taxOrDiscount} ${addonPayment.label}:</span>
                             <span>${convertedValue.toFixed(2)}</span>
                         </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
             }
             totalValue += convertedValue;
             array.push(addon);
@@ -1040,7 +1040,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Total:</span>
                         <span>${totalValue.toFixed(2)}</span>
                     </div>`,
-            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
         array.push(total);
 
@@ -1048,7 +1048,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
             const iFood: PosPrintData = {
                 type: 'text',
                 value: "PEDIDO IFOOD",
-                style: { fontWeight: "bold", textAlign: "center", fontSize: "15px", marginRight: `${marginRight}px` }
+                style: { fontWeight: "bold", textAlign: "center", fontSize: "15px", marginRight: `${marginRight}px`, fontFamily: "monospace" }
             }
 
             const pickupCode: PosPrintData = {
@@ -1057,7 +1057,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Código de coleta:</span>
                         <span>${cart.controls.pickupCode}</span>
                     </div>`,
-                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px` }
+                style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, fontFamily: "monospace" }
             }
 
             array.push(iFood, pickupCode);
@@ -1067,7 +1067,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
             const paid: PosPrintData = {
                 type: 'text',
                 value: "PAGO ONLINE",
-                style: { fontWeight: "bold", textAlign: "center", fontSize: "15px", marginRight: `${marginRight}px` }
+                style: { fontWeight: "bold", textAlign: "center", fontSize: "15px", marginRight: `${marginRight}px`, fontFamily: "monospace" }
             }
             array.push(paid);
         } else {
@@ -1078,7 +1078,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                         <span>Pagamento em:</span>
                         <span>${command.formsPayment.map((formPayment) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                 }
                 : {
                     type: 'text',
@@ -1088,7 +1088,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             ? table.opened.formsPayment.map((formPayment) => `${formPayment.label}`)
                             : cart.formsPayment.map((formPayment) => `${formPayment.label}`)}</span>
                     </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                 }
             array.push(paidWith);
 
@@ -1100,7 +1100,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                             <span>Troco para:</span>
                             <span>${Number(moneyPayment.change) !== totalValue ? `${Number(moneyPayment.change).toFixed(2)}` : "Não é necessário"}</span>
                         </div>`,
-                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                    style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                 }
 
                 if (Number(moneyPayment.change) > totalValue) {
@@ -1110,7 +1110,7 @@ const generatePayments = (payload: PrintPayloadType, isGeneric: boolean, isTable
                                 <span>Troco:</span>
                                 <span>${(Number(moneyPayment.change) - totalValue).toFixed(2)}</span>
                             </div>`,
-                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px` }
+                        style: { fontWeight: "bold", fontSize: "15px", marginRight: `${marginRight}px`, marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
                     }
                     array.push(moneyPaid, change);
                 } else {
@@ -1128,22 +1128,22 @@ const generateAddress = (cart: CartType, hr: PosPrintData, marginLeft: number): 
         {
             type: 'text',
             value: `${cart.address.street},`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         },
         {
             type: 'text',
             value: `${cart.address.number} ${cart.address.complement ?? ""}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         },
         {
             type: 'text',
             value: `${cart.address.neighborhood} - ${cart.address.city}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         },
         {
             type: 'text',
             value: `${cart.address.reference ?? ""}`,
-            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px` }
+            style: { fontWeight: "bold", fontSize: "15px", marginLeft: `${marginLeft}px`, fontFamily: "monospace" }
         }
     ]
 }
@@ -1156,43 +1156,43 @@ const generateNFCe = async (cart: CartType, isGeneric: boolean, hr: PosPrintData
     const accessKey: PosPrintData = {
         type: 'text',
         value: "Consulte pela Chave de Acesso em:",
-        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, fontFamily: "monospace" }
     }
 
     const keyUrl: PosPrintData = {
         type: 'text',
         value: `${fiscal_note.aditional_info.url_consulta_nf}`,
-        style: { fontWeight: "bold", fontSize: "10px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
+        style: { fontWeight: "bold", fontSize: "10px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px", fontFamily: "monospace" }
     }
 
     const key: PosPrintData = {
         type: 'text',
         value: "Chave de acesso:",
-        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, fontFamily: "monospace" }
     }
 
     const keyValue: PosPrintData = {
         type: 'text',
         value: `${fiscal_note.aditional_info.chave_nfe.replace(/\D/g, "")}`,
-        style: { fontWeight: "bold", fontSize: "10px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
+        style: { fontWeight: "bold", fontSize: "10px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px", fontFamily: "monospace" }
     }
 
     const protocolLabel: PosPrintData = {
         type: 'text',
         value: "Protocolo:",
-        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, fontFamily: "monospace" }
     }
 
     const protocol: PosPrintData = {
         type: 'text',
         value: `${fiscal_note.aditional_info.protocolo}`,
-        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, fontFamily: "monospace" }
     }
 
     const protocolDate: PosPrintData = {
         type: 'text',
         value: `${DateTime.fromISO(fiscal_note.created_at).toFormat("dd/MM/yyyy HH:mm:ss")}`,
-        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px" }
+        style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, marginBottom: "5px", fontFamily: "monospace" }
     }
 
     finalArray.push(accessKey, keyUrl, key, keyValue, protocolLabel, protocol, protocolDate);
@@ -1215,14 +1215,14 @@ const generateNFCe = async (cart: CartType, isGeneric: boolean, hr: PosPrintData
         const qrLabel: PosPrintData = {
             type: 'text',
             value: "Consulta via leitor de QR Code:",
-            style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px` }
+            style: { fontWeight: "bold", fontSize: "15px", textAlign: 'center', marginRight: `${marginRight}px`, fontFamily: "monospace" }
         }
 
         const qrCode: PosPrintData = {
             type: 'qrCode',
             position: 'center',
             value: fiscal_note.aditional_info.qrcode_url,
-            style: { textAlign: 'center', marginBottom: "5px", marginRight: `${marginRight}px` }
+            style: { textAlign: 'center', marginBottom: "5px", marginRight: `${marginRight}px`, fontFamily: "monospace" }
         }
         finalArray.push(qrLabel, qrCode);
     }
@@ -1256,17 +1256,17 @@ const generateFooter = (isTable: boolean, isDelivery: boolean, isGeneric: boolea
             {
                 type: 'text',
                 value: `**${isTable ? "Pedido Mesa" : isDelivery ? "Delivery" : "Vou retirar no local"}**`,
-                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "0px" }
+                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", marginBottom: "0px", fontFamily: "monospace" }
             },
             {
                 type: 'text',
                 value: "Tecnologia",
-                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px" }
+                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", fontFamily: "monospace" }
             },
             {
                 type: 'text',
                 value: "www.whatsmenu.com.br",
-                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px" }
+                style: { fontWeight: "bold", textAlign: 'center', fontSize: "15px", fontFamily: "monospace" }
             }
         ];
 
@@ -1276,14 +1276,12 @@ const generateFooter = (isTable: boolean, isDelivery: boolean, isGeneric: boolea
 export const printService = async (payload: PrintPayloadType, printOptions: Electron.WebContentsPrintOptions, paperSize: number, isGeneric: boolean) => {
     const { cart, table } = payload;
     const { left, right } = printOptions.margins;
-    console.log("table", cart.command.opened.table.name);
     const marginLeft = left && left > 0 ? left : 0;
     const marginRight = right && right > 0 ? right : 0;
     const isDelivery = (cart.type === 'D' || cart.type === 'P') && cart.address;
     const isTable = cart.type === 'T';
     const isIfood = cart.origin === 'ifood';
-    const isNFCe = cart.controls.grovenfe;
-
+    const isNFCe = cart.controls.grovenfe?.fiscal_note?.url_consulta_nf;
     let maxLength = 0;
     if (isGeneric) {
         if (paperSize <= 58) {
@@ -1352,7 +1350,7 @@ export const printService = async (payload: PrintPayloadType, printOptions: Elec
         printerName: printOptions.deviceName,
         preview: false,
         silent: printOptions.silent,
-        pageSize: paperSize === 80 ? "80mm" : "58mm",
+        pageSize: paperSize > 59 ? "80mm" : "58mm",
         margin: '0 0 0 0',
         boolean: undefined
     }).catch((error) =>
