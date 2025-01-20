@@ -4,7 +4,7 @@ import { Button } from "../shadcn-ui/components/ui/button"
 import AddNewEnvironment from './addNewEnvironment'
 import PrintContext from '../contexts/PrintContext'
 import { PrintEnvironmentConfig } from '../types_print-environment'
-import { set } from 'zod'
+import EditEnvironment from './editEnvironment'
 
 export default function MainPrintConfig() {
     const context = useContext(PrintContext);
@@ -13,7 +13,7 @@ export default function MainPrintConfig() {
       throw new Error('PrintContext must be used within a PrintProvider');
     }
 
-    const { setId, setType, setEnvName, setEnvCategories, currentPage, setCurrentPage, setProductCategories, setLocations, locations } = context;
+    const { setEnvId, setEnvType, setEnvName, setEnvCategories, currentPage, setCurrentPage, setProductCategories, setLocations, locations } = context;
 
     useEffect(() => {
       window.DesktopApi.onCategoriesChange((_, categories) => {
@@ -46,8 +46,8 @@ export default function MainPrintConfig() {
 
     const handleUpdatePrint = (location: PrintEnvironmentConfig) => {
       if (location.id === 1) return alert('Ambiente Caixa não pode ser atualizado.');
-      setId(location.id);
-      setType(location.type);
+      setEnvId(location.id);
+      setEnvType(location.type);
       setEnvName(location.name);
       setEnvCategories(location.categories || []);
       setCurrentPage('edit');
@@ -91,7 +91,8 @@ export default function MainPrintConfig() {
           </CardContent>
         </div>
       )}
-      {currentPage === 'add' && <AddNewEnvironment />}
+      { currentPage === 'edit' && <EditEnvironment /> }
+      { currentPage === 'add' && <AddNewEnvironment /> }
     </Card>
   )
 }

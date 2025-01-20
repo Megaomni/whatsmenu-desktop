@@ -10,10 +10,10 @@ interface PrintTypes {
   setLocations: Dispatch<SetStateAction<PrintEnvironmentConfig[]>>
   selectedType: PrintEnvironmentType;
   setSelectedType: Dispatch<SetStateAction<PrintEnvironmentType>>;
-  id: number;
-  setId: Dispatch<SetStateAction<number>>;
-  type: PrintEnvironmentType;
-  setType: Dispatch<SetStateAction<PrintEnvironmentType>>;
+  envId: number;
+  setEnvId: Dispatch<SetStateAction<number>>;
+  envType: PrintEnvironmentType;
+  setEnvType: Dispatch<SetStateAction<PrintEnvironmentType>>;
   envName: string;
   setEnvName: Dispatch<SetStateAction<string>>;
   envCategories: string[];

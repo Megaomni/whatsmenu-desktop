@@ -6,7 +6,7 @@ export type Printer = Electron.PrinterInfo & {
   margins: Electron.Margins;
   scaleFactor: number;
   options: {
-    "printer-location": string[];
+    "printer-location": number[];
     "printer-make-and-model": string;
     system_driverinfo: string;
   };

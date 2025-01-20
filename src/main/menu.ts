@@ -227,14 +227,14 @@ const updateMenu = async () => {
             ...getPrinterLocations().map((location) => ({
               label: location.name,
               type: "checkbox",
-              checked: printer.options["printer-location"].includes(location.name),
+              checked: printer.options["printer-location"].includes(location.id),
               click: (menuItem: { checked: boolean; }) => {
                 const currentLocations = [...printer.options["printer-location"]];
 
                 if (menuItem.checked) {
-                  currentLocations.push(location.name);
+                  currentLocations.push(location.id);
                 } else {
-                  const index = currentLocations.indexOf(location.name);
+                  const index = currentLocations.indexOf(location.id);
                   if (index > -1) {
                     currentLocations.splice(index, 1);
                   }
