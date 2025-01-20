@@ -5,7 +5,7 @@ import { AddonType, ProfileType } from "../@types/profile";
 import { TableType } from "../@types/table";
 import { CommandType } from "../@types/command";
 
-type PrintPayloadType = {
+export type PrintPayloadType = {
     cart: CartType;
     profile: ProfileType;
     table?: TableType;

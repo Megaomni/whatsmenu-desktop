@@ -101,6 +101,13 @@ export const store = new ElectronStore<Store>({
   },
 });
 
+export type categoryType = {
+  id: number;
+  name: string;
+  products: { id: number; categoryId: number }[];
+  pizzaProduct: any;
+};
+
 export const setCategories = async () => {
   try {
     const profile = getProfile();
@@ -113,7 +120,7 @@ export const setCategories = async () => {
 }
 
 export const getCategories = () => {
-  const categories = store.get<"configs.productCategories", { id: number; name: string }[]>(
+  const categories = store.get<"configs.productCategories", categoryType[]>(
     "configs.productCategories"
   );
   return categories;
