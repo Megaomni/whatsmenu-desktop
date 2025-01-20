@@ -3,8 +3,8 @@ import PrintContext from "./PrintContext";
 import { PrintEnvironmentType } from "../types_print-environment";
 
 export default function PrintProvider({ children }: any) {
-  const [id, setId] = useState(0);
-  const [type, setType] = useState<PrintEnvironmentType>('fiscal');
+  const [envId, setEnvId] = useState(0);
+  const [envType, setEnvType] = useState<PrintEnvironmentType>('fiscal');
   const [envName, setEnvName] = useState('');
   const [envCategories, setEnvCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState('main');
@@ -21,10 +21,10 @@ export default function PrintProvider({ children }: any) {
     setLocations,
     selectedType,
     setSelectedType,
-    id,
-    setId,
-    type,
-    setType,
+    envId,
+    setEnvId,
+    envType,
+    setEnvType,
     envName,
     setEnvName,
     envCategories,

@@ -51,23 +51,6 @@ export default function AddNewEnvironment() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nome do Ambiente</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Digite o nome do ambiente"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="type"
               render={({ field }) => (
                 <FormItem>
@@ -103,6 +86,24 @@ export default function AddNewEnvironment() {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome do Ambiente</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Digite o nome do ambiente"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
 
             {selectedType === 'production' && (
               <FormField
