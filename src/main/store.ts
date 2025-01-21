@@ -9,13 +9,17 @@ import { MerchantType } from "../@types/merchant";
 import { VoucherType } from "../@types/voucher";
 import { getVouchersFromDB } from "./ipc";
 import { ClientType } from "../@types/client";
+import { PrintEnvironmentConfig } from "../react/types_print-environment";
 
 export interface Store {
   configs: {
     printing: {
+      locations: PrinterLocation[];
+      useMultiplePrinters: boolean;
       printers: Printer[];
       legacyPrint: boolean;
     };
+    productCategories: { id: number; name: string; }[];
     whatsapp: {
       showHiddenWhatsApp: boolean;
     };
@@ -25,6 +29,13 @@ export interface Store {
     voucherToNotify: VoucherNotification[];
     merchant: MerchantType | null;
   };
+}
+
+export interface PrinterLocation {
+  id: number;
+  type: "fiscal" | "production";
+  name: string;
+  categories: string[];
 }
 
 export const store = new ElectronStore<Store>({
@@ -39,13 +50,46 @@ export const store = new ElectronStore<Store>({
     "0.4.5": (store) => {
       store.set("configs.merchant", null);
     },
+    "1.5.7": (store) => {
+      store.set("configs.printing.locations", [
+        {
+          type: "fiscal",
+          name: "Caixa",
+          categories: []
+        },
+        {
+          type: "production",
+          name: "Cozinha",
+          categories: []
+        }
+      ])
+    },
+    "1.5.8": (store) => {
+      store.set("configs.printing.useMultiplePrinters", false)
+    }
   },
   defaults: {
     configs: {
       printing: {
+        locations: [
+          {
+            id: 1,
+            type: "fiscal",
+            name: "Caixa",
+            categories: []
+          },
+          {
+            id: 2,
+            type: "production",
+            name: "Cozinha",
+            categories: []
+          }
+        ],
+        useMultiplePrinters: false,
         printers: [],
         legacyPrint: false,
       },
+      productCategories: [],
       whatsapp: {
         showHiddenWhatsApp: false,
       },
@@ -57,6 +101,74 @@ export const store = new ElectronStore<Store>({
   },
 });
 
+export type categoryType = {
+  id: number;
+  name: string;
+  products: { id: number; categoryId: number }[];
+  pizzaProduct: any;
+};
+
+export const setCategories = async () => {
+  try {
+    const profile = getProfile();
+    const { data } = await whatsmenu_api_v3.get(`/categories/${profile?.id}`);
+
+    store.set("configs.productCategories", data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const getCategories = () => {
+  const categories = store.get<"configs.productCategories", categoryType[]>(
+    "configs.productCategories"
+  );
+  return categories;
+}
+
+export const toggleMultiplePrinters = () => {
+  const isMultiplePrinters = getIsMultiplePrinters();
+  store.set("configs.printing.useMultiplePrinters", !isMultiplePrinters)
+}
+
+export const getIsMultiplePrinters = () =>
+  store.get<"configs.printing.useMultiplePrinters", boolean>(
+    "configs.printing.useMultiplePrinters"
+  )
+
+export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
+  const { type, name } = location;
+  const categories = !location.categories || type === "fiscal" ? [] : location.categories;
+  const locations = getPrinterLocations();
+  store.set("configs.printing.locations", [...locations, { id: locations[locations.length - 1].id + 1, type, name, categories }]);
+}
+
+export const removePrinterLocation = (id: number) => {
+  const locations = getPrinterLocations();
+  if (id === 1 || id === 2) return;
+  const listWithoutLocation = locations.filter((location) => location.id !== id);
+  store.set("configs.printing.locations", listWithoutLocation);
+}
+
+export const updatePrinterLocation = (location: PrintEnvironmentConfig) => {
+  const { id, type, name } = location;
+  const categories = !location.categories || type === "fiscal" ? [] : location.categories;
+  const locations = getPrinterLocations();
+  const locationsUpdated = locations.map((location) => {
+    if (location.id === id) {
+      return { ...location, type, name, categories };
+    }
+    return location;
+  });
+  store.set("configs.printing.locations", locationsUpdated);
+}
+
+export const getPrinterLocations = () => {
+  const locations = store.get<"configs.printing.locations", PrinterLocation[]>(
+    "configs.printing.locations",
+  );
+  return locations;
+}
 export const getLegacyPrint = () => {
   let legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
     "configs.printing.legacyPrint",

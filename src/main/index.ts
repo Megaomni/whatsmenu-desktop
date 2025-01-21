@@ -12,7 +12,7 @@ import "./sentry";
 import { TabBrowser } from "../extends/tab-browser";
 import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
-import { fetchVouchers, getPrinters, updatePrinter } from "./store";
+import { fetchVouchers, getPrinters, setCategories, updatePrinter } from "./store";
 
 export let mainWindow: TabBrowser;
 
@@ -30,6 +30,7 @@ const main = async () => {
   mainWindow = tabsWindow.createWindow();
   const printers = getPrinters();
   await fetchVouchers();
+  await setCategories();
   if (printers.length > 0) {
     printers.forEach((printer) => {
       if (!printer.margins) {
