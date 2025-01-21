@@ -5,7 +5,7 @@ import { AddonType, ProfileType } from "../@types/profile";
 import { TableType } from "../@types/table";
 import { CommandType } from "../@types/command";
 
-type PrintPayloadType = {
+export type PrintPayloadType = {
     cart: CartType;
     profile: ProfileType;
     table?: TableType;
@@ -141,7 +141,7 @@ const generateUpper = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
             }
             upperPrint.push(ifoodCode);
         }
-    } else if (table.opened) {
+    } else if (table?.opened) {
         const creationTime = DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }).toFormat("HH:mm");
         const checkoutTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).toFormat("HH:mm");
         const stayingTime = DateTime.fromSQL(table.opened.updated_at, { zone: profile.timeZone }).diff(DateTime.fromSQL(table.opened.created_at, { zone: profile.timeZone }), ['minutes']).minutes;
@@ -309,7 +309,7 @@ const generateItens = (payload: PrintPayloadType, isGeneric: boolean, isTable: b
         const groupedItens = groupEqualItems(allItens.flat());
         groupedItens.map((item) => getPrintBody(item, printBody));
     } else {
-        if (isTable && table.opened) {
+        if (isTable && table?.opened) {
             const { commands } = table.opened;
             const allItens = commands.map((command) => command.carts.map((cart) => cart.itens.map((item) => item)));
             if (allItens.flat(2).length === 0) {
@@ -1313,7 +1313,7 @@ export const printService = async (payload: PrintPayloadType, printOptions: Elec
 
     const itensPrint: PosPrintData[] = generateItens(payload, isGeneric, isTable, hr, marginLeft, marginRight, maxLength);
 
-    const printIndividualCommands: PosPrintData[] = isTable && table.opened?.commands.length > 1 && table.opened?.formsPayment.length > 0 && payload.printType !== 'command'
+    const printIndividualCommands: PosPrintData[] = isTable && table?.opened?.commands.length > 1 && table?.opened?.formsPayment.length > 0 && payload.printType !== 'command'
         ? generateIndCommands(table, marginLeft, marginRight, hr)
         : [];
 

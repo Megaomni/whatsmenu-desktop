@@ -4,15 +4,21 @@ import { Printer } from "./../@types/store";
 import {
   addPrinter,
   deletePrinter,
+  getIsMultiplePrinters,
+  getPrinterLocations,
   getLegacyPrint,
   getPrinters,
+  setPrinterLocation,
   store,
+  toggleMultiplePrinters,
   toggleLegacyPrint,
   updatePrinter,
 } from "./store";
 
 import { randomUUID } from "node:crypto";
 import { mainWindow } from ".";
+import { printModal } from "./print";
+import { botWindow } from "../windows/bot-window";
 
 const isMac = process.platform === "darwin";
 
@@ -199,6 +205,7 @@ export const whatsmenu_menu = Menu.buildFromTemplate(template as any[]);
 const updateMenu = async () => {
   const isLegacy = getLegacyPrint();
   const clientPrinters = getPrinters();
+  const isMultiplePrinters = getIsMultiplePrinters();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   template.at(0).submenu.at(0).submenu = [
@@ -211,6 +218,38 @@ const updateMenu = async () => {
           checked: printer.silent,
           click: () =>
             updatePrinter({ id: printer.id, silent: !printer.silent }),
+        },
+        { type: "separator" },
+        {
+          label: "Ambientes da Impressora",
+          enabled: isMultiplePrinters,
+          submenu: [
+            ...getPrinterLocations().map((location) => ({
+              label: location.name,
+              type: "checkbox",
+              checked: printer.options["printer-location"].includes(location.id),
+              click: (menuItem: { checked: boolean; }) => {
+                const currentLocations = [...printer.options["printer-location"]];
+
+                if (menuItem.checked) {
+                  currentLocations.push(location.id);
+                } else {
+                  const index = currentLocations.indexOf(location.id);
+                  if (index > -1) {
+                    currentLocations.splice(index, 1);
+                  }
+                }
+
+                updatePrinter({
+                  id: printer.id,
+                  options: {
+                    ...printer.options,
+                    "printer-location": currentLocations,
+                  },
+                });
+              },
+            })),
+          ]
         },
         { type: "separator" },
         {
@@ -375,6 +414,19 @@ const updateMenu = async () => {
 
         await copiesDialog(newPrinter);
       },
+    },
+    { type: "separator" },
+    {
+      label: "Usar ambientes de impressão",
+      type: "checkbox",
+      checked: isMultiplePrinters,
+      click: () =>
+        toggleMultiplePrinters(),
+    },
+    {
+      label: "Configurar ambientes",
+      enabled: isMultiplePrinters,
+      click: () => printModal(),
     },
     { type: "separator" },
     {

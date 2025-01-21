@@ -6,6 +6,7 @@ import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
 import { Env } from "../environments";
 import { MerchantType } from "../@types/merchant";
+import { PrintEnvironmentConfig, ProductCategory } from "../react/types_print-environment";
 
 export const WhatsAppBotApi = {
   // Events
@@ -47,8 +48,20 @@ export const DesktopApi = {
   onProfileChange: (
     callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void,
   ) => ipcRenderer.on("onProfileChange", callback),
+  onCategoriesChange: (
+    callback: (event: Electron.IpcRendererEvent, categories: ProductCategory[]) => void,
+  ) => ipcRenderer.on("onCategoriesChange", callback),
+  onPrinterLocationsChange: (
+    callback: (event: Electron.IpcRendererEvent, locations: PrintEnvironmentConfig[]) => void,
+  ) => ipcRenderer.on("onPrinterLocationsChange", callback),
   onCart: (cart: { id: number; client?: ClientType }) =>
     ipcRenderer.send("onCart", cart),
+  onSubmitPrint: (location: PrintEnvironmentConfig) =>
+    ipcRenderer.send("onSubmitPrint", location),
+  onRemovePrint: (id: number) =>
+    ipcRenderer.send("onRemovePrint", id),
+  onUpdatePrint: (location: PrintEnvironmentConfig) =>
+    ipcRenderer.send("onUpdatePrint", location),
   onVoucher: (voucher: VoucherType) => ipcRenderer.send("onVoucher", voucher),
   removeVoucher: (voucher: VoucherType) =>
     ipcRenderer.send("removeVoucher", voucher),
@@ -59,6 +72,8 @@ export const DesktopApi = {
     ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),
   getMerchant: () => ipcRenderer.send("getMerchant"),
+  getCategories: () => ipcRenderer.send("getCategories"),
+  getPrinterLocations: () => ipcRenderer.send("getPrinterLocations"),
   /**
    * Abre um link no navegador padrão.
    *
