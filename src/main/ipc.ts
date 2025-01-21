@@ -157,10 +157,33 @@ const CSS = `<head>
 </head>`;
 
 const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | PrintPayloadType => {
-  const { cart } = payload;
+  const { cart, table, command, printType } = payload;
   const environment = getPrinterLocations().find((env) => env.id === envId);
-  if (!environment || environment.categories.length < 1) return "";
-  if (environment.type === "fiscal") return payload;
+
+  if (environment.type === "fiscal") {
+    if (printType === "command" && command.carts.some((cart) => cart.print !== 0)) {
+      return payload;
+    }
+
+    if (printType === "table" && table.opened.commands[0].carts.some((cart) => cart.print !== 0)) {
+      return payload;
+    }
+  }
+
+  if (
+    !environment ||
+    (environment.type === "production" && environment.categories.length < 1) ||
+    (environment.type === "production" && cart.print !== 0) ||
+    (environment.type === "production" && printType) ||
+    (environment.type === "fiscal" && cart.type === "T" && cart.print === 0)
+  ) {
+    return ""
+  };
+
+  if (environment.type === "fiscal" || cart.print !== 0) {
+    return payload
+  };
+
   const storedCategories = getCategories();
   const allProductsFromCategories: number[] = [];
 
@@ -174,6 +197,9 @@ const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | Pri
   })
 
   const newCartItems = cart.itens.filter((item) => item.productId && allProductsFromCategories.includes(item.productId));
+  if (newCartItems.length < 1) {
+    return ""
+  };
 
   return {
     ...payload,
@@ -397,7 +423,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
               pageSize: paperSize > 59 ? "80mm" : "58mm",
               margin: '0 0 0 0',
               boolean: undefined
-            }).catch((error) =>
+            }).catch((error: Error) =>
               console.error("Erro na impressão:", error)
             );
           });
@@ -433,7 +459,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
             pageSize: paperSize > 59 ? "80mm" : "58mm",
             margin: '0 0 0 0',
             boolean: undefined
-          }).catch((error) =>
+          }).catch((error: Error) =>
             console.error("Erro na impressão:", error)
           );
 
