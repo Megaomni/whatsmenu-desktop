@@ -17,7 +17,7 @@ const formSchema = z.object({
   categories: z.array(z.string()).optional(),
 })
 
-export default function EditEnvironment() {
+export default function AddOrEditEnvironment() {
     const context = useContext(PrintContext);
 
     if (!context) {
@@ -32,6 +32,7 @@ export default function EditEnvironment() {
       setEnvName,
       envCategories,
       setEnvCategories,
+      currentPage,
       setCurrentPage,
       selectedType,
       setSelectedType,
@@ -48,6 +49,8 @@ export default function EditEnvironment() {
   })
 
   useEffect(() => {
+    if (currentPage !== 'edit') return;
+
     form.setValue('name', envName);
     setSelectedType(envType);
     form.setValue('type', envType);
@@ -72,14 +75,20 @@ export default function EditEnvironment() {
     setCurrentPage('main');
   }
 
+  const onSubmit = (data: PrintEnvironmentConfig) => {
+      console.log('Dados do formulário:', data)
+      window.DesktopApi.onSubmitPrint(data);
+      setCurrentPage('main');
+    }
+
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Editar Ambiente de Impressão</CardTitle>
+        <CardTitle>{currentPage === 'edit' ? "Editar Ambiente de Impressão" : "Configuração de Ambiente de Impressão"}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onUpdate)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(currentPage === 'edit' ? onUpdate : onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="type"
@@ -93,7 +102,7 @@ export default function EditEnvironment() {
                         setSelectedType(value)
                         setEnvType(value)
                       }}
-                      defaultValue={envType}
+                      defaultValue={currentPage === 'edit' ? envType : field.value}
                       className="flex flex-col space-y-1"
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -127,7 +136,6 @@ export default function EditEnvironment() {
                   <FormLabel>Nome do Ambiente</FormLabel>
                   <FormControl>
                     <Input
-                      className='focus:outline-black'
                       onChange={(e) => setEnvName(e.target.value)}
                       placeholder="Digite o nome do ambiente"
                       {...field}
@@ -154,7 +162,7 @@ export default function EditEnvironment() {
                           key={category.id.toString()}
                           control={form.control}
                           name="categories"
-                          render={() => {
+                          render={currentPage === 'edit' ? () => {
                             return (
                               <FormItem
                                 key={category.id.toString()}
@@ -171,7 +179,33 @@ export default function EditEnvironment() {
                                 </FormLabel>
                               </FormItem>
                             )
-                          }}
+                          } 
+                          : ({ field }) => {
+                              return (
+                                <FormItem
+                                  key={category.id.toString()}
+                                  className="flex flex-row items-start space-x-3 space-y-0"
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value?.includes(category.name)}
+                                      onCheckedChange={(checked) => {
+                                        return checked
+                                          ? field.onChange([...field.value || [], category.name])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                (value) => value !== category.name
+                                              )
+                                            )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormLabel className="font-normal">
+                                    {category.name}
+                                  </FormLabel>
+                                </FormItem>
+                              )
+                            }}
                         />
                       ))}
                     </div>
