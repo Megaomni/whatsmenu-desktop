@@ -28,7 +28,7 @@ export default function MainPrintConfig() {
     }, [locations]);
 
     const handleRemovePrint = (id: number) => {
-      if (id === 1 || id === 2) return alert('Ambientes padrões não podem ser removidos.');
+      if (id === 1) return alert('Ambiente caixa não pode ser removido.');
       window.DesktopApi.onRemovePrint(id);
     }
 

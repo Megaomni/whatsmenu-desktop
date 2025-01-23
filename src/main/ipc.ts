@@ -14,7 +14,6 @@ import {
 import {
   deleteVoucherToNotify,
   getCategories,
-  getIsMultiplePrinters,
   getMerchant,
   getPrinterLocations,
   getProfile,
@@ -64,104 +63,6 @@ ipcMain.on("executablePath", (_, executablePath) => {
     executablePath.replaceAll("\\", "/").replaceAll("/", "\\")
   );
 });
-
-const CSS = `<head>
-  <style>
-    * {
-      padding: 0;
-      margin: 0;
-      font-weight: bolder;
-    }
-
-    body {
-      margin: 0;
-    }
-
-    .print-root {
-      margin: 0;
-    }
-
-    *.text-only,
-    *.title {
-      display: inherit !important;
-      white-space: normal !important;
-    }
-
-    *.formated.layout-80mm {
-      font-size: 16pt;
-    }
-    *.formated.layout-58mm {
-      width: 48mm;
-    }
-
-    *.formated {
-      white-space: pre-wrap !important;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-
-    .formated.print-title {
-      margin: 0 !important;
-      text-align: center;
-    }
-
-    .formated.print-title.layout-58mm {
-      white-space: normal !important;
-      font-size: 16pt;
-    }
-    .formated.print-title.layout-80mm {
-      white-space: normal !important;
-      font-size: 16pt;
-    }
-
-    .formated.print-row div {
-      display: flex;
-      overflow: hidden;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-
-    .formated.print-row.layout-58mm div p.complement-space {
-      padding-left: 4mm;
-    }
-
-    .formated.print-row.layout-58mm div p.transshipment-space {
-      padding-left: 5mm;
-    }
-
-    .formated.print-row.layout-58mm div p.item-space {
-      padding-left: 8mm;
-    }
-
-    .formated.print-row.layout-80mm div p.complement-space {
-      padding-left: 13mm;
-    }
-
-    .formated.print-row.layout-80mm div p.transshipment-space {
-      padding-left: 9mm;
-    }
-
-    .formated.print-row.layout-80mm div p.item-space {
-      padding-left: 20mm;
-    }
-  </style>
-
-  <link
-    id="bootstrap-link"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    crossorigin="anonymous"
-  />
-  
-  <script
-    id="bootstrap-script"
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"
-  ></script>
-</head>`;
 
 const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | PrintPayloadType => {
   const { cart, table, command, printType } = payload;
@@ -219,186 +120,184 @@ const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | Pri
 
 ipcMain.on("print", async (_, serializedPayload) => {
   const printers = store.get("configs.printing.printers") as Printer[];
-  const isEnvPrint = getIsMultiplePrinters();
   for (const printer of printers) {
     const isGeneric = printer.options.system_driverinfo
       .toLowerCase()
       .includes("generic");
     console.log(isGeneric, "isGeneric");
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer;
-    for (const envId of printer.options["printer-location"]) {
-      const win = new BrowserWindow({ show: false });
 
-      const { printTypeMode = "whatsmenu", ...payload } =
-        JSON.parse(serializedPayload);
+    const win = new BrowserWindow({ show: false });
 
-      if (printTypeMode === "html") {
-        win.webContents.executeJavaScript(`
-            const printBody = document.body
-            if (${isGeneric}) {
-              let link = document.getElementById('bootstrap-link')
-              link.parentNode.removeChild(link)
-            } else {
-              printBody.style.height = '1400px' 
+    const { printTypeMode = "whatsmenu", ...payload } =
+      JSON.parse(serializedPayload);
+
+    if (printTypeMode === "html") {
+      win.webContents.executeJavaScript(`
+          const printBody = document.body
+          if (${isGeneric}) {
+            let link = document.getElementById('bootstrap-link')
+            link.parentNode.removeChild(link)
+          } else {
+            printBody.style.height = '1400px' 
+          }
+          printBody.innerHTML = ${JSON.stringify(payload.html)}
+        `);
+    }
+
+    if (printTypeMode === "whatsmenu") {
+      for (const envId of printer.options["printer-location"]) {
+        const window = new BrowserWindow({ show: false });
+        const foundLocation = getPrinterLocations().find(
+          (location) => location.id === envId
+        )
+        if (!foundLocation) continue;
+
+        const envPayload = payloadEnvSplit(payload, envId);
+
+        if (typeof envPayload === "string") continue;
+
+        try {
+          envPayload.profile.options.print.width =
+            paperSize !== 58 ? "302px" : "219px";
+          envPayload.profile.options.print.textOnly = isGeneric;
+          const data = printToString(
+            foundLocation.type === "production" ? ProductionPrint : NotePrint,
+            {
+              cart: new Cart(envPayload.cart as any),
+              profile: new Profile(envPayload.profile as any),
+              printType: envPayload.printType,
+              table: envPayload.table ? new Table(envPayload.table as any) : undefined,
+              command: envPayload.command ? new Command(envPayload.command as any) : undefined,
+              electron: true,
+              html: true,
+              motoboys: []
             }
-            printBody.innerHTML = ${JSON.stringify(payload.html)}
-          `);
-      }
-      if (printTypeMode === "whatsmenu") {
-        if (isEnvPrint) {
-          const foundLocation = getPrinterLocations().find(
-            (location) => location.id === envId
           )
 
-          if (!foundLocation) return;
-
-          const envPayload = payloadEnvSplit(payload, envId);
-
-          if (typeof envPayload === "string") return;
-
-          try {
-            envPayload.profile.options.print.width =
-              paperSize !== 58 ? "302px" : "219px";
-            envPayload.profile.options.print.textOnly = isGeneric;
-            const data = printToString(
-              foundLocation.type === "production" ? ProductionPrint : NotePrint,
-              {
-                cart: new Cart(envPayload.cart as any),
-                profile: new Profile(envPayload.profile as any),
-                printType: envPayload.printType,
-                table: envPayload.table ? new Table(envPayload.table as any) : undefined,
-                command: envPayload.command ? new Command(envPayload.command as any) : undefined,
-                electron: true,
-                html: true,
-                motoboys: []
-              }
-            )
-
-            win.webContents.executeJavaScript(`
+          window.webContents.executeJavaScript(`
                 const printBody = document.body
                 let link = document.getElementById('bootstrap-link')
                 link.parentNode.removeChild(link)
                 printBody.innerHTML = ${JSON.stringify(
-              data[80]
-            )}
-              `);
-          } catch (error) {
-            console.error(error);
-          }
-
-          const printOptions: Electron.WebContentsPrintOptions = {
-            deviceName: name,
-            silent,
-            margins,
-            copies,
-            scaleFactor,
-          };
-          win.webContents.addListener("did-finish-load", async () => {
-            console.log(name, typeof paperSize);
-
-            const height = Math.ceil(
-              (await win.webContents.executeJavaScript(
-                "document.body.offsetHeight"
-              )) * 264.5833
-            );
-            setTimeout(() => {
-              win.webContents.print(
-                {
-                  ...printOptions,
-                  pageSize: {
-                    height: height < 4800000 ? height : 4800000,
-                    width: paperSize * 1000,
-                  },
-                },
-                (success, failureReason) => {
-                  console.log("Print Initiated in Main...");
-                  if (!success) console.error(failureReason);
-                }
-              );
-            }, 2000);
-          });
-
-          if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-            win.webContents.loadURL(
-              `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
-            );
-          } else {
-            win.webContents.loadFile(
-              path.join(
-                __dirname,
-                `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-              )
-            );
-          }
-
-        } else {
-          try {
-            payload.profile.options.print.width =
-              paperSize !== 58 ? "302px" : "219px";
-            payload.profile.options.print.textOnly = isGeneric;
-            const { data } = await axios.post(
-              "https://ifood.whatsmenu.com.br/api/printLayout",
-              { ...payload, html: true, electron: true }
-            );
-            win.webContents.executeJavaScript(`
-              const printBody = document.body
-              let link = document.getElementById('bootstrap-link')
-              link.parentNode.removeChild(link)
-              printBody.innerHTML = ${JSON.stringify(
-              data.reactComponentString[paperSize < 65 ? 58 : 80]
-            )}
+            data[paperSize < 65 ? 58 : 80]
+          )}
             `);
-          } catch (error) {
-            console.error(error);
-          }
+        } catch (error) {
+          console.error(error);
+        }
 
-          const printOptions: Electron.WebContentsPrintOptions = {
-            deviceName: name,
-            silent,
-            margins,
-            copies,
-            scaleFactor,
-          };
-          win.webContents.addListener("did-finish-load", async () => {
-            console.log(name, typeof paperSize);
+        const printOptions: Electron.WebContentsPrintOptions = {
+          deviceName: name,
+          silent,
+          margins,
+          copies,
+          scaleFactor,
+        };
+        window.webContents.addListener("did-finish-load", async () => {
+          console.log(name, typeof paperSize);
 
-            const height = Math.ceil(
-              (await win.webContents.executeJavaScript(
-                "document.body.offsetHeight"
-              )) * 264.5833
-            );
-            setTimeout(() => {
-              win.webContents.print(
-                {
-                  ...printOptions,
-                  pageSize: {
-                    height: height < 4800000 ? height : 4800000,
-                    width: paperSize * 1000,
-                  },
+          const height = Math.ceil(
+            (await window.webContents.executeJavaScript(
+              "document.body.offsetHeight"
+            )) * 264.5833
+          );
+          setTimeout(() => {
+            window.webContents.print(
+              {
+                ...printOptions,
+                pageSize: {
+                  height: height < 4800000 ? height : 4800000,
+                  width: paperSize * 1000,
                 },
-                (success, failureReason) => {
-                  console.log("Print Initiated in Main...");
-                  if (!success) console.error(failureReason);
-                }
-              );
-            }, 2000);
-          });
+              },
+              (success, failureReason) => {
+                console.log("Print Initiated in Main...");
+                if (!success) console.error(failureReason);
+              }
+            );
+          }, 2000);
+        });
 
-          if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-            win.webContents.loadURL(
-              `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
-            );
-          } else {
-            win.webContents.loadFile(
-              path.join(
-                __dirname,
-                `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-              )
-            );
-          }
+        if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+          window.webContents.loadURL(
+            `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+          );
+        } else {
+          window.webContents.loadFile(
+            path.join(
+              __dirname,
+              `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+            )
+          );
         }
       }
     }
+
+    // try {
+    //   payload.profile.options.print.width =
+    //     paperSize !== 58 ? "302px" : "219px";
+    //   payload.profile.options.print.textOnly = isGeneric;
+    //   const { data } = await axios.post(
+    //     "https://ifood.whatsmenu.com.br/api/printLayout",
+    //     { ...payload, html: true, electron: true }
+    //   );
+    //   win.webContents.executeJavaScript(`
+    //         const printBody = document.body
+    //         let link = document.getElementById('bootstrap-link')
+    //         link.parentNode.removeChild(link)
+    //         printBody.innerHTML = ${JSON.stringify(
+    //     data.reactComponentString[paperSize < 65 ? 58 : 80]
+    //   )}
+    //       `);
+    // } catch (error) {
+    //   console.error(error);
+    // }
+
+    // const printOptions: Electron.WebContentsPrintOptions = {
+    //   deviceName: name,
+    //   silent,
+    //   margins,
+    //   copies,
+    //   scaleFactor,
+    // };
+    // win.webContents.addListener("did-finish-load", async () => {
+    //   console.log(name, typeof paperSize);
+
+    //   const height = Math.ceil(
+    //     (await win.webContents.executeJavaScript(
+    //       "document.body.offsetHeight"
+    //     )) * 264.5833
+    //   );
+    //   setTimeout(() => {
+    //     win.webContents.print(
+    //       {
+    //         ...printOptions,
+    //         pageSize: {
+    //           height: height < 4800000 ? height : 4800000,
+    //           width: paperSize * 1000,
+    //         },
+    //       },
+    //       (success, failureReason) => {
+    //         console.log("Print Initiated in Main...");
+    //         if (!success) console.error(failureReason);
+    //       }
+    //     );
+    //   }, 2000);
+    // });
+
+    // if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    //   win.webContents.loadURL(
+    //     `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+    //   );
+    // } else {
+    //   win.webContents.loadFile(
+    //     path.join(
+    //       __dirname,
+    //       `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+    //     )
+    //   );
+    // }
   }
 
   return "shown print dialog";
