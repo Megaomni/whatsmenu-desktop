@@ -4,12 +4,9 @@ import { Printer } from "./../@types/store";
 import {
   addPrinter,
   deletePrinter,
-  getIsMultiplePrinters,
   getPrinterLocations,
-  getLegacyPrint,
   getPrinters,
   store,
-  toggleMultiplePrinters,
   updatePrinter,
 } from "./store";
 
@@ -164,9 +161,7 @@ const template = [
 export const whatsmenu_menu = Menu.buildFromTemplate(template as any[]);
 
 const updateMenu = async () => {
-  const isLegacy = getLegacyPrint();
   const clientPrinters = getPrinters();
-  const isMultiplePrinters = getIsMultiplePrinters();
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   //@ts-ignore
   template.at(0).submenu.at(0).submenu = [
@@ -183,7 +178,6 @@ const updateMenu = async () => {
         { type: "separator" },
         {
           label: "Ambientes da Impressora",
-          enabled: isMultiplePrinters,
           submenu: [
             ...getPrinterLocations().map((location) => ({
               label: location.name,
@@ -232,7 +226,6 @@ const updateMenu = async () => {
             : ""
             }`,
           type: "radio",
-          enabled: isLegacy,
           checked: printer.paperSize !== 80 && printer.paperSize !== 58,
           click: () => paperSizeDialog(printer),
         },
@@ -254,48 +247,21 @@ const updateMenu = async () => {
           type: "radio",
           checked: printer.margins?.marginType === "custom",
           click: () => {
-            if (isLegacy) {
-              updatePrinter({
-                id: printer.id,
-                margins: {
-                  marginType: "custom",
-                  top: 0,
-                  right: 0,
-                  bottom: 1,
-                  left: 15,
-                },
-              })
-            } else {
-              if (printer.paperSize === 58) {
-                updatePrinter({
-                  id: printer.id,
-                  margins: {
-                    marginType: "custom",
-                    top: 0,
-                    right: 15,
-                    bottom: 1,
-                    left: 10,
-                  },
-                });
-              } else {
-                updatePrinter({
-                  id: printer.id,
-                  margins: {
-                    marginType: "custom",
-                    top: 0,
-                    right: 25,
-                    bottom: 1,
-                    left: 0,
-                  },
-                });
-              }
-            }
+            updatePrinter({
+              id: printer.id,
+              margins: {
+                marginType: "custom",
+                top: 0,
+                right: 0,
+                bottom: 1,
+                left: 15,
+              },
+            })
           }
         },
         { type: "separator" },
         {
           label: `Escala - ${printer.scaleFactor}%`,
-          enabled: isLegacy,
           click: () => scaleFactorDialog(printer),
         },
         { type: "separator" },
@@ -368,15 +334,7 @@ const updateMenu = async () => {
     },
     { type: "separator" },
     {
-      label: "Usar ambientes de impressão",
-      type: "checkbox",
-      checked: isMultiplePrinters,
-      click: () =>
-        toggleMultiplePrinters(),
-    },
-    {
       label: "Configurar ambientes",
-      enabled: isMultiplePrinters,
       click: () => printModal(),
     }
   ];

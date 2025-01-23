@@ -57,11 +57,6 @@ export const store = new ElectronStore<Store>({
           name: "Caixa",
           categories: []
         },
-        {
-          type: "production",
-          name: "Cozinha",
-          categories: []
-        }
       ])
     },
     "1.5.8": (store) => {
@@ -78,12 +73,6 @@ export const store = new ElectronStore<Store>({
             name: "Caixa",
             categories: []
           },
-          {
-            id: 2,
-            type: "production",
-            name: "Cozinha",
-            categories: []
-          }
         ],
         useMultiplePrinters: false,
         printers: [],
@@ -126,15 +115,6 @@ export const getCategories = () => {
   return categories;
 }
 
-export const toggleMultiplePrinters = () => {
-  const isMultiplePrinters = getIsMultiplePrinters();
-  store.set("configs.printing.useMultiplePrinters", !isMultiplePrinters)
-}
-
-export const getIsMultiplePrinters = () =>
-  store.get<"configs.printing.useMultiplePrinters", boolean>(
-    "configs.printing.useMultiplePrinters"
-  )
 
 export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
   const { type, name } = location;
@@ -145,7 +125,7 @@ export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
 
 export const removePrinterLocation = (id: number) => {
   const locations = getPrinterLocations();
-  if (id === 1 || id === 2) return;
+  if (id === 1) return;
   const listWithoutLocation = locations.filter((location) => location.id !== id);
   store.set("configs.printing.locations", listWithoutLocation);
 }
@@ -169,21 +149,6 @@ export const getPrinterLocations = () => {
   );
   return locations;
 }
-export const getLegacyPrint = () => {
-  let legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
-    "configs.printing.legacyPrint",
-  );
-  if (legacyPrint === undefined) {
-    store.set("configs.printing.legacyPrint", false);
-    legacyPrint = store.get<"configs.printing.legacyPrint", boolean>(
-      "configs.printing.legacyPrint",
-    );
-  }
-  return legacyPrint;
-}
-
-export const toggleLegacyPrint = () =>
-  store.set("configs.printing.legacyPrint", !getLegacyPrint());
 
 export const getPrinters = () =>
   store.get<"configs.printing.printers", Printer[]>(
@@ -197,7 +162,15 @@ export const getPrinter = (id: string) =>
 
 export const addPrinter = (payload: Omit<Printer, "options">) => {
   store.set("configs.printing.printers", [...getPrinters(), payload]);
-  return getPrinter(payload.id);
+  const printer = getPrinter(payload.id);
+  updatePrinter({
+    id: printer.id,
+    options: {
+      ...printer.options,
+      "printer-location": [1],
+    },
+  });
+  return printer;
 };
 export const updatePrinter = (payload: Partial<Printer>) => {
   const printer = store
