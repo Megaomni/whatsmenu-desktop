@@ -126,7 +126,14 @@ export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
 export const removePrinterLocation = (id: number) => {
   const locations = getPrinterLocations();
   if (id === 1) return;
+  const printersWithoutLocation = getPrinters().map((printer) => {
+    if (printer.options["printer-location"].includes(id)) {
+      return { ...printer, options: { ...printer.options, "printer-location": printer.options["printer-location"].filter((location) => location !== id) } }
+    }
+    return printer
+  });
   const listWithoutLocation = locations.filter((location) => location.id !== id);
+  updateAllPrinters(printersWithoutLocation);
   store.set("configs.printing.locations", listWithoutLocation);
 }
 
@@ -172,6 +179,11 @@ export const addPrinter = (payload: Omit<Printer, "options">) => {
   });
   return printer;
 };
+
+const updateAllPrinters = (printers: Printer[]) => {
+  store.set("configs.printing.printers", printers);
+};
+
 export const updatePrinter = (payload: Partial<Printer>) => {
   const printer = store
     .get<"configs.printing.printers", Printer[]>("configs.printing.printers")

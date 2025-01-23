@@ -31,6 +31,7 @@ import Cart from "@whatsmenu/entities/dist/cart";
 import Profile from "@whatsmenu/entities/dist/profile";
 import Table from "@whatsmenu/entities/dist/table";
 import Command from "@whatsmenu/entities/dist/command";
+import { log } from "node:console";
 
 ipcMain.on(
   "send-message",
@@ -133,6 +134,20 @@ ipcMain.on("print", async (_, serializedPayload) => {
       JSON.parse(serializedPayload);
 
     if (printTypeMode === "html") {
+      const fiscalEnvironments = getPrinterLocations().filter(
+        (location) => location.type === "fiscal"
+      )
+
+      console.log(fiscalEnvironments, "fiscalEnvironments");
+
+      const isFiscal = fiscalEnvironments.some((env) =>
+        printer.options["printer-location"].some((loc) => loc === env.id)
+      );
+
+      console.log(isFiscal, "isFiscal");
+
+      if (!isFiscal) continue;
+
       win.webContents.executeJavaScript(`
           const printBody = document.body
           if (${isGeneric}) {
@@ -143,6 +158,51 @@ ipcMain.on("print", async (_, serializedPayload) => {
           }
           printBody.innerHTML = ${JSON.stringify(payload.html)}
         `);
+
+      const printOptions: Electron.WebContentsPrintOptions = {
+        deviceName: name,
+        silent,
+        margins,
+        copies,
+        scaleFactor,
+      };
+      win.webContents.addListener("did-finish-load", async () => {
+        console.log(name, typeof paperSize);
+
+        const height = Math.ceil(
+          (await win.webContents.executeJavaScript(
+            "document.body.offsetHeight"
+          )) * 264.5833
+        );
+        setTimeout(() => {
+          win.webContents.print(
+            {
+              ...printOptions,
+              pageSize: {
+                height: height < 4800000 ? height : 4800000,
+                width: paperSize * 1000,
+              },
+            },
+            (success, failureReason) => {
+              console.log("Print Initiated in Main...");
+              if (!success) console.error(failureReason);
+            }
+          );
+        }, 2000);
+      });
+
+      if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+        win.webContents.loadURL(
+          `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+        );
+      } else {
+        win.webContents.loadFile(
+          path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+          )
+        );
+      }
     }
 
     if (printTypeMode === "whatsmenu") {
@@ -233,71 +293,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
         }
       }
     }
-
-    // try {
-    //   payload.profile.options.print.width =
-    //     paperSize !== 58 ? "302px" : "219px";
-    //   payload.profile.options.print.textOnly = isGeneric;
-    //   const { data } = await axios.post(
-    //     "https://ifood.whatsmenu.com.br/api/printLayout",
-    //     { ...payload, html: true, electron: true }
-    //   );
-    //   win.webContents.executeJavaScript(`
-    //         const printBody = document.body
-    //         let link = document.getElementById('bootstrap-link')
-    //         link.parentNode.removeChild(link)
-    //         printBody.innerHTML = ${JSON.stringify(
-    //     data.reactComponentString[paperSize < 65 ? 58 : 80]
-    //   )}
-    //       `);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-
-    // const printOptions: Electron.WebContentsPrintOptions = {
-    //   deviceName: name,
-    //   silent,
-    //   margins,
-    //   copies,
-    //   scaleFactor,
-    // };
-    // win.webContents.addListener("did-finish-load", async () => {
-    //   console.log(name, typeof paperSize);
-
-    //   const height = Math.ceil(
-    //     (await win.webContents.executeJavaScript(
-    //       "document.body.offsetHeight"
-    //     )) * 264.5833
-    //   );
-    //   setTimeout(() => {
-    //     win.webContents.print(
-    //       {
-    //         ...printOptions,
-    //         pageSize: {
-    //           height: height < 4800000 ? height : 4800000,
-    //           width: paperSize * 1000,
-    //         },
-    //       },
-    //       (success, failureReason) => {
-    //         console.log("Print Initiated in Main...");
-    //         if (!success) console.error(failureReason);
-    //       }
-    //     );
-    //   }, 2000);
-    // });
-
-    // if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    //   win.webContents.loadURL(
-    //     `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
-    //   );
-    // } else {
-    //   win.webContents.loadFile(
-    //     path.join(
-    //       __dirname,
-    //       `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-    //     )
-    //   );
-    // }
   }
 
   return "shown print dialog";
