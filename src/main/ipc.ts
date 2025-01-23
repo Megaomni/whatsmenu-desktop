@@ -7,12 +7,14 @@ import { ClientType } from "../@types/client";
 import { Printer } from "../@types/store";
 import { VoucherType } from "../@types/voucher";
 import { whatsmenu_api_v3 } from "../lib/axios";
-import { PrintPayloadType, printService } from "../services/printService";
+import {
+  PrintPayloadType,
+  // printService
+} from "../services/printService";
 import {
   deleteVoucherToNotify,
   getCategories,
   getIsMultiplePrinters,
-  getLegacyPrint,
   getMerchant,
   getPrinterLocations,
   getProfile,
@@ -24,7 +26,12 @@ import {
   updatePrinterLocation,
 } from "./store";
 import { PrintEnvironmentConfig } from "../react/types_print-environment";
-import { PosPrinter } from "electron-pos-printer";
+// import { PosPrinter } from "electron-pos-printer";
+import { printToString, NotePrint, ProductionPrint } from "@whatsmenu/print-component";
+import Cart from "@whatsmenu/entities/dist/cart";
+import Profile from "@whatsmenu/entities/dist/profile";
+import Table from "@whatsmenu/entities/dist/table";
+import Command from "@whatsmenu/entities/dist/command";
 
 ipcMain.on(
   "send-message",
@@ -178,11 +185,11 @@ const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | Pri
     (environment.type === "fiscal" && cart.type === "T" && cart.print === 0)
   ) {
     return ""
-  };
+  }
 
   if (environment.type === "fiscal" || cart.print !== 0) {
     return payload
-  };
+  }
 
   const storedCategories = getCategories();
   const allProductsFromCategories: number[] = [];
@@ -199,7 +206,7 @@ const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | Pri
   const newCartItems = cart.itens.filter((item) => item.productId && allProductsFromCategories.includes(item.productId));
   if (newCartItems.length < 1) {
     return ""
-  };
+  }
 
   return {
     ...payload,
@@ -212,7 +219,6 @@ const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | Pri
 
 ipcMain.on("print", async (_, serializedPayload) => {
   const printers = store.get("configs.printing.printers") as Printer[];
-  const legacy = getLegacyPrint();
   const isEnvPrint = getIsMultiplePrinters();
   for (const printer of printers) {
     const isGeneric = printer.options.system_driverinfo
@@ -220,12 +226,12 @@ ipcMain.on("print", async (_, serializedPayload) => {
       .includes("generic");
     console.log(isGeneric, "isGeneric");
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer;
-    const win = new BrowserWindow({ show: false });
+    for (const envId of printer.options["printer-location"]) {
+      const win = new BrowserWindow({ show: false });
 
-    const { printTypeMode = "whatsmenu", ...payload } =
-      JSON.parse(serializedPayload);
+      const { printTypeMode = "whatsmenu", ...payload } =
+        JSON.parse(serializedPayload);
 
-    if (legacy || printTypeMode === "html") {
       if (printTypeMode === "html") {
         win.webContents.executeJavaScript(`
             const printBody = document.body
@@ -240,76 +246,91 @@ ipcMain.on("print", async (_, serializedPayload) => {
       }
       if (printTypeMode === "whatsmenu") {
         if (isEnvPrint) {
-          const locations = printer.options["printer-location"];
-          if (locations.length < 1) return;
-          locations.map(async (envId) => {
-            const envPayload = payloadEnvSplit(payload, envId);
-            if (typeof envPayload === "string") return;
-            try {
-              envPayload.profile.options.print.width =
-                paperSize !== 58 ? "302px" : "219px";
-              envPayload.profile.options.print.textOnly = isGeneric;
-              const { data } = await axios.post(
-                "https://ifood.whatsmenu.com.br/api/printLayout",
-                { ...envPayload, html: true, electron: true }
-              );
-              win.webContents.executeJavaScript(`
+          const foundLocation = getPrinterLocations().find(
+            (location) => location.id === envId
+          )
+
+          if (!foundLocation) return;
+
+          const envPayload = payloadEnvSplit(payload, envId);
+
+          if (typeof envPayload === "string") return;
+
+          try {
+            envPayload.profile.options.print.width =
+              paperSize !== 58 ? "302px" : "219px";
+            envPayload.profile.options.print.textOnly = isGeneric;
+            const data = printToString(
+              foundLocation.type === "production" ? ProductionPrint : NotePrint,
+              {
+                cart: new Cart(envPayload.cart as any),
+                profile: new Profile(envPayload.profile as any),
+                printType: envPayload.printType,
+                table: envPayload.table ? new Table(envPayload.table as any) : undefined,
+                command: envPayload.command ? new Command(envPayload.command as any) : undefined,
+                electron: true,
+                html: true,
+                motoboys: []
+              }
+            )
+
+            win.webContents.executeJavaScript(`
                 const printBody = document.body
                 let link = document.getElementById('bootstrap-link')
                 link.parentNode.removeChild(link)
                 printBody.innerHTML = ${JSON.stringify(
-                data.reactComponentString[paperSize < 65 ? 58 : 80]
-              )}
+              data[80]
+            )}
               `);
-            } catch (error) {
-              console.error(error);
-            }
+          } catch (error) {
+            console.error(error);
+          }
 
-            const printOptions: Electron.WebContentsPrintOptions = {
-              deviceName: name,
-              silent,
-              margins,
-              copies,
-              scaleFactor,
-            };
-            win.webContents.addListener("did-finish-load", async () => {
-              console.log(name, typeof paperSize);
+          const printOptions: Electron.WebContentsPrintOptions = {
+            deviceName: name,
+            silent,
+            margins,
+            copies,
+            scaleFactor,
+          };
+          win.webContents.addListener("did-finish-load", async () => {
+            console.log(name, typeof paperSize);
 
-              const height = Math.ceil(
-                (await win.webContents.executeJavaScript(
-                  "document.body.offsetHeight"
-                )) * 264.5833
-              );
-              setTimeout(() => {
-                win.webContents.print(
-                  {
-                    ...printOptions,
-                    pageSize: {
-                      height: height < 4800000 ? height : 4800000,
-                      width: paperSize * 1000,
-                    },
+            const height = Math.ceil(
+              (await win.webContents.executeJavaScript(
+                "document.body.offsetHeight"
+              )) * 264.5833
+            );
+            setTimeout(() => {
+              win.webContents.print(
+                {
+                  ...printOptions,
+                  pageSize: {
+                    height: height < 4800000 ? height : 4800000,
+                    width: paperSize * 1000,
                   },
-                  (success, failureReason) => {
-                    console.log("Print Initiated in Main...");
-                    if (!success) console.error(failureReason);
-                  }
-                );
-              }, 2000);
-            });
+                },
+                (success, failureReason) => {
+                  console.log("Print Initiated in Main...");
+                  if (!success) console.error(failureReason);
+                }
+              );
+            }, 2000);
+          });
 
-            if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-              win.webContents.loadURL(
-                `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
-              );
-            } else {
-              win.webContents.loadFile(
-                path.join(
-                  __dirname,
-                  `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
-                )
-              );
-            }
-          })
+          if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+            win.webContents.loadURL(
+              `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/src/views/print.html`
+            );
+          } else {
+            win.webContents.loadFile(
+              path.join(
+                __dirname,
+                `../renderer/${MAIN_WINDOW_VITE_NAME}/src/views/print.html`
+              )
+            );
+          }
+
         } else {
           try {
             payload.profile.options.print.width =
@@ -377,124 +398,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
           }
         }
       }
-    }
-
-    if (!legacy && printTypeMode === "whatsmenu") {
-      const printOptions: Electron.WebContentsPrintOptions = {
-        deviceName: name,
-        silent,
-        margins,
-        copies,
-        scaleFactor,
-      };
-
-      if (isEnvPrint) {
-        try {
-          const locations = printer.options["printer-location"];
-          if (locations.length < 1) return;
-          locations.map(async (envId) => {
-            const envPayload = payloadEnvSplit(payload, envId);
-            if (typeof envPayload === "string") return;
-            const { data } = await axios.post(
-              "https://ifood.whatsmenu.com.br/api/printLayout",
-              { ...envPayload, html: true, electron: true }
-            );
-
-
-            await PosPrinter.print([
-              {
-                type: "text",
-                value: `${CSS}
-                ${data.reactComponentString[80]}`,
-                style: {
-                  fontWeight: "bold",
-                  fontSize: "15px",
-                  marginLeft: `${margins.left}px`,
-                  marginRight: `${margins.right}px`,
-                  marginTop: `${margins.top}px`,
-                  marginBottom: `${margins.bottom}px`,
-                  fontFamily: "monospace",
-                }
-              }
-            ], {
-              printerName: printOptions.deviceName,
-              preview: false,
-              silent: printOptions.silent,
-              pageSize: paperSize > 59 ? "80mm" : "58mm",
-              margin: '0 0 0 0',
-              boolean: undefined
-            }).catch((error: Error) =>
-              console.error("Erro na impressão:", error)
-            );
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        try {
-          const { data } = await axios.post(
-            "https://ifood.whatsmenu.com.br/api/printLayout",
-            { ...payload, html: true, electron: true }
-          );
-
-
-          await PosPrinter.print([
-            {
-              type: "text",
-              value: data.reactComponentString[58],
-              style: {
-                fontWeight: "bold",
-                fontSize: "15px",
-                marginLeft: `${margins.left}px`,
-                marginRight: `${margins.right}px`,
-                marginTop: `${margins.top}px`,
-                marginBottom: `${margins.bottom}px`,
-                fontFamily: "monospace",
-              }
-            }
-          ], {
-            printerName: printOptions.deviceName,
-            preview: false,
-            silent: printOptions.silent,
-            pageSize: paperSize > 59 ? "80mm" : "58mm",
-            margin: '0 0 0 0',
-            boolean: undefined
-          }).catch((error: Error) =>
-            console.error("Erro na impressão:", error)
-          );
-
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-
-
-
-
-      // const printOptions: Electron.WebContentsPrintOptions = {
-      //   deviceName: name,
-      //   silent,
-      //   margins,
-      //   copies,
-      //   scaleFactor,
-      // };
-
-      // if (isEnvPrint) {
-      //   const locations = printer.options["printer-location"];
-      //   if (locations.length < 1) return;
-      //   locations.map(async (envId) => {
-      //     const envPayload = payloadEnvSplit(payload, envId);
-      //     if (typeof envPayload === "string") return;
-      //     await printService(envPayload, printOptions, paperSize, isGeneric);
-      //   });
-      // } else {
-      //   try {
-      //     await printService(payload, printOptions, paperSize, isGeneric);
-      //   } catch (error) {
-      //     console.error(error);
-      //   }
-      // }
     }
   }
 

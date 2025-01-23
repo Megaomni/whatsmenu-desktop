@@ -1,10 +1,9 @@
 import React, { useEffect, useContext } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "../shadcn-ui/components/ui/card"
 import { Button } from "../shadcn-ui/components/ui/button"
-import AddNewEnvironment from './addNewEnvironment'
 import PrintContext from '../contexts/PrintContext'
 import { PrintEnvironmentConfig } from '../types_print-environment'
-import EditEnvironment from './editEnvironment'
+import AddOrEditEnvironment from './addOrEditEnvironment'
 
 export default function MainPrintConfig() {
     const context = useContext(PrintContext);
@@ -23,17 +22,6 @@ export default function MainPrintConfig() {
       window.DesktopApi.onPrinterLocationsChange((_, locations) => {
         setLocations(locations);
       });
-
-      // window.DesktopApi.onRemovePrint( id da localização );
-
-      // window.DesktopApi.onUpdatePrint({
-      //   id: 3,
-      //   type: "production",
-      //   name: "Fifinha dos Cria",
-      //   categories: [
-      //     "Bebidas",
-      //   ]
-      // })
 
       window.DesktopApi.getCategories();
       window.DesktopApi.getPrinterLocations();
@@ -91,8 +79,7 @@ export default function MainPrintConfig() {
           </CardContent>
         </div>
       )}
-      { currentPage === 'edit' && <EditEnvironment /> }
-      { currentPage === 'add' && <AddNewEnvironment /> }
+      { (currentPage === 'edit' || currentPage === 'add') && <AddOrEditEnvironment /> }
     </Card>
   )
 }

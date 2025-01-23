@@ -8,55 +8,16 @@ import {
   getPrinterLocations,
   getLegacyPrint,
   getPrinters,
-  setPrinterLocation,
   store,
   toggleMultiplePrinters,
-  toggleLegacyPrint,
   updatePrinter,
 } from "./store";
 
 import { randomUUID } from "node:crypto";
 import { mainWindow } from ".";
 import { printModal } from "./print";
-import { botWindow } from "../windows/bot-window";
 
 const isMac = process.platform === "darwin";
-
-const marginLeftDialog = async (printerSelected: Printer) => {
-  const marginLeft = await prompt({
-    title: "Margem esquerda",
-    label: "Margem em pixels",
-    inputAttrs: { type: "number" },
-    value: printerSelected.margins.left ? printerSelected.margins.left.toString() : "0",
-    height: 200,
-    buttonLabels: {
-      ok: "OK",
-      cancel: "Cancelar",
-    },
-  });
-  updatePrinter({
-    id: printerSelected.id,
-    margins: { ...printerSelected.margins, left: parseInt(marginLeft) },
-  });
-}
-
-const marginRightDialog = async (printerSelected: Printer) => {
-  const marginRight = await prompt({
-    title: "Margem direita",
-    label: "Margem em pixels",
-    inputAttrs: { type: "number" },
-    value: printerSelected.margins.right ? printerSelected.margins.right.toString() : "0",
-    height: 200,
-    buttonLabels: {
-      ok: "OK",
-      cancel: "Cancelar",
-    },
-  });
-  updatePrinter({
-    id: printerSelected.id,
-    margins: { ...printerSelected.margins, right: parseInt(marginRight) },
-  });
-}
 
 const copiesDialog = async (printerSelected: Printer) => {
   const copies = await prompt({
@@ -331,16 +292,6 @@ const updateMenu = async () => {
             }
           }
         },
-        {
-          label: `Margem Esquerda`,
-          enabled: !isLegacy,
-          click: () => marginLeftDialog(printer),
-        },
-        {
-          label: `Margem Direita`,
-          enabled: !isLegacy,
-          click: () => marginRightDialog(printer),
-        },
         { type: "separator" },
         {
           label: `Escala - ${printer.scaleFactor}%`,
@@ -427,15 +378,6 @@ const updateMenu = async () => {
       label: "Configurar ambientes",
       enabled: isMultiplePrinters,
       click: () => printModal(),
-    },
-    { type: "separator" },
-    {
-      label: "Impressão Legado (Antiga)",
-      type: "checkbox",
-      checked: isLegacy,
-      click: () => {
-        toggleLegacyPrint();
-      }
     }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));
