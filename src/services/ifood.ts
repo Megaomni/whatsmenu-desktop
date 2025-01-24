@@ -51,8 +51,8 @@ export const polling = async ({
     );
 
     pollingData = data;
-    if (pollingData.length > 0) {
-      const returnOrders = await whatsmenu_api_v3.post("ifood/polling", {
+    if (pollingData.length > 0) {      
+      const returnOrders = await whatsmenu_api_v3.post(`ifood/polling/${profile.id}`, {
         pollingData,
         token: merchant.token,
       });

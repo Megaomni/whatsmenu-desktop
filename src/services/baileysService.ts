@@ -145,7 +145,6 @@ export class BaileysService {
       this.events.emit("connectionUpdate", update);
 
       const { connection } = update;
-      console.log("connection baileys update", connection);
 
       await saveCreds();
     };
