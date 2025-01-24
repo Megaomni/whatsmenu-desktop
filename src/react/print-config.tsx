@@ -7,6 +7,8 @@ import MainPrintConfig from './components/mainPrintConfig'
 const root = createRoot(document.body);
 
 const PrintEnvironmentForm = () => {
+  if (typeof window === 'undefined') return null;
+
   return (
     <PrintProvider>
       <MainPrintConfig />

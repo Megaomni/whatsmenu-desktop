@@ -1,0 +1,38 @@
+{
+  "name": "@whatsmenu/print-component",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.tsx --format esm,cjs --dts",
+    "dev": "tsup src/index.tsx --format esm,cjs --dts --watch",
+    "lint": "eslint src/**/*.ts* --fix"
+  },
+  "dependencies": {
+    "@react-pdf/renderer": "^3.1.12",
+    "@types/luxon": "^3.4.2",
+    "luxon": "^3.5.0",
+    "qrcode.react": "^4.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "tsup": "^8.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.1",
+    "@whatsmenu/eslint-config": "workspace:*",
+    "@whatsmenu/prettier": "workspace:*",
+    "@whatsmenu/typescript-config": "workspace:*",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@whatsmenu/eslint-config"
+    ]
+  },
+  "prettier": "@whatsmenu/prettier"
+}

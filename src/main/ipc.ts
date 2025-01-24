@@ -1,4 +1,3 @@
-import axios from "axios";
 import { BrowserWindow, app, ipcMain, shell } from "electron";
 import { DateTime } from "luxon";
 import path from "node:path";
@@ -26,12 +25,11 @@ import {
 } from "./store";
 import { PrintEnvironmentConfig } from "../react/types_print-environment";
 // import { PosPrinter } from "electron-pos-printer";
-import { printToString, NotePrint, ProductionPrint } from "@whatsmenu/print-component";
-import Cart from "@whatsmenu/entities/dist/cart";
-import Profile from "@whatsmenu/entities/dist/profile";
-import Table from "@whatsmenu/entities/dist/table";
-import Command from "@whatsmenu/entities/dist/command";
-import { log } from "node:console";
+import { printToString, NotePrint, ProductionPrint } from "../../packages/print-component";
+import Cart from "../../packages/entities/cart";
+import Profile from "../../packages/entities/profile";
+import Table from "../../packages/entities/table";
+import Command from "../../packages/entities/command";
 
 ipcMain.on(
   "send-message",
