@@ -1,5 +1,5 @@
 import React, { LegacyRef, forwardRef } from 'react'
-export interface PrintRootProps extends PrintProviderProps {}
+export type PrintRootProps = PrintProviderProps
 import { PrintProvider, PrintProviderProps } from '../../PrintContext'
 
 export const PrintRoot = forwardRef(function PrintRoot(

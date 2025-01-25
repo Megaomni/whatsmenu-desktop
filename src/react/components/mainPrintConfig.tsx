@@ -1,4 +1,6 @@
 import React, { useEffect, useContext } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from "../shadcn-ui/components/ui/card"
+import { Button } from "../shadcn-ui/components/ui/button"
 import PrintContext from '../contexts/PrintContext'
 import { PrintEnvironmentConfig } from '../types_print-environment'
 import AddOrEditEnvironment from './addOrEditEnvironment'
@@ -40,16 +42,16 @@ export default function MainPrintConfig() {
     }
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto">
       { currentPage === 'main' && (
         <div>
-          <header className='flex-row justify-between items-center'>
-            <h1 className='font-bold'>Ambiente de Impressão</h1>
-            <button className='px-10 py-6 bg-black hover:bg-gray-800' onClick={() => setCurrentPage('add')}>Cadastrar Ambiente</button>
-          </header>
+          <CardHeader className='flex-row justify-between items-center'>
+            <CardTitle className='font-bold'>Ambiente de Impressão</CardTitle>
+            <Button className='px-10 py-6 bg-black hover:bg-gray-800' onClick={() => setCurrentPage('add')}>Cadastrar Ambiente</Button>
+          </CardHeader>
 
-          <div>
-            <h1 className='mt-6'>Ambiente</h1>
+          <CardContent>
+            <CardTitle className='mt-6'>Ambiente</CardTitle>
 
             <div className='h-1 rounded-full w-full bg-black mt-2' />
 
@@ -59,25 +61,25 @@ export default function MainPrintConfig() {
                   {location.name}
                 </p>
                 <div>
-                  <button
+                  <Button
                     className='font-semibold text-lg bg-transparent hover:bg-transparent text-blue-700'
                     onClick={() => handleUpdatePrint(location)}
                   >
                     Editar
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     className='font-semibold text-lg bg-transparent hover:bg-transparent text-red-600'
                     onClick={() => handleRemovePrint(location.id)}
                   >
                     Excluir
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
-          </div>
+          </CardContent>
         </div>
       )}
       { (currentPage === 'edit' || currentPage === 'add') && <AddOrEditEnvironment /> }
-    </div>
+    </Card>
   )
 }

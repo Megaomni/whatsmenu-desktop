@@ -7,7 +7,7 @@
 //   }
 
 //   console.log(sourceDirs);
-  
+
 //   sourceDirs.forEach((dir) => {
 //     const dirName = path.basename(dir);
 //     const destDir = path.join(dirName);
@@ -16,10 +16,10 @@
 //       console.log(path.join(dir, file));
 //       fs.readdirSync(path.join(dir, file)).forEach((subFile) => {
 //         console.log(subFile);
-        
+
 //       })
 //     })
-    
+
 
 //     // fs.mkdirSync(destDir, { recursive: true });
 
@@ -53,3 +53,4 @@ async function copyDirectory(source, destination) {
 
 // Exemplo de uso
 copyDirectory(path.join('../../packages/entities/src'), 'packages/entities');
+copyDirectory(path.join('../../packages/print-component/src'), 'packages/print-component');

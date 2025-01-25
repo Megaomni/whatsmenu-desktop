@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from '@react-pdf/renderer'
 import { HTMLAttributes, useContext } from 'react'
 import { PrintContext } from '../../PrintContext'
 
@@ -37,7 +36,7 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
         rowTextLength += str?.length
       })
     }
-    let result = value as string
+    const result = value as string
     if (result?.length >= paperWidthSize) {
       rowsObject[key] = splitString(
         result,
@@ -57,7 +56,7 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
   })
 
   let rowsCount = 0
-  let newRow: { [key: string]: string } = {}
+  const newRow: { [key: string]: string } = {}
   const rowsLength = Math.max(...Object.values(rowsObject).map((a) => a.length))
   Object.entries(rowsObject).forEach(([key, value]) => {
     while (value.length < rowsLength) {
@@ -92,6 +91,7 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
     case 'text-only':
       content = <pre>{text}</pre>
       break
+    case 'pdf':
     case 'formated':
       content = (
         <div style={{ fontWeight: 'bolder' }}>
@@ -101,54 +101,54 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
         </div>
       )
       break
-    case 'pdf':
-      let styles: { [ket: string]: any; 'complement-space'?: any; 'item-space'?: any } = {}
-      switch (leftClass) {
-        case 'complement-space':
-          styles = StyleSheet.create({
-            [leftClass]: {
-              marginLeft: `${paperWidthSize === 32 ? 4 : 13}mm`,
-            },
-          })
-          break
-        case 'item-space':
-          styles = StyleSheet.create({
-            [leftClass]: {
-              marginLeft: `${paperWidthSize === 32 ? 8 : 20}mm`,
-            },
-          })
-          break
-        default:
-          break
-      }
+    // case 'pdf':
+    //   let styles: { [ket: string]: any; 'complement-space'?: any; 'item-space'?: any } = {}
+    //   switch (leftClass) {
+    //     case 'complement-space':
+    //       styles = StyleSheet.create({
+    //         [leftClass]: {
+    //           marginLeft: `${paperWidthSize === 32 ? 4 : 13}mm`,
+    //         },
+    //       })
+    //       break
+    //     case 'item-space':
+    //       styles = StyleSheet.create({
+    //         [leftClass]: {
+    //           marginLeft: `${paperWidthSize === 32 ? 8 : 20}mm`,
+    //         },
+    //       })
+    //       break
+    //     default:
+    //       break
+    //   }
 
-      const fontSize = className?.includes('print-title') ? '20pt' : printFontSize === 7 ? '14pt' : '18pt'
-      const viewWidth = paperWidthSize === 32 ? 72 : 109
+    //   const fontSize = className?.includes('print-title') ? '20pt' : printFontSize === 7 ? '14pt' : '18pt'
+    //   const viewWidth = paperWidthSize === 32 ? 72 : 109
 
-      content = (
-        <View
-          style={[
-            {
-              display: 'flex',
-              justifyContent: 'space-between',
-              flexDirection: 'row',
-              width: `${viewWidth}mm`,
-              fontSize,
-              marginBottom: className?.includes('print-title') ? '24pt' : 0,
-            },
-            styles[leftClass],
-          ]}
-        >
-          <Text wrap style={{ maxWidth: `${viewWidth - (printFontSize === 7 ? 18 : 15)}mm` }}>
-            {left.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
-          </Text>
-          <Text wrap style={{ textAlign: 'center', flex: 1 }}>
-            {center.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
-          </Text>
-          <Text style={{ textAlign: 'left', marginLeft: 'auto' }}>{right.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}</Text>
-        </View>
-      )
-      break
+    //   content = (
+    //     <View
+    //       style={[
+    //         {
+    //           display: 'flex',
+    //           justifyContent: 'space-between',
+    //           flexDirection: 'row',
+    //           width: `${viewWidth}mm`,
+    //           fontSize,
+    //           marginBottom: className?.includes('print-title') ? '24pt' : 0,
+    //         },
+    //         styles[leftClass],
+    //       ]}
+    //     >
+    //       <Text wrap style={{ maxWidth: `${viewWidth - (printFontSize === 7 ? 18 : 15)}mm` }}>
+    //         {left.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
+    //       </Text>
+    //       <Text wrap style={{ textAlign: 'center', flex: 1 }}>
+    //         {center.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}
+    //       </Text>
+    //       <Text style={{ textAlign: 'left', marginLeft: 'auto' }}>{right.normalize('NFD').replace(/[\u0300-\u036f]/g, '')}</Text>
+    //     </View>
+    //   )
+    //   break
   }
 
   return (
