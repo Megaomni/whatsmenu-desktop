@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import React, { useContext } from 'react'
 import { PrintContext } from '../../PrintContext'
 
 export const PrintBreakline = () => {

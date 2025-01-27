@@ -1,4 +1,4 @@
-import { ReactNode, createContext } from 'react'
+import React, { ReactNode, createContext } from 'react'
 
 export type PrintMode = 'formated' | 'text-only' | 'pdf'
 

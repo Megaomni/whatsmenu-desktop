@@ -1,4 +1,4 @@
-import { HTMLAttributes, useContext } from 'react'
+import React, { HTMLAttributes, useContext } from 'react'
 import { PrintContext } from '../../PrintContext'
 
 export interface RowProps extends HTMLAttributes<HTMLPreElement> {
