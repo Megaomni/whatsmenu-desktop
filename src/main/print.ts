@@ -8,7 +8,7 @@ export const printModal = () => {
             preload: path.join(__dirname, "preload.js"),
         },
     });
-    isDev && window.webContents.openDevTools();
+    // isDev && window.webContents.openDevTools();
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         window.webContents.loadURL(
