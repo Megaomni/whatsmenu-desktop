@@ -532,10 +532,19 @@ const deleteExpiredVoucher = (id: number) => {
   }
 }
 
+// eslint-disable-next-line prefer-const
+let allVouchersFromDB: { fetchedAt: DateTime; vouchers: VoucherType[] } = { fetchedAt: DateTime.fromISO("2023-01-01T01:00:00.000-03:00"), vouchers: [] };
+
 const deleteUsedVouchers = async (voucherFromDB: VoucherType, client: ClientType) => {
-  const allVouchersFromDB = await getVouchersFromDB();
+  const diffInMinutes = allVouchersFromDB.fetchedAt.diffNow(["minutes"]).toObject().minutes;
+
+  if (Math.abs(diffInMinutes) >= 10) {
+    allVouchersFromDB.fetchedAt = DateTime.now();
+    allVouchersFromDB.vouchers = await getVouchersFromDB();
+  }
   const currentVouchers = getVoucherToNotifyList();
-  const voucherFromUser = allVouchersFromDB.find((voucher) => voucher.clientId === voucherFromDB.clientId);
+  const voucherFromUser = allVouchersFromDB.vouchers.find((voucher) => voucher.clientId === voucherFromDB.clientId);
+
   if (voucherFromUser) {
     const newFormatvoucher = formatVouchFromDB(voucherFromUser, client);
     const updatedList = currentVouchers.map((user) => user.whatsapp === newFormatvoucher.whatsapp ? newFormatvoucher : user);
