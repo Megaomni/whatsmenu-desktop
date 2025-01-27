@@ -50,7 +50,7 @@ export const store = new ElectronStore<Store>({
     "0.4.5": (store) => {
       store.set("configs.merchant", null);
     },
-    "1.5.7": (store) => {
+    "1.6.0": (store) => {
       store.set("configs.printing.locations", [
         {
           type: "fiscal",
@@ -58,10 +58,8 @@ export const store = new ElectronStore<Store>({
           categories: []
         },
       ])
+      store.set("configs.productCategories", []);
     },
-    "1.5.8": (store) => {
-      store.set("configs.printing.useMultiplePrinters", false)
-    }
   },
   defaults: {
     configs: {
