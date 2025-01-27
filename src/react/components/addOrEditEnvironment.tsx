@@ -65,7 +65,6 @@ export default function AddOrEditEnvironment() {
   }
 
   const onUpdate = (data: PrintEnvironmentConfig) => {
-    console.log('Dados do formulário:', data)
     window.DesktopApi.onUpdatePrint({
         id: envId,
         type: data.type,
@@ -76,7 +75,6 @@ export default function AddOrEditEnvironment() {
   }
 
   const onSubmit = (data: PrintEnvironmentConfig) => {
-      console.log('Dados do formulário:', data)
       window.DesktopApi.onSubmitPrint(data);
       setCurrentPage('main');
     }
