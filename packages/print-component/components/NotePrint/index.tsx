@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { Fragment, Key, Ref, forwardRef } from 'react'
+import React, { Fragment, Key, Ref, forwardRef } from 'react'
 // import Cart, { CartFormPayment } from '../../../../types/cart'
 // import CartItem from '../../../../types/cart-item'
 // import Command from '../../../../types/command'
@@ -363,6 +363,7 @@ export const NotePrint = forwardRef(function NotePrint(
         if (type === 'total') {
           return table?.opened?.getTotalValue('tableFee') as number
         }
+        break
       case 'command':
         if (type === 'subtotal') {
           return command?.getTotalValue('command') as number
@@ -370,6 +371,7 @@ export const NotePrint = forwardRef(function NotePrint(
         if (type === 'total') {
           return command?.getTotalValue('commandFee') as number
         }
+        break
       default:
         return cart.getTotalValue(type)
     }
