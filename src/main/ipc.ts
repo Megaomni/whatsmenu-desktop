@@ -126,7 +126,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
     console.log(isGeneric, "isGeneric");
     const { margins, copies, silent, name, paperSize, scaleFactor } = printer;
 
-    const win = new BrowserWindow({ show: true });
+    const win = new BrowserWindow({ show: false });
 
     const { printTypeMode = "whatsmenu", ...payload } =
       JSON.parse(serializedPayload);
