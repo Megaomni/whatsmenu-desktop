@@ -16,8 +16,8 @@ interface PrintTypes {
   setEnvType: Dispatch<SetStateAction<PrintEnvironmentType>>;
   envName: string;
   setEnvName: Dispatch<SetStateAction<string>>;
-  envCategories: string[];
-  setEnvCategories: Dispatch<SetStateAction<string[]>>
+  envCategories: ProductCategory[];
+  setEnvCategories: Dispatch<SetStateAction<ProductCategory[]>>
 }
 
 const PrintContext = createContext<PrintTypes | undefined>(undefined);

@@ -27,7 +27,7 @@ export const printModal = () => {
         },
     });
 
-    // isDev && printWindow.webContents.openDevTools();
+    isDev && printWindow.webContents.openDevTools();
 
     if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
         printWindow.webContents.loadURL(
