@@ -56,7 +56,7 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
   })
 
   let rowsCount = 0
-  const newRow: { [key: string]: string } = {}
+  const newRow: { [key: string]: string } = { left, center, right }
   const rowsLength = Math.max(...Object.values(rowsObject).map((a) => a.length))
   Object.entries(rowsObject).forEach(([key, value]) => {
     while (value.length < rowsLength) {
