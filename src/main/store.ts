@@ -53,6 +53,7 @@ export const store = new ElectronStore<Store>({
     "1.6.0": (store) => {
       store.set("configs.printing.locations", [
         {
+          id: 1,
           type: "fiscal",
           name: "Caixa",
           categories: []
