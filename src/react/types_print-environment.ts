@@ -4,7 +4,7 @@ export interface PrintEnvironmentConfig {
   id: number;
   type: PrintEnvironmentType;
   name: string;
-  categories?: string[];
+  categories?: ProductCategory[];
 }
 
 export interface ProductCategory {

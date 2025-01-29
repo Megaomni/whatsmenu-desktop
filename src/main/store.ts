@@ -31,11 +31,16 @@ export interface Store {
   };
 }
 
+interface CategoriesLocation {
+  id: number;
+  name: string;
+}
+
 export interface PrinterLocation {
   id: number;
   type: "fiscal" | "production";
   name: string;
-  categories: string[];
+  categories: CategoriesLocation[];
 }
 
 export const store = new ElectronStore<Store>({
@@ -53,6 +58,7 @@ export const store = new ElectronStore<Store>({
     "1.6.0": (store) => {
       store.set("configs.printing.locations", [
         {
+          id: 1,
           type: "fiscal",
           name: "Caixa",
           categories: []

@@ -49,20 +49,26 @@ export default function AddOrEditEnvironment() {
   })
 
   useEffect(() => {
-    if (currentPage !== 'edit') return;
+    if (currentPage === "add") {
+      setEnvCategories([]);
+    }
 
-    form.setValue('name', envName);
-    setSelectedType(envType);
-    form.setValue('type', envType);
+    if (currentPage === "edit") {
+      form.setValue('name', envName);
+      setSelectedType(envType);
+      form.setValue('type', envType);
+    }
+
   }, [])
 
-  const handleCategoriesChange = (category: string) => {
-    if (envCategories.includes(category)) {
-      setEnvCategories(envCategories.filter((cat) => cat !== category));
+  const handleCategoriesChange = (categoryId: number) => {
+    const foundCat = productCategories.find((cat) => cat.id === categoryId);
+    if (envCategories.some((cat) => cat.id === foundCat.id)) {
+      setEnvCategories(envCategories.filter((cat) => cat.id !== foundCat.id));
     } else {
-      setEnvCategories([...envCategories, category]);
+      setEnvCategories([...envCategories, { id: foundCat.id, name: foundCat.name }]);
     }
-  }
+  };
 
   const onUpdate = (data: PrintEnvironmentConfig) => {
     window.DesktopApi.onUpdatePrint({
@@ -75,7 +81,12 @@ export default function AddOrEditEnvironment() {
   }
 
   const onSubmit = (data: PrintEnvironmentConfig) => {
-      window.DesktopApi.onSubmitPrint(data);
+      window.DesktopApi.onSubmitPrint({
+        id: 0,
+        type: data.type,
+        name: data.name,
+        categories: envCategories,
+      });
       setCurrentPage('main');
     }
 
@@ -160,7 +171,7 @@ export default function AddOrEditEnvironment() {
                           key={category.id.toString()}
                           control={form.control}
                           name="categories"
-                          render={currentPage === 'edit' ? () => {
+                          render={() => {
                             return (
                               <FormItem
                                 key={category.id.toString()}
@@ -168,8 +179,8 @@ export default function AddOrEditEnvironment() {
                               >
                                 <FormControl>
                                   <Checkbox
-                                    checked={envCategories.includes(category.name)}
-                                    onCheckedChange={() => handleCategoriesChange(category.name)}
+                                    checked={envCategories.some((cat) => cat.id === category.id)}
+                                    onCheckedChange={() => handleCategoriesChange(category.id)}
                                   />
                                 </FormControl>
                                 <FormLabel className="font-normal">
@@ -177,33 +188,7 @@ export default function AddOrEditEnvironment() {
                                 </FormLabel>
                               </FormItem>
                             )
-                          } 
-                          : ({ field }) => {
-                              return (
-                                <FormItem
-                                  key={category.id.toString()}
-                                  className="flex flex-row items-start space-x-3 space-y-0"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(category.name)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...field.value || [], category.name])
-                                          : field.onChange(
-                                              field.value?.filter(
-                                                (value) => value !== category.name
-                                              )
-                                            )
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {category.name}
-                                  </FormLabel>
-                                </FormItem>
-                              )
-                            }}
+                          }}
                         />
                       ))}
                     </div>
