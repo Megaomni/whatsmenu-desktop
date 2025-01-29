@@ -11,7 +11,7 @@ import React, { Fragment, Key, Ref, forwardRef } from 'react'
 // } from '../../../../types/profile'
 // import Table from '../../../../types/table'
 
-import { QRCodeCanvas } from 'qrcode.react'
+import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react'
 import { Print } from '../Print'
 import { currency } from '../../utils/currency'
 
@@ -47,7 +47,6 @@ export const NotePrint = forwardRef(function NotePrint(
   }: NotePrintProps,
   ref: Ref<HTMLPreElement>
 ) {
-
   if (!cart) {
     return null
   }
@@ -406,7 +405,7 @@ export const NotePrint = forwardRef(function NotePrint(
   const tax = () => {
     let verifyNeighborood
     if (profile.typeDelivery === 'neighborhood') {
-      let verifyNeighborood = (
+      verifyNeighborood = (
         profile.taxDelivery as any[] //ProfileTaxDeliveryNeighborhood[]
       ).map((tax) => {
         return tax?.neighborhoods.filter(
@@ -840,12 +839,12 @@ export const NotePrint = forwardRef(function NotePrint(
                   className="d-flex justify-content-center"
                   children_controls="mid"
                 >
-                  <QRCodeCanvas
+                  <QRCodeSVG
                     value={
                       cart.controls.grovenfe?.fiscal_note?.aditional_info
                         .qrcode_url
                     }
-                    size={200}
+                    size={paperSize === 58 ? 150 : 200}
                   />
                 </Print.Row>
                 <Print.Breakline />
