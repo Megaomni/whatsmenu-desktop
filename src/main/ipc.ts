@@ -65,6 +65,7 @@ ipcMain.on("executablePath", (_, executablePath) => {
 
 const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | PrintPayloadType => {
   const { cart, table, command, printType } = payload;
+
   const environment = getPrinterLocations().find((env) => env.id === envId);
 
   if (environment.type === "fiscal") {
@@ -95,15 +96,21 @@ const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | Pri
   const allProductsFromCategories: number[] = [];
 
   environment.categories.map((category) => {
-    const foundCategory = storedCategories.find((cat) => cat.name === category);
+    const foundCategory = storedCategories.find((cat) => cat.id === category.id);
     if (foundCategory) {
       foundCategory.products.map((product) => {
         allProductsFromCategories.push(product.id);
       })
+      if (foundCategory.pizzaProduct) {
+        allProductsFromCategories.push(foundCategory.pizzaProduct.id);
+      }
     }
   })
 
-  const newCartItems = cart.itens.filter((item) => item.productId && allProductsFromCategories.includes(item.productId));
+  const newProducts = cart.itens.filter((item) => item.productId && allProductsFromCategories.includes(item.productId));
+  const newPizzas = cart.itens.filter((item) => item.pizzaId && allProductsFromCategories.includes(item.pizzaId));
+  const newCartItems = [...newProducts, ...newPizzas];
+
   if (newCartItems.length < 1) {
     return ""
   }
@@ -136,13 +143,9 @@ ipcMain.on("print", async (_, serializedPayload) => {
         (location) => location.type === "fiscal"
       )
 
-      console.log(fiscalEnvironments, "fiscalEnvironments");
-
       const isFiscal = fiscalEnvironments.some((env) =>
         printer.options["printer-location"].some((loc) => loc === env.id)
       );
-
-      console.log(isFiscal, "isFiscal");
 
       if (!isFiscal) continue;
 
