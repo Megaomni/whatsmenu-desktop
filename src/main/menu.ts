@@ -177,37 +177,6 @@ const updateMenu = async () => {
         },
         { type: "separator" },
         {
-          label: "Ambientes da Impressora",
-          submenu: [
-            ...getPrinterLocations().map((location) => ({
-              label: location.name,
-              type: "checkbox",
-              checked: printer.options["printer-location"].includes(location.id),
-              click: (menuItem: { checked: boolean; }) => {
-                const currentLocations = [...printer.options["printer-location"]];
-
-                if (menuItem.checked) {
-                  currentLocations.push(location.id);
-                } else {
-                  const index = currentLocations.indexOf(location.id);
-                  if (index > -1) {
-                    currentLocations.splice(index, 1);
-                  }
-                }
-
-                updatePrinter({
-                  id: printer.id,
-                  options: {
-                    ...printer.options,
-                    "printer-location": currentLocations,
-                  },
-                });
-              },
-            })),
-          ]
-        },
-        { type: "separator" },
-        {
           label: "58mm",
           type: "radio",
           checked: printer.paperSize === 58,
