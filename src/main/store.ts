@@ -184,6 +184,24 @@ export const addPrinter = (payload: Omit<Printer, "options">) => {
   return printer;
 };
 
+export const convertPrinterLocation = () => {
+  const printers = getPrinters();
+  const printersUpdated = printers.map((printer) => {
+    if (typeof printer.options["printer-location"] === "string") {
+      return {
+        ...printer,
+        options: {
+          ...printer.options,
+          "printer-location": [1],
+        },
+      };
+    } else {
+      return printer;
+    }
+  });
+  updateAllPrinters(printersUpdated);
+}
+
 const updateAllPrinters = (printers: Printer[]) => {
   store.set("configs.printing.printers", printers);
 };
