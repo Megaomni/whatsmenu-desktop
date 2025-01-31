@@ -68,7 +68,8 @@ export const DesktopApi = {
     ipcRenderer.send("onUpdatePrint", location),
   onUpdatePrinter: (printer: Partial<Printer>) =>
     ipcRenderer.send("onUpdatePrinter", printer),
-  onVoucher: (voucher: VoucherType) => ipcRenderer.send("onVoucher", voucher),
+  onVoucher: (voucher: VoucherType) =>
+    ipcRenderer.send("onVoucher", voucher),
   removeVoucher: (voucher: VoucherType) =>
     ipcRenderer.send("removeVoucher", voucher),
 

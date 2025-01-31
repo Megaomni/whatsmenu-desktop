@@ -18,13 +18,13 @@ export const botMessages = {
         case "pt-BR":
         case "pt-PT":
         case "fr-CH":
-          return `*${user.name}*,\n\nAgora o ${profile.name} tem CashBack\n\n *Você ganhou ${formatCurrency(voucher.value)}* em desconto no seu próximo pedido\n\n*https://www.whatsmenu.com.br/${profile.slug}*\n\n*VOCÊ TEM ${formatCurrency(user.vouchersTotal)} EM CASHBACK*`;
+          return `*${user.name}*,\n\nAgora o ${profile.name} tem CashBack\n\n *Você ganhou ${formatCurrency(voucher.value)}* em desconto no seu próximo pedido\n\n*https://www.whatsmenu.com.br/${profile.slug}*`;
         case "ar-AE":
         case "en-US":
         case 'en-GB':
-          return `*${user.name}*,\n\nNow ${profile.name} has CashBack\n\n *You won ${formatCurrency(voucher.value)}* in discount on your next order\n\n*https://www.whatsmenu.com.br/${profile.slug}*\n\n*YOU HAVE ${formatCurrency(user.vouchersTotal)} IN CASHBACK*`;
+          return `*${user.name}*,\n\nNow ${profile.name} has CashBack\n\n *You won ${formatCurrency(voucher.value)}* in discount on your next order\n\n*https://www.whatsmenu.com.br/${profile.slug}*`;
         default:
-          return `*${user.name}*,\n\nAgora o ${profile.name} tem CashBack\n\n *Você ganhou ${formatCurrency(voucher.value)}* em desconto no seu próximo pedido\n\n*https://www.whatsmenu.com.br/${profile.slug}*\n\n*VOCÊ TEM ${formatCurrency(user.vouchersTotal)} EM CASHBACK*`;
+          return `*${user.name}*,\n\nAgora o ${profile.name} tem CashBack\n\n *Você ganhou ${formatCurrency(voucher.value)}* em desconto no seu próximo pedido\n\n*https://www.whatsmenu.com.br/${profile.slug}*`;
       }
     },
     remember: ({
