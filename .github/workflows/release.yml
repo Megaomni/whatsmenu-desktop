@@ -2,6 +2,8 @@ name: Build/release WhatsMenu Desktop
 
 on:
   push:
+    branches:
+      - build/1.6.0
     tags:
       - v*.*.*
 
@@ -50,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: squirrel-windows
           path: ./out/make/squirrel.windows/ia32
