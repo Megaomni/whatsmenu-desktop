@@ -15,6 +15,7 @@ export interface Store {
   configs: {
     printing: {
       locations: PrinterLocation[];
+      proPrint: boolean;
       useMultiplePrinters: boolean;
       printers: Printer[];
       legacyPrint: boolean;
@@ -66,6 +67,9 @@ export const store = new ElectronStore<Store>({
       ])
       store.set("configs.productCategories", []);
     },
+    "1.6.1": (store) => {
+      store.set("configs.printing.proPrint", false);
+    },
   },
   defaults: {
     configs: {
@@ -78,6 +82,7 @@ export const store = new ElectronStore<Store>({
             categories: []
           },
         ],
+        proPrint: false,
         useMultiplePrinters: false,
         printers: [],
         legacyPrint: false,
@@ -119,6 +124,11 @@ export const getCategories = () => {
   return categories;
 }
 
+export const getProPrint = () =>
+  store.get<"configs.printing.proPrint", boolean>("configs.printing.proPrint");
+
+export const setProPrint = (proPrint: boolean) =>
+  store.set("configs.printing.proPrint", proPrint);
 
 export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
   const { type, name } = location;
