@@ -155,7 +155,6 @@ export default function AddOrEditEnvironment() {
               )}
             />
 
-            {selectedType === 'production' && (
               <FormField
                 control={form.control}
                 name="categories"
@@ -179,6 +178,7 @@ export default function AddOrEditEnvironment() {
                               >
                                 <FormControl>
                                   <Checkbox
+                                    disabled={selectedType === 'fiscal'}
                                     checked={envCategories.some((cat) => cat.id === category.id)}
                                     onCheckedChange={() => handleCategoriesChange(category.id)}
                                   />
@@ -196,7 +196,6 @@ export default function AddOrEditEnvironment() {
                   </FormItem>
                 )}
               />
-            )}
 
             <Button type="submit">Salvar Edição</Button>
           </form>
