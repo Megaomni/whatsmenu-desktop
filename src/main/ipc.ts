@@ -338,14 +338,26 @@ ipcMain.on("getAllPrinters", (event) => {
   event.reply("onPrinterChange", allPrinters);
 });
 
-export const getVouchersFromDB = async (): Promise<VoucherType[]> => {
+export const getVouchersFromDB = async (id?: number): Promise<VoucherType[]> => {
   const profile = getProfile();
-  const { data } = await whatsmenu_api_v3.get(
-    `/vouchers/${profile.id}/getByStatus/avaliable`
-  );
-  if (data.vouchers) {
-    return data.vouchers as VoucherType[];
+  if (!id) {
+    const { data } = await whatsmenu_api_v3.get(
+      `/vouchers/${profile.id}/getByStatus/avaliable`
+    );
+    if (data.vouchers) {
+      return data.vouchers as VoucherType[];
+    }
   }
+
+  if (id) {
+    const { data } = await whatsmenu_api_v3.get(
+      `/vouchers/${profile.id}/getByStatus/avaliable/${id}`
+    );
+    if (data.vouchers) {
+      return data.vouchers as VoucherType[];
+    }
+  }
+  return [];
 }
 
 ipcMain.on("onCart", async (_, cart: { id: number; client?: ClientType }) => {
