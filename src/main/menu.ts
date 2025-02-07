@@ -6,6 +6,7 @@ import {
   deletePrinter,
   getPrinterLocations,
   getPrinters,
+  getProPrint,
   store,
   updatePrinter,
 } from "./store";
@@ -304,6 +305,7 @@ const updateMenu = async () => {
     { type: "separator" },
     {
       label: "Configurar ambientes",
+      enabled: getProPrint(),
       click: () => printModal(),
     }
   ];
