@@ -12,7 +12,8 @@ import "./sentry";
 import { TabBrowser } from "../extends/tab-browser";
 import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
-import { convertPrinterLocation, fetchVouchers, getPrinters, setCategories, updatePrinter } from "./store";
+import { convertPrinterLocation, fetchVouchers, getPrinters, getProfile, setCategories, setProPrint, updatePrinter } from "./store";
+import { whatsmenu_api_v3 } from "../lib/axios";
 
 export let mainWindow: TabBrowser;
 
@@ -27,6 +28,10 @@ if (require('electron-squirrel-startup')) {
 }
 export const whatsAppService = new BaileysService();
 const main = async () => {
+  const profile = getProfile();
+  const { data } = await whatsmenu_api_v3.get(`/getProPrint/${profile?.id}`);
+  setProPrint(data);
+
   mainWindow = tabsWindow.createWindow();
   const printers = getPrinters();
   await fetchVouchers();
