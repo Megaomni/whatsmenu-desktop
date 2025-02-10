@@ -17,6 +17,7 @@ import {
   getPrinterLocations,
   getPrinters,
   getProfile,
+  getProPrint,
   removePrinterLocation,
   setCacheContactByWhatsapp,
   setPrinterLocation,
@@ -67,6 +68,15 @@ ipcMain.on("executablePath", (_, executablePath) => {
 
 const payloadEnvSplit = (payload: PrintPayloadType, envId: number): string | PrintPayloadType => {
   const { cart, table, command, printType } = payload;
+  const isPro = getProPrint();
+  const allPrinters = getPrinters();
+  const isOnlyCashier = allPrinters.length >= 1
+    ? allPrinters.every((printer) => printer.options["printer-location"].includes(1) && printer.options["printer-location"].length === 1)
+    : true;
+
+  if (!isPro || isOnlyCashier) {
+    return payload;
+  }
 
   const environment = getPrinterLocations().find((env) => env.id === envId);
 
