@@ -1,17 +1,7 @@
 import { DateTime } from 'luxon'
 import React, { Fragment, Key, Ref, forwardRef } from 'react'
-// import Cart, { CartFormPayment } from '../../../../types/cart'
-// import CartItem from '../../../../types/cart-item'
-// import Command from '../../../../types/command'
-// import { ComplementType } from '../../../../types/complements'
-// import { PizzaImplementationType } from '../../../../types/pizza-product'
-// import Profile, {
-//   ProfileFee,
-//   ProfileTaxDeliveryNeighborhood,
-// } from '../../../../types/profile'
-// import Table from '../../../../types/table'
 
-import { QRCodeCanvas, QRCodeSVG } from 'qrcode.react'
+import { QRCodeSVG } from 'qrcode.react'
 import { Print } from '../Print'
 import { currency } from '../../utils/currency'
 
@@ -53,6 +43,29 @@ export const NotePrint = forwardRef(function NotePrint(
 
   if (!printType) {
     table = cart?.command?.opened?.table
+  }
+
+  const getSecretType = (secretNumber: string): string => {
+    const country = profile?.options?.locale?.language;
+
+    switch (country) {
+      case 'pt-BR':
+        if (secretNumber.length <= 11) {
+          return 'CPF'
+        } else {
+          return 'CNPJ'
+        }
+      case 'en-US':
+        return 'SSN'
+      case 'pt-PT':
+        return 'NIF'
+      default:
+        if (secretNumber.length <= 11) {
+          return 'CPF'
+        } else {
+          return 'CNPJ'
+        }
+    }
   }
 
   const getItens = () => {
@@ -545,7 +558,7 @@ export const NotePrint = forwardRef(function NotePrint(
       )}
       {cart.secretNumber && (
         <Print.Row
-          left={`${cart.secretNumber.length <= 11 ? 'CPF' : 'CNPJ'}: ${cart.secretNumber}`}
+          left={`${getSecretType(cart.secretNumber)}: ${cart.secretNumber}`}
         />
       )}
       {printType === 'table' && (
