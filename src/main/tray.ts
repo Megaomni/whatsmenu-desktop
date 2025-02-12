@@ -23,7 +23,9 @@ app.whenReady().then(() => {
   ]);
   tray.setContextMenu(menu);
   tray.on("click", () => {
-    mainWindow.restore();
-    mainWindow.maximize();
+    if (mainWindow) {
+      mainWindow.maximize();
+      mainWindow.restore();
+    }
   });
 });
