@@ -172,9 +172,10 @@ ipcMain.on("print", async (_, serializedPayload) => {
           printBody.innerHTML = ${JSON.stringify(payload.html)}
         `);
 
+
       const printOptions: Electron.WebContentsPrintOptions = {
         deviceName: name,
-        silent,
+        silent: !silent && payload.cart.print === 1 ? true : silent,
         margins,
         copies,
         scaleFactor,
@@ -262,7 +263,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
 
         const printOptions: Electron.WebContentsPrintOptions = {
           deviceName: name,
-          silent,
+          silent: !silent && envPayload.cart.print === 1 ? true : silent,
           margins,
           copies,
           scaleFactor,
@@ -275,7 +276,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
               "document.body.offsetHeight"
             )) * 264.5833
           );
-          setTimeout(() => {
+
+          printOptions.silent && setTimeout(() => {
             window.webContents.print(
               {
                 ...printOptions,
