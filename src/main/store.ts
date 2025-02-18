@@ -541,7 +541,7 @@ export const removeDuplicateVouchers = (): void => {
   return store.set("configs.voucherToNotify", uniqueVouchers);
 };
 
-const deleteExpiredVoucher = (id: number) => {
+export const deleteExpiredVoucher = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((voucher) => voucher.id === id));
   if (!foundUser) {
@@ -565,22 +565,14 @@ const deleteExpiredVoucher = (id: number) => {
   }
 }
 
-const deleteUsedVouchers = async (voucherFromDB: VoucherType, client: ClientType) => {
+export const deleteUsedVouchers = async (vouchersFromDB: VoucherType[],) => {
   const currentVouchers = getVoucherToNotifyList();
-  const vouchersFromUser = await getVouchersFromDB(voucherFromDB.clientId);
+  const vouchersFromUser = await getVouchersFromDB(vouchersFromDB[0].clientId);
 
   if (vouchersFromUser) {
-    const newFormatvoucher = formatVouchFromDB(vouchersFromUser[vouchersFromUser.length - 1], client);
-    const updatedList = currentVouchers.filter((user) => user.whatsapp !== newFormatvoucher.whatsapp);
+    const newFormatvoucher = formatVouchFromDB(vouchersFromUser[vouchersFromUser.length - 1], vouchersFromUser[0].client);
+    const updatedList = currentVouchers.map((user) => user.whatsapp === newFormatvoucher.whatsapp ? newFormatvoucher : user);
     store.set("configs.voucherToNotify", updatedList);
-  }
-}
-
-export const deleteVoucherToNotify = (voucherOrId: number | VoucherType) => {
-  if (typeof voucherOrId === 'number') {
-    deleteExpiredVoucher(voucherOrId);
-  } else {
-    deleteUsedVouchers(voucherOrId, voucherOrId.client);
   }
 }
 

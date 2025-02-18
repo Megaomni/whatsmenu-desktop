@@ -1,6 +1,6 @@
 import { whatsAppService } from "../main";
 import {
-  deleteVoucherToNotify,
+  deleteExpiredVoucher,
   fetchVouchers,
   getProfile,
   getVoucherToNotifyList,
@@ -50,7 +50,7 @@ export class WhatsApp {
         user.vouchers.filter(
           (voucher) =>
             voucher.expirationDate === null
-        ).forEach((voucher) => deleteVoucherToNotify(voucher.id));
+        ).forEach((voucher) => deleteExpiredVoucher(voucher.id));
       })
     };
 

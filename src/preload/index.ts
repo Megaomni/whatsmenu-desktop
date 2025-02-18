@@ -70,8 +70,10 @@ export const DesktopApi = {
     ipcRenderer.send("onUpdatePrinter", printer),
   onVoucher: (voucher: VoucherType) =>
     ipcRenderer.send("onVoucher", voucher),
-  removeVoucher: (voucher: VoucherType) =>
-    ipcRenderer.send("removeVoucher", voucher),
+  removeUsedVoucher: (voucher: VoucherType) =>
+    ipcRenderer.send("removeUsedVoucher", voucher),
+  removeCanceledVoucher: (voucherId: number) =>
+    ipcRenderer.send("removeCanceledVoucher", voucherId),
 
   storeProfile: (profile: ProfileType, updateBot: boolean) =>
     ipcRenderer.send("storeProfile", profile, updateBot),
