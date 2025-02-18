@@ -63,10 +63,10 @@ const BotRoot = () => {
             window.DesktopApi.onVoucher(voucher);
         });
         wsRef.current.connection.on("voucher:used", (voucher) => {
-          window.DesktopApi.removeVoucher(voucher);
+          window.DesktopApi.removeUsedVoucher(voucher);
         });
         wsRef.current.connection.on("voucher:cancelled", (voucher) => {
-          window.DesktopApi.removeVoucher(voucher.id);
+          window.DesktopApi.removeCanceledVoucher(voucher.id);
         });
       });
     }

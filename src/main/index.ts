@@ -28,12 +28,11 @@ if (require('electron-squirrel-startup')) {
 }
 export const whatsAppService = new BaileysService();
 const main = async () => {
+  mainWindow = tabsWindow.createWindow();
+  const printers = getPrinters();
   const profile = getProfile();
   const { data } = await whatsmenu_api_v3.get(`/getProPrint/${profile?.id}`);
   setProPrint(data);
-
-  mainWindow = tabsWindow.createWindow();
-  const printers = getPrinters();
   await fetchVouchers();
   await setCategories();
   convertPrinterLocation();

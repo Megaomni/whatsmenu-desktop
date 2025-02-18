@@ -11,7 +11,8 @@ import {
   // printService
 } from "../services/printService";
 import {
-  deleteVoucherToNotify,
+  deleteUsedVouchers,
+  deleteExpiredVoucher,
   getCategories,
   getMerchant,
   getPrinterLocations,
@@ -458,8 +459,29 @@ ipcMain.on("onVoucher", async (_, voucher: VoucherType) => {
   });
 });
 
-ipcMain.on("removeVoucher", (_, voucherOrId: VoucherType | number) => {
-  deleteVoucherToNotify(voucherOrId);
+const voucherQueue: VoucherType[] = [];
+let processingTimeout: NodeJS.Timeout | null = null;
+
+ipcMain.on("removeUsedVoucher", (_, voucher: VoucherType) => {
+  voucherQueue.push(voucher);
+
+  if (!processingTimeout) {
+    processingTimeout = setTimeout(() => {
+      processVoucherQueue();
+    }, 1000);
+  }
+});
+
+const processVoucherQueue = () => {
+  if (voucherQueue.length > 0) {
+    deleteUsedVouchers(voucherQueue);
+    voucherQueue.length = 0;
+  }
+  processingTimeout = null;
+};
+
+ipcMain.on("removeCanceledVoucher", (_, voucherId: number) => {
+  deleteExpiredVoucher(voucherId);
 });
 
 ipcMain.on("env", (event) => {
