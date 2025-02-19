@@ -160,8 +160,8 @@ export class BaileysService {
       );
       const shouldSendMessage = Boolean(
         !isGroupMessage &&
-          m.messages[0].pushName &&
-          isJidUser(m.messages[0].key.remoteJid)
+        m.messages[0].pushName &&
+        isJidUser(m.messages[0].key.remoteJid)
       );
 
       if (isGroupMessage) {
@@ -225,16 +225,17 @@ export class BaileysService {
             await this.sendMessageToContact(currPhoneNum, {
               text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
             });
-            
+
             setContactWelcomeMessage(currPhoneNum);
           } else {
             sendMenu &&
-            (await this.sendMessageToContact(currPhoneNum, {
-              text: profile.options.placeholders.welcomeMessage.replace(
-                "[NOME]",
-                m.messages[0].pushName
-              ),
-            }));
+              (await this.sendMessageToContact(currPhoneNum, {
+                text: profile.options.placeholders.welcomeMessage.replace(
+                  "[NOME]",
+                  m.messages[0].pushName
+                ),
+              }));
+            setContactWelcomeMessage(currPhoneNum);
           }
         } else {
           sendMenu &&
@@ -269,12 +270,13 @@ export class BaileysService {
             setContactWelcomeMessage(currPhoneNum);
           } else {
             sendMenu &&
-            (await this.sendMessageToContact(currPhoneNum, {
-              text: profile.options.placeholders.welcomeMessage.replace(
-                "[NOME]",
-                m.messages[0].pushName
-              ),
-            }));
+              (await this.sendMessageToContact(currPhoneNum, {
+                text: profile.options.placeholders.welcomeMessage.replace(
+                  "[NOME]",
+                  m.messages[0].pushName
+                ),
+              }));
+            setContactWelcomeMessage(currPhoneNum);
           }
         } else {
           sendMenu &&
@@ -288,7 +290,7 @@ export class BaileysService {
       }
     });
   }
-  
+
   async handleClientFirstCupom(whatsapp: string, profileId: number) {
     try {
       const sanitizedWhatsapp = whatsapp.replace(/^55/, "").split("@")[0];
