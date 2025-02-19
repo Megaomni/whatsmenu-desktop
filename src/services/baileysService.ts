@@ -5,7 +5,7 @@ import {
   AnyMessageContent,
   WAMessage,
   isJidGroup,
-  isJidUser
+  isJidUser,
 } from "@whiskeysockets/baileys";
 import {
   getProfile,
@@ -20,6 +20,7 @@ import { app } from "electron";
 import { WhatsApp } from "./whatsapp";
 import path from "node:path";
 import os from "node:os";
+import { whatsmenu_api_v3 } from "../lib/axios";
 
 const whatsapp = new WhatsApp();
 
@@ -101,7 +102,7 @@ export class BaileysService {
       }
 
       if (!exists || jid === "Número não está no whatsapp") {
-        return
+        return;
       } else {
         return this.socket.sendMessage(jid, message);
       }
@@ -154,8 +155,14 @@ export class BaileysService {
     this.socket.ev.on("messages.upsert", async (m) => {
       let currPhoneNum: string | undefined = undefined;
       const isMessageFromMe = Boolean(m.messages[0].key.fromMe);
-      const isGroupMessage = Boolean(m.messages[0].key.participant || isJidGroup(m.messages[0].key.remoteJid));
-      const shouldSendMessage = Boolean(!isGroupMessage && m.messages[0].pushName && isJidUser(m.messages[0].key.remoteJid));
+      const isGroupMessage = Boolean(
+        m.messages[0].key.participant || isJidGroup(m.messages[0].key.remoteJid)
+      );
+      const shouldSendMessage = Boolean(
+        !isGroupMessage &&
+          m.messages[0].pushName &&
+          isJidUser(m.messages[0].key.remoteJid)
+      );
 
       if (isGroupMessage) {
         return;
@@ -173,7 +180,7 @@ export class BaileysService {
       );
 
       if (cachedContact && cachedContact.messageType === "cupomFirst") {
-        setContactWelcomeMessage(cachedContact);
+        setContactWelcomeMessage(currPhoneNum);
       } else if (!cachedContact) {
         setCacheContactByWhatsapp(currPhoneNum, {
           contact: currPhoneNum,
@@ -197,11 +204,8 @@ export class BaileysService {
         myMessages.length > 0
           ? myMessages[myMessages.length - 1].messageTimestamp
           : undefined;
-      const alwaysSend =
-        profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
-      const sendMenu =
-        profile.options.bot.whatsapp.welcomeMessage.status;
-
+      const alwaysSend = profile.options.bot.whatsapp.welcomeMessage.alwaysSend;
+      const sendMenu = profile.options.bot.whatsapp.welcomeMessage.status;
 
       if (
         alwaysSend &&
@@ -212,15 +216,37 @@ export class BaileysService {
           profile.firstOnlyCupom &&
           (!cachedContact || cachedContact.messageType === "cupomFirst")
         ) {
-          await this.sendMessageToContact(currPhoneNum, {
-            text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
-          });
-        } else {
-          sendMenu && await this.sendMessageToContact(currPhoneNum,
-            { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) }
+          const clientExists = await this.handleClientFirstCupom(
+            currPhoneNum,
+            profile.id
           );
+
+          if (clientExists.data === "client not found") {
+            await this.sendMessageToContact(currPhoneNum, {
+              text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
+            });
+            
+            setContactWelcomeMessage(currPhoneNum);
+          } else {
+            sendMenu &&
+            (await this.sendMessageToContact(currPhoneNum, {
+              text: profile.options.placeholders.welcomeMessage.replace(
+                "[NOME]",
+                m.messages[0].pushName
+              ),
+            }));
+          }
+        } else {
+          sendMenu &&
+            (await this.sendMessageToContact(currPhoneNum, {
+              text: profile.options.placeholders.welcomeMessage.replace(
+                "[NOME]",
+                m.messages[0].pushName
+              ),
+            }));
         }
-      } else if (
+      }
+      if (
         !isMessageFromMe &&
         this.timeDifference(currTime, prevTime, 3) &&
         this.timeDifference(currTime, myLastMsgTime, 5) &&
@@ -230,15 +256,53 @@ export class BaileysService {
           profile.firstOnlyCupom &&
           (!cachedContact || cachedContact.messageType === "cupomFirst")
         ) {
-          await this.sendMessageToContact(currPhoneNum, {
-            text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
-          });
-        } else {
-          sendMenu && await this.sendMessageToContact(currPhoneNum,
-            { text: profile.options.placeholders.welcomeMessage.replace("[NOME]", m.messages[0].pushName) }
+          const clientExists = await this.handleClientFirstCupom(
+            currPhoneNum,
+            profile.id
           );
+
+          if (clientExists.data === "client not found") {
+            await this.sendMessageToContact(currPhoneNum, {
+              text: `Olá *${m.messages[0].pushName}!*\n\nSeja bem vindo ao ${profile.name}\n\nÉ sua primeira vez aqui, separei um cupom especial para você\n\nhttps://www.whatsmenu.com.br/${profile.slug}?firstOnlyCupom=${profile.firstOnlyCupom.code}\n\n 👆🏻 Cupom: *${profile.firstOnlyCupom.code}* 👆🏻 \n\nClique no link para fazer o pedido com o cupom`,
+            });
+
+            setContactWelcomeMessage(currPhoneNum);
+          } else {
+            sendMenu &&
+            (await this.sendMessageToContact(currPhoneNum, {
+              text: profile.options.placeholders.welcomeMessage.replace(
+                "[NOME]",
+                m.messages[0].pushName
+              ),
+            }));
+          }
+        } else {
+          sendMenu &&
+            (await this.sendMessageToContact(currPhoneNum, {
+              text: profile.options.placeholders.welcomeMessage.replace(
+                "[NOME]",
+                m.messages[0].pushName
+              ),
+            }));
         }
       }
     });
+  }
+  
+  async handleClientFirstCupom(whatsapp: string, profileId: number) {
+    try {
+      const sanitizedWhatsapp = whatsapp.replace(/^55/, "").split("@")[0];
+
+      const { data } = await whatsmenu_api_v3.post(
+        `/consult/client/${profileId}`,
+        {
+          whatsapp: sanitizedWhatsapp,
+        }
+      );
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 }
