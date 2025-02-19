@@ -251,21 +251,15 @@ export const getMerchant = () =>
 export const setCacheContactList = (cacheContact: CacheContact) =>
   store.set("configs.contacts_cache", cacheContact);
 
-export const setContactWelcomeMessage = (cacheContact: CacheContact) => {
+export const setContactWelcomeMessage = (whatsapp: string) => {
   const allContacts = getCacheContactList();
-  const cacheFiltered = allContacts.filter(
-    (contact) => contact?.contact !== cacheContact?.contact
+  const cacheFiltered = allContacts.map(
+    (contact) => contact?.contact === whatsapp ? {...contact, messageType: "welcome"} : contact
   )
-  const selectedContact = allContacts.find(
-    (contact) => contact?.contact === cacheContact?.contact
-  );
-  store.set("configs.contacts_cache", [
-    ...cacheFiltered,
-    {
-      ...selectedContact,
-      messageType: "welcome",
-    },
-  ]);
+  // const selectedContact = allContacts.find(
+  //   (contact) => contact?.contact === cacheContact?.contact
+  // );
+  store.set("configs.contacts_cache", cacheFiltered);
 }
 
 export const getCacheContactList = () =>
