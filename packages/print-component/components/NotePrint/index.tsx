@@ -310,16 +310,6 @@ export const NotePrint = forwardRef(function NotePrint(
             'g'
           )
           : ''
-
-
-      if (cartItem.type === 'pizza') {
-        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", cartItemTotalWithOutSymbol)
-        console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY 2", cartItem.details.value)
-        console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", cartItem.details.complements[0].itens)
-        console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", cartItem.details.implementations)
-      }
-
-
       const cartItemName =
         cartItem.type === 'default'
           ? cartItem.name
