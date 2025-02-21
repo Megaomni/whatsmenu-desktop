@@ -281,7 +281,7 @@ export const NotePrint = forwardRef(function NotePrint(
                 cartItem.details.complements.reduce(
                   (total: any, i: { itens: any[] }) =>
                     total +
-                    i.itens.reduce((acc: any, item: { value: any }) => acc + item.value, 0),
+                    i.itens.reduce((acc: any, item: { value: number, quantity: number }) => acc + (item.value * item.quantity), 0),
                   0
                 ) -
                 cartItem.details.implementations.reduce(
@@ -310,9 +310,16 @@ export const NotePrint = forwardRef(function NotePrint(
             'g'
           )
           : ''
-      // if (cartItem.type === 'pizza') {
-      //   console.log(cartItem.name.replace(regex, flavorsString), regex)
-      // }
+
+
+      if (cartItem.type === 'pizza') {
+        console.log("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", cartItemTotalWithOutSymbol)
+        console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY 2", cartItem.details.value)
+        console.log("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY", cartItem.details.complements[0].itens)
+        console.log("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ", cartItem.details.implementations)
+      }
+
+
       const cartItemName =
         cartItem.type === 'default'
           ? cartItem.name
