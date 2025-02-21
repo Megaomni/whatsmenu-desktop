@@ -14,6 +14,7 @@ export interface ProductionPrintProps {
   pdf?: boolean
   electron?: boolean
   paperSize?: 58 | 80
+  isGeneric?: boolean
 }
 
 export const ProductionPrint = forwardRef(function (
@@ -27,6 +28,7 @@ export const ProductionPrint = forwardRef(function (
     pdf,
     electron,
     paperSize,
+    isGeneric
   }: ProductionPrintProps,
   ref: Ref<HTMLPreElement>
 ) {
