@@ -12,21 +12,24 @@ type PrintToStringProps = {
 	html: boolean,
 	electron: boolean
 	motoboys: any[]
+	isGeneric?: boolean
 }
 
 type ComponentToPrint = typeof NotePrint | typeof ProductionPrint
 
-export const printToString = (Component: ComponentToPrint, { 
+export const printToString = (Component: ComponentToPrint, {
 	cart,
 	profile,
 	table,
 	printType,
 	command,
 	html = false,
-	electron = false
+	electron = false,
+	isGeneric
 }: PrintToStringProps) => {
 	if (!electron) {
 		profile.options.print.textOnly = true
+		isGeneric = profile.options.print.textOnly
 	}
 	const props: Partial<PrintToStringProps> = {
 		// cart: new Cart(cart),
@@ -39,6 +42,7 @@ export const printToString = (Component: ComponentToPrint, {
 		printType,
 		electron,
 		motoboys: [],
+		isGeneric
 	}
 	const layout58 = renderToString(createElement(Component, { ...props, paperSize: 58 } as any))
 	const layout80 = renderToString(createElement(Component, { ...props, paperSize: 80 } as any))
@@ -46,17 +50,17 @@ export const printToString = (Component: ComponentToPrint, {
 		58: html
 			? layout58
 			: layout58
-					.replace(/<[^>]+>/g, '')
-					.replaceAll('\u00A0', ' ')
-					.match(/.{1,32}/gmu)
-					?.join('\n') || '',
+				.replace(/<[^>]+>/g, '')
+				.replaceAll('\u00A0', ' ')
+				.match(/.{1,32}/gmu)
+				?.join('\n') || '',
 		80: html
 			? layout80
 			: layout80
-					.replace(/<[^>]+>/g, '')
-					.replaceAll('\u00A0', ' ')
-					.match(/.{1,48}/gmu)
-					?.join('\n') || '',
+				.replace(/<[^>]+>/g, '')
+				.replaceAll('\u00A0', ' ')
+				.match(/.{1,48}/gmu)
+				?.join('\n') || '',
 		requestId: cart.id,
 	}
 
