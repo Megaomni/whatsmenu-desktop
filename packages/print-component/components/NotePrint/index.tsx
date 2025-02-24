@@ -233,7 +233,7 @@ export const NotePrint = forwardRef(function NotePrint(
         <Print.Row
           leftClass="complement-space"
           key={complement.id}
-          left={`${complement.name}`}
+          left={electron && !isGeneric ? `${complement.name}` : `${' '.repeat(3)}${complement.name}`}
         />
         {complement.itens?.map((complementItem: any, index: number) => {
           const complementItemTotal =
@@ -244,7 +244,7 @@ export const NotePrint = forwardRef(function NotePrint(
             <Print.Row
               key={`${complementItem.code}-${index}`}
               leftClass="item-space"
-              left={`${complementItem.quantity}X | ${complementItem.name}`}
+              left={electron && !isGeneric ? `${complementItem.quantity}X | ${complementItem.name}` : `${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}`}
               center=""
               right={`${complementItemTotal} `}
             />
@@ -262,7 +262,7 @@ export const NotePrint = forwardRef(function NotePrint(
       <Print.Row
         key={implementation.code}
         leftClass="complement-space"
-        left={`${implementation.name}`}
+        left={electron && !isGeneric ? `${implementation.name}` : `${' '.repeat(3)}${implementation.name}`}
         right={`${currency({ value: implementation.value, withoutSymbol: true })}`}
       />
     )
@@ -334,7 +334,7 @@ export const NotePrint = forwardRef(function NotePrint(
                 <Fragment key={`${flavor.code}-${index}`}>
                   <Print.Row
                     leftClass="complement-space"
-                    left={`${flavor.name}`}
+                    left={electron && !isGeneric ? `${flavor.name}` : `${' '.repeat(3)}${flavor.name}`}
                   />
                   {flavor.complements?.map((complement: any) =>
                     complementLayout(complement)
