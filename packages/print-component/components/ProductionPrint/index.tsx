@@ -98,14 +98,14 @@ export const ProductionPrint = forwardRef(function (
         <Print.Row
           leftClass="complement-space"
           key={complement.id}
-          left={`${' '.repeat(3)}${complement.name}`}
+          left={isGeneric ? `${' '.repeat(3)}${complement.name}` : `${complement.name}`}
         />
         {complement.itens?.map((complementItem: any, index: number) => {
           return (
             <Print.Row
               key={`${complementItem.code}-${index}`}
               leftClass="item-space"
-              left={`${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}`}
+              left={isGeneric ? `${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}` : `${complementItem.quantity}X | ${complementItem.name}`}
               center=""
               right=""
             />
@@ -123,7 +123,7 @@ export const ProductionPrint = forwardRef(function (
       <Print.Row
         key={implementation.code}
         leftClass="complement-space"
-        left={`${' '.repeat(3)}${implementation.name}`}
+        left={isGeneric ? `${' '.repeat(3)}${implementation.name}` : `${implementation.name}`}
         right=""
       />
     )
@@ -195,7 +195,7 @@ export const ProductionPrint = forwardRef(function (
                 <Fragment key={`${flavor.code}-${index}`}>
                   <Print.Row
                     leftClass="complement-space"
-                    left={`${' '.repeat(3)}${flavor.name}`}
+                    left={isGeneric ? `${' '.repeat(3)}${flavor.name}` : `${flavor.name}`}
                   />
                   {flavor.complements?.map((complement: any) =>
                     complementLayout(complement)
