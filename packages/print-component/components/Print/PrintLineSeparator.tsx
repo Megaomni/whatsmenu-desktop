@@ -6,7 +6,7 @@ export const PrintLineSeparator: React.FC<any> = () => {
   const separator = new Array(paperWidthSize).fill('_')
   return (
     <pre className={`lineseparator ${printMode}`}>
-      {separator.join('') + '\n' }
+      {separator.join('') + '\n'}
     </pre>
   )
 }

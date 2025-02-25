@@ -91,7 +91,6 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
     case 'text-only':
       content = <pre>{text}</pre>
       break
-    case 'pdf':
     case 'formated':
       content = (
         <div style={{ fontWeight: 'bolder' }}>
@@ -102,7 +101,7 @@ export const PrintRow = ({ left = '', center = '', right = '', leftClass = '', c
       )
       break
     // case 'pdf':
-    //   let styles: { [ket: string]: any; 'complement-space'?: any; 'item-space'?: any } = {}
+    //   const styles: { [ket: string]: any; 'complement-space'?: any; 'item-space'?: any } = {}
     //   switch (leftClass) {
     //     case 'complement-space':
     //       styles = StyleSheet.create({

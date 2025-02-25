@@ -1,8 +1,10 @@
 import { DateTime } from 'luxon'
-import React, { Fragment, Key, Ref, forwardRef } from 'react'
+import React, { Fragment, Key, Ref, forwardRef, useEffect } from 'react'
 
 import { currency } from '../../utils/currency'
 import { Print } from '../Print'
+
+import i18n from '../../../i18n'
 
 export interface ProductionPrintProps {
   profile: any //Profile
@@ -229,6 +231,10 @@ export const ProductionPrint = forwardRef(function (
     })
   }
 
+  useEffect(() => {
+    i18n.changeLanguage(profile.options?.locale?.language ?? 'pt-BR')
+  }, [])
+
   return (
     <Print.Root
       ref={ref}
@@ -251,33 +257,33 @@ export const ProductionPrint = forwardRef(function (
       <Print.Row center={profile.name} className="print-title" />
       <Print.Breakline />
       <Print.Row
-        left={DateTime.fromSQL(cart.created_at, { zone: 'America/Sao_Paulo' })
+        left={DateTime.fromSQL(cart.created_at, { zone: profile.timeZone ?? 'America/Sao_Paulo' })
           .setZone(profile.timeZone)
-          .toFormat('dd/MM/yyyy HH:mm:ss')
+          .toFormat(`${i18n.t('date_format')} HH:mm:ss`)
           .trim()}
       />
       {!printType && (
         <Print.Row
-          left={`Pedido: wm${cart.code}-${cart.type} ${cart.status === 'canceled' ? ' (CANCELADO)' : ''}`}
+          left={`${i18n.t('order')}: wm${cart.code}-${cart.type} ${cart.status === 'canceled' ? ` (${i18n.t('cancelled_up')})` : ''}`}
         />
       )}
       {cart.type === 'T' ? (
         <Print.Row
-          left={`Mesa: ${table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), ' (Desativada)') : table?.name}`}
+          left={`${i18n.t('table')}: ${table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), ` (${i18n.t('disabled')})`) : table?.name}`}
         />
       ) : null}
       <Print.Row
-        left={`${printType === 'command' || cart.type === 'T' ? 'Comanda' : 'Cliente'}: ${cart.nameClient()} `}
+        left={`${printType === 'command' || cart.type === 'T' ? i18n.t('order_slip') : i18n.t('client')}: ${cart.nameClient()} `}
       />
 
       {cart.type === 'T' && !printType && cart.bartender && (
         <Print.Row
-          left={`Garçom: ${cart.bartender.deleted_at
+          left={`${i18n.t('waiter')}: ${cart.bartender.deleted_at
             ? cart.bartender.name.replace(
               cart.bartender.name.substring(
                 cart.bartender.name.length - 19
               ),
-              ' (Desativado)'
+              ` (${i18n.t('disabled')})`
             )
             : cart.bartender.name
 
@@ -285,11 +291,11 @@ export const ProductionPrint = forwardRef(function (
         />
       )}
       {cart.type === 'P' && (
-        <Print.Row left={`Data Entrega: ${cart.date().formatted}`} />
+        <Print.Row left={`${i18n.t('delivery_date')}: ${cart.date().formatted}`} />
       )}
       {printType === 'table' && (
         <Print.Row
-          left={`Permanência: ${cart.permenance(false, table?.opened)}`}
+          left={`${i18n.t('duration')}: ${cart.permenance(false, table?.opened)}`}
         />
       )}
       <Print.LineSeparator />
@@ -297,7 +303,7 @@ export const ProductionPrint = forwardRef(function (
         ? table?.opened?.getCarts()?.map((cart: { status: string; code: any; type: any; groupItens: (arg0: any) => any[] }) => {
           return cart.status !== 'canceled' ? (
             <>
-              <Print.Row left={`Pedido: wm${cart.code}-${cart.type}`} />
+              <Print.Row left={`${i18n.t('order')}: wm${cart.code}-${cart.type}`} />
               {getItemsToPrint(
                 cart.groupItens(profile.options.print.groupItems)
               )}
@@ -354,7 +360,7 @@ export const ProductionPrint = forwardRef(function (
                   <Print.Row
                     key={command.id}
                     left={`${command.name} `}
-                    center={`${command.fullPaid() ? ' PAGO ' : ''}`}
+                    center={`${command.fullPaid() ? ` ${i18n.t('paid_up')} ` : ''}`}
                     right=""
                   />
                 )
