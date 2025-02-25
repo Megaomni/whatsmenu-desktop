@@ -18,6 +18,7 @@ export interface NotePrintProps {
   paperSize?: 58 | 80
   motoboys?: any[]
   textPackage?: string
+  isGeneric?: boolean
 }
 
 export const NotePrint = forwardRef(function NotePrint(
@@ -33,7 +34,8 @@ export const NotePrint = forwardRef(function NotePrint(
     electron,
     paperSize,
     motoboys = [],
-    textPackage
+    textPackage,
+    isGeneric
   }: NotePrintProps,
   ref: Ref<HTMLPreElement>
 ) {
@@ -231,7 +233,7 @@ export const NotePrint = forwardRef(function NotePrint(
         <Print.Row
           leftClass="complement-space"
           key={complement.id}
-          left={`${' '.repeat(3)}${complement.name}`}
+          left={electron && !isGeneric ? `${complement.name}` : `${' '.repeat(3)}${complement.name}`}
         />
         {complement.itens?.map((complementItem: any, index: number) => {
           const complementItemTotal =
@@ -242,7 +244,7 @@ export const NotePrint = forwardRef(function NotePrint(
             <Print.Row
               key={`${complementItem.code}-${index}`}
               leftClass="item-space"
-              left={`${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}`}
+              left={electron && !isGeneric ? `${complementItem.quantity}X | ${complementItem.name}` : `${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}`}
               center=""
               right={`${complementItemTotal} `}
             />
@@ -260,7 +262,7 @@ export const NotePrint = forwardRef(function NotePrint(
       <Print.Row
         key={implementation.code}
         leftClass="complement-space"
-        left={`${' '.repeat(3)}${implementation.name}`}
+        left={electron && !isGeneric ? `${implementation.name}` : `${' '.repeat(3)}${implementation.name}`}
         right={`${currency({ value: implementation.value, withoutSymbol: true })}`}
       />
     )
@@ -329,7 +331,7 @@ export const NotePrint = forwardRef(function NotePrint(
                 <Fragment key={`${flavor.code}-${index}`}>
                   <Print.Row
                     leftClass="complement-space"
-                    left={`${' '.repeat(3)}${flavor.name}`}
+                    left={electron && !isGeneric ? `${flavor.name}` : `${' '.repeat(3)}${flavor.name}`}
                   />
                   {flavor.complements?.map((complement: any) =>
                     complementLayout(complement)
