@@ -9,6 +9,7 @@ import Profile, {
   ProfileFormPayment,
   ProfileType
 } from './profile'
+import i18n from '../i18n'
 
 export interface CartType {
   id: number
@@ -129,7 +130,7 @@ export default class Cart {
   public defaultStatusTransportMessage =
     'Obaaa [NOME], seu pedido está a caminho.'
   public defaultCanceledMessage = 'Olá [NOME], seu pedido foi cancelado.'
-  sendMB: boolean = false
+  sendMB = false
 
   constructor({
     id,
@@ -297,24 +298,26 @@ export default class Cart {
 
   public typeDeliveryText(
     textPackage: 'Encomendas' | 'Agendamentos' = 'Encomendas',
-    textOnly = false
+    textOnly = false,
+    language?: string | 'pt-BR'
   ) {
     let textDelivery = ''
+    i18n.changeLanguage(language)
     switch (this.type) {
       case 'D':
         textDelivery =
           this.address && !textOnly
             ? `**Delivery**\n\r`
-            : '**Vou retirar no local**'
+            : `**${i18n.t('pickup_the_location')}**`
         break
       case 'P':
         textDelivery =
           this.address && !textOnly
             ? `**${textPackage}**\r\n`
-            : '**Vou Retirar no Local**'
+            : `**${i18n.t('pickup_the_location')}**`
         break
       case 'T':
-        textDelivery = '**Pedido Mesa**'
+        textDelivery = `**${i18n.t('table_request')}**`
         break
     }
 

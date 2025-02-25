@@ -1,7 +1,9 @@
 import { DateTime } from 'luxon'
 import React, { Fragment, Key, Ref, forwardRef } from 'react'
 
-import { QRCodeSVG } from 'qrcode.react'
+import i18n from '../../../i18n'
+
+import { QRCodeCanvas } from 'qrcode.react'
 import { Print } from '../Print'
 import { currency } from '../../utils/currency'
 
@@ -26,7 +28,6 @@ export const NotePrint = forwardRef(function NotePrint(
     profile,
     cart,
     printType,
-    report = false,
     table,
     detailedTable,
     command,
@@ -35,7 +36,7 @@ export const NotePrint = forwardRef(function NotePrint(
     paperSize,
     motoboys = [],
     textPackage,
-    isGeneric
+    isGeneric,
   }: NotePrintProps,
   ref: Ref<HTMLPreElement>
 ) {
@@ -48,7 +49,7 @@ export const NotePrint = forwardRef(function NotePrint(
   }
 
   const getSecretType = (secretNumber: string): string => {
-    const country = profile?.options?.locale?.language;
+    const country = profile?.options?.locale?.language
 
     switch (country) {
       case 'pt-BR':
@@ -139,10 +140,10 @@ export const NotePrint = forwardRef(function NotePrint(
     if (getFormsPaymentToPrint()[0]?.addon.status) {
       switch (getFormsPaymentToPrint()[0]?.addon.type) {
         case 'fee':
-          type = `Acréscimo ${getFormsPaymentToPrint()[0]?.label}`
+          type = `${i18n.t('surchage')} ${i18n.t(getFormsPaymentToPrint()[0]?.payment)}`
           break
         case 'discount':
-          type = `Desconto ${getFormsPaymentToPrint()[0]?.label}`
+          type = `${i18n.t('discount')} ${i18n.t(getFormsPaymentToPrint()[0]?.payment)}`
           break
       }
     }
@@ -163,7 +164,7 @@ export const NotePrint = forwardRef(function NotePrint(
   }
 
   const getFormsPaymentToPrint = (noCashback = true) => {
-    let formsPayment:  any[] /*CartFormPayment[] */ = []
+    let formsPayment: any[] /*CartFormPayment[] */ = []
     switch (printType) {
       case 'table':
         formsPayment = cart?.command?.opened?.formsPayment ?? []
@@ -233,7 +234,11 @@ export const NotePrint = forwardRef(function NotePrint(
         <Print.Row
           leftClass="complement-space"
           key={complement.id}
-          left={electron && !isGeneric ? `${complement.name}` : `${' '.repeat(3)}${complement.name}`}
+          left={
+            electron && !isGeneric
+              ? `${complement.name}`
+              : `${' '.repeat(3)}${complement.name}`
+          }
         />
         {complement.itens?.map((complementItem: any, index: number) => {
           const complementItemTotal =
@@ -244,7 +249,11 @@ export const NotePrint = forwardRef(function NotePrint(
             <Print.Row
               key={`${complementItem.code}-${index}`}
               leftClass="item-space"
-              left={electron && !isGeneric ? `${complementItem.quantity}X | ${complementItem.name}` : `${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}`}
+              left={
+                electron && !isGeneric
+                  ? `${complementItem.quantity}X | ${complementItem.name}`
+                  : `${' '.repeat(5)}${complementItem.quantity}X | ${complementItem.name}`
+              }
               center=""
               right={`${complementItemTotal} `}
             />
@@ -254,7 +263,9 @@ export const NotePrint = forwardRef(function NotePrint(
     )
   }
 
-  const implementationLayout = (implementation: any /*PizzaImplementationType */) => {
+  const implementationLayout = (
+    implementation: any /*PizzaImplementationType */
+  ) => {
     if (!implementation) {
       return <></>
     }
@@ -262,7 +273,11 @@ export const NotePrint = forwardRef(function NotePrint(
       <Print.Row
         key={implementation.code}
         leftClass="complement-space"
-        left={electron && !isGeneric ? `${implementation.name}` : `${' '.repeat(3)}${implementation.name}`}
+        left={
+          electron && !isGeneric
+            ? `${implementation.name}`
+            : `${' '.repeat(3)}${implementation.name}`
+        }
         right={`${currency({ value: implementation.value, withoutSymbol: true })}`}
       />
     )
@@ -283,11 +298,18 @@ export const NotePrint = forwardRef(function NotePrint(
                 cartItem.details.complements.reduce(
                   (total: any, i: { itens: any[] }) =>
                     total +
-                    i.itens.reduce((acc: any, item: { value: number, quantity: number }) => acc + (item.value * item.quantity), 0),
+                    i.itens.reduce(
+                      (
+                        acc: any,
+                        item: { value: number; quantity: number }
+                      ) => acc + item.value * item.quantity,
+                      0
+                    ),
                   0
                 ) -
                 cartItem.details.implementations.reduce(
-                  (total: any, implementation: { value: any }) => total + implementation.value,
+                  (total: any, implementation: { value: any }) =>
+                    total + implementation.value,
                   0
                 )
                 : cartItem.details.value,
@@ -312,6 +334,9 @@ export const NotePrint = forwardRef(function NotePrint(
             'g'
           )
           : ''
+      // if (cartItem.type === 'pizza') {
+      //   console.log(cartItem.name.replace(regex, flavorsString), regex)
+      // }
       const cartItemName =
         cartItem.type === 'default'
           ? cartItem.name
@@ -327,20 +352,34 @@ export const NotePrint = forwardRef(function NotePrint(
               {cartItem.details.implementations?.map((implementatiton: any) =>
                 implementationLayout(implementatiton)
               )}
-              {cartItem.details.flavors?.map((flavor: { code: any; name: any; complements: any[]; implementations: any[] }, index: any) => (
-                <Fragment key={`${flavor.code}-${index}`}>
-                  <Print.Row
-                    leftClass="complement-space"
-                    left={electron && !isGeneric ? `${flavor.name}` : `${' '.repeat(3)}${flavor.name}`}
-                  />
-                  {flavor.complements?.map((complement: any) =>
-                    complementLayout(complement)
-                  )}
-                  {flavor.implementations?.map((implementatiton: any) =>
-                    implementationLayout(implementatiton)
-                  )}
-                </Fragment>
-              ))}
+              {cartItem.details.flavors?.map(
+                (
+                  flavor: {
+                    code: any
+                    name: any
+                    complements: any[]
+                    implementations: any[]
+                  },
+                  index: any
+                ) => (
+                  <Fragment key={`${flavor.code}-${index}`}>
+                    <Print.Row
+                      leftClass="complement-space"
+                      left={
+                        electron && !isGeneric
+                          ? `${flavor.name}`
+                          : `${' '.repeat(3)}${flavor.name}`
+                      }
+                    />
+                    {flavor.complements?.map((complement: any) =>
+                      complementLayout(complement)
+                    )}
+                    {flavor.implementations?.map((implementatiton: any) =>
+                      implementationLayout(implementatiton)
+                    )}
+                  </Fragment>
+                )
+              )}
             </>
           )}
           {(cartItem.type === 'default' ||
@@ -349,7 +388,10 @@ export const NotePrint = forwardRef(function NotePrint(
               complementLayout(complement)
             )}
           {cartItem.obs.length > 0 && (
-            <Print.Row className="observation-space" left={`Obs: ${cartItem.obs}`} />
+            <Print.Row
+              className="observation-space"
+              left={`Obs: ${cartItem.obs}`}
+            />
           )}
           {
             <Print.Row
@@ -395,7 +437,11 @@ export const NotePrint = forwardRef(function NotePrint(
         if (cart.command) {
           result = cart.command.carts
             .filter((c: { status: string }) => c.status !== 'canceled')
-            .reduce((total: any, cart: { transshipment: () => any }) => (total += cart.transshipment()), 0)
+            .reduce(
+              (total: any, cart: { transshipment: () => any }) =>
+                (total += cart.transshipment()),
+              0
+            )
         }
         break
       case 'table':
@@ -404,7 +450,11 @@ export const NotePrint = forwardRef(function NotePrint(
             .activeCommands()
             .flatMap((command: { carts: any }) => command.carts)
             .filter((c: { status: any }) => c.status)
-            .reduce((total: any, cart: { transshipment: () => any }) => (total += cart.transshipment()), 0)
+            .reduce(
+              (total: any, cart: { transshipment: () => any }) =>
+                (total += cart.transshipment()),
+              0
+            )
         }
         break
       default:
@@ -417,13 +467,12 @@ export const NotePrint = forwardRef(function NotePrint(
   const tax = () => {
     let verifyNeighborood
     if (profile.typeDelivery === 'neighborhood') {
-      verifyNeighborood = (
-        profile.taxDelivery as any[] //ProfileTaxDeliveryNeighborhood[]
-      ).map((tax) => {
-        return tax?.neighborhoods.filter(
-          (n: { name: any }) => n.name === cart?.address?.neighborhood
-        )
-      })
+      verifyNeighborood = (profile.taxDelivery as any[]) //ProfileTaxDeliveryNeighborhood[]
+        .map((tax) => {
+          return tax?.neighborhoods.filter(
+            (n: { name: any }) => n.name === cart?.address?.neighborhood
+          )
+        })
       if (verifyNeighborood[0][0]?.value === null) {
         return 'À Consultar'
       } else {
@@ -487,10 +536,55 @@ export const NotePrint = forwardRef(function NotePrint(
     }
   }
 
-  const commandWithNfce = table?.opened?.commands.flatMap((command: { carts: any[] }) => command.carts.filter((cartFilter: { command: { id: any }; controls: { grovenfe: any } }) => cartFilter.command?.id === cart.command?.id && cartFilter.controls.grovenfe))
+  const typeDeliveryText = ({ textPackage, textOnly, language, cart }: { textPackage: string, textOnly?: false, language: string | 'pt-BR', cart: any }) => {
+    if (textPackage === 'Agendamentos') {
+      textPackage = 'Encomendas'
+    }
 
-  const tableWithNfce = table?.activeCommands().flatMap((command: { carts: any[] }) => command.carts.filter((cartFilter: { controls: { grovenfe: any } }) => cartFilter.controls.grovenfe))
+    console.log(textPackage)
+    let textDelivery = ''
+    i18n.changeLanguage(language)
+    switch (cart.type) {
+      case 'D':
+        textDelivery =
+          cart.address && !textOnly
+            ? `**Delivery**\n\r`
+            : `**${i18n.t('pickup_the_location')}**`
+        break
+      case 'P':
+        textDelivery =
+          cart.address && !textOnly
+            ? `**${textPackage}**\r\n`
+            : `**${i18n.t('pickup_the_location')}**`
+        break
+      case 'T':
+        textDelivery = `**${i18n.t('table_request')}**`
+        break
+    }
 
+    return textDelivery
+  }
+
+
+  const commandWithNfce = table?.opened?.commands.flatMap(
+    (command: { carts: any[] }) =>
+      command.carts.filter(
+        (cartFilter: { command: { id: any }; controls: { grovenfe: any } }) =>
+          cartFilter.command?.id === cart.command?.id &&
+          cartFilter.controls.grovenfe
+      )
+  )
+
+  const tableWithNfce = table
+    ?.activeCommands()
+    .flatMap((command: { carts: any[] }) =>
+      command.carts.filter(
+        (cartFilter: { controls: { grovenfe: any } }) =>
+          cartFilter.controls.grovenfe
+      )
+    )
+
+  i18n.changeLanguage(profile.options?.locale?.language ?? 'pt-BR')
   return (
     <Print.Root
       ref={ref}
@@ -513,44 +607,47 @@ export const NotePrint = forwardRef(function NotePrint(
       <Print.Row center={profile.name} className="print-title" />
       <Print.Breakline />
       <Print.Row
-        left={DateTime.fromSQL(cart.created_at, { zone: 'America/Sao_Paulo' })
+        left={DateTime.fromSQL(cart.created_at, {
+          zone: profile.timeZone ?? 'America/Sao_Paulo',
+        })
           .setZone(profile.timeZone)
-          .toFormat('dd/MM/yyyy HH:mm:ss')
+          .toFormat(`${i18n.t('date_format')} HH:mm:ss`)
           .trim()}
       />
       {!printType && (
         <Print.Row
-          left={`Pedido: wm${cart.code}-${cart.type} ${cart.status === 'canceled' ? ' (CANCELADO)' : ''}`}
+          left={`${i18n.t('order')}: wm${cart.code}-${cart.type} ${cart.status === 'canceled' ? ` (${i18n.t('cancelled_up')})` : ''}`}
         />
       )}
       {cart.type === 'T' ? (
         <Print.Row
-          left={`Mesa: ${table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), ' (Desativada)') : table?.name}`}
+          left={`${i18n.t('table')}: ${table?.deleted_at ? table?.name.replace(table?.name.substring(table?.name.length - 25), ` (${i18n.t('disabled')})`) : table?.name}`}
         />
       ) : null}
       <Print.Row
-        left={`${printType === 'command' || cart.type === 'T' ? 'Comanda' : 'Cliente'}: ${cart.nameClient()} `}
+        left={`${printType === 'command' || cart.type === 'T' ? i18n.t('order_slip') : i18n.t('client')}: ${cart.nameClient()} `}
       />
 
       {cart.type === 'T' && !printType && cart.bartender && (
         <Print.Row
-          left={`Garçom: ${cart.bartender.deleted_at
+          left={`${i18n.t('waiter')}: ${cart.bartender.deleted_at
             ? cart.bartender.name.replace(
               cart.bartender.name.substring(
                 cart.bartender.name.length - 19
               ),
-              ' (Desativado)'
+              ` (${i18n.t('disabled')})`
             )
             : cart.bartender.name
-
             }`}
         />
       )}
       {cart.type === 'P' && (
-        <Print.Row left={`Data Entrega: ${cart.date().formatted}`} />
+        <Print.Row
+          left={`${i18n.t('delivery_date')}: ${cart.date().formatted}`}
+        />
       )}
       {cart.type !== 'T' && cart.client !== null && (
-        <Print.Row left={`Tel: ${cart.returnMaskedContact()}`} />
+        <Print.Row left={`${i18n.t('ph')}: ${cart.returnMaskedContact()}`} />
       )}
       {cart.origin === 'ifood' && (
         <Print.Row left={`Código localizador: ${cart.client.codeLocalizer}`} />
@@ -562,21 +659,32 @@ export const NotePrint = forwardRef(function NotePrint(
       )}
       {printType === 'table' && (
         <Print.Row
-          left={`Permanência: ${cart.permenance(false, table?.opened)}`}
+          left={`${i18n.t('duration')}: ${cart.permenance(false, table?.opened)}`}
         />
       )}
       <Print.LineSeparator />
       {detailedTable
-        ? table?.opened?.getCarts()?.map((cart: { status: string; code: any; type: any; groupItens: (arg0: any) => any[] }) => {
-          return cart.status !== 'canceled' ? (
-            <>
-              <Print.Row left={`Pedido: wm${cart.code}-${cart.type}`} />
-              {getItemsToPrint(
-                cart.groupItens(profile.options.print.groupItems)
-              )}
-            </>
-          ) : null
-        })
+        ? table?.opened
+          ?.getCarts()
+          ?.map(
+            (cart: {
+              status: string
+              code: any
+              type: any
+              groupItens: (arg0: any) => any[]
+            }) => {
+              return cart.status !== 'canceled' ? (
+                <>
+                  <Print.Row
+                    left={`${i18n.t('order')}: wm${cart.code}-${cart.type}`}
+                  />
+                  {getItemsToPrint(
+                    cart.groupItens(profile.options.print.groupItems)
+                  )}
+                </>
+              ) : null
+            }
+          )
         : getItemsToPrint(getItens())}
       {(printType === 'command' || printType === 'table') && (
         <>
@@ -615,23 +723,40 @@ export const NotePrint = forwardRef(function NotePrint(
           <>
             {table?.opened?.commands
               .filter(
-                (command: { carts: { filter: (arg0: (c: any) => boolean) => { (): any; new(): any; length: any } } }) =>
-                  command.carts.filter((c: { status: string }) => c.status !== 'canceled').length
+                (command: {
+                  carts: {
+                    filter: (arg0: (c: any) => boolean) => {
+                      (): any
+                      new(): any
+                      length: any
+                    }
+                  }
+                }) =>
+                  command.carts.filter(
+                    (c: { status: string }) => c.status !== 'canceled'
+                  ).length
               )
-              ?.map((command: { getTotalValue: (arg0: string) => any; id: Key | null | undefined; name: any; fullPaid: () => any }) => {
-                const commandTotalValue = currency({
-                  value: command.getTotalValue('command'),
-                  withoutSymbol: true,
-                })
-                return (
-                  <Print.Row
-                    key={command.id}
-                    left={`${command.name} `}
-                    center={`${command.fullPaid() ? ' PAGO ' : ''}`}
-                    right={` ${commandTotalValue}`}
-                  />
-                )
-              })}
+              ?.map(
+                (command: {
+                  getTotalValue: (arg0: string) => any
+                  id: Key | null | undefined
+                  name: any
+                  fullPaid: () => any
+                }) => {
+                  const commandTotalValue = currency({
+                    value: command.getTotalValue('command'),
+                    withoutSymbol: true,
+                  })
+                  return (
+                    <Print.Row
+                      key={command.id}
+                      left={`${command.name} `}
+                      center={`${command.fullPaid() ? ` ${i18n.t('paid_up')} ` : ''}`}
+                      right={` ${commandTotalValue}`}
+                    />
+                  )
+                }
+              )}
             <Print.LineSeparator />
           </>
         )}
@@ -660,7 +785,7 @@ export const NotePrint = forwardRef(function NotePrint(
         />
         {cart.address && cart.type !== 'T' && (
           <Print.Row
-            left={`Taxa Entrega:`}
+            left={`${i18n.t('delivery_fee')}:`}
             right={
               cart.origin === 'ifood'
                 ? `${currency({ value: cart.taxDelivery, withoutSymbol: true })}`
@@ -682,7 +807,7 @@ export const NotePrint = forwardRef(function NotePrint(
         )}
         {cart.cupom && (
           <Print.Row
-            left={`Cupom:`}
+            left={`${i18n.t('coupon')}:`}
             right={`-${cart.origin === 'ifood' ? cart.cupom.value : getCupomValue().cupomDisplayValue}`}
           />
         )}
@@ -700,15 +825,16 @@ export const NotePrint = forwardRef(function NotePrint(
         />
         {haveTransshipment &&
           cart.formsPayment.filter(
-            (formPayment: { payment: string }) => formPayment.payment !== 'cashback'
+            (formPayment: { payment: string }) =>
+              formPayment.payment !== 'cashback'
           ).length ? (
           <>
             <Print.Row
-              left={`Troco para:`}
+              left={`${i18n.t('change_for')}:`}
               right={`${currency({ value: getTransshipment(), withoutSymbol: true })}`}
             />
             <Print.Row
-              left={`Troco:`}
+              left={`${i18n.t('change')}:`}
               right={`${currency({ value: Math.max(getTransshipment() - getTotal('total'), 0), withoutSymbol: true })}`}
             />
           </>
@@ -720,24 +846,36 @@ export const NotePrint = forwardRef(function NotePrint(
           <>
             {getFormsPaymentToPrint()[0] ? (
               <Print.Row
-                left={`Pagamento em:`}
-                right={`${getFormsPaymentToPrint()[0]?.label}${(typeof getFormsPaymentToPrint()[0]?.flag === 'string' ? getFormsPaymentToPrint()[0]?.flag : getFormsPaymentToPrint()[0]?.flag?.name) ? ' - ' + (typeof getFormsPaymentToPrint()[0]?.flag === 'string' ? getFormsPaymentToPrint()[0]?.flag : getFormsPaymentToPrint()[0]?.flag?.name) : ''}`}
+                left={`${i18n.t('payment_in')}:`}
+                right={`${i18n.t(getFormsPaymentToPrint()[0]?.payment)}${(typeof getFormsPaymentToPrint()[0]?.flag === 'string' ? getFormsPaymentToPrint()[0]?.flag : getFormsPaymentToPrint()[0]?.flag?.name) ? ' - ' + (typeof getFormsPaymentToPrint()[0]?.flag === 'string' ? getFormsPaymentToPrint()[0]?.flag : getFormsPaymentToPrint()[0]?.flag?.name) : ''}`}
               />
             ) : null}
           </>
         ) : (
           <>
-            <Print.Row left={`Total Pago:`} right={`${getPaidValue()}`} />
-            <Print.Row left={`Formas de pagamento:`} />
-            {table?.opened?.formsPayment?.map((formPayment: { code: Key | null | undefined; label: string | undefined; value: any }) => {
-              return (
-                <Print.Row
-                  key={formPayment.code}
-                  left={formPayment.label}
-                  right={currency({ value: formPayment.value, withoutSymbol: true })}
-                />
-              )
-            })}
+            <Print.Row
+              left={`${i18n.t('total_paid')}:`}
+              right={`${getPaidValue()}`}
+            />
+            <Print.Row left={`${i18n.t('payment_methods_n')}:`} />
+            {table?.opened?.formsPayment?.map(
+              (formPayment: {
+                code: Key | null | undefined
+                payment: string | ''
+                value: any
+              }) => {
+                return (
+                  <Print.Row
+                    key={formPayment.code}
+                    left={i18n.t(formPayment.payment)}
+                    right={currency({
+                      value: formPayment.value,
+                      withoutSymbol: true,
+                    })}
+                  />
+                )
+              }
+            )}
 
             {getFormsPaymentToPrint()?.map((formPayment, index) => {
               return (
@@ -745,14 +883,13 @@ export const NotePrint = forwardRef(function NotePrint(
                   <Print.Row
                     key={`${formPayment.code}-${index}`}
                     leftClass="transshipment-space"
-                    left={`${formPayment.change ? 'Troco para' : formPayment.label}${formPayment.flag && formPayment.flag.name ? ' - ' + formPayment.flag.name : ''}`}
+                    left={`${formPayment.change ? i18n.t('change_for') : i18n.t(formPayment.payment)}${formPayment.flag && formPayment.flag.name ? ' - ' + formPayment.flag.name : ''}`}
                     right={`${currency({ value: formPayment.change ?? formPayment.value, withoutSymbol: true })}`}
                   />
                   {formPayment.change ? (
                     <>
-                      {/* <Print.Row left={`  Troco para`} leftClass='transshipment-space' right={`${currency({ value: formPayment.change, withoutSymbol: true })}`} /> */}
                       <Print.Row
-                        left={`  Troco`}
+                        left={`  ${i18n.t('change')}`}
                         leftClass="transshipment-space"
                         right={`${currency({ value: formPayment.change - formPayment.value, withoutSymbol: true })}`}
                       />
@@ -762,11 +899,14 @@ export const NotePrint = forwardRef(function NotePrint(
               )
             })}
             {Number(getLackValue()) > 0 && (
-              <Print.Row left={`Faltam:`} right={`${getLackValue()}`} />
+              <Print.Row
+                left={`${i18n.t('missing')}:`}
+                right={`${getLackValue()}`}
+              />
             )}
             {cart.getTotalValue('paid') - cart.getTotalValue('total') > 0 && (
               <Print.Row
-                left={'Fechamento:'}
+                left={`${i18n.t('checkout')}:`}
                 right={`${currency({ value: cart.getTotalValue('paid') - cart.getTotalValue('total'), withoutSymbol: true })}`}
               />
             )}
@@ -782,7 +922,9 @@ export const NotePrint = forwardRef(function NotePrint(
             right={(cart.controls as any).pickupCode}
           />
         )}
-        {cart.statusPayment === 'paid' && <Print.Row center="PAGO ONLINE" />}
+        {cart.statusPayment === 'paid' && (
+          <Print.Row center={i18n.t('paid_online_up')} />
+        )}
         {/* )} */}
         <Print.LineSeparator />
       </>
@@ -800,155 +942,168 @@ export const NotePrint = forwardRef(function NotePrint(
           )}
           {cart && cart.motoboyId && (
             <Print.Row
-              left={`Entregador: ${electron ? cart.motoboy?.name : motoboys?.find((motoboy) => motoboy.id === cart.motoboyId)?.name}`}
+              left={`${i18n.t('delivery_person')}: ${electron ? cart.motoboy?.name : motoboys?.find((motoboy) => motoboy.id === cart.motoboyId)?.name}`}
             />
           )}
           <Print.LineSeparator />
         </>
       ) : null}
       <>
-        {(cart.controls.grovenfe?.fiscal_note?.aditional_info?.qrcode_url && printType !== 'command' && printType !== 'table') && (
-          <>
-            <Print.Breakline />
-            <Print.Row center="Consulte pela Chave de Acesso em:" />
-            <Print.Row
-              className="longText"
-              left={
-                cart.controls.grovenfe?.fiscal_note?.aditional_info
-                  ?.url_consulta_nf
-              }
-            />
-            <Print.Breakline />
-            <Print.Row center="Chave de Acesso:" />
-            <Print.Row
-              center={cart.controls.grovenfe?.fiscal_note?.aditional_info?.chave_nfe?.replace(
-                'NFe',
-                ''
+        {cart.controls.grovenfe?.fiscal_note?.aditional_info?.qrcode_url &&
+          printType !== 'command' &&
+          printType !== 'table' && (
+            <>
+              <Print.Breakline />
+              <Print.Row center="Consulte pela Chave de Acesso em:" />
+              <Print.Row
+                className="longText"
+                left={
+                  cart.controls.grovenfe?.fiscal_note?.aditional_info
+                    ?.url_consulta_nf
+                }
+              />
+              <Print.Breakline />
+              <Print.Row center="Chave de Acesso:" />
+              <Print.Row
+                center={cart.controls.grovenfe?.fiscal_note?.aditional_info?.chave_nfe?.replace(
+                  'NFe',
+                  ''
+                )}
+              />
+              <Print.Breakline />
+              <Print.Row center="Protocolo:" />
+              <Print.Row
+                center={
+                  cart.controls.grovenfe?.fiscal_note?.aditional_info?.protocolo
+                }
+              />
+              <Print.Row
+                center={DateTime.fromISO(
+                  cart.controls.grovenfe?.fiscal_note?.created_at,
+                  { zone: 'America/Sao_Paulo' }
+                )
+                  .setZone(profile.timeZone)
+                  .toFormat('dd/MM/yyyy HH:mm:ss')
+                  .trim()}
+              />
+              <Print.Breakline />
+              {!profile.options?.print.textOnly && (
+                <>
+                  <Print.Row center="Consulta via leitor de QR Code:" />
+                  <Print.Breakline />
+                  <Print.Row
+                    className="d-flex justify-content-center"
+                    children_controls="mid"
+                  >
+                    <QRCodeCanvas
+                      value={
+                        cart.controls.grovenfe?.fiscal_note?.aditional_info
+                          .qrcode_url
+                      }
+                      size={200}
+                    />
+                  </Print.Row>
+                  <Print.Breakline />
+                </>
               )}
-            />
-            <Print.Breakline />
-            <Print.Row center="Protocolo:" />
-            <Print.Row
-              center={
-                cart.controls.grovenfe?.fiscal_note?.aditional_info?.protocolo
-              }
-            />
-            <Print.Row
-              center={DateTime.fromISO(
-                cart.controls.grovenfe?.fiscal_note?.created_at,
-                { zone: 'America/Sao_Paulo' }
-              )
-                .setZone(profile.timeZone)
-                .toFormat('dd/MM/yyyy HH:mm:ss')
-                .trim()}
-            />
-            <Print.Breakline />
-            {!profile.options?.print.textOnly && (
-              <>
-                <Print.Row center="Consulta via leitor de QR Code:" />
-                <Print.Breakline />
-                <Print.Row
-                  className="d-flex justify-content-center"
-                  children_controls="mid"
-                >
-                  <QRCodeSVG
-                    value={
-                      cart.controls.grovenfe?.fiscal_note?.aditional_info
-                        .qrcode_url
-                    }
-                    size={paperSize === 58 ? 150 : 200}
-                  />
-                </Print.Row>
-                <Print.Breakline />
-              </>
-            )}
-          </>
-        )}
-        {(commandWithNfce && commandWithNfce?.length > 0) && printType === 'command' && (
-          <>
-            <Print.Row center="IMPRESSÃO COMANDA" />
-            <Print.Breakline />
-            <Print.Row center="Consulte pela Chave de Acesso em:" />
-            <Print.Row
-              className="longText"
-              left={
-                commandWithNfce[0]?.controls.grovenfe?.fiscal_note
-                  ?.aditional_info?.url_consulta_nf
-              }
-            />
-            <Print.Breakline />
-            <Print.Row center="Chave de Acesso:" />
-            <Print.Row
-              center={commandWithNfce[0]?.controls.grovenfe?.fiscal_note?.aditional_info?.chave_nfe?.replace(
-                'NFe',
-                ''
-              )
-              }
-            />
-            <Print.Breakline />
-            <Print.Row center="Protocolo:" />
-            <Print.Row
-              center={
-                commandWithNfce[0]?.controls.grovenfe?.fiscal_note?.aditional_info?.protocolo
-              }
-            />
-            <Print.Row
-              center={DateTime.fromISO(
-                commandWithNfce[0]?.controls.grovenfe?.fiscal_note?.created_at,
-                { zone: 'America/Sao_Paulo' }
-              )
-                .setZone(profile.timeZone)
-                .toFormat('dd/MM/yyyy HH:mm:ss')
-                .trim()}
-            />
-            <Print.Breakline />
-          </>
-        )}
-        {(tableWithNfce && tableWithNfce?.length > 0) && printType === 'table' && (
-          <>
-            <Print.Row center="IMPRESSÃO MESA" />
-            <Print.Breakline />
-            <Print.Row center="Consulte pela Chave de Acesso em:" />
-            <Print.Row
-              className="longText"
-              left={
-                tableWithNfce[0]?.controls.grovenfe?.fiscal_note
-                  ?.aditional_info?.url_consulta_nf
-              }
-            />
-            <Print.Breakline />
-            <Print.Row center="Chave de Acesso:" />
-            <Print.Row
-              center={tableWithNfce[0]?.controls.grovenfe?.fiscal_note?.aditional_info?.chave_nfe?.replace(
-                'NFe',
-                ''
-              )
-              }
-            />
-            <Print.Breakline />
-            <Print.Row center="Protocolo:" />
-            <Print.Row
-              center={
-                tableWithNfce[0]?.controls.grovenfe?.fiscal_note?.aditional_info?.protocolo
-              }
-            />
-            <Print.Row
-              center={DateTime.fromISO(
-                tableWithNfce[0]?.controls.grovenfe?.fiscal_note?.created_at,
-                { zone: 'America/Sao_Paulo' }
-              )
-                .setZone(profile.timeZone)
-                .toFormat('dd/MM/yyyy HH:mm:ss')
-                .trim()}
-            />
-            <Print.Breakline />
-          </>
-        )}
+            </>
+          )}
+        {commandWithNfce &&
+          commandWithNfce?.length > 0 &&
+          printType === 'command' && (
+            <>
+              <Print.Row center="IMPRESSÃO COMANDA" />
+              <Print.Breakline />
+              <Print.Row center="Consulte pela Chave de Acesso em:" />
+              <Print.Row
+                className="longText"
+                left={
+                  commandWithNfce[0]?.controls.grovenfe?.fiscal_note
+                    ?.aditional_info?.url_consulta_nf
+                }
+              />
+              <Print.Breakline />
+              <Print.Row center="Chave de Acesso:" />
+              <Print.Row
+                center={commandWithNfce[0]?.controls.grovenfe?.fiscal_note?.aditional_info?.chave_nfe?.replace(
+                  'NFe',
+                  ''
+                )}
+              />
+              <Print.Breakline />
+              <Print.Row center="Protocolo:" />
+              <Print.Row
+                center={
+                  commandWithNfce[0]?.controls.grovenfe?.fiscal_note
+                    ?.aditional_info?.protocolo
+                }
+              />
+              <Print.Row
+                center={DateTime.fromISO(
+                  commandWithNfce[0]?.controls.grovenfe?.fiscal_note
+                    ?.created_at,
+                  { zone: 'America/Sao_Paulo' }
+                )
+                  .setZone(profile.timeZone)
+                  .toFormat('dd/MM/yyyy HH:mm:ss')
+                  .trim()}
+              />
+              <Print.Breakline />
+            </>
+          )}
+        {tableWithNfce &&
+          tableWithNfce?.length > 0 &&
+          printType === 'table' && (
+            <>
+              <Print.Row center="IMPRESSÃO MESA" />
+              <Print.Breakline />
+              <Print.Row center="Consulte pela Chave de Acesso em:" />
+              <Print.Row
+                className="longText"
+                left={
+                  tableWithNfce[0]?.controls.grovenfe?.fiscal_note
+                    ?.aditional_info?.url_consulta_nf
+                }
+              />
+              <Print.Breakline />
+              <Print.Row center="Chave de Acesso:" />
+              <Print.Row
+                center={tableWithNfce[0]?.controls.grovenfe?.fiscal_note?.aditional_info?.chave_nfe?.replace(
+                  'NFe',
+                  ''
+                )}
+              />
+              <Print.Breakline />
+              <Print.Row center="Protocolo:" />
+              <Print.Row
+                center={
+                  tableWithNfce[0]?.controls.grovenfe?.fiscal_note
+                    ?.aditional_info?.protocolo
+                }
+              />
+              <Print.Row
+                center={DateTime.fromISO(
+                  tableWithNfce[0]?.controls.grovenfe?.fiscal_note?.created_at,
+                  { zone: 'America/Sao_Paulo' }
+                )
+                  .setZone(profile.timeZone)
+                  .toFormat('dd/MM/yyyy HH:mm:ss')
+                  .trim()}
+              />
+              <Print.Breakline />
+            </>
+          )}
         <Print.Row
-          center={`${cart?.typeDeliveryText(textPackage)}`}
+          center={`${typeDeliveryText({ textPackage, language: i18n.language, cart })}`}
         />
-        <Print.Row center="Tecnologia" />
-        <Print.Row center="www.whatsmenu.com.br" />
+        <Print.Row center={i18n.t('technology')} />
+        <Print.Row
+          center={
+            i18n.language === 'pt-BR'
+              ? 'www.whatsmenu.com.br'
+              : 'www.whatsmenu.pro'
+          }
+        />
       </>
       {profile.options.print.textOnly && !profile.options.print.web && (
         <>
