@@ -246,7 +246,8 @@ ipcMain.on("print", async (_, serializedPayload) => {
               command: envPayload.command ? new Command(envPayload.command as any) : undefined,
               electron: true,
               html: true,
-              motoboys: []
+              motoboys: [],
+              isGeneric
             }
           )
 
