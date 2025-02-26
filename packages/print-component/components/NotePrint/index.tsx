@@ -6,6 +6,7 @@ import i18n from '../../../i18n'
 import { QRCodeCanvas } from 'qrcode.react'
 import { Print } from '../Print'
 import { currency } from '../../utils/currency'
+import Cart from '../../../entities/cart'
 
 export interface NotePrintProps {
   profile: any //Profile
@@ -35,7 +36,6 @@ export const NotePrint = forwardRef(function NotePrint(
     electron,
     paperSize,
     motoboys = [],
-    textPackage,
     isGeneric,
   }: NotePrintProps,
   ref: Ref<HTMLPreElement>
@@ -536,12 +536,17 @@ export const NotePrint = forwardRef(function NotePrint(
     }
   }
 
-  const typeDeliveryText = ({ textPackage, textOnly, language, cart }: { textPackage: string, textOnly?: false, language: string | 'pt-BR', cart: any }) => {
-    if (textPackage === 'Agendamentos') {
-      textPackage = 'Encomendas'
-    }
-
-    console.log(textPackage)
+  /**
+   * Retorna uma string formatada que descreve o tipo de entrega com base no tipo de pedido.
+   * 
+   * @param {object} params - Parâmetros para a função.
+   * @param {boolean} [params.textOnly=false] - Indica se apenas o texto deve ser retornado sem formatação de endereço.
+   * @param {string} params.language - Idioma para internacionalização.
+   * @param {Cart} params.cart - Objeto de pedido que contém informações sobre o tipo e endereço.
+   * 
+   * @returns {string} Texto formatado descrevendo o tipo de entrega.
+   */
+  const typeDeliveryText = ({ textOnly, language, cart }: { textOnly?: false, language: string | 'pt-BR', cart: Cart }) => {
     let textDelivery = ''
     i18n.changeLanguage(language)
     switch (cart.type) {
@@ -554,7 +559,7 @@ export const NotePrint = forwardRef(function NotePrint(
       case 'P':
         textDelivery =
           cart.address && !textOnly
-            ? `**${textPackage}**\r\n`
+            ? `**${i18n.t('package')}**\r\n`
             : `**${i18n.t('pickup_the_location')}**`
         break
       case 'T':
@@ -1094,7 +1099,7 @@ export const NotePrint = forwardRef(function NotePrint(
             </>
           )}
         <Print.Row
-          center={`${typeDeliveryText({ textPackage, language: i18n.language, cart })}`}
+          center={`${typeDeliveryText({ language: i18n.language, cart })}`}
         />
         <Print.Row center={i18n.t('technology')} />
         <Print.Row
