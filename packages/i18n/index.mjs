@@ -7,6 +7,7 @@ import { initReactI18next } from "react-i18next";
 // src/locales/ar-AE.json
 var ar_AE_default = {
   country_code: "971",
+  neighborhoods: false,
   toMiles: false,
   masks: {
     mi: "KM",
@@ -1595,6 +1596,7 @@ var ar_AE_default = {
 var en_GB_default = {
   country_code: "44",
   showLocale: false,
+  neighborhoods: true,
   masks: {
     phone: "000 0000 0000",
     cell: "000 0000 0000",
@@ -6510,6 +6512,7 @@ var fr_CH_default = {
 
 // src/locales/pt-BR.json
 var pt_BR_default = {
+  neighborhoods: true,
   country_code: "55",
   showLocale: true,
   masks: {
