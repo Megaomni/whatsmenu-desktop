@@ -2,6 +2,8 @@ name: Build/release WhatsMenu Desktop
 
 on:
   push:
+    branches:
+      - build/1.6.6
     tags:
       - v*.*.*
 
