@@ -9,6 +9,7 @@ var ar_AE_default = {
   country_code: "971",
   neighborhoods: false,
   toMiles: false,
+  currency_config_up: "AED",
   masks: {
     mi: "KM",
     phone: "00 000 0000",
@@ -1597,6 +1598,7 @@ var en_GB_default = {
   country_code: "44",
   showLocale: false,
   neighborhoods: true,
+  currency_config_up: "GBP",
   masks: {
     phone: "000 0000 0000",
     cell: "000 0000 0000",
@@ -3193,6 +3195,7 @@ var en_US_default = {
   country_code: "1",
   toMiles: true,
   neighborhoods: false,
+  currency_config_up: "USD",
   masks: {
     phone: "(000) 0000-0000",
     cell: "(000) 000-0000",
@@ -4908,6 +4911,7 @@ var fr_CH_default = {
   country_code: "41",
   toMiles: false,
   neighborhoods: true,
+  currency_config_up: "CHF",
   masks: {
     mi: "KM",
     phone: "00 000 00 00",
@@ -6514,6 +6518,7 @@ var fr_CH_default = {
 var pt_BR_default = {
   neighborhoods: true,
   country_code: "55",
+  currency_config_up: "BRL",
   showLocale: true,
   masks: {
     mi: "KM",
@@ -8234,6 +8239,7 @@ var pt_PT_default = {
   country_code: "351",
   toMiles: false,
   neighborhoods: true,
+  currency_config_up: "EUR",
   masks: {
     phone: "000 000 000",
     cell: "000 000 000",
