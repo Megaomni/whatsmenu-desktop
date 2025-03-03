@@ -16,10 +16,10 @@ export const getMerchantApi = async ({
     if (!profile) {
       throw new Error("Perfil não encontrado!");
     }
-    // const { data } = await whatsmenu_api_v3.get(
-    //   `/ifood/merchant?slug=${profile.slug}`,
-    // );
-    // store.set("configs.merchant", data);
+    const { data } = await whatsmenu_api_v3.get(
+      `/ifood/merchant?slug=${profile.slug}`,
+    );
+    store.set("configs.merchant", data);
   } catch (error) {
     throw error;
   }
