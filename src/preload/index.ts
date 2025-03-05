@@ -74,7 +74,8 @@ export const DesktopApi = {
     ipcRenderer.send("removeUsedVoucher", voucher),
   removeCanceledVoucher: (voucherId: number) =>
     ipcRenderer.send("removeCanceledVoucher", voucherId),
-
+  setUserControls: (userControls: any) =>
+    ipcRenderer.send("setUserControls", userControls),
   storeProfile: (profile: ProfileType, updateBot: boolean) =>
     ipcRenderer.send("storeProfile", profile, updateBot),
   storeMerchant: (merchant: MerchantType) =>

@@ -1,16 +1,14 @@
 import { app, autoUpdater, dialog } from "electron";
 import { mainWindow } from ".";
-import { getProfile } from "./store";
+import { getUserControls } from "./store";
 import { tabsWindow } from "../windows/tabs-window";
-import { whatsmenu_api_v3 } from "../lib/axios";
 
 
 let url = "https://whatsmenu-desktop-update-server.vercel.app"
 const checkForUpdates = async () => {
   try {
-    const profileId = getProfile().id;
-    const response = await whatsmenu_api_v3.get(`/user/${profileId}`);
-    const server = response.data === 'staging' ? "https://whatsmenu-desktop-update-server-beta.vercel.app" : "https://whatsmenu-desktop-update-server.vercel.app";
+    const beta = getUserControls().beta;
+    const server = beta && beta === 'staging' ? "https://whatsmenu-desktop-update-server-beta.vercel.app" : "https://whatsmenu-desktop-update-server.vercel.app";
     return `${server}/update/${process.platform}/${app.getVersion()}`;
   } catch (error) {
     console.error(error);
@@ -23,6 +21,8 @@ checkForUpdates().then((result) => {
   const UPDATE_CHECK_INTERVAL = 1000 * 60;
 
   const isMac = process.platform === "darwin";
+
+  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX URL:", url);
 
   if (!isMac) {
     autoUpdater.setFeedURL({ url });
