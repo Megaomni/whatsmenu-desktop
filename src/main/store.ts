@@ -70,6 +70,9 @@ export const store = new ElectronStore<Store>({
     "1.6.1": (store) => {
       store.set("configs.printing.proPrint", false);
     },
+    "1.6.6": (store) => {
+      store.set("configs.userControls", {});
+    },
   },
   defaults: {
     configs: {
@@ -122,6 +125,14 @@ export const getCategories = () => {
     "configs.productCategories"
   );
   return categories;
+}
+
+export const getUserControls = () =>
+  store.get<"configs.userControls", any>("configs.userControls");
+
+export const setUserControls = (userControls: any) => {
+  console.log("XXXXX entrou", userControls.beta);
+  store.set("configs.userControls", userControls);
 }
 
 export const getProPrint = () =>
@@ -254,7 +265,7 @@ export const setCacheContactList = (cacheContact: CacheContact) =>
 export const setContactWelcomeMessage = (whatsapp: string) => {
   const allContacts = getCacheContactList();
   const cacheFiltered = allContacts.map(
-    (contact) => contact?.contact === whatsapp ? {...contact, messageType: "welcome"} : contact
+    (contact) => contact?.contact === whatsapp ? { ...contact, messageType: "welcome" } : contact
   )
   // const selectedContact = allContacts.find(
   //   (contact) => contact?.contact === cacheContact?.contact
