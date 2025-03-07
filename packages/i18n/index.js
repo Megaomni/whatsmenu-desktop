@@ -415,7 +415,6 @@ var ar_AE_default = {
     review_change_amount: "Review the Change Amount!",
     no_internet_connection: "No Internet Connection",
     add_another_card: "Add another card",
-    print: "Print",
     zip_invalid: "Zip code is invalid"
   },
   calendar: {
@@ -2066,7 +2065,6 @@ var en_GB_default = {
     review_change_amount: "Review the Change Amount!",
     no_internet_connection: "No Internet Connection",
     add_another_card: "Add another card",
-    print: "Print",
     zip_invalid: "Zip code is invalid",
     data_print: "Date print"
   },
@@ -3776,7 +3774,6 @@ var en_US_default = {
     review_change_amount: "Review the Change Amount!",
     no_internet_connection: "No Internet Connection",
     add_another_card: "Add another card",
-    print: "Print",
     zip_invalid: "Zip code is invalid"
   },
   calendar: {
@@ -5510,8 +5507,7 @@ var fr_CH_default = {
     enter_your_whatsapp: "Insira seu WhatsApp",
     enter_your_date_of_birth: "Insira sua data de nascimento",
     review_change_amount: "Revise o valor do troco!",
-    no_internet_connection: "Sem conex\xE3o com a internet!",
-    print: "Imprimir"
+    no_internet_connection: "Sem conex\xE3o com a internet!"
   },
   calendar: {
     weekdays: ["Seg", "Ter", "Qua", "Qui", "Sex", "S\xE1b", "Dom"],
@@ -7207,8 +7203,7 @@ var pt_BR_default = {
     enter_your_whatsapp: "Insira seu WhatsApp",
     enter_your_date_of_birth: "Insira sua data de nascimento",
     review_change_amount: "Revise o valor do troco!",
-    no_internet_connection: "Sem conex\xE3o com a internet!",
-    print: "Imprimir"
+    no_internet_connection: "Sem conex\xE3o com a internet!"
   },
   calendar: {
     weekdays: ["Seg", "Ter", "Qua", "Qui", "Sex", "S\xE1b", "Dom"],
@@ -8960,7 +8955,6 @@ var pt_PT_default = {
     review_change_amount: "Revise o Valor do Troco!",
     no_internet_connection: "Sem liga\xE7\xE3o \xE0 Internet",
     add_another_card: "Adicionar outro cart\xE3o",
-    print: "Imprimir",
     zip_invalid: "O c\xF3digo postal \xE9 inv\xE1lido"
   },
   calendar: {
