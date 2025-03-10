@@ -4,13 +4,16 @@ import { Printer } from "./../@types/store";
 import {
   addPrinter,
   deletePrinter,
+  getPrinterLocations,
   getPrinters,
+  getProPrint,
   store,
   updatePrinter,
 } from "./store";
 
 import { randomUUID } from "node:crypto";
 import { mainWindow } from ".";
+import { printModal } from "./print";
 
 const isMac = process.platform === "darwin";
 
@@ -72,21 +75,21 @@ const template = [
   // { role: 'appMenu' }
   ...(isMac
     ? [
-        {
-          label: app.name,
-          submenu: [
-            { role: "about" },
-            { type: "separator" },
-            { role: "services" },
-            { type: "separator" },
-            { role: "hide" },
-            { role: "hideOthers" },
-            { role: "unhide" },
-            { type: "separator" },
-            { role: "quit" },
-          ],
-        },
-      ]
+      {
+        label: app.name,
+        submenu: [
+          { role: "about" },
+          { type: "separator" },
+          { role: "services" },
+          { type: "separator" },
+          { role: "hide" },
+          { role: "hideOthers" },
+          { role: "unhide" },
+          { type: "separator" },
+          { role: "quit" },
+        ],
+      },
+    ]
     : []),
   // { role: 'fileMenu' }
   // (isMac ? {
@@ -181,17 +184,17 @@ const updateMenu = async () => {
           click: () => updatePrinter({ id: printer.id, paperSize: 58 }),
         },
         {
+          id: "1",
           label: "80mm",
           type: "radio",
           checked: printer.paperSize === 80,
           click: () => updatePrinter({ id: printer.id, paperSize: 80 }),
         },
         {
-          label: `Customizado ${
-            printer.paperSize !== 80 && printer.paperSize !== 58
-              ? " - " + printer.paperSize + "mm"
-              : ""
-          }`,
+          label: `Customizado ${printer.paperSize !== 80 && printer.paperSize !== 58
+            ? " - " + printer.paperSize + "mm"
+            : ""
+            }`,
           type: "radio",
           checked: printer.paperSize !== 80 && printer.paperSize !== 58,
           click: () => paperSizeDialog(printer),
@@ -213,7 +216,7 @@ const updateMenu = async () => {
           label: `Margem Mínima`,
           type: "radio",
           checked: printer.margins?.marginType === "custom",
-          click: () =>
+          click: () => {
             updatePrinter({
               id: printer.id,
               margins: {
@@ -223,7 +226,8 @@ const updateMenu = async () => {
                 bottom: 1,
                 left: 15,
               },
-            }),
+            })
+          }
         },
         { type: "separator" },
         {
@@ -298,6 +302,12 @@ const updateMenu = async () => {
         await copiesDialog(newPrinter);
       },
     },
+    { type: "separator" },
+    {
+      label: "Configurar ambientes",
+      enabled: getProPrint(),
+      click: () => printModal(),
+    }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template as any[]));
 };

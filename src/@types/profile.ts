@@ -86,7 +86,23 @@ interface ProfileOptions {
     cashierManagement: boolean;
   };
   integrations: {
-    ifood: string;
+    ifood?: {
+      created_at?: string
+      merchantId?: string
+      autoOrder?: boolean
+    }
+    grovenfe?: {
+      company_id: number
+      plan: any
+      config: {
+        fiscal_notes: {
+          day_limiter: null | number
+          forms_payments: Array<{ type: string }>
+        }
+      }
+      delivery_ncm_code?: string
+      created_at: string
+    }
   };
   asaas?: {
     id: string;
@@ -183,4 +199,36 @@ interface ProfileOptions {
     showProductsWhenPaused: boolean;
   };
   inventoryControl: boolean;
+}
+
+export interface ProfileFormPayment {
+  payment: string
+  status?: boolean
+  flags?: { code: string; image: string; name: string }[]
+  newFlag?: string
+  label: string
+  key?: { type: string; value: string }
+  addon: AddonType
+}
+
+export interface AddonType {
+  status: boolean
+  type: 'fee' | 'discount' | string
+  valueType: 'fixed' | 'percentage' | string
+  value: number
+}
+
+export interface ProfileFee {
+  id?: number | null
+  code: string | null
+  profileId?: number | null
+  type: 'percent' | 'fixed' | null
+  value: number
+  quantity?: number
+  oldQuantity?: number
+  status: boolean | null
+  automatic: boolean
+  deleted_at?: string | null
+  created_at?: string | null
+  updated_at?: string | null
 }

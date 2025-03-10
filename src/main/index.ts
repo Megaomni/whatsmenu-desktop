@@ -12,7 +12,8 @@ import "./sentry";
 import { TabBrowser } from "../extends/tab-browser";
 import { BaileysService } from "../services/baileysService";
 import { tabsWindow } from "../windows/tabs-window";
-import { fetchVouchers, getPrinters, updatePrinter } from "./store";
+import { convertPrinterLocation, fetchVouchers, getPrinters, getProfile, setCategories, setProPrint, updatePrinter } from "./store";
+import { whatsmenu_api_v3 } from "../lib/axios";
 
 export let mainWindow: TabBrowser;
 
@@ -29,7 +30,12 @@ export const whatsAppService = new BaileysService();
 const main = async () => {
   mainWindow = tabsWindow.createWindow();
   const printers = getPrinters();
+  const profile = getProfile();
+  const { data } = await whatsmenu_api_v3.get(`/getProPrint/${profile?.id}`);
+  setProPrint(data);
   await fetchVouchers();
+  await setCategories();
+  convertPrinterLocation();
   if (printers.length > 0) {
     printers.forEach((printer) => {
       if (!printer.margins) {

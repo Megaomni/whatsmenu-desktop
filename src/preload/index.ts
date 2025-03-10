@@ -6,6 +6,8 @@ import { ProfileType } from "../@types/profile";
 import { VoucherType } from "../@types/voucher";
 import { Env } from "../environments";
 import { MerchantType } from "../@types/merchant";
+import { PrintEnvironmentConfig, ProductCategory } from "../react/types_print-environment";
+import { Printer } from "../@types/store";
 
 export const WhatsAppBotApi = {
   // Events
@@ -47,18 +49,42 @@ export const DesktopApi = {
   onProfileChange: (
     callback: (event: Electron.IpcRendererEvent, profile: ProfileType) => void,
   ) => ipcRenderer.on("onProfileChange", callback),
+  onCategoriesChange: (
+    callback: (event: Electron.IpcRendererEvent, categories: ProductCategory[]) => void,
+  ) => ipcRenderer.on("onCategoriesChange", callback),
+  onPrinterLocationsChange: (
+    callback: (event: Electron.IpcRendererEvent, locations: PrintEnvironmentConfig[]) => void,
+  ) => ipcRenderer.on("onPrinterLocationsChange", callback),
+  onPrinterChange: (
+    callback: (event: Electron.IpcRendererEvent, printers: Printer[]) => void,
+  ) => ipcRenderer.on("onPrinterChange", callback),
   onCart: (cart: { id: number; client?: ClientType }) =>
     ipcRenderer.send("onCart", cart),
-  onVoucher: (voucher: VoucherType) => ipcRenderer.send("onVoucher", voucher),
-  removeVoucher: (voucher: VoucherType) =>
-    ipcRenderer.send("removeVoucher", voucher),
-
+  onSubmitPrint: (location: PrintEnvironmentConfig) =>
+    ipcRenderer.send("onSubmitPrint", location),
+  onRemovePrint: (id: number) =>
+    ipcRenderer.send("onRemovePrint", id),
+  onUpdatePrint: (location: PrintEnvironmentConfig) =>
+    ipcRenderer.send("onUpdatePrint", location),
+  onUpdatePrinter: (printer: Partial<Printer>) =>
+    ipcRenderer.send("onUpdatePrinter", printer),
+  onVoucher: (voucher: VoucherType) =>
+    ipcRenderer.send("onVoucher", voucher),
+  removeUsedVoucher: (voucher: VoucherType) =>
+    ipcRenderer.send("removeUsedVoucher", voucher),
+  removeCanceledVoucher: (voucherId: number) =>
+    ipcRenderer.send("removeCanceledVoucher", voucherId),
+  setUserControls: (userControls: any) =>
+    ipcRenderer.send("setUserControls", userControls),
   storeProfile: (profile: ProfileType, updateBot: boolean) =>
     ipcRenderer.send("storeProfile", profile, updateBot),
   storeMerchant: (merchant: MerchantType) =>
     ipcRenderer.send("storeMerchant", merchant),
   getProfile: () => ipcRenderer.send("getProfile"),
   getMerchant: () => ipcRenderer.send("getMerchant"),
+  getCategories: () => ipcRenderer.send("getCategories"),
+  getPrinterLocations: () => ipcRenderer.send("getPrinterLocations"),
+  getAllPrinters: () => ipcRenderer.send("getAllPrinters"),
   /**
    * Abre um link no navegador padrão.
    *

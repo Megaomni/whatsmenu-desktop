@@ -9,12 +9,18 @@ import { MerchantType } from "../@types/merchant";
 import { VoucherType } from "../@types/voucher";
 import { getVouchersFromDB } from "./ipc";
 import { ClientType } from "../@types/client";
+import { PrintEnvironmentConfig } from "../react/types_print-environment";
 
 export interface Store {
   configs: {
     printing: {
+      locations: PrinterLocation[];
+      proPrint: boolean;
+      useMultiplePrinters: boolean;
       printers: Printer[];
+      legacyPrint: boolean;
     };
+    productCategories: { id: number; name: string; }[];
     whatsapp: {
       showHiddenWhatsApp: boolean;
     };
@@ -24,6 +30,18 @@ export interface Store {
     voucherToNotify: VoucherNotification[];
     merchant: MerchantType | null;
   };
+}
+
+interface CategoriesLocation {
+  id: number;
+  name: string;
+}
+
+export interface PrinterLocation {
+  id: number;
+  type: "fiscal" | "production";
+  name: string;
+  categories: CategoriesLocation[];
 }
 
 export const store = new ElectronStore<Store>({
@@ -38,12 +56,41 @@ export const store = new ElectronStore<Store>({
     "0.4.5": (store) => {
       store.set("configs.merchant", null);
     },
+    "1.6.0": (store) => {
+      store.set("configs.printing.locations", [
+        {
+          id: 1,
+          type: "fiscal",
+          name: "Caixa",
+          categories: []
+        },
+      ])
+      store.set("configs.productCategories", []);
+    },
+    "1.6.1": (store) => {
+      store.set("configs.printing.proPrint", false);
+    },
+    "1.6.6": (store) => {
+      store.set("configs.userControls", {});
+    },
   },
   defaults: {
     configs: {
       printing: {
+        locations: [
+          {
+            id: 1,
+            type: "fiscal",
+            name: "Caixa",
+            categories: []
+          },
+        ],
+        proPrint: false,
+        useMultiplePrinters: false,
         printers: [],
+        legacyPrint: false,
       },
+      productCategories: [],
       whatsapp: {
         showHiddenWhatsApp: false,
       },
@@ -54,6 +101,85 @@ export const store = new ElectronStore<Store>({
     },
   },
 });
+
+export type categoryType = {
+  id: number;
+  name: string;
+  products: { id: number; categoryId: number }[];
+  pizzaProduct: any;
+};
+
+export const setCategories = async () => {
+  try {
+    const profile = getProfile();
+    const { data } = await whatsmenu_api_v3.get(`/categories/${profile?.id}`);
+
+    store.set("configs.productCategories", data);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export const getCategories = () => {
+  const categories = store.get<"configs.productCategories", categoryType[]>(
+    "configs.productCategories"
+  );
+  return categories;
+}
+
+export const getUserControls = () =>
+  store.get<"configs.userControls", any>("configs.userControls");
+
+export const setUserControls = (userControls: any) => {
+  store.set("configs.userControls", userControls);
+}
+
+export const getProPrint = () =>
+  store.get<"configs.printing.proPrint", boolean>("configs.printing.proPrint");
+
+export const setProPrint = (proPrint: boolean) =>
+  store.set("configs.printing.proPrint", proPrint);
+
+export const setPrinterLocation = (location: PrintEnvironmentConfig) => {
+  const { type, name } = location;
+  const categories = !location.categories || type === "fiscal" ? [] : location.categories;
+  const locations = getPrinterLocations();
+  store.set("configs.printing.locations", [...locations, { id: locations[locations.length - 1].id + 1, type, name, categories }]);
+}
+
+export const removePrinterLocation = (id: number) => {
+  const locations = getPrinterLocations();
+  if (id === 1) return;
+  const printersWithoutLocation = getPrinters().map((printer) => {
+    if (printer.options["printer-location"].includes(id)) {
+      return { ...printer, options: { ...printer.options, "printer-location": printer.options["printer-location"].filter((location) => location !== id) } }
+    }
+    return printer
+  });
+  const listWithoutLocation = locations.filter((location) => location.id !== id);
+  updateAllPrinters(printersWithoutLocation);
+  store.set("configs.printing.locations", listWithoutLocation);
+}
+
+export const updatePrinterLocation = (location: PrintEnvironmentConfig) => {
+  const { id, type, name } = location;
+  const categories = !location.categories || type === "fiscal" ? [] : location.categories;
+  const locations = getPrinterLocations();
+  const locationsUpdated = locations.map((location) => {
+    if (location.id === id) {
+      return { ...location, type, name, categories };
+    }
+    return location;
+  });
+  store.set("configs.printing.locations", locationsUpdated);
+}
+
+export const getPrinterLocations = () => {
+  const locations = store.get<"configs.printing.locations", PrinterLocation[]>(
+    "configs.printing.locations",
+  );
+  return locations;
+}
 
 export const getPrinters = () =>
   store.get<"configs.printing.printers", Printer[]>(
@@ -67,8 +193,39 @@ export const getPrinter = (id: string) =>
 
 export const addPrinter = (payload: Omit<Printer, "options">) => {
   store.set("configs.printing.printers", [...getPrinters(), payload]);
-  return getPrinter(payload.id);
+  const printer = getPrinter(payload.id);
+  updatePrinter({
+    id: printer.id,
+    options: {
+      ...printer.options,
+      "printer-location": [1],
+    },
+  });
+  return printer;
 };
+
+export const convertPrinterLocation = () => {
+  const printers = getPrinters();
+  const printersUpdated = printers.map((printer) => {
+    if (typeof printer.options["printer-location"] === "string") {
+      return {
+        ...printer,
+        options: {
+          ...printer.options,
+          "printer-location": [1],
+        },
+      };
+    } else {
+      return printer;
+    }
+  });
+  updateAllPrinters(printersUpdated);
+}
+
+const updateAllPrinters = (printers: Printer[]) => {
+  store.set("configs.printing.printers", printers);
+};
+
 export const updatePrinter = (payload: Partial<Printer>) => {
   const printer = store
     .get<"configs.printing.printers", Printer[]>("configs.printing.printers")
@@ -104,21 +261,15 @@ export const getMerchant = () =>
 export const setCacheContactList = (cacheContact: CacheContact) =>
   store.set("configs.contacts_cache", cacheContact);
 
-export const setContactWelcomeMessage = (cacheContact: CacheContact) => {
+export const setContactWelcomeMessage = (whatsapp: string) => {
   const allContacts = getCacheContactList();
-  const cacheFiltered = allContacts.filter(
-    (contact) => contact?.contact !== cacheContact?.contact
+  const cacheFiltered = allContacts.map(
+    (contact) => contact?.contact === whatsapp ? { ...contact, messageType: "welcome" } : contact
   )
-  const selectedContact = allContacts.find(
-    (contact) => contact?.contact === cacheContact?.contact
-  );
-  store.set("configs.contacts_cache", [
-    ...cacheFiltered,
-    {
-      ...selectedContact,
-      messageType: "welcome",
-    },
-  ]);
+  // const selectedContact = allContacts.find(
+  //   (contact) => contact?.contact === cacheContact?.contact
+  // );
+  store.set("configs.contacts_cache", cacheFiltered);
 }
 
 export const getCacheContactList = () =>
@@ -224,7 +375,7 @@ const formatOldVoucher = (oldVoucher: OldVoucher): VoucherNotification => {
       {
         id: oldVoucher.id,
         value: oldVoucher.value,
-        expirationDate: oldVoucher.expirationDate,
+        expirationDate: DateTime.fromISO(oldVoucher.expirationDate).toISO(),
         rememberDays: oldVoucher.rememberDays,
         rememberDate: DateTime.fromISO(oldVoucher.rememberDate).diffNow(["minutes"]).minutes <= 0
           ? null : oldVoucher.rememberDate,
@@ -267,7 +418,7 @@ const formatVouchFromDB = (vouchFromDB: VoucherType, client: ClientType): Vouche
       {
         id: vouchFromDB.id,
         value: vouchFromDB.value,
-        expirationDate: vouchFromDB.expirationDate,
+        expirationDate: DateTime.fromISO(vouchFromDB.expirationDate).toISO(),
         rememberDays,
         rememberDate: DateTime.fromISO(rememberValue).diffNow(["minutes"]).minutes <= 0
           ? null : rememberValue,
@@ -361,7 +512,6 @@ export const storeNewUserToNotify = (payload: VoucherNotification) => {
           voucherToAdd.vouchers[0]
         );
         store.set("configs.voucherToNotify", updatedUsers);
-
       } else {
         updatedVouchers.push(voucherToAdd);
         store.set("configs.voucherToNotify", updatedVouchers);
@@ -395,7 +545,7 @@ export const removeDuplicateVouchers = (): void => {
   return store.set("configs.voucherToNotify", uniqueVouchers);
 };
 
-const deleteExpiredVoucher = (id: number) => {
+export const deleteExpiredVoucher = (id: number) => {
   const currentVouchers = getVoucherToNotifyList();
   const foundUser = currentVouchers.find((user) => user.vouchers.some((voucher) => voucher.id === id));
   if (!foundUser) {
@@ -419,22 +569,14 @@ const deleteExpiredVoucher = (id: number) => {
   }
 }
 
-const deleteUsedVouchers = async (voucherFromDB: VoucherType, client: ClientType) => {
-  const allVouchersFromDB = await getVouchersFromDB();
+export const deleteUsedVouchers = async (vouchersFromDB: VoucherType[],) => {
   const currentVouchers = getVoucherToNotifyList();
-  const voucherFromUser = allVouchersFromDB.find((voucher) => voucher.clientId === voucherFromDB.clientId);
-  if (voucherFromUser) {
-    const newFormatvoucher = formatVouchFromDB(voucherFromUser, client);
+  const vouchersFromUser = await getVouchersFromDB(vouchersFromDB[0].clientId);
+
+  if (vouchersFromUser) {
+    const newFormatvoucher = formatVouchFromDB(vouchersFromUser[vouchersFromUser.length - 1], vouchersFromUser[0].client);
     const updatedList = currentVouchers.map((user) => user.whatsapp === newFormatvoucher.whatsapp ? newFormatvoucher : user);
     store.set("configs.voucherToNotify", updatedList);
-  }
-}
-
-export const deleteVoucherToNotify = (voucherOrId: number | VoucherType) => {
-  if (typeof voucherOrId === 'number') {
-    deleteExpiredVoucher(voucherOrId);
-  } else {
-    deleteUsedVouchers(voucherOrId, voucherOrId.client);
   }
 }
 

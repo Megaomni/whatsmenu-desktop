@@ -32,29 +32,39 @@ export const create_dashboard_tab = () => {
         open = false;
       }
       const now = parseFloat(
-        DateTime.local().setZone(profile.timeZone).toFormat("HH.mm"),
+        DateTime.local().setZone(profile.timeZone).toFormat("HH.mm")
       );
       const filter = profile.week[today].filter(
-        (d: WeekDayType) => now >= convert(d.open) && now <= convert(d.close),
+        (d: WeekDayType) => now >= convert(d.open) && now <= convert(d.close)
       );
 
       if (filter.length) {
         open = true;
       }
 
-      store.onDidAnyChange((newValue) => {
-        if (newValue.configs.profile.options.integrations) {
-          getMerchantApi({ profile });
+      store.onDidAnyChange((newValue, oldValue) => {
+        const newProfile = newValue.configs.profile;
+        if (
+          JSON.stringify(
+            newValue.configs.profile.options?.integrations?.ifood
+          ) !==
+          JSON.stringify(oldValue.configs.profile.options?.integrations?.ifood)
+        ) {
+          getMerchantApi({ profile: newProfile });
           merchant = getMerchant();
-          if (open && merchant) {
-            if (pollingInterval) {
-              clearInterval(pollingInterval);
-            }
-            pollingInterval = setInterval(
-              () => polling({ merchant, profile }),
-              30 * 1000,
-            );
+        }
+        merchant = getMerchant();
+        if (
+          open &&
+          merchant &&
+          newProfile.options.integrations?.ifood?.merchantId
+        ) {
+          if (pollingInterval) {
+            clearInterval(pollingInterval);
           }
+          pollingInterval = setInterval(() => {
+            polling({ merchant, profile: newProfile });
+          }, 10 * 1000);
         }
       });
     }

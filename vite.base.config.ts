@@ -2,6 +2,7 @@ import { builtinModules } from "node:module";
 import type { AddressInfo } from "node:net";
 import type { ConfigEnv, Plugin, UserConfig } from "vite";
 import pkg from "./package.json";
+import react from "@vitejs/plugin-react";
 
 export const builtins = [
   "electron",
