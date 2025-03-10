@@ -26,6 +26,7 @@ import {
   storeNewUserToNotify,
   updatePrinter,
   updatePrinterLocation,
+  setUserControls,
 } from "./store";
 import { PrintEnvironmentConfig } from "../react/types_print-environment";
 // import { PosPrinter } from "electron-pos-printer";
@@ -329,6 +330,10 @@ ipcMain.on("storeProfile", (_, profile, updateBot = false) => {
   }
   store.set("configs.profile", profile);
 });
+
+ipcMain.on("setUserControls", (_, userControls) => {
+  setUserControls(userControls);
+})
 
 ipcMain.on("storeMerchant", (_, merchant) => {
   store.set("configs.merchant", merchant);
