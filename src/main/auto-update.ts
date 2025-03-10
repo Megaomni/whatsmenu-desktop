@@ -3,7 +3,6 @@ import { mainWindow } from ".";
 import { getUserControls } from "./store";
 import { tabsWindow } from "../windows/tabs-window";
 
-
 let url = "https://whatsmenu-desktop-update-server.vercel.app"
 const checkForUpdates = async () => {
   try {
@@ -21,8 +20,6 @@ checkForUpdates().then((result) => {
   const UPDATE_CHECK_INTERVAL = 1000 * 60;
 
   const isMac = process.platform === "darwin";
-
-  console.log("XXXXXXXXXXXXXXXXXXXXXXXXX URL:", url);
 
   if (!isMac) {
     autoUpdater.setFeedURL({ url });
@@ -66,6 +63,7 @@ checkForUpdates().then((result) => {
 
     const updateInterval = setInterval(() => {
       autoUpdater.checkForUpdates();
+      autoUpdater.setFeedURL({ url });
     }, UPDATE_CHECK_INTERVAL);
   }
 })

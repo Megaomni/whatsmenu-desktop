@@ -131,7 +131,6 @@ export const getUserControls = () =>
   store.get<"configs.userControls", any>("configs.userControls");
 
 export const setUserControls = (userControls: any) => {
-  console.log("XXXXX entrou", userControls.beta);
   store.set("configs.userControls", userControls);
 }
 
