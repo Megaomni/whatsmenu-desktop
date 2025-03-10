@@ -207,7 +207,10 @@ export const addPrinter = (payload: Omit<Printer, "options">) => {
 export const convertPrinterLocation = () => {
   const printers = getPrinters();
   const printersUpdated = printers.map((printer) => {
-    if (typeof printer.options["printer-location"] === "string") {
+    if (
+      typeof printer.options["printer-location"] === "string" ||
+      !printer.options["printer-location"]
+    ) {
       return {
         ...printer,
         options: {
