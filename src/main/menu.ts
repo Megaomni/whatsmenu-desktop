@@ -36,6 +36,7 @@ const copiesDialog = async (printerSelected: Printer) => {
 };
 
 const scaleFactorDialog = async (printerSelected: Printer) => {
+  console.log('PRINTTTTTT ANTESSS',printerSelected.scaleFactor);
   const scaleFactor = await prompt({
     title: "Escala da impressão",
     label: "Escala em porcentagem",
@@ -49,7 +50,7 @@ const scaleFactorDialog = async (printerSelected: Printer) => {
   });
   updatePrinter({
     id: printerSelected.id,
-    scaleFactor: parseInt(scaleFactor) ?? printerSelected.scaleFactor,
+    scaleFactor: parseInt(scaleFactor) ? parseInt(scaleFactor) : printerSelected.scaleFactor,
   });
 };
 
