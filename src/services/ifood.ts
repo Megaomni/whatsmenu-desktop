@@ -39,7 +39,7 @@ export const polling = async ({
     if (!merchant) {
       throw new Error("Loja ifood não encontrada!");
     }
-    
+
     const { data } = await axios.get(
       "https://merchant-api.ifood.com.br/events/v1.0/events:polling",
       {
@@ -51,28 +51,28 @@ export const polling = async ({
     );
 
     pollingData = data;
-    if (pollingData.length > 0) {      
+    if (pollingData.length > 0) {
       const returnOrders = await whatsmenu_api_v3.post(`ifood/polling`, {
         profileId: profile.id,
         pollingData,
         token: merchant.token,
       });
-      
-      returnOrders.data.orders.forEach( async (order: any) => {
+
+      returnOrders.data.orders.forEach(async (order: any) => {
         if (order.orderStatus === "PLACED") {
           if (profile.options.integrations.ifood?.autoOrder) {
             await whatsmenu_api_v3.post(`/ifood/order/${order.orderId}/updateStatus`, {
-              status: 'CONFIRMED' ,
+              status: 'CONFIRMED',
             });
           }
-          if (!profile.options.integrations.ifood?.autoOrder) {       
+          if (!profile.options.integrations.ifood?.autoOrder) {
             io.to(`ifood:${profile.slug}`).emit("newOrderIfood", order);
           }
         }
         if (order.orderStatus !== "PLACED") {
           io.to(`ifood:${profile.slug}`).emit("processedOrderIfood", order);
           await whatsmenu_api_v3.patch(`ifood/${order.orderId}/updatePrint`, {
-           body: { print: 1, wm_id: profile.id }, 
+            body: { print: 1, wm_id: profile.id },
           })
         }
       });
