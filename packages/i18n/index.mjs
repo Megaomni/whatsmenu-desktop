@@ -14,7 +14,7 @@ var ar_AE_default = {
     mi: "KM",
     phone: "00 000 0000",
     cell: "00 000 0000",
-    secret_number: "784-####-#######-#",
+    secret_number: "000-0000-0000000-0",
     ssn_mask: "000-0000-0000000-0",
     zipcode: "000099",
     date_mask: "dd/MM/yyyy",
@@ -384,7 +384,15 @@ var ar_AE_default = {
     zip_invalid: "Zip code is invalid"
   },
   calendar: {
-    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    weekdays: [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
     months: [
       "January",
       "February",
@@ -400,7 +408,12 @@ var ar_AE_default = {
       "December"
     ]
   },
-  timezones: [{ label: "Dubai", value: "Asia/Dubai" }],
+  timezones: [
+    {
+      label: "Dubai",
+      value: "Asia/Dubai"
+    }
+  ],
   unitSystem: "imperial",
   distanceinkmto: "Distance in miles to",
   distance: "Distance",
@@ -1663,7 +1676,8 @@ var en_GB_default = {
   masks: {
     phone: "000 0000 0000",
     cell: "000 0000 0000",
-    secret_number: "## ## ## ## #",
+    secret_number: "AA 00 00 00 A",
+    secret_number_company: "00000 00000",
     ssn_mask: "00.00.00.00.0",
     zipcode: "",
     date_mask: "dd/MM/yyyy",
@@ -2035,7 +2049,15 @@ var en_GB_default = {
     data_print: "Date print"
   },
   calendar: {
-    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    weekdays: [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
     months: [
       "January",
       "February",
@@ -3321,7 +3343,7 @@ var en_US_default = {
   masks: {
     phone: "(000) 0000-0000",
     cell: "(000) 000-0000",
-    secret_number: "###.###.###-##",
+    secret_number: "000-00-0000",
     ssn_mask: "000-00-0000",
     zipcode: "00000",
     date_mask: "MM/dd/yyyy",
@@ -3743,7 +3765,15 @@ var en_US_default = {
     zip_invalid: "Zip code is invalid"
   },
   calendar: {
-    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    weekdays: [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat",
+      "Sun"
+    ],
     months: [
       "January",
       "February",
@@ -5099,7 +5129,7 @@ var fr_CH_default = {
     mi: "KM",
     phone: "00 000 00 00",
     cell: "00 000 00 00",
-    secret_number: "756.####.####.##",
+    secret_number: "000.0000.0000.00",
     ssn_mask: "000.0000.0000.00",
     zipcode: "0000",
     date_mask: "dd/MM/yyyy",
@@ -5476,7 +5506,15 @@ var fr_CH_default = {
     no_internet_connection: "Sem conex\xE3o com a internet!"
   },
   calendar: {
-    weekdays: ["Seg", "Ter", "Qua", "Qui", "Sex", "S\xE1b", "Dom"],
+    weekdays: [
+      "Seg",
+      "Ter",
+      "Qua",
+      "Qui",
+      "Sex",
+      "S\xE1b",
+      "Dom"
+    ],
     months: [
       "Janeiro",
       "Fevereiro",
@@ -6768,7 +6806,8 @@ var pt_BR_default = {
     mi: "KM",
     phone: "(00) 0000-00009",
     cell: "(00) 00000-0000",
-    secret_number: "###.###.###-##",
+    secret_number: "000.000.000-000",
+    secret_number_company: "00.000.000/0000-00",
     ssn_mask: "CPF_CNPJ",
     zipcode: "00000-000",
     date_mask: "dd/MM/yyyy",
@@ -7172,7 +7211,15 @@ var pt_BR_default = {
     no_internet_connection: "Sem conex\xE3o com a internet!"
   },
   calendar: {
-    weekdays: ["Seg", "Ter", "Qua", "Qui", "Sex", "S\xE1b", "Dom"],
+    weekdays: [
+      "Seg",
+      "Ter",
+      "Qua",
+      "Qui",
+      "Sex",
+      "S\xE1b",
+      "Dom"
+    ],
     months: [
       "Janeiro",
       "Fevereiro",
@@ -8548,7 +8595,7 @@ var pt_PT_default = {
   masks: {
     phone: "000 000 000",
     cell: "000 000 000",
-    secret_number: "000000000",
+    secret_number: "000 000 000",
     ssn_mask: "000000000",
     zipcode: "0000-000",
     date_mask: "dd/MM/yyyy",
@@ -8924,7 +8971,15 @@ var pt_PT_default = {
     zip_invalid: "O c\xF3digo postal \xE9 inv\xE1lido"
   },
   calendar: {
-    weekdays: ["Seg", "Ter", "Qua", "Qui", "Sex", "S\xE1b", "Dom"],
+    weekdays: [
+      "Seg",
+      "Ter",
+      "Qua",
+      "Qui",
+      "Sex",
+      "S\xE1b",
+      "Dom"
+    ],
     months: [
       "Janeiro",
       "Fevereiro",
