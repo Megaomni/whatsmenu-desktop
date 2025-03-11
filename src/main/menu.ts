@@ -49,7 +49,7 @@ const scaleFactorDialog = async (printerSelected: Printer) => {
   });
   updatePrinter({
     id: printerSelected.id,
-    scaleFactor: parseInt(scaleFactor) ?? printerSelected.scaleFactor,
+    scaleFactor: parseInt(scaleFactor) ? parseInt(scaleFactor) : printerSelected.scaleFactor,
   });
 };
 
