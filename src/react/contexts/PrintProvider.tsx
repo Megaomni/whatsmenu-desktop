@@ -32,7 +32,7 @@ export default function PrintProvider({ children }: any) {
     margins: {
       marginType: "none",
     },
-    scaleFactor: 100
+    scaleFactor: 70
   })
   const [selectedPrinterEnvs, setSelectedPrinterEnvs] = useState([])
   const [selectedType, setSelectedType] = useState<PrintEnvironmentType>('fiscal')

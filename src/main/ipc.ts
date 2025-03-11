@@ -35,7 +35,6 @@ import Cart from "../../packages/entities/cart";
 import Profile from "../../packages/entities/profile";
 import Table from "../../packages/entities/table";
 import Command from "../../packages/entities/command";
-import { set } from "zod";
 
 ipcMain.on(
   "send-message",
@@ -222,7 +221,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
       }
       setTimeout(() => {
         win.close();
-      }, 5000)
+      }, 1000 * 60);
     }
 
     if (printTypeMode === "whatsmenu") {
@@ -315,7 +314,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
         }
         setTimeout(() => {
           window.close();
-        }, 5000)
+        }, 1000 * 60);
       }
     }
   }
