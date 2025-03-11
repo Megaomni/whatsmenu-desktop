@@ -42,7 +42,7 @@ const main = async () => {
         updatePrinter({ id: printer.id, margins: { marginType: "none" } });
       }
       if (!printer.scaleFactor) {
-        updatePrinter({ id: printer.id, scaleFactor: 100 });
+        updatePrinter({ id: printer.id, scaleFactor: 70 });
       }
     });
   }
