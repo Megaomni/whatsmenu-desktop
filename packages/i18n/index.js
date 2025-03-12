@@ -10243,9 +10243,7 @@ var pt_PT_default = {
   if_you_need: "caso precise",
   reference: "Refer\xEAncia",
   pickup_the_location: "Vou retirar no local",
-  table_request: "Pedido mesa",
-  possible: "Poss\xEDvel",
-  the_date_of_your_delivery: "A data da sua entrega \xE9"
+  table_request: "Pedido mesa"
 };
 
 // src/index.ts
