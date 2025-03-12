@@ -202,6 +202,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
             (success, failureReason) => {
               console.log("Print Initiated in Main...");
               if (!success) console.error(failureReason);
+              win.close();
             }
           );
         }, 2000);
@@ -219,9 +220,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
           )
         );
       }
-      setTimeout(() => {
-        win.close();
-      }, 1000 * 60);
     }
 
     if (printTypeMode === "whatsmenu") {
@@ -295,6 +293,7 @@ ipcMain.on("print", async (_, serializedPayload) => {
               (success, failureReason) => {
                 console.log("Print Initiated in Main...");
                 if (!success) console.error(failureReason);
+                window.close();
               }
             );
           }, 2000);
@@ -312,9 +311,6 @@ ipcMain.on("print", async (_, serializedPayload) => {
             )
           );
         }
-        setTimeout(() => {
-          window.close();
-        }, 1000 * 60);
       }
     }
   }
