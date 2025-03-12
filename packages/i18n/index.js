@@ -100,7 +100,7 @@ var ar_AE_default = {
   secret_number_on_note: "SSN on note",
   search_products_by_name_or_description: "Search Products by Name or Description",
   outside_the_coverage_area: "outside the coverage area",
-  unavilable: "unavilable",
+  unavilable: "Unavilable",
   avaible: "avaible",
   product_unavilable: "product unavilable",
   unavilable_amount: "unavilable amount",
@@ -1624,6 +1624,8 @@ var ar_AE_default = {
   reference: "Reference",
   pickup_the_location: "Pickup the location",
   table_request: "Table request",
+  possible: "Possible",
+  the_date_of_your_delivery: "The date of your delivery is",
   whatsMenuPro: {
     this_app_is_better_than: "This APP is better than employees whether in-store or for delivery, all management is now automated!",
     waiter_app_delivery: "WAITER APP, DELIVERY ROUTE, AND MUCH MORE.",
@@ -1750,7 +1752,7 @@ var en_GB_default = {
   secret_number_on_note: "SSN on note",
   search_products_by_name_or_description: "Search Products by Name or Description",
   outside_the_coverage_area: "outside the coverage area",
-  unavilable: "unavilable",
+  unavilable: "Unavilable",
   avaible: "avaible",
   product_unavilable: "product unavilable",
   unavilable_amount: "unavilable amount",
@@ -3282,6 +3284,8 @@ var en_GB_default = {
   reference: "Reference",
   pickup_the_location: "Pickup the location",
   table_request: "Table request",
+  possible: "Possible",
+  the_date_of_your_delivery: "The date of your delivery is",
   whatsMenuPro: {
     this_app_is_better_than: "This app is better than employees, whether in-store or for delivery, all management is now automated!",
     waiter_app_delivery: "WAITER APP, DELIVERY ROUTE, AND MUCH MORE.",
@@ -3459,7 +3463,7 @@ var en_US_default = {
   secret_number_on_note: "SSN on note",
   search_products_by_name_or_description: "Search Products by Name or Description",
   outside_the_coverage_area: "outside the coverage area",
-  unavilable: "unavilable",
+  unavilable: "Unavilable",
   avaible: "avaible",
   product_unavilable: "product unavilable",
   unavilable_amount: "unavilable amount",
@@ -5059,6 +5063,8 @@ var en_US_default = {
   reference: "Reference",
   pickup_the_location: "Pickup the location",
   table_request: "Table request",
+  possible: "Possible",
+  the_date_of_your_delivery: "The date of your delivery is",
   whatsMenuPro: {
     this_app_is_better_than: "This APP is better than employees whether in-store or for delivery, all management is now automated!",
     waiter_app_delivery: "WAITER APP, DELIVERY ROUTE, AND MUCH MORE.",
@@ -5188,7 +5194,7 @@ var fr_CH_default = {
   secret_number_on_note: "AVS na nota",
   search_products_by_name_or_description: "Pesquisar Produtos por Nome ou descri\xE7\xE3o",
   outside_the_coverage_area: "fora da \xE1rea de cobertura",
-  unavilable: "indispon\xEDvel",
+  unavilable: "Indispon\xEDvel",
   avaible: "dispon\xEDvel",
   product_unavilable: "produto indispon\xEDvel",
   unavilable_amount: "quantidade indispon\xEDvel",
@@ -6728,6 +6734,8 @@ var fr_CH_default = {
   reference: "Refer\xEAncia",
   pickup_the_location: "Vou retirar no local",
   table_request: "Pedido mesa",
+  possible: "Poss\xEDvel",
+  the_date_of_your_delivery: "A data da sua entrega \xE9",
   whatsMenuPro: {
     this_app_is_better_than: "This APP is better than employees whether in-store or for delivery, all management is now automated!",
     waiter_app_delivery: "WAITER APP, DELIVERY ROUTE, AND MUCH MORE.",
@@ -6884,7 +6892,7 @@ var pt_BR_default = {
   secret_number_on_note: "CPF/CNPJ na nota",
   search_products_by_name_or_description: "Pesquisar Produtos por Nome ou descri\xE7\xE3o",
   outside_the_coverage_area: "fora da \xE1rea de cobertura",
-  unavilable: "indispon\xEDvel",
+  unavilable: "Indispon\xEDvel",
   avaible: "dispon\xEDvel",
   product_unavilable: "produto indispon\xEDvel",
   unavilable_amount: "quantidade indispon\xEDvel",
@@ -8509,6 +8517,8 @@ var pt_BR_default = {
   reference: "Refer\xEAncia",
   pickup_the_location: "Vou retirar no local",
   table_request: "Pedido mesa",
+  possible: "Poss\xEDvel",
+  the_date_of_your_delivery: "A data da sua entrega \xE9",
   whatsMenuPro: {
     this_app_is_better_than: "Este APP \xE9 melhor do que funcion\xE1rios, seja na loja ou para entrega, toda a gest\xE3o agora \xE9 automatizada!",
     waiter_app_delivery: "APP DE GAR\xC7OM, ROTA DE ENTREGA E MUITO MAIS.",
@@ -8635,7 +8645,7 @@ var pt_PT_default = {
   secret_number_on_note: "CPF/CNPJ na nota",
   search_products_by_name_or_description: "Pesquisar Produtos por Nome ou descri\xE7\xE3o",
   outside_the_coverage_area: "fora da \xE1rea de cobertura",
-  unavilable: "indispon\xEDvel",
+  unavilable: "Indispon\xEDvel",
   avaible: "dispon\xEDvel",
   product_unavilable: "produto indispon\xEDvel",
   unavilable_amount: "quantidade indispon\xEDvel",
@@ -10178,7 +10188,9 @@ var pt_PT_default = {
   if_you_need: "caso precise",
   reference: "Refer\xEAncia",
   pickup_the_location: "Vou retirar no local",
-  table_request: "Pedido mesa"
+  table_request: "Pedido mesa",
+  possible: "Poss\xEDvel",
+  the_date_of_your_delivery: "A data da sua entrega \xE9"
 };
 
 // src/index.ts
