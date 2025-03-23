@@ -41,7 +41,7 @@ jobs:
         run: npm run make
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: squirrel-windows
           path: ./out/make/squirrel.windows/ia32
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: squirrel-windows
           path: ./out/make/squirrel.windows/ia32

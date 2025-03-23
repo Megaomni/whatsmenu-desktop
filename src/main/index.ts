@@ -2,7 +2,7 @@ import { app, BrowserWindow } from "electron";
 import isDev from "electron-is-dev";
 import path from "node:path";
 
-import "../main/auto-update";
+// import "../main/auto-update";
 import "../main/ipc";
 import "../main/menu";
 import "../main/tray";
