@@ -134,6 +134,7 @@ export class BaileysService {
       syncFullHistory: false,
       markOnlineOnConnect: false,
       browser: ["WhatsMenu", "", app.getVersion()],
+      version: [2, 3000, 1025190524],
       generateHighQualityLinkPreview: true,
     });
 
